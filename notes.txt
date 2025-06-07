@@ -1,0 +1,89 @@
+
+docker-compose down --remove-orphans && docker-compose -f docker-compose.prod.yml up --build -d
+docker-compose down --remove-orphans && docker-compose -f docker-compose.dev.yml up --build -d
+
+docker-compose down --remove-orphans && docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+docker-compose down && docker-compose -f docker-compose.yml up --build -d
+
+docker-compose down --remove-orphans && docker-compose -f docker-compose.yml -f docker-compose.prod.test.yml up --build -d
+
+docker-compose down && docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build --force-recreate -d
+
+
+docker-compose down && docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f /home/admin/marswide/marswide_frontend/docker-compose.yml -f /home/admin/marswide/marswide_frontend/docker-compose.dev.yml up --build -d
+
+
+sudo certbot certonly --manual -d marswide.com -d www.marswide.com
+sudo certbot --nginx -d example.com -d www.example.com
+
+/home/admin/michoapp/michoapp/media/docs/3/data/service_card/documents
+/home/novu/projects/django/michoapp/michoapp
+
+/static/images/icons/sidebar/folder(1).svg
+
+raid 0 hızcd
+
+raid 1 güvenlik
+raid 5 hız + güvenlik
+
+eSmR56782hgh87632
+
+sudo sysctl -w vm.drop_caches=3
+
+8jpmno7u7m44q6i1g8ql177838tr9wez
+
+0 11 * * * /bin/systemctl restart postgresql
+30 12 * * * /bin/systemctl restart postgresql
+30 14 * * * /bin/systemctl restart postgresql
+30 15 * * * /bin/systemctl restart postgresql
+30 16 * * * /bin/systemctl restart postgresql
+30 17 * * * /bin/systemctl restart postgresql
+00 18 * * * /bin/systemctl restart postgresql
+
+cd projects/django/michoapp/ && source myenv/bin/activate && cd michoapp/
+
+WHERE cha_evrak_tip = 0 OR cha_evrak_tip = 63
+
+koray.zorlu@entechsemar.local
+zLL%&867383
+
+"Aydıntepe Mah. Sahil Bulvarı Cad. Denizciler Ticaret Merkezi No:126 57/C P.K. 34947 Tuzla İstanbul TR"
+
+n4ac
+
+ESO-024-00000786
+
+08/27 832
+
+
+
+#34495E
+
+#E6EAEE
+
+
+box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+ablenion
+
+style="color: gray;cursor:default;" hx-disable="true"
+
+
+
+
+
+
+
+position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  height: 4px;
+  
+  
+  
+  
+  
+https://chatgpt.com/share/67a60f1a-c818-8002-b9ee-256473d0cb55

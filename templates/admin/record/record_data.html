@@ -1,0 +1,65 @@
+<!-- Layout eklemimizi sağlayan komut. -->
+{% extends "layout.html" %}
+<!-- Static dosyalarından yararlanmamız için. -->
+{% load static i18n%}
+
+<!-- Her sayfada sayfa özelinde dinamik olarak değişmesi gereken kısımlar burada tanımlanıyor. -->
+{% block title %}{% trans 'Record Data' %}{% endblock %}
+{% block mainDirectory %}{% trans 'Admin' %}{% endblock %}
+{% block childDirectory %}{% trans 'Record Data' %}{% endblock childDirectory %}
+{% block href %}{% url 'user:dashboard' %}{% endblock %}
+{% block mainRoute %}{% trans 'Record' %}{% endblock %}
+{% block childRoute %}{% trans 'Record Data' %}{% endblock %}
+
+{% block plugins %}
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/datatables.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/select.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/pdfmake/pdfmake.min.js' %}"></script>
+<script
+    src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/pdfmake/vfs_fonts.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/buttons.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/row_reorder.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/tables/datatables/extensions/responsive.min.js' %}"></script>
+{% endblock %}
+
+{% block demo_pages %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Basic initialization -->
+<div class="card">
+    <div class="card-header header-elements-inline">
+        <div class="header-elements">
+            <h5 class="m-0">Users Table</h5>
+        </div>
+        <div class="actionButtons">
+            <div id="loadTable">
+                <i class="icon-spinner2 spinner"></i>
+            </div>
+        </div>
+    </div>
+
+    <table id="makerDatatable" class="table table-striped table-hover table-bordered dataTable no-footer">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Path</th>
+                <th>Method</th>
+                <th>Time Since</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+</div>
+<!-- /Basic initialization -->
+
+{% endblock %}
+{% block javascript %}
+<script>
+    const records_api = "{% url 'records_api' %}?format=datatables";
+</script>
+<script type="module" src="{% static 'js/admin/record/record_data/record_data.js' %}"></script>
+{% endblock javascript %}

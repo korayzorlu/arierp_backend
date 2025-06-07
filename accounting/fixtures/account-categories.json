@@ -1,0 +1,42 @@
+[
+    {
+        "model": "accounting.accountcategory",
+        "pk": 1,
+        "fields": {
+            "code": "asset",
+            "name": "Asset"
+        }
+    },
+    {
+        "model": "accounting.accountcategory",
+        "pk": 2,
+        "fields": {
+            "code": "liability",
+            "name": "Liability"
+        }
+    },
+    {
+        "model": "accounting.accountcategory",
+        "pk": 3,
+        "fields": {
+            "code": "equity",
+            "name": "Equity"
+        }
+    },
+    {
+        "model": "accounting.accountcategory",
+        "pk": 4,
+        "fields": {
+            "code": "revenue",
+            "name": "Revenue"
+        }
+    },
+    {
+        "model": "accounting.accountcategory",
+        "pk": 5,
+        "fields": {
+            "code": "expense",
+            "name": "Expense"
+        }
+    }
+]

@@ -1,0 +1,121 @@
+#version: '3'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6380:6379"  # Redis'in varsayılan portu
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: always
+    networks:
+      - marswide_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5673:5672"  # RabbitMQ için mesaj kuyruğu portu
+      - "15673:15672"  # RabbitMQ yönetim paneli portu
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: always
+    networks:
+      - marswide_network
+
+  web:
+    container_name: marswide_backend
+    image: marswide_backend
+    build: .
+    #command: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --timeout 600 --log-level debug
+    #command: gunicorn --access-logfile - --workers 33 --limit-request-line 6000 --bind unix:/run/gunicorn.sock core.asgi:application -k uvicorn.workers.UvicornWorker
+    command: gunicorn --access-logfile - --workers 5 --limit-request-line 6000 --bind 0.0.0.0:8000 core.asgi:application -k uvicorn.workers.UvicornWorker
+    environment:
+      DJANGO_SETTINGS_MODULE: core.settings
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - marswide_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.test.conf:/etc/nginx/conf.d/default.conf
+      - ./staticfiles:/staticfiles
+      - ./media:/media
+      - ./nginx/certificates:/etc/ssl/certs
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ../marswide_frontend/build:/usr/share/nginx/html
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    restart: always
+    networks:
+      - marswide_network
+
+  celery:
+    build:
+      context: .
+    container_name: celery
+    command: celery -A core worker -l INFO
+    depends_on:
+      - rabbitmq
+    volumes:
+      - .:/app
+    restart: always
+    networks:
+      - marswide_network
+
+  celery-beat:
+    image: marswide_backend:latest  # Django uygulamanın image adı
+    container_name: celery_beat
+    command: celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - rabbitmq
+      - web
+    volumes:
+      - .:/app
+    restart: always
+    networks:
+      - marswide_network
+
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    volumes:
+      #- ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - postgres_data:/var/lib/postgresql/data
+      - ./dbbackup:/backup
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - marswide_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  marswide_network:
+    external: true
+
+
+  

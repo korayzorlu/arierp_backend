@@ -1,0 +1,14 @@
+{
+    "0": "Alış Faturası",
+    "1": "Tahsilat Makbuzu",
+    "2": "Kasa Tahsilat Fişi",
+    "3": "Senet Giriş Bordrosu",
+    "4": "Çek Giriş Bordrosu",
+    "5": "Portföydeki Çek Karşılığı Nakit Kasa Tahsilat Makbuzu",
+    "6": "Portföydeki Senet Karşılığı Nakit Tahsilat Makbuzu",
+    "7": "Bankadan Kasaya Nakit Çekme Makbuzu",
+    "8": "Kasadan Bankaya Nakit Yatırma Makbuzu",
+    "9": "Kredi Virman Fişi",
+    "10": "Kredi Kabul Fişi",
+    "63": "Satış Faturası"
+}

@@ -1,0 +1,68 @@
+body {
+    background: none;
+    background-color: #000;
+    font-family: Arial, sans-serif;
+    color: #fff;
+}
+
+.navbar {
+    background-color: #1b1f23;
+    color: white;
+    border: none!important;
+}
+
+.navbar-brand {
+    color: #efe237!important;
+}
+
+.breadcrumb {
+    background-color: #000;
+}
+
+.prettyprint {
+    background-color: #1b1f23;
+    border: none;
+    border-radius: 0;
+}
+
+.pln {
+    color: #fff;
+}
+
+pre {
+    color: #fff;
+}
+
+.well {
+    background-color: #1b1f23;
+    border: none;
+    border-radius: 0;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+    background-color: #1b1f23;
+    border: none;
+    border-radius: 0;
+}
+
+.form-control {
+    background-color: #000;
+    color: #fff;
+}
+
+.nav > li > a:focus, .nav > li > a:hover {
+    background-color: #1b1f23;
+}
+
+.nav-tabs > li > a:hover {
+    border: none;
+    border-radius: 0;
+}
+
+.kwd, .prettyprint .tag {
+    color: #778fdb;
+}
+
+.lit {
+    color: #70bcf2;
+}

@@ -1,0 +1,26 @@
+<!-- templates/base_generic.html -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django Uygulaması{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>Site Başlığı</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Ana Sayfa</a></li>
+                <li><a href="/reset">Şifre Sıfırlama</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}
+        <!-- İçerik burada görünecek -->
+        {% endblock %}
+    </main>
+</body>
+</html>

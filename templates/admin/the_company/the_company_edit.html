@@ -1,0 +1,67 @@
+<!-- Layout eklemimizi sağlayan komut. -->
+{% extends "layout.html" %}
+<!-- Static dosyalarından yararlanmamız için. -->
+{% load static i18n%}
+
+<!-- Her sayfada sayfa özelinde dinamik olarak değişmesi gereken kısımlar burada tanımlanıyor. -->
+{% block title %}{% trans 'Edit Company' %}{% endblock %}
+{% block mainDirectory %}{% trans 'Human Resource' %}{% endblock %}
+{% block childDirectory %}{% trans 'Edit Company' %}{% endblock childDirectory %}
+{% block href %}{% url 'hr:company_data' %}{% endblock %}
+{% block mainRoute %}{% trans 'Company' %}{% endblock %}
+{% block childRoute %}{% trans 'Edit Company' %}{% endblock %}
+
+
+{% block plugins %}
+<script src="{% static 'lib/global_assets/js/plugins/uploaders/fileinput/plugins/sortable.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/uploaders/fileinput/fileinput.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/forms/selects/select2.min.js' %}"></script>
+<script src="{% static 'lib/global_assets/js/plugins/forms/selects/bootstrap_multiselect.js' %}"></script>
+{% endblock %}
+
+{% block demo_pages %}
+<script src="{% static 'lib/global_assets/js/demo_pages/form_select2.js' %}"></script>
+{% endblock %}
+    
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <div class="media flex-md-row mb-2">
+            <a id="iconBuild" class="align-self-md-start mr-3">
+                <img src="{% static 'images/icons/vote.svg' %}" class="rounded" width="44" height="44" alt="">
+            </a>
+            <div class="media-body">
+                <h5 class="media-title font-weight-semibold">{% trans 'Edit Company Details' %}</h5>
+                <ul class="list-inline list-inline-dotted text-muted mb-0">
+                    <li class="list-inline-item">Edit <u>company</u>.</li>
+                </ul>
+            </div>
+            <div class="align-self-md-center actionButtons">
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <form id="form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                {% for field in the_company_edit_form.visible_fields %}
+                <div class="form-group col-md-12 col-lg-4">
+                    <label>{{field.label}}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+                {% endfor %}
+            </div>
+            <fieldset class="card-body border-top w-100 text-right">
+                <button id="formSubmit" type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+{% endblock %}
+<!-- Content bloğu sonu -->
+{% block javascript %}
+{% endblock javascript %}

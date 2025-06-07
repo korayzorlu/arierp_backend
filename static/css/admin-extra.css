@@ -1,0 +1,49 @@
+body {background-color: #000;}
+
+/* HEADER */
+
+#header {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    background: #1b1f23;
+    color: #efe237;
+    /* color: var(--header-color); */
+    /*overflow: hidden;*/
+}
+
+div.breadcrumbs{
+    background: #1b1f23;
+}
+
+#nav-sidebar{
+    background-color: #1b1f23;
+}
+
+.module caption{
+    background: #efe237;
+}
+
+a.section:link, a.section:visited{
+    color: #000;
+}
+
+#nav-sidebar .current-app .section:link, #nav-sidebar .current-app .section:visited{
+    color: #1b1f23;
+}
+
+a:link, a:visited{
+    color: #fff;
+}
+
+#nav-sidebar .current-model a{
+    font-weight: bold;
+    color: red;
+}
+
+.submit-row a.deletelink{
+    border-radius: 0!important;
+}

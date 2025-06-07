@@ -1,0 +1,33 @@
+{
+    "error_codes" : [
+        {
+            "app" : "common",
+            "code" : "CM",
+            "errors" : [
+                {
+                    "CM0001" : "Import function for model 'model_name' not found!"
+                }
+            ]
+        },
+        {
+            "app" : "core",
+            "code" : "CR",
+            "errors" : []
+        },
+        {
+            "app" : "companies",
+            "code" : "CP",
+            "errors" : []
+        },
+        {
+            "app" : "data",
+            "code" : "DT",
+            "errors" : []
+        },
+        {
+            "app" : "notifications",
+            "code" : "NT",
+            "errors" : []
+        }
+    ]
+}
