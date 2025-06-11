@@ -57,7 +57,9 @@ services:
       - marswide_network
 
   celery-beat:
-    image: marswide_backend:latest  # Django uygulamanın image adı
+    #image: marswide_backend:latest  # Django uygulamanın image adı
+    build:
+      context: .
     container_name: celery_beat
     command: celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
