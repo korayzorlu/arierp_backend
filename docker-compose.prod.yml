@@ -54,7 +54,7 @@ services:
       - ./media:/media
       #- ./nginx/certificates:/etc/ssl/certs
       #- /etc/letsencrypt:/etc/letsencrypt:ro
-      - ../marswide_frontend/build:/usr/share/nginx/html
+      - ../arierp_frontend/build:/usr/share/nginx/html
       - ./nginx/certificates:/etc/letsencrypt:ro
       - ./nginx/certbot-www:/var/www/certbot
     ports:
