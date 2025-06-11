@@ -36,6 +36,7 @@ from .models import *
 from .utils import get_client_ip,get_client_country
 from subscriptions.models import Subscription
 from common.models import Country,Currency
+from companies.models import Company, UserCompany
 
 # Create your views here.
 
@@ -141,6 +142,15 @@ class UserRegisterView(View):
 
         profile = Profile.objects.create(user = user)
         profile.save()
+
+        company = Company.objects.filter().first()
+        user_company = UserCompany.objects.create(
+            user = user,
+            company = company,
+            is_active = True,
+            is_admin = False
+        )
+        user_company.save()
 
         subscription = Subscription.objects.create(user = user)
         subscription.save()

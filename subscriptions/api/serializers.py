@@ -14,21 +14,11 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Companies", "icon" : "badge", "route" : "/companies"},
                 {"type" : "item", "class" : "free", "label" : "Invitations", "icon" : "mail", "route" : "/invitations"}
             ]},
-            {"type" : "item", "class" : "free", "label" : "Partners", "icon" : "handshake", "route" : "/partners"},
-            {"type" : "sub_menu", "class" : "free", "label" : "Inventory", "icon" : "inventory", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Categories", "icon" : "tree", "route" : "/categories"},
-                {"type" : "item", "class" : "free", "label" : "Products", "icon" : "box", "route" : "/products"}
+            # {"type" : "item", "class" : "free", "label" : "Partners", "icon" : "dashboard", "route" : "/partners"},
+            {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},
+                {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları Odoo", "icon" : "account", "route" : "/banka--tahsilatlari-odoo"},
             ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Accounting", "icon" : "accounting", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Accounts", "icon" : "account", "route" : "/accounts"},
-                {"type" : "item", "class" : "free", "label" : "Invoices", "icon" : "invoice", "route" : "/invoices"},
-                {"type" : "item", "class" : "free", "label" : "Payments", "icon" : "payment", "route" : "/payments"}
-            ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Mikro", "icon" : "database", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Cari Hesap Hareketleri", "icon" : "home", "route" : "/cari-hesap-hareketleri"},
-                {"type" : "item", "class" : "free", "label" : "Personeller", "icon" : "home", "route" : "/personeller"},
-                {"type" : "item", "class" : "free", "label" : "Personel Tahakkukları", "icon" : "home", "route" : "/personel_tahakkuklari"}
-            ]}
         ]
 
         hierarchy = {

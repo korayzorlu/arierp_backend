@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "geoip2",
     "accounting",
     "products",
+    "converters",
     
 ]
 
@@ -161,7 +162,7 @@ else:
                 },
                 #'CONN_MAX_AGE': 30, # Bağlantı ömrü (saniye cinsinden)
                 "TEST": {
-                    "NAME": "marswidedb_test",
+                    "NAME": "aridb_test",
                 },
             }
     }

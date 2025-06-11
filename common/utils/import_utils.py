@@ -6,10 +6,12 @@ from django.db.models import BooleanField
 import pandas as pd
 import io
 import os
+from decimal import Decimal
 
 from users.models import User
 from common.models import ImportProcess
 from partners.models import Partner
+from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 
 class BaseImporter():
     allowed_extensions = ["xls", "xlsx"]
@@ -17,7 +19,7 @@ class BaseImporter():
     max_rows = 10_000
 
     expected_columns = {
-        "partner": ["name", "formal_name"]
+        "partner": []
     }
 
     def __init__(self, user_id, app, model_name, file=None, task_id=None):
@@ -53,7 +55,7 @@ class BaseImporter():
         return 200
     
     def get_required_fields(self):
-        excluded_fields = {"uuid","company","user"}
+        excluded_fields = {}
 
         return [
             field.name for field in self.model._meta.fields
@@ -69,12 +71,12 @@ class BaseImporter():
             df = pd.DataFrame(file_data)
             self.df = df
 
-            required_fields = set(self.get_required_fields())
-            df_columns = set(df.columns)
-            missing_columns = required_fields - df_columns
+            # required_fields = set(self.get_required_fields())
+            # df_columns = set(df.columns)
+            # missing_columns = required_fields - df_columns
 
-            if missing_columns:
-                return {"message":f"Missing required columns: {list(missing_columns)}"}
+            # if missing_columns:
+            #     return {"message":f"Missing required columns: {list(missing_columns)}"}
 
             return df.to_json(orient='records')
         except Exception as e:
@@ -100,11 +102,11 @@ class BaseImporter():
             return {"message": "Sorry, something went wrong! [CM0001]"}
 
         import_function(df_json)
-    
-    def import_partner(self, df_json):
+
+    def import_hareketi(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
         
-        required_columns = ["name","formal_name"]
+        required_columns = ["Açıklama"]
         empty_rows = df[required_columns].isnull().any(axis=1)
         if empty_rows.any():
             self.process.status = "rejected"
@@ -124,23 +126,112 @@ class BaseImporter():
                 self.process.progress = int(current_progress)
                 self.process.save()
                 previous_progress = current_progress
-            
-            type_list = [item.strip().lower() for item in row["type"].split(",")]
 
-            if Partner.objects.filter(formal_name = row["formal_name"]).exists():
-                continue
+            #process commands
             
-            partner = Partner.objects.create(
+            obj = BankaHareketi.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
-                name = row["name"],
-                formal_name = row["formal_name"],
-                vat_no = row.get("vat_no") or None,
-                vat_office = row.get("vat_office") or None,
-                address = row.get("address") or None,
-                email = row.get("email") or None,
-                types = type_list
+                gonderen_unvani = row["Gönderen Ünvanı"],
+                tc_vkn_no = row["Gönderen TCKN / VKN"],
+                tutar = Decimal(str(row["Tutar"])),
+                aciklama = row.get("Açıklama") or None,
             )
-            partner.save()
+            obj.save()
+
+
+
+
+            #process commands end
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
+    
+    def import_bankatahsilati(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = ["Gönderen TCKN / VKN"]
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+
+            #process commands
+
+            if row["Hesap Numarası"] == 14651335 and row["Tutar"] >= 0:
+                obj = BankaTahsilati.objects.create(
+                    company = self.user.user_companies.filter(is_active=True).first().company,
+                    gonderen_unvani = row["Gönderen Ünvanı"],
+                    tc_vkn_no = row["Gönderen TCKN / VKN"],
+                    tutar = Decimal(str(row["Tutar"])),
+                    aciklama = row.get("Açıklama") or None,
+                )
+                obj.save()
+
+
+
+
+            #process commands end
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
+
+    def import_bankatahsilatiodoo(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = ["Gönderen TCKN / VKN"]
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+
+            #process commands
+
+
+            obj = BankaTahsilatiOdoo.objects.create(
+                company = self.user.user_companies.filter(is_active=True).first().company,
+                gonderen_unvani = row["Gönderen Ünvanı"],
+                tc_vkn_no = row["Gönderen TCKN / VKN"],
+                tutar = Decimal(str(row["Tutar"])),
+                aciklama = row.get("Açıklama") or None,
+            )
+            obj.save()
+
+
+
+
+            #process commands end
 
         self.process.progress = 100
         self.process.status = "completed"
