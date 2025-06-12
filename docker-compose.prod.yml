@@ -57,7 +57,7 @@ services:
       - ../arierp_frontend/build:/usr/share/nginx/html
       - ./nginx/certificates:/etc/ssl:ro
       - ./nginx/certbot-www:/var/www/certbot
-      - ./ssl:/etc/ssl/arierp
+      - ./ssl:/etc/ssl
     ports:
       - "80:80"
       - "443:443"
