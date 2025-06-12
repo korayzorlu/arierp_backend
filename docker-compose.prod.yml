@@ -55,9 +55,12 @@ services:
       #- ./nginx/certificates:/etc/ssl/certs
       #- /etc/letsencrypt:/etc/letsencrypt:ro
       - ../arierp_frontend/build:/usr/share/nginx/html
-      - ./nginx/certificates:/etc/ssl:ro
-      - ./nginx/certbot-www:/var/www/certbot
-      - ./ssl:/etc/ssl
+      - ./certs/certificate.crt:/etc/ssl/certificate.crt:ro
+      - ./certs/private.key:/etc/ssl/private.key:ro
+      - ./certs/ca_bundle.crt:/etc/ssl/ca_bundle.crt:ro
+      # - ./nginx/certificates:/etc/ssl:ro
+      # - ./nginx/certbot-www:/var/www/certbot
+      # - ./ssl:/etc/ssl
     ports:
       - "80:80"
       - "443:443"
@@ -67,15 +70,15 @@ services:
     networks:
       - marswide_network
 
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./nginx/certificates:/etc/ssl
-      - ./nginx/certbot-www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'echo ready'"
-    networks:
-      - marswide_network
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   volumes:
+  #     - ./nginx/certificates:/etc/ssl
+  #     - ./nginx/certbot-www:/var/www/certbot
+  #   entrypoint: "/bin/sh -c 'echo ready'"
+  #   networks:
+  #     - marswide_network
 
   celery:
     build:
