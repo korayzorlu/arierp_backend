@@ -1,5 +1,6 @@
 from django.urls import path, include
 
+from .views.banka_hareketi_views import *
 from .views.banka_tahsilati_views import *
 from .views.banka_tahsilati_odoo_views import *
 from .tests import *
@@ -7,6 +8,11 @@ from .tests import *
 app_name = "converters"
 
 urlpatterns = [
+    path('delete_banka_hareketi/', DeleteBankaHareketiView.as_view(), name="delete_banka_hareketi"),
+    path('delete_banka_hareketleri/', DeleteBankaHareketleriView.as_view(), name="delete_banka_hareketleri"),
+    path('delete_all_banka_hareketleri/', DeleteAllBankaHareketleriView.as_view(), name="delete_all_banka_hareketleri"),
+    path('import_banka_hareketleri/', ImportBankaHareketleriView.as_view(), name="import_banka_hareketleri"),
+
     path('delete_banka_tahsilati/', DeleteBankaTahsilatiView.as_view(), name="delete_banka_tahsilati"),
     path('delete_banka_tahsilatlari/', DeleteBankaTahsilatlariView.as_view(), name="delete_banka_tahsilatlari"),
     path('delete_all_banka_tahsilatlari/', DeleteAllBankaTahsilatlariView.as_view(), name="delete_all_banka_tahsilatlari"),

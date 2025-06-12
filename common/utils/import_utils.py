@@ -103,10 +103,10 @@ class BaseImporter():
 
         import_function(df_json)
 
-    def import_hareketi(self, df_json):
+    def import_bankahareketi(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
         
-        required_columns = ["Açıklama"]
+        required_columns = []
         empty_rows = df[required_columns].isnull().any(axis=1)
         if empty_rows.any():
             self.process.status = "rejected"
@@ -128,13 +128,20 @@ class BaseImporter():
                 previous_progress = current_progress
 
             #process commands
-            
+            if row.get("SÖZLEŞME DIŞI-3.ŞAHIS"):
+                if row["SÖZLEŞME DIŞI-3.ŞAHIS"] == "EVET":
+                    ucuncu_sahis_mi = True
+                else:
+                    ucuncu_sahis_mi = False
+            else:
+                ucuncu_sahis_mi = False
+
             obj = BankaHareketi.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
-                gonderen_unvani = row["Gönderen Ünvanı"],
-                tc_vkn_no = row["Gönderen TCKN / VKN"],
-                tutar = Decimal(str(row["Tutar"])),
+                gonderen_unvani = "test",
+                musteri_unvani = "test",
                 aciklama = row.get("Açıklama") or None,
+                ucuncu_sahis_mi = ucuncu_sahis_mi
             )
             obj.save()
 
