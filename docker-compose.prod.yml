@@ -55,7 +55,7 @@ services:
       #- ./nginx/certificates:/etc/ssl/certs
       #- /etc/letsencrypt:/etc/letsencrypt:ro
       - ../arierp_frontend/build:/usr/share/nginx/html
-      - ./nginx/certificates:/etc/letsencrypt:ro
+      - ./nginx/certificates:/etc/ssl:ro
       - ./nginx/certbot-www:/var/www/certbot
     ports:
       - "80:80"
@@ -70,7 +70,7 @@ services:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - ./nginx/certificates:/etc/letsencrypt
+      - ./nginx/certificates:/etc/ssl
       - ./nginx/certbot-www:/var/www/certbot
     entrypoint: "/bin/sh -c 'echo ready'"
     networks:
