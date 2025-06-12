@@ -55,9 +55,9 @@ services:
       #- ./nginx/certificates:/etc/ssl/certs
       #- /etc/letsencrypt:/etc/letsencrypt:ro
       - ../arierp_frontend/build:/usr/share/nginx/html
-      - ./certs/certificate.crt:/etc/ssl/certificate.crt:ro
-      - ./certs/private.key:/etc/ssl/private.key:ro
-      - ./certs/ca_bundle.crt:/etc/ssl/ca_bundle.crt:ro
+      - ./certs/certificate.crt:/etc/ssl/certificate.crt
+      - ./certs/private.key:/etc/ssl/private.key
+      - ./certs/ca_bundle.crt:/etc/ssl/ca_bundle.crt
       # - ./nginx/certificates:/etc/ssl:ro
       # - ./nginx/certbot-www:/var/www/certbot
       # - ./ssl:/etc/ssl
