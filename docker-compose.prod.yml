@@ -55,7 +55,7 @@ services:
       #- ./nginx/certificates:/etc/ssl/certs
       #- /etc/letsencrypt:/etc/letsencrypt:ro
       - ../arierp_frontend/build:/usr/share/nginx/html
-      - ./nginx/certificates:/etc/ssl/arinet.arileasing.com.tr:ro
+      - ./nginx/certificates:/etc/ssl:ro
       - ./nginx/certbot-www:/var/www/certbot
       - ./ssl:/etc/ssl/arierp
     ports:
@@ -71,7 +71,7 @@ services:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - ./nginx/certificates:/etc/ssl/arinet.arileasing.com.tr
+      - ./nginx/certificates:/etc/ssl
       - ./nginx/certbot-www:/var/www/certbot
     entrypoint: "/bin/sh -c 'echo ready'"
     networks:
