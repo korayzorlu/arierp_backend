@@ -17,6 +17,7 @@ class BankaHareketi(models.Model):
     musteri_unvani = models.CharField(_("Müşteri Ünvanı"), max_length=250)
     aciklama = models.CharField(_("Açıklama"), max_length=250)
     ucuncu_sahis_mi = models.BooleanField(default=False)
+    ucuncu_sahis_mi_str = models.CharField(_("Üçüncü Şahıs"), max_length=25, default="")
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

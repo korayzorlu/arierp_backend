@@ -7,11 +7,17 @@ import pandas as pd
 import io
 import os
 from decimal import Decimal
+from openai import OpenAI
+import time
+import ast
 
 from users.models import User
 from common.models import ImportProcess
 from partners.models import Partner
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
+
+from dotenv import load_dotenv
+load_dotenv()
 
 class BaseImporter():
     allowed_extensions = ["xls", "xlsx"]
@@ -118,30 +124,56 @@ class BaseImporter():
         self.process.items_count = len(df)
         self.process.save()
         
-        previous_progress = 0
+        new_list = []
         for index,row in df.iterrows():
+            self.process.progress = 20
+            self.process.save()
+
+            #process commands
+            # if row.get("SÖZLEŞME DIŞI-3.ŞAHIS"):
+            #     if row["SÖZLEŞME DIŞI-3.ŞAHIS"] == "EVET":
+            #         ucuncu_sahis_mi = True
+            #     else:
+            #         ucuncu_sahis_mi = False
+            # else:
+            #     ucuncu_sahis_mi = False
+
+            new_list.append({
+                "aciklama" : row.get("Açıklama") or None,
+                "ucuncu_sahis_mi" : False
+            })
+
+            
+
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+        response = client.responses.create(
+            model="gpt-4.1",
+            #input=f"{row.get("Açıklama")} bu havale/eft açıklamasında 'gelen eft', 'gelen havale' veya 'gelen fast' yazısından sonraki isim parayı gönderen kişiye ait. gönderen kişinin ismi iki defa yazıyor, iki isim arasındaki yazı para transferinin açıklama yazısı. bu açıklama kısmını incele ve ödemenin parayı göndren tarafından başkası adına yapıp yapmadığını noktalama olmadan evet veya hayır diyerek cevapla, başka hiçbir şey yazma."
+            input=f"{new_list} bu listedeki açıklama kısımlarında havale/eft açıklamasında 'gelen eft', 'gelen havale' veya 'gelen fast' yazılarındandan sonraki isim parayı gönderen kişiye ait. gönderen kişinin ismi iki defa yazıyor, iki isim arasındaki yazı para transferinin açıklama yazısı. bu açıklama kısmımlarını incele ve ödemenin parayı göndren tarafından başkası adına yapıp yapmadığını analiz et. eğer başkasına yapmışsa 'ucuncu_sahis_mi' kısmını True yap değil False kalsın. En son güncel listeyti yaz sadece başka hiçbir şey yazma."
+        )
+
+        response_list = ast.literal_eval(response.output_text)
+
+        self.process.progress = 60
+        self.process.save()
+
+        previous_progress = 0
+        for item in response_list:
             current_progress = ((index + 1)/len(df))*100
 
             if current_progress - previous_progress >= 5:
-                self.process.progress = int(current_progress)
+                self.process.progress = int(current_progress) + 60
                 self.process.save()
                 previous_progress = current_progress
-
-            #process commands
-            if row.get("SÖZLEŞME DIŞI-3.ŞAHIS"):
-                if row["SÖZLEŞME DIŞI-3.ŞAHIS"] == "EVET":
-                    ucuncu_sahis_mi = True
-                else:
-                    ucuncu_sahis_mi = False
-            else:
-                ucuncu_sahis_mi = False
 
             obj = BankaHareketi.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
                 gonderen_unvani = "test",
                 musteri_unvani = "test",
-                aciklama = row.get("Açıklama") or None,
-                ucuncu_sahis_mi = ucuncu_sahis_mi
+                aciklama = item["aciklama"],
+                ucuncu_sahis_mi = item["ucuncu_sahis_mi"],
+                ucuncu_sahis_mi_str = "Evet" if item["ucuncu_sahis_mi"] else ""
             )
             obj.save()
 
@@ -149,6 +181,8 @@ class BaseImporter():
 
 
             #process commands end
+
+
 
         self.process.progress = 100
         self.process.status = "completed"

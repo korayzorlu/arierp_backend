@@ -87,3 +87,4 @@ geoip2==5.0.1
 pytest==8.3.5
 pytest-django==4.11.1
 django-mptt==0.17.0
+openai==1.86.0

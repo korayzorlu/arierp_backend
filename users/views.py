@@ -50,6 +50,7 @@ class CSRFTokenGetView(View):
 class UserSessionView(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+
             return JsonResponse({"authenticated": True},status=200)
         return JsonResponse({"authenticated": False},status=200)
 

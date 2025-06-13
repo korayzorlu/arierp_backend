@@ -10,6 +10,7 @@ class BankaHareketiListSerializer(serializers.Serializer):
     musteri_unvani = serializers.CharField()
     aciklama = serializers.CharField()
     ucuncu_sahis_mi = serializers.BooleanField()
+    ucuncu_sahis_mi_str = serializers.CharField()
 
 class BankaTahsilatiListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
