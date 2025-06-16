@@ -9,8 +9,8 @@ from common.models import Country
 class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.EmailField(unique=True)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','first_name','last_name']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email','first_name','last_name']
 
     is_email_verified = models.BooleanField(default=False)
 

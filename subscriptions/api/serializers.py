@@ -9,10 +9,10 @@ class MenuItemListSerializer(serializers.Serializer):
     
     def get_menu_items(self, obj):
         menu_items = [
-            {"type" : "item", "class" : "free", "label" : "Dashboard", "icon" : "dashboard", "route" : "/dashboard"},
-            {"type" : "sub_menu", "class" : "free", "label" : "Organizations", "icon" : "organization", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Companies", "icon" : "badge", "route" : "/companies"},
-                {"type" : "item", "class" : "free", "label" : "Invitations", "icon" : "mail", "route" : "/invitations"}
+            {"type" : "item", "class" : "free", "label" : "Kontrol Paneli", "icon" : "dashboard", "route" : "/dashboard"},
+            {"type" : "sub_menu", "class" : "free", "label" : "Organizasyon", "icon" : "organization", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Firmalar", "icon" : "badge", "route" : "/companies"},
+                {"type" : "item", "class" : "free", "label" : "Davetiyeler", "icon" : "mail", "route" : "/invitations"}
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Partner", "icon" : "handshake", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},

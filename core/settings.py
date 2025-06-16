@@ -15,6 +15,9 @@ from pathlib import Path
 
 from decouple import config, Csv
 
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -376,6 +379,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        "django_auth_ldap": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
     },
 }
 
@@ -445,3 +453,37 @@ FRONTEND_URL = str(os.getenv('FRONTEND_URL'))
 # GeoIP
 
 GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
+
+# LDAP
+
+AUTH_LDAP_SERVER_URI = "ldap://192.168.82.45:389"
+
+AUTH_LDAP_BIND_DN = "sophos.central@arileasing.local"
+AUTH_LDAP_BIND_PASSWORD = "Nowayout5057.*"
+
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    "OU=ARI,DC=arileasing,DC=local",
+    ldap.SCOPE_SUBTREE,
+    "(sAMAccountName=%(user)s)"
+)
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    "username": "sAMAccountName",
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+}
+
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+AUTH_LDAP_CREATE_USERS = True
+
+AUTHENTICATION_BACKENDS = [
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',  # local admin erişimi için
+]
+
+import logging
+
+logger = logging.getLogger('django_auth_ldap')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)

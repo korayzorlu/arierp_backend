@@ -60,25 +60,25 @@ class UserLoginView(View):
         email = data.get('email')
         password = data.get('password')
         remember = data.get('remember')
-
-        user = authenticate(request, email=email, password=password)
+        print(data)
+        user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
             if not remember:
                 request.session.set_expiry(0)
                 request.session.modified = True
 
-            account_sid = str(os.getenv('TWILIO_ACCOUNT_SID'))
-            auth_token = str(os.getenv('TWILIO_AUTH_TOKEN'))
-            client = Client(account_sid, auth_token)
+            # account_sid = str(os.getenv('TWILIO_ACCOUNT_SID'))
+            # auth_token = str(os.getenv('TWILIO_AUTH_TOKEN'))
+            # client = Client(account_sid, auth_token)
 
-            service = client.verify.v2.services.create(
-                friendly_name="TWilio Verify Service"
-            )
+            # service = client.verify.v2.services.create(
+            #     friendly_name="TWilio Verify Service"
+            # )
 
-            if service.sid:
-                user.verify_sid = service.sid
-                user.save()
+            # if service.sid:
+            #     user.verify_sid = service.sid
+            #     user.save()
 
             ip = get_client_ip(request)
             country = get_client_country(ip)

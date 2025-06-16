@@ -38,7 +38,6 @@ class Command(BaseCommand):
             Persist Security Info=False;
             Initial Catalog=MASTER;
             Data Source=VSRV2;
-            Encrypt=no;
             TrustServerCertificate=yes;
         '''
 

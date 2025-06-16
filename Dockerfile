@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.10-bullseye
+FROM python:3.12
 
 # Set working directory
 WORKDIR /app
@@ -20,6 +20,10 @@ RUN curl -sSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
 RUN apt-get update && \
     ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev && \
     rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    libldap2-dev \
+    libsasl2-dev \
+    && rm -rf /var/lib/apt/lists/*
 ENV PATH="$PATH:/opt/mssql-tools17/bin"
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
