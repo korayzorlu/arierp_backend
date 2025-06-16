@@ -14,7 +14,10 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Companies", "icon" : "badge", "route" : "/companies"},
                 {"type" : "item", "class" : "free", "label" : "Invitations", "icon" : "mail", "route" : "/invitations"}
             ]},
-            # {"type" : "item", "class" : "free", "label" : "Partners", "icon" : "dashboard", "route" : "/partners"},
+            {"type" : "sub_menu", "class" : "free", "label" : "Partner", "icon" : "handshake", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
+                {"type" : "item", "class" : "free", "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
+            ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
                 {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},

@@ -1,19 +1,21 @@
 from django.apps import apps
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from django.db.models import BooleanField
+from django.db.models import BooleanField,QuerySet, Q
+from django.db.models.functions import Lower,Upper
 
 import pandas as pd
 import io
 import os
 from decimal import Decimal
 from openai import OpenAI
+from datetime import datetime
 import time
 import ast
 
 from users.models import User
-from common.models import ImportProcess
-from partners.models import Partner
+from common.models import ImportProcess,Country,City
+from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 
 from dotenv import load_dotenv
@@ -21,7 +23,7 @@ load_dotenv()
 
 class BaseImporter():
     allowed_extensions = ["xls", "xlsx"]
-    max_file_size = 10 * 1024 * 1024
+    max_file_size = 100 * 1024 * 1024
     max_rows = 10_000
 
     expected_columns = {
@@ -108,6 +110,131 @@ class BaseImporter():
             return {"message": "Sorry, something went wrong! [CM0001]"}
 
         import_function(df_json)
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
+
+    def import_sector(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = ["Sektör No","Sektör Adı"]
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+
+            #process commands
+
+            obj = Sector.objects.create(
+                company = self.user.user_companies.filter(is_active=True).first().company,
+                code = row["Sektör No"],
+                name = row["Sektör Adı"],
+                main_sector_code = row["Ana Sektör No"],
+                match_code = row["Eşleştirme Kodu"],
+                kkbmb_sector_code = row["KKBMBSectorCode"],
+            )
+            obj.save()
+            #process commands end
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
+
+    def import_partner(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = []
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+            
+            #type_list = [item.strip().lower() for item in row["type"].split(",")]
+
+            if Partner.objects.filter(tc_vkn_no = row["Vergi/TC Kimlik No"]).exists():
+                continue
+
+            if row["İkinci Adı"]:
+                if len(row["İkinci Adı"]) > 0:
+                    first_name = f"{row['Adı']} {row['İkinci Adı']}"
+            else:
+                first_name = row["Adı"]
+
+            if row["Ülke Kodu"] == "İNG":
+                row["Ülke Kodu"] = "UK"
+
+            if row["Doğum Tarihi"]:
+                birthday = datetime.strptime(row["Doğum Tarihi"], "%d.%m.%Y").date()
+            else:
+                birthday = None
+
+            if row["Kep Bitiş Tarihi"]:
+                kep_expiry_date = datetime.strptime(row["Kep Bitiş Tarihi"], "%d.%m.%Y").date()
+            else:
+                kep_expiry_date = None
+            
+            partner = Partner.objects.create(
+                company = self.user.user_companies.filter(is_active=True).first().company,
+                first_name = first_name,
+                last_name = row["Soyad"],
+                name = row["Ad Soyad"],
+                formal_name = row["Kurum"],
+                customer_code = str(row["Müşteri Kodu"]),
+                vat_no = str(row.get("Vergi No")) or None,
+                vat_office = row.get("Vergi Dairesi") or None,
+                tc_no = row["TC Kimlik No"],
+                tc_vkn_no = row["Vergi/TC Kimlik No"],
+                passport_no = row["Pasaport No"],
+                ticari_sicil_no = row["Ticari Sicil No"],
+                kep = row["Kep Adresi"],
+                kep_expiry_date = kep_expiry_date,
+                is_turkkep = True if row["Türkkep Müşterisi Mi ?"] == "Evet" else False,
+                sector = Sector.objects.filter(code = str(row["Ana Faaliyet Sektör Adı"])).first(),
+                father_name = row["Baba Adı"],
+                birthday = birthday,
+                country = Country.objects.filter(iso2 = row["Ülke Kodu"]).first(),
+                city = City.objects.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = row["Şehir Adı"] or "xxx") | Q(uppercase__icontains = row["Şehir Adı"] or "xxx")).first(),
+                address = row["Adres"][:250] if row["Adres"] else None,
+                phone_number = row.get("Telefon") or None,
+                email = row.get("Email") or None,
+                types = ["customer"]
+            )
+            partner.save()
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
 
     def import_bankahareketi(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')

@@ -160,7 +160,7 @@ class UserRegisterView(View):
         login(request, user)
 
         token = signer.sign(user.email)
-        verification_url = f"{os.getenv("EMAIL_PROTOCOL")}://{request.get_host()}/api/users/email_verification?token={token}"
+        verification_url = f"{os.getenv('EMAIL_PROTOCOL')}://{request.get_host()}/api/users/email_verification?token={token}"
 
         try:
             subject = "Verify Your Email for Marswide"
@@ -205,7 +205,7 @@ class UserEmailSettingsView(LoginRequiredMixin,View):
             return JsonResponse({'message': 'This email address is already in use.','status':'error'}, status=400)
         
         token = signer.sign(request.user.email)
-        verification_url = f"{os.getenv("EMAIL_PROTOCOL")}://{request.get_host()}/api/users/email_verification?token={token}"
+        verification_url = f"{os.getenv('EMAIL_PROTOCOL')}://{request.get_host()}/api/users/email_verification?token={token}"
 
         try:
             subject = "Verify Your Email for Marswide"
@@ -237,7 +237,7 @@ class UserEmailVerificationView(View):
             user = User.objects.get(email=email)
             user.is_email_verified = True
             user.save()
-            return redirect(f"{os.getenv("BASE_URL")}/settings/auth/email")
+            return redirect(f"{os.getenv('BASE_URL')}/settings/auth/email")
             #return JsonResponse({'message': 'Verified successfully!','status':'success'}, status=200)
         except SignatureExpired:
                 return JsonResponse({'message': 'Link expired!','status':'error'}, status=400)

@@ -4,6 +4,7 @@ from rest_framework import routers
 from .views import *
 
 router = routers.DefaultRouter()
+router.register(r'sectors', SectorList, "sectors_api")
 router.register(r'partners', PartnerList, "partners_api")
 
 urlpatterns = [

@@ -202,7 +202,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600
 
 SECURE_BROWSER_XSS_FILTER = True
 

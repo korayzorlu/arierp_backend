@@ -98,6 +98,52 @@ class DatatablesPagination(LimitOffsetPagination):
             'data': data
         })
 
+class SectorFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    code = CharFilter(method = 'filter_code')
+    name = CharFilter(method = 'filter_name')
+
+    class Meta:
+        model = Sector
+        fields = ['uuid','code','name']
+
+    def filter_uuid(self, queryset, uuid, value):
+        return queryset.filter(uuid = value)
+    
+    def filter_code(self, queryset, code, value):
+        return queryset.filter(code = value)
+    
+    def filter_name(self, queryset, name, value):
+        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
+    
+class SectorList(ModelViewSet, QueryListAPIView):
+    serializer_class = SectorListSerializer
+    filterset_class = SectorFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company"]
+
+        queryset = Sector.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("name")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["code","name","main_sector_code","match_code","kkbmb_sector_code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
 class PartnerFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     types = CharFilter(method = 'filter_types')

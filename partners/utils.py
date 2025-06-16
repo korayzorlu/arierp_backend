@@ -1,5 +1,10 @@
 from django.http import JsonResponse
 
+def is_valid_sector_data(data):
+    if not data.get('code') or not data.get('name') or not data.get('mainSectorCode') or not data.get('matchCode') or not data.get('kkbmbSectorCode'):
+        return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)
+    return True, None
+
 def is_valid_partner_data(data):
     if not data.get('name') or not data.get('formalName'):
         return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)

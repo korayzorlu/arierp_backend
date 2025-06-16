@@ -1,11 +1,20 @@
 from django.urls import path, include
 
-from .views import *
+from .views.partner_views import *
+from .views.sector_views import *
 from .tests import *
 
 app_name = "partners"
 
 urlpatterns = [
+    path('add_sector/', AddSectorView.as_view(), name="add_sector"),
+    path('update_sector/', UpdateSectorView.as_view(), name="update_sector"),
+    path('delete_sector/', DeleteSectorView.as_view(), name="delete_sector"),
+    path('delete_sectors/', DeleteSectorsView.as_view(), name="delete_sectors"),
+    path('delete_all_sectors/', DeleteAllSectorsView.as_view(), name="delete_all_sectors"),
+    path('sectors_template/', SectorsTemplateView.as_view(), name="sectors_template"),
+    path('import_sectors/', ImportSectorsView.as_view(), name="import_sectors"),
+
     path('add_partner/', AddPartnerView.as_view(), name="add_partner"),
     path('update_partner/', UpdatePartnerView.as_view(), name="update_partner"),
     path('delete_partner/', DeletePartnerView.as_view(), name="delete_partner"),

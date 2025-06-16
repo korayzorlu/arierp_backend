@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.12
+FROM python:3.10-bullseye
 
 # Set working directory
 WORKDIR /app
@@ -18,9 +18,9 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl -sSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
     -o /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev && \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev && \
     rm -rf /var/lib/apt/lists/*
-ENV PATH="$PATH:/opt/mssql-tools18/bin"
+ENV PATH="$PATH:/opt/mssql-tools17/bin"
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt

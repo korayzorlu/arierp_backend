@@ -1,9 +1,24 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Partner
+from .models import Partner,Sector
 
 # Register your models here.
+
+@admin.register(Sector)
+class SectorAdmin(admin.ModelAdmin):
+    list_display = ["company","code","name","main_sector_code","match_code","kkbmb_sector_code"]
+    list_display_links = ["name"]
+    search_fields = ["company__name","code","name","main_sector_code","match_code","kkbmb_sector_code"]
+    list_filter = []
+    inlines = []
+    ordering = ["name"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    class Meta:
+        model = Sector
 
 class PartnerAdminForm(forms.ModelForm):
     TYPES_CHOICES = [
