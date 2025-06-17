@@ -8,9 +8,9 @@ from subscriptions.models import Subscription
 @receiver(post_save, sender=User)
 def create_related_models(sender, instance, created, **kwargs):
     if created:
-        print("tesss")
         # Kullanıcı ilk defa oluşturuluyorsa ilişkili modelleri oluştur
         instance.is_email_verified = True
+        instance.save()
         profile = Profile.objects.create(user=instance)
         profile.save()
         # Diğer bağlı modeller varsa onları da burada oluştur
