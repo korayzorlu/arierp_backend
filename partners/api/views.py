@@ -181,7 +181,7 @@ class PartnerList(ModelViewSet, QueryListAPIView):
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["name","formal_name","company__name"]
+            search_fields = ["name","formal_name","company__name","tc_vkn_no"]
             
             q_objects = Q()
             for field in search_fields:

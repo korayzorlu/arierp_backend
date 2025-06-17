@@ -46,6 +46,7 @@ class PartnerListSerializer(serializers.Serializer):
     companyId = serializers.SerializerMethodField()
     vatOffice = serializers.CharField(source = "vat_office")
     vatNo = serializers.CharField(source = "vat_no")
+    tcVknNo = serializers.CharField(source = "tc_vkn_no")
     country = serializers.SerializerMethodField()
     city = serializers.SerializerMethodField()
     address = serializers.CharField()
