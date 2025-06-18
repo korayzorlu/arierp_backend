@@ -1,0 +1,44 @@
+[
+    {
+        "model": "common.mainstatus",
+        "pk": 1,
+        "fields": {
+            "name": "Devam Ediyor"
+        }
+    },
+    {
+        "model": "common.mainstatus",
+        "pk": 2,
+        "fields": {
+            "name": "Durduruldu"
+        }
+    },
+    {
+        "model": "common.mainstatus",
+        "pk": 3,
+        "fields": {
+            "name": "Sonlandı"
+        }
+    },
+    {
+        "model": "common.mainstatus",
+        "pk": 4,
+        "fields": {
+            "name": "Tamamlandı"
+        }
+    },
+    {
+        "model": "common.mainstatus",
+        "pk": 5,
+        "fields": {
+            "name": "Yeni"
+        }
+    },
+    {
+        "model": "common.mainstatus",
+        "pk": 6,
+        "fields": {
+            "name": "Yürürlükte"
+        }
+    }
+]

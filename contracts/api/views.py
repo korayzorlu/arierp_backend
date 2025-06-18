@@ -18,6 +18,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
+from .filters import *
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -97,28 +98,10 @@ class DatatablesPagination(LimitOffsetPagination):
             'recordsFiltered': self.count,
             'data': data
         })
-
-class SectorFilter(FilterSet):
-    uuid = CharFilter(method = 'filter_uuid')
-    code = CharFilter(method = 'filter_code')
-    name = CharFilter(method = 'filter_name')
-
-    class Meta:
-        model = Sector
-        fields = ['uuid','code','name']
-
-    def filter_uuid(self, queryset, uuid, value):
-        return queryset.filter(uuid = value)
     
-    def filter_code(self, queryset, code, value):
-        return queryset.filter(code = value)
-    
-    def filter_name(self, queryset, name, value):
-        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
-    
-class SectorList(ModelViewSet, QueryListAPIView):
-    serializer_class = SectorListSerializer
-    filterset_class = SectorFilter
+class ContractList(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractListSerializer
+    filterset_class = ContractFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
     pagination_class = DatatablesPagination
@@ -129,64 +112,13 @@ class SectorList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["company"]
+        custom_related_fields = ["company","partner","status"]
 
-        queryset = Sector.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("name")
-
-        query = self.request.query_params.get('search[value]', None)
-        if query:
-            search_fields = ["code","name","main_sector_code","match_code","kkbmb_sector_code"]
-            
-            q_objects = Q()
-            for field in search_fields:
-                q_objects |= Q(**{f"{field}__icontains": query})
-            
-            queryset = queryset.filter(q_objects)
-        return queryset
-
-class PartnerFilter(FilterSet):
-    uuid = CharFilter(method = 'filter_uuid')
-    types = CharFilter(method = 'filter_types')
-    name = CharFilter(method = 'filter_name')
-    country_name = CharFilter(method = 'filter_country')
-
-    class Meta:
-        model = Partner
-        fields = ['uuid','types','name']
-
-    def filter_uuid(self, queryset, uuid, value):
-        return queryset.filter(uuid = value)
-    
-    def filter_types(self, queryset, types, value):
-        return queryset.filter(types__overlap = value)
-    
-    def filter_name(self, queryset, name, value):
-        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
-    
-    def filter_country(self, queryset, country, value):
-        return queryset.annotate(lowercase=Lower('country__name'),uppercase=Upper('country__name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
-
-    
-class PartnerList(ModelViewSet, QueryListAPIView):
-    serializer_class = PartnerListSerializer
-    filterset_class = PartnerFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
-    required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
-    
-    def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-
-        custom_related_fields = ["company","country"]
-
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("name")
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("kof_tan_sozlesmeye_aktarim_tarihi")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["name","formal_name","company__name","tc_vkn_no","country__name"]
+            search_fields = ["code","partner__name","kof","quotation","committe","credit_type","customer_representative","supplier","project","status__name","mkk_tesciline_gonderilecek_mi","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
             
             q_objects = Q()
             for field in search_fields:

@@ -17,6 +17,7 @@ from users.models import User
 from common.models import ImportProcess,Country,City
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
+from contracts.utils import import_contracts
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -235,6 +236,9 @@ class BaseImporter():
         self.process.progress = 100
         self.process.status = "completed"
         self.process.save()
+
+    def import_contract(self, df_json):
+        import_contracts(self, df_json)
 
     def import_bankahareketi(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')

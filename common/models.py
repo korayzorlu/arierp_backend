@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 from companies.models import Company
 
+import uuid
+
 # Create your models here.
 
 class TimestampModel(models.Model):
@@ -70,3 +72,40 @@ class Currency(models.Model):
 
     def __str__(self):
         return str(self.code)
+
+class MainStatus(models.Model):
+    name = models.CharField(_("Name"), max_length=25)
+
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
+
+class Status(models.Model):
+    MODEL_CHOICES = (
+        ('contract', ('Contract')),
+        ('credit', ('Credit')),
+        ('invoice', ('Invoice')),
+        ('incoming_request', ('Incoming Request')),
+        ('insurance_policy', ('Insurance Policy')),
+        ('lease_purchase_document', ('Lease Purchase Document')),
+        ('lease_purchase_order', ('Lease Purchase Order')),
+        ('lease_purchase_project', ('Lease Purchase Project')),
+        ('lease_operation_project', ('Lease Operation Project')),
+        ('op_leasing', ('Op Leasing')),
+        ('quotation', ('Quotation')),
+        ('rpr_quo', ('RPR QUO')),
+        ('trade_guarantee', ('Trade Guarantee'))
+    )
+    model = models.CharField(_("Model"), max_length=25, default='contract', choices=MODEL_CHOICES, blank=True, null=True)
+
+    main_status = models.ForeignKey(MainStatus, on_delete=models.SET_NULL, blank=True, null=True, related_name="main_status_statusses")
+
+    name = models.CharField(_("Name"), max_length=140)
+
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return str(self.name)

@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     "accounting",
     "products",
     "converters",
+    "contracts",
+    "leasing",
     
 ]
 

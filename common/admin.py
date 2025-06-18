@@ -62,3 +62,30 @@ class ImportProcessAdmin(admin.ModelAdmin):
     
     class Meta:
         model = ImportProcess
+
+@admin.register(MainStatus)
+class MainStatusAdmin(admin.ModelAdmin):
+    list_display = ["name","created_date"]
+    list_display_links = ["name"]
+    search_fields = ["name","created_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["id"]
+    
+    class Meta:
+        model = MainStatus
+
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+    list_display = ["model","main_status","name","created_date"]
+    list_display_links = ["name"]
+    search_fields = ["model__name","main_status","name","created_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["id"]
+
+    def model(self,obj):
+        return obj.model.name if obj.model else ""
+    
+    class Meta:
+        model = Status
