@@ -18,6 +18,7 @@ from common.models import ImportProcess,Country,City
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from contracts.utils import import_contracts
+from leasing.utils import import_leases
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -183,7 +184,7 @@ class BaseImporter():
             
             #type_list = [item.strip().lower() for item in row["type"].split(",")]
 
-            if Partner.objects.filter(tc_vkn_no = row["Vergi/TC Kimlik No"]).exists():
+            if Partner.objects.filter(tc_vkn_no = row["Vergi/TC Kimlik No"], name = row["Ad Soyad"], birthday=datetime.strptime(row["Doğum Tarihi"], "%d.%m.%Y").date() if row["Doğum Tarihi"] else None).exists():
                 continue
 
             if row["İkinci Adı"]:
@@ -239,6 +240,9 @@ class BaseImporter():
 
     def import_contract(self, df_json):
         import_contracts(self, df_json)
+
+    def import_lease(self, df_json):
+        import_leases(self, df_json)
 
     def import_bankahareketi(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')

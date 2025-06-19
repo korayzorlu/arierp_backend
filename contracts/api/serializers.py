@@ -9,6 +9,7 @@ class ContractListSerializer(serializers.Serializer):
     companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
     partner = serializers.SerializerMethodField()
+    partner_tc = serializers.SerializerMethodField()
     kof = serializers.CharField()
     quotation = serializers.CharField()
     committe = serializers.CharField()
@@ -25,6 +26,9 @@ class ContractListSerializer(serializers.Serializer):
         
     def get_partner(self, obj):
         return obj.partner.name if obj.partner else ""
+    
+    def get_partner_tc(self, obj):
+        return obj.partner.tc_vkn_no if obj.partner else ""
     
     def get_status(self, obj):
         return obj.status.name if obj.status else ""

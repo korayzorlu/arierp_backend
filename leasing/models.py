@@ -39,7 +39,7 @@ class Lease(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_rents")
     musteri_baz_maliyet = models.DecimalField(_("Müşteri Baz Maliyet"), default = 0.00, max_digits=14, decimal_places=2)
     vade = models.IntegerField(_("Vade"), default = 0)
-    leasing_rate = models.DecimalField(_("Leasing Rate"), default = 0.00, max_digits=8, decimal_places=2)
+    leasing_rate = models.DecimalField(_("Leasing Rate"), default = 0.00, max_digits=14, decimal_places=2)
     irr = models.DecimalField(_("IRR"), default = 0.00, max_digits=14, decimal_places=2)
 
     project_no = models.CharField(_("Project No"), max_length=25, blank=True, null=True)

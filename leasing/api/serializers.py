@@ -8,14 +8,15 @@ class LeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
-    contract = serializers.BooleanField()
+    contract = serializers.SerializerMethodField()
     type = serializers.CharField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
+    activation_date = serializers.DateField()
     lease_status = serializers.CharField()
     currency = serializers.SerializerMethodField()
     musteri_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
     vade = serializers.IntegerField()
-    leasing_rate = serializers.DecimalField(max_digits=8,decimal_places=2)
+    leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
     status = serializers.SerializerMethodField()
@@ -27,15 +28,26 @@ class LeaseListSerializer(serializers.Serializer):
     is_tufe = serializers.BooleanField()
     is_musterek = serializers.BooleanField()
     bbsn = serializers.CharField()
+    partner = serializers.SerializerMethodField()
+    partner_tc = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
+    
+    def get_contract(self, obj):
+        return obj.contract.code if obj.contract else ""
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
     
     def get_status(self, obj):
         return obj.status.name if obj.status else ""
+    
+    def get_partner(self, obj):
+        return obj.contract.partner.name if obj.contract.partner else ""
+    
+    def get_partner_tc(self, obj):
+        return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)
