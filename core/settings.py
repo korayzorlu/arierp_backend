@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "converters",
     "contracts",
     "leasing",
+    "quotations",
     
 ]
 
@@ -403,6 +404,10 @@ CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if os.ge
 
 SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE")  # veya 'Lax' ya da 'Strict'
 SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE")
+
+# session
+# SESSION_COOKIE_AGE = 10
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # CORS_ALLOW_CREDENTIALS = True
 # CORS_ORIGIN_ALLOW_ALL = True

@@ -12,10 +12,10 @@ from contracts.models import Contract
 
 class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="rents")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
 
     code = models.CharField(_("Code"), max_length=25)
-    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="pcontract_rents")
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="pcontract_leases")
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
     vat = models.DecimalField(_("Vat"), default = 0.00, max_digits=5, decimal_places=2)
     activation_date = models.DateField(_("Activation Date"), blank=True, null=True)
@@ -36,7 +36,7 @@ class Lease(models.Model):
     )
     lease_status = models.CharField(_("Status"), max_length=25, default='aktiflestirildi', choices=LEASE_STATUS_CHOICES, blank=True, null=True)
 
-    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_rents")
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_leases")
     musteri_baz_maliyet = models.DecimalField(_("Müşteri Baz Maliyet"), default = 0.00, max_digits=14, decimal_places=2)
     vade = models.IntegerField(_("Vade"), default = 0)
     leasing_rate = models.DecimalField(_("Leasing Rate"), default = 0.00, max_digits=14, decimal_places=2)

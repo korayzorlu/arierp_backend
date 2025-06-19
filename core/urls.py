@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/notifications/', include("notifications.urls")),
     path('api/partners/', include("partners.urls")),
     path('api/products/', include("products.urls")),
+    path('api/quotations/', include("quotations.urls")),
     path('api/subscriptions/', include("subscriptions.urls")),
     path('api/users/', include("users.urls")),
     

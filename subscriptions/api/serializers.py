@@ -18,6 +18,10 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
                 {"type" : "item", "class" : "free", "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
             ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Teklif", "icon" : "unknown", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
+                {"type" : "item", "class" : "free", "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},
+            ]},
             {"type" : "item", "class" : "free", "label" : "Sözleşmeler", "icon" : "contract", "route" : "/contracts"},
             {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
             {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
