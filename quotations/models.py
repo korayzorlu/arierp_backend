@@ -18,6 +18,7 @@ class QuickQuotation(models.Model):
     code = models.CharField(_("Code"), max_length=25)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_quick_quotations", null=True, blank=True)
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_quick_quotations", null=True, blank=True)
+    quotation_no = models.CharField(_("Quotation No"), max_length=25, null=True, blank=True)
 
     customer_type = models.CharField(_("Customer Type"), max_length=25, null=True, blank=True)
     project = models.CharField(_("Project"), max_length=250, null=True, blank=True)

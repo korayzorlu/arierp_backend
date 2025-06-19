@@ -16,3 +16,13 @@ class QuickQuotationFilter(FilterSet):
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)
+    
+class QuotationFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+
+    class Meta:
+        model = Quotation
+        fields = ['uuid']
+
+    def filter_uuid(self, queryset, uuid, value):
+        return queryset.filter(uuid = value)

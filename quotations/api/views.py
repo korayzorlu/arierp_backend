@@ -126,3 +126,31 @@ class QuickQuotationList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class QuotationList(ModelViewSet, QueryListAPIView):
+    serializer_class = QuotationListSerializer
+    filterset_class = QuotationFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","currency","status"]
+
+        queryset = Quotation.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("request_date")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["code","partner__name","quick_quotaiton__code","request_date","currency__code","status__name"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset

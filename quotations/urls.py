@@ -14,6 +14,14 @@ urlpatterns = [
     path('delete_all_quick_quotations/', DeleteAllQuickQuotationsView.as_view(), name="delete_all_quick_quotations"),
     path('quick_quotations_template/', QuickQuotationsTemplateView.as_view(), name="quick_quotations_template"),
     path('import_quick_quotations/', ImportQuickQuotationsView.as_view(), name="import_quick_quotations"),
+
+    path('add_quotation/', AddQuotationView.as_view(), name="add_quotation"),
+    path('update_quotation/', UpdateQuotationView.as_view(), name="update_quotation"),
+    path('delete_quotation/', DeleteQuotationView.as_view(), name="delete_quotation"),
+    path('delete_quotations/', DeleteQuotationsView.as_view(), name="delete_quotations"),
+    path('delete_all_quotations/', DeleteAllQuotationsView.as_view(), name="delete_all_quotations"),
+    path('quotations_template/', QuotationsTemplateView.as_view(), name="quotations_template"),
+    path('import_quotations/', ImportQuotationsView.as_view(), name="import_quotations"),
     
     path('', include("quotations.api.urls")),
 ]
