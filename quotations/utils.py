@@ -84,7 +84,7 @@ def import_quick_quotations(self, df_json):
                 code = row['Hızlı Teklif No'],
                 status = Status.objects.filter(name = str(row["Alt Statü"])).first() or None,
                 partner = partner,
-                quotation_no = str(int(row['Teklif No'])) if type(row['Teklif No']) == float else str(row['Teklif No']),
+                quotation_no = str(int(row['Teklif No'])) if type(row['Teklif No']) == float and not pd.isna(row['Teklif No']) else str(row['Teklif No']),
                 customer_type = row['Müşteri Tipi'],
                 project = row['Proje Adı'],
                 block = row['Blok'],
