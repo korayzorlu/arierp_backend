@@ -114,7 +114,7 @@ class QuickQuotationList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["company","partner","currency","status"]
 
-        queryset = QuickQuotation.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("customer_signature_date")
+        queryset = QuickQuotation.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("partner__name")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -142,7 +142,7 @@ class QuotationList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["company","partner","currency","status"]
 
-        queryset = Quotation.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("request_date")
+        queryset = Quotation.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("partner__name")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

@@ -33,6 +33,8 @@ class LeaseListSerializer(serializers.Serializer):
     partner_tc = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
+    block = serializers.SerializerMethodField()
+    unit = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -56,13 +58,19 @@ class LeaseListSerializer(serializers.Serializer):
         return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
     
     def get_quotation(self, obj):
-        return obj.contract.quotation if obj.contract else ""
+        return obj.contract.quotation_obj.code if obj.contract.quotation_obj else ""
     
     def get_kof(self, obj):
         return obj.contract.kof if obj.contract else ""
     
     def get_project(self, obj):
         return obj.contract.project if obj.contract else ""
+    
+    def get_block(self, obj):
+        return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else ""
+    
+    def get_unit(self, obj):
+        return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else ""
     
 
     def update(self, instance, validated_data):

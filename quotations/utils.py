@@ -8,7 +8,7 @@ from decimal import Decimal
 
 from .models import *
 from common.models import Status
-from partners.models import Partner
+from contracts.models import Contract
 
 def is_valid_quick_quotation_data(data):
     if not data.get('code') or not data.get('partner'):

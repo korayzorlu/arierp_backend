@@ -6,7 +6,6 @@ import uuid
 
 from companies.models import Company
 from common.models import Currency, Status
-from contracts.models import Contract
 from partners.models import Partner
 
 # Create your models here.

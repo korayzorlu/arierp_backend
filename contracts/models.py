@@ -7,6 +7,7 @@ import uuid
 from common.models import Status
 from companies.models import Company
 from partners.models import Partner
+from quotations.models import Quotation
 
 # Create your models here.
 
@@ -17,6 +18,7 @@ class Contract(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="contracts")
 
     code = models.CharField(_("Code"), max_length=25)
+    quotation_obj = models.ForeignKey(Quotation, on_delete=models.CASCADE, related_name="quotation_contracts", null=True, blank=True)
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_contracts", null=True, blank=True)
     kof = models.CharField(_("Kof"), max_length=25, null=True, blank=True)
     quotation = models.CharField(_("Quotation"), max_length=25, null=True, blank=True)

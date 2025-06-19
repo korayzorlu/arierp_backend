@@ -114,7 +114,7 @@ class ContractList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["company","partner","status"]
 
-        queryset = Contract.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("kof_tan_sozlesmeye_aktarim_tarihi")
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-kof_tan_sozlesmeye_aktarim_tarihi")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

@@ -87,7 +87,7 @@ class QuotationListSerializer(serializers.Serializer):
         return obj.partner.tc_vkn_no if obj.partner else ""
     
     def get_quick_quotation(self, obj):
-        return obj.quick_quotation.name if obj.quick_quotation else ""
+        return obj.quick_quotation.code if obj.quick_quotation else ""
     
     def get_status(self, obj):
         return obj.status.name if obj.status else ""
