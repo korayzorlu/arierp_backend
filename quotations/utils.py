@@ -84,7 +84,7 @@ def import_quick_quotations(self, df_json):
                 code = row['Hızlı Teklif No'],
                 status = Status.objects.filter(name = str(row["Alt Statü"])).first() or None,
                 partner = partner,
-                quotation_no = row['Teklif No'],
+                quotation_no = str(int(row['Teklif No'])) if type(row['Teklif No']) == float else str(row['Teklif No']),
                 customer_type = row['Müşteri Tipi'],
                 project = row['Proje Adı'],
                 block = row['Blok'],
@@ -155,12 +155,18 @@ def import_quotations(self, df_json):
                     partner = None
             else:
                 partner = None
-            
+
+            if row['Teklif No']:
+                quotation_code = str(int(row['Teklif No'])) if type(row['Teklif No']) == float else str(row['Teklif No'])
+                quick_quotation = QuickQuotation.objects.select_related("partner").filter(quotation_no = quotation_code).first()
+            else:
+                quick_quotation = None
+
             obj = Quotation.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
-                code = row['Hızlı Teklif No'],
+                code = row['Teklif No'],
                 status = Status.objects.filter(name = str(row["Durum"])).first() or None,
-                quick_quotation = QuickQuotation.objects.select_related().filter(quotation_no = str(row["Teklif No"])).first() or None,
+                quick_quotation = quick_quotation,
                 partner = partner,
                 currency = Currency.objects.select_related().filter(code = "TRY" if row["PB"] == "TL" else row["PB"]).first() or None,
                 kbm = Decimal(str(row['KBM']).replace(",",".")) if not pd.isna(row['KBM']) else Decimal(str(0)),

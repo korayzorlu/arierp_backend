@@ -5,7 +5,7 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'quick_quotations',QuickQuotationList, "quick_quotations_api")
-router.register(r'qquotations',QuotationList, "qquotations_api")
+router.register(r'quotations',QuotationList, "quotations_api")
 
 urlpatterns = [
     path('',include(router.urls)),

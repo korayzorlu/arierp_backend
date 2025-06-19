@@ -19,7 +19,7 @@ from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from contracts.utils import import_contracts
 from leasing.utils import import_leases
-from quotations.utils import import_quick_quotations
+from quotations.utils import import_quick_quotations,import_quotations
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -247,6 +247,9 @@ class BaseImporter():
 
     def import_quickquotation(self, df_json):
         import_quick_quotations(self, df_json)
+
+    def import_quotation(self, df_json):
+        import_quotations(self, df_json)
 
     def import_bankahareketi(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
