@@ -12,13 +12,14 @@ class LeaseListSerializer(serializers.Serializer):
     type = serializers.CharField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
     activation_date = serializers.DateField()
-    lease_status = serializers.CharField()
+    lease_status = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
     musteri_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
     vade = serializers.IntegerField()
     leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
+    project = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     leasing_type = serializers.CharField()
     application_no = serializers.CharField()
@@ -30,6 +31,8 @@ class LeaseListSerializer(serializers.Serializer):
     bbsn = serializers.CharField()
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
+    quotation = serializers.SerializerMethodField()
+    kof = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -40,6 +43,9 @@ class LeaseListSerializer(serializers.Serializer):
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
     
+    def get_lease_status(self, obj):
+        return obj.get_lease_status_display() if obj.lease_status else ""
+    
     def get_status(self, obj):
         return obj.status.name if obj.status else ""
     
@@ -48,6 +54,16 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_partner_tc(self, obj):
         return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
+    
+    def get_quotation(self, obj):
+        return obj.contract.quotation if obj.contract else ""
+    
+    def get_kof(self, obj):
+        return obj.contract.kof if obj.contract else ""
+    
+    def get_project(self, obj):
+        return obj.contract.project if obj.contract else ""
+    
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)
