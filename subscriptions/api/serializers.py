@@ -24,11 +24,11 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "item", "class" : "free", "label" : "Sözleşmeler", "icon" : "contract", "route" : "/contracts"},
             {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
-            {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
-                {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},
-                {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları Odoo", "icon" : "account", "route" : "/banka--tahsilatlari-odoo"},
-            ]},
+            # {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
+            #     {"type" : "item", "class" : "free", "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
+            #     {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},
+            #     {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları Odoo", "icon" : "account", "route" : "/banka--tahsilatlari-odoo"},
+            # ]},
         ]
 
         hierarchy = {
