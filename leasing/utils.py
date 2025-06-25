@@ -133,21 +133,25 @@ def import_installments(self, df_json):
                 self.process.progress = int(current_progress)
                 self.process.save()
                 previous_progress = current_progress
-            
-            #type_list = [item.strip().lower() for item in row["type"].split(",")]
 
-            if Installment.objects.filter(lease__code = row["Kira Planı Kodu"], sequency = int(row["Kira Planı Sıra No"])).exists():
+            if Installment.objects.select_related().filter(lease__code = str(row["Kira Planı Kodu"]), sequency = int(row["Kira Planı Sıra No"])).exists():
                 continue
+
+            if row['Ödeme Tarihi']:
+                payment_date = datetime.fromtimestamp(row['Ödeme Tarihi'] / 1000)
+            else:
+                payment_date = None
             
             obj = Installment.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
-                lease = Lease.objects.filter(code = str(row["Kira Planı Kodu"])).first() or None,
-                vat = Decimal(str(row['Vergi Oranı']).replace(",",".")),
-                amount = Decimal(str(row['Taksit']).replace(",",".")),
-                paid = Decimal(str(row['Toplam Ödeme Tutarı']).replace(",",".")),
-                principal = Decimal(str(row['Ana Para']).replace(",",".")),
-                interest = Decimal(str(row['Faiz']).replace(",",".")),
-                sequency = int(row['Kira Planı Sıra No'])
+                lease = Lease.objects.select_related().filter(code = str(row["Kira Planı Kodu"])).first() or None,
+                payment_date = payment_date,
+                vat = Decimal(str(row['Vergi Oranı']).replace(",",".")) if not pd.isna(row['Vergi Oranı']) else Decimal(str(0)),
+                amount = Decimal(str(row['Taksit']).replace(",",".")) if not pd.isna(row['Taksit']) else Decimal(str(0)),
+                paid = Decimal(str(row['Toplam Ödeme Tutarı']).replace(",",".")) if not pd.isna(row['Toplam Ödeme Tutarı']) else Decimal(str(0)),
+                principal = Decimal(str(row['Ana Para']).replace(",",".")) if not pd.isna(row['Ana Para']) else Decimal(str(0)),
+                interest = Decimal(str(row['Faiz']).replace(",",".")) if not pd.isna(row['Faiz']) else Decimal(str(0)),
+                sequency = int(row['Kira Planı Sıra No']) if not pd.isna(row['Kira Planı Sıra No']) else int(0),
             )
             obj.save()
 

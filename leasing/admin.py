@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Lease
+from .models import Lease,Installment
 
 # Register your models here.
 
@@ -22,3 +22,21 @@ class LeaseAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Lease
+
+@admin.register(Installment)
+class InstallmentAdmin(admin.ModelAdmin):
+    list_display = ["company","lease","amount","principal","payment_date","sequency"]
+    list_display_links = ["lease"]
+    search_fields = ["company__name","lease__code","payment_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["lease__code","sequency"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def lease(self,obj):
+        return obj.lease.code if obj.lease else ""
+    
+    class Meta:
+        model = Installment

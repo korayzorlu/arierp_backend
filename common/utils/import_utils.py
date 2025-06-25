@@ -12,6 +12,7 @@ from openai import OpenAI
 from datetime import datetime
 import time
 import ast
+import pickle
 
 from users.models import User
 from common.models import ImportProcess,Country,City
@@ -23,6 +24,17 @@ from quotations.utils import import_quick_quotations,import_quotations
 
 from dotenv import load_dotenv
 load_dotenv()
+
+def save_pickle_to_file(data, prefix="import_data"):
+    os.makedirs("/media/tmp/imports", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = f"{prefix}_{timestamp}.pkl"
+    filepath = os.path.join("/media/tmp/imports", filename)
+
+    with open(filepath, "wb") as f:
+        pickle.dump(data, f)
+
+    return filepath
 
 class BaseImporter():
     allowed_extensions = ["xls", "xlsx"]

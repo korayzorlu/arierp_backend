@@ -79,10 +79,10 @@ class InstallmentListSerializer(serializers.Serializer):
     currency = serializers.SerializerMethodField()
     payment_date = serializers.DateField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
-    amount = serializers.DecimalField(max_digits=5,decimal_places=2)
-    paid = serializers.DecimalField(max_digits=5,decimal_places=2)
-    principle = serializers.DecimalField(max_digits=5,decimal_places=2)
-    interest = serializers.DecimalField(max_digits=5,decimal_places=2)
+    amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    paid = serializers.DecimalField(max_digits=14,decimal_places=2)
+    principal = serializers.DecimalField(max_digits=14,decimal_places=2)
+    interest = serializers.DecimalField(max_digits=14,decimal_places=2)
     sequency = serializers.IntegerField()
 
     def get_companyId(self, obj):
@@ -92,4 +92,4 @@ class InstallmentListSerializer(serializers.Serializer):
         return obj.lease.code if obj.lease else ""
 
     def get_currency(self, obj):
-        return obj.currency.code if obj.currency else ""
+        return obj.lease.currency.code if obj.lease.currency else ""

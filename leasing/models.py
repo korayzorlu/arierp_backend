@@ -76,5 +76,5 @@ class Installment(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.code)
+        return str(self.lease.code)
     
