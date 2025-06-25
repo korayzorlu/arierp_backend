@@ -80,3 +80,25 @@ class LeaseFilter(FilterSet):
     
     def filter_lease_status(self, queryset, lease_status, value):
         return queryset.annotate(lowercase=Lower('lease_status'),uppercase=Upper('lease_status')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
+    
+class InstallmentFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    lease = CharFilter(method = 'filter_lease')
+    currency = CharFilter(method = 'filter_currency')
+    sequency = CharFilter(method = 'filter_sequency')
+
+    class Meta:
+        model = Installment
+        fields = ['uuid','sequency']
+
+    def filter_uuid(self, queryset, uuid, value):
+        return queryset.filter(uuid = value)
+    
+    def filter_lease(self, queryset, lease, value):
+        return queryset.filter(lease__code = value)
+    
+    def filter_currency(self, queryset, currency, value):
+        return queryset.annotate(lowercase=Lower('currency__code'),uppercase=Upper('currency__code')).filter(Q(lowercase = value) | Q(uppercase = value))
+    
+    def filter_sequency(self, queryset, sequency, value):
+        return queryset.filter(sequency = value)

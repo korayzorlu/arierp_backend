@@ -22,8 +22,11 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
                 {"type" : "item", "class" : "free", "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},
             ]},
-            {"type" : "item", "class" : "free", "label" : "Sözleşmeler", "icon" : "contract", "route" : "/contracts"},
-            {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
+            {"type" : "item", "class" : "free", "label" : "Sözleşmeler", "icon" : "description", "route" : "/contracts"},
+            {"type" : "sub_menu", "class" : "free", "label" : "Kira Planı", "icon" : "unknown", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
+                {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
+            ]},
             # {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
             #     {"type" : "item", "class" : "free", "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
             #     {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},

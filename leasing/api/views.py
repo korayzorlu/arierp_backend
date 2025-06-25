@@ -118,7 +118,35 @@ class LeaseList(ModelViewSet, QueryListAPIView):
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["code","contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class InstallmentList(ModelViewSet, QueryListAPIView):
+    serializer_class = InstallmentListSerializer
+    filterset_class = InstallmentFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","lease","currency"]
+
+        queryset = Installment.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("lease__code","sequency")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["lease__code","sequency"]
             
             q_objects = Q()
             for field in search_fields:

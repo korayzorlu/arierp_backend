@@ -71,22 +71,25 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else ""
+
+class InstallmentListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    lease = serializers.SerializerMethodField()
+    currency = serializers.SerializerMethodField()
+    payment_date = serializers.DateField()
+    vat = serializers.DecimalField(max_digits=5,decimal_places=2)
+    amount = serializers.DecimalField(max_digits=5,decimal_places=2)
+    paid = serializers.DecimalField(max_digits=5,decimal_places=2)
+    principle = serializers.DecimalField(max_digits=5,decimal_places=2)
+    interest = serializers.DecimalField(max_digits=5,decimal_places=2)
+    sequency = serializers.IntegerField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
     
+    def get_lease(self, obj):
+        return obj.lease.code if obj.lease else ""
 
-    def update(self, instance, validated_data):
-        info = model_meta.get_field_info(instance)
-
-        m2m_fields = []
-        for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
-            else:
-                setattr(instance, attr, value)
-
-        instance.save()
-
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
-        
-        return instance
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ""

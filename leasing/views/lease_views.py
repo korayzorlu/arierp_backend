@@ -11,8 +11,8 @@ from asgiref.sync import async_to_sync
 
 from utils.mixins import CompanyOwnershipRequiredMixin
 
-from .models import *
-from .utils import is_valid_lease_data
+from leasing.models import *
+from leasing.utils import is_valid_lease_data
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert

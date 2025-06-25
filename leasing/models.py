@@ -15,7 +15,7 @@ class Lease(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
 
     code = models.CharField(_("Code"), max_length=25)
-    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="pcontract_leases")
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_leases")
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
     vat = models.DecimalField(_("Vat"), default = 0.00, max_digits=5, decimal_places=2)
     activation_date = models.DateField(_("Activation Date"), blank=True, null=True)
@@ -52,6 +52,25 @@ class Lease(models.Model):
     is_tufe = models.BooleanField(default=False)
     is_musterek = models.BooleanField(default=False)
     bbsn = models.CharField(_("BBSN"), max_length=25, blank=True, null=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.code)
+    
+class Installment(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="installments")
+
+    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_installments")
+    payment_date = models.DateField(_("Payment Date"), blank=True, null=True)
+    vat = models.DecimalField(_("Vat"), default = 0.00, max_digits=5, decimal_places=2)
+    amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
+    principal = models.DecimalField(_("Principal"), default = 0.00, max_digits=14, decimal_places=2)
+    interest = models.DecimalField(_("Interest"), default = 0.00, max_digits=14, decimal_places=2)
+    sequency = models.PositiveIntegerField(_("Sequency"), default=0)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

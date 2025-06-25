@@ -15,6 +15,11 @@ def is_valid_lease_data(data):
         return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)
     return True, None
 
+def is_valid_installment_data(data):
+    if not data.get('code') or not data.get('installment'):
+        return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)
+    return True, None
+
 def import_leases(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
         
@@ -100,6 +105,51 @@ def import_leases(self, df_json):
                 if contract:
                     contract.partner = Partner.objects.select_related().filter(tc_vkn_no = tc_vkn_no,formal_name = str(row['Müşteri Adı'])).first() or None
                     contract.save()
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
+
+def import_installments(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = []
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+            
+            #type_list = [item.strip().lower() for item in row["type"].split(",")]
+
+            if Installment.objects.filter(lease__code = row["Kira Planı Kodu"], sequency = int(row["Kira Planı Sıra No"])).exists():
+                continue
+            
+            obj = Installment.objects.create(
+                company = self.user.user_companies.filter(is_active=True).first().company,
+                lease = Lease.objects.filter(code = str(row["Kira Planı Kodu"])).first() or None,
+                vat = Decimal(str(row['Vergi Oranı']).replace(",",".")),
+                amount = Decimal(str(row['Taksit']).replace(",",".")),
+                paid = Decimal(str(row['Toplam Ödeme Tutarı']).replace(",",".")),
+                principal = Decimal(str(row['Ana Para']).replace(",",".")),
+                interest = Decimal(str(row['Faiz']).replace(",",".")),
+                sequency = int(row['Kira Planı Sıra No'])
+            )
+            obj.save()
 
         self.process.progress = 100
         self.process.status = "completed"
