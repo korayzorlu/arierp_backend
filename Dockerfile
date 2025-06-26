@@ -18,13 +18,13 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl -sSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
     -o /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev && \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev && \
     rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y \
     libldap2-dev \
     libsasl2-dev \
     && rm -rf /var/lib/apt/lists/*
-ENV PATH="$PATH:/opt/mssql-tools17/bin"
+ENV PATH="$PATH:/opt/mssql-tools18/bin"
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt

@@ -11,7 +11,7 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     restart: always
     networks:
-      - marswide_network
+      - arinet_network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -26,11 +26,11 @@ services:
     # - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     restart: always
     networks:
-      - marswide_network
+      - arinet_network
 
   web:
-    container_name: marswide_backend
-    image: marswide_backend
+    container_name: arinet_backend
+    image: arinet_backend
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     environment:
@@ -43,7 +43,7 @@ services:
     env_file:
       - .env
     networks:
-      - marswide_network
+      - arinet_network
 
   celery:
     build:
@@ -56,10 +56,10 @@ services:
       - .:/app
     restart: always
     networks:
-      - marswide_network
+      - arinet_network
 
   celery-beat:
-    #image: marswide_backend:latest  # Django uygulamanın image adı
+    #image: arinet_backend:latest  # Django uygulamanın image adı
     build:
       context: .
     container_name: celery_beat
@@ -71,7 +71,7 @@ services:
       - .:/app
     restart: always
     networks:
-      - marswide_network
+      - arinet_network
 
   db:
     image: postgres:16
@@ -90,13 +90,13 @@ services:
     env_file:
       - .env
     networks:
-      - marswide_network
+      - arinet_network
 
 volumes:
   postgres_data:
   redis_data:
 
 networks:
-  marswide_network:
+  arinet_network:
     external: true
 
