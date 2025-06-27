@@ -140,13 +140,13 @@ class InstallmentList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["company","lease","lease__currency"]
+        custom_related_fields = ["company","lease","lease__currency","lease__contract","lease__contract__partner","lease__contract__quotation_obj__quick_quotation"]
 
         queryset = Installment.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("lease__code","sequency")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["lease__code","sequency","lease__currency__code"]
+            search_fields = ["lease__code","sequency","lease__currency__code","lease__contract__code","lease__contract__partner__name"]
             
             q_objects = Q()
             for field in search_fields:

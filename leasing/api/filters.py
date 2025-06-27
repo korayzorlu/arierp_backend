@@ -84,6 +84,8 @@ class LeaseFilter(FilterSet):
 class InstallmentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     lease = CharFilter(method = 'filter_lease')
+    contract = CharFilter(method = 'filter_contract')
+    partner = CharFilter(method = 'filter_partner')
     currency = CharFilter(method = 'filter_currency')
     sequency = CharFilter(method = 'filter_sequency')
 
@@ -96,6 +98,12 @@ class InstallmentFilter(FilterSet):
     
     def filter_lease(self, queryset, lease, value):
         return queryset.filter(lease__code = value)
+    
+    def filter_contract(self, queryset, contract, value):
+        return queryset.filter(lease__contract__code = value)
+    
+    def filter_partner(self, queryset, partner, value):
+        return queryset.filter(lease__contract__partner__code = value)
     
     def filter_currency(self, queryset, currency, value):
         return queryset.annotate(lowercase=Lower('currency__code'),uppercase=Upper('currency__code')).filter(Q(lowercase = value) | Q(uppercase = value))

@@ -76,6 +76,10 @@ class InstallmentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     lease = serializers.SerializerMethodField()
+    contract = serializers.SerializerMethodField()
+    partner = serializers.SerializerMethodField()
+    partner_tc = serializers.SerializerMethodField()
+    activation_date = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
     payment_date = serializers.DateField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
@@ -84,12 +88,36 @@ class InstallmentListSerializer(serializers.Serializer):
     principal = serializers.DecimalField(max_digits=14,decimal_places=2)
     interest = serializers.DecimalField(max_digits=14,decimal_places=2)
     sequency = serializers.IntegerField()
+    project = serializers.SerializerMethodField()
+    block = serializers.SerializerMethodField()
+    unit = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
     
     def get_lease(self, obj):
         return obj.lease.code if obj.lease else ""
+    
+    def get_contract(self, obj):
+        return obj.lease.contract.code if obj.lease.contract else ""
+    
+    def get_partner(self, obj):
+        return obj.lease.contract.partner.name if obj.lease.contract.partner else ""
+    
+    def get_partner_tc(self, obj):
+        return obj.lease.contract.partner.tc_vkn_no if obj.lease.contract.partner else ""
+    
+    def get_activation_date(self, obj):
+        return obj.lease.activation_date if obj.lease else ""
 
     def get_currency(self, obj):
         return obj.lease.currency.code if obj.lease.currency else ""
+    
+    def get_project(self, obj):
+        return obj.lease.contract.project if obj.lease.contract else ""
+    
+    def get_block(self, obj):
+        return obj.lease.contract.quotation_obj.quick_quotation.block if obj.lease.contract.quotation_obj.quick_quotation else ""
+    
+    def get_unit(self, obj):
+        return obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else ""
