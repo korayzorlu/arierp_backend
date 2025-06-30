@@ -98,10 +98,25 @@ def import_leases(self, df_json):
             """
 
             if row["Sözleşme Kodu"]:
-                contract = Contract.objects.select_related("partner").filter(code = str(row["Sözleşme Kodu"])).first()
+                if type(row["Sözleşme Kodu"]) == float:
+                    contract_code = str(int(row["Sözleşme Kodu"]))
+                else:
+                    contract_code = str(row["Sözleşme Kodu"])
+                contract = Contract.objects.select_related("partner").filter(code = contract_code).first()
                 if contract:
                     contract.partner = Partner.objects.select_related().filter(crm_code = str(int(row['Müşteri']))).first() or None
                     contract.save()
+
+                    if not contract.partner:
+                        if row['Vergi/TC Kimlik No']:
+                            contract = Contract.objects.select_related("partner").filter(code = str(row["Sözleşme Kodu"])).first()
+                            try:
+                                tc_vkn_no = str(int(row['Vergi/TC Kimlik No']))
+                            except:
+                                tc_vkn_no = None
+                            if contract:
+                                contract.partner = Partner.objects.select_related().filter(tc_vkn_no = tc_vkn_no,formal_name = str(row['Müşteri Adı'])).first() or None
+                                contract.save()
 
         self.process.progress = 100
         self.process.status = "completed"
