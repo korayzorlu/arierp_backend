@@ -52,9 +52,7 @@ class Command(BaseCommand):
             cursor.execute(SQL_QUERY)
             
             records = cursor.fetchall()
-            # for r in records:
-                
-            #     row_to_list = [elem for elem in r]
+
             external_data=[
                 {
                     "customerId" : r.CustomerId,
@@ -65,10 +63,11 @@ class Command(BaseCommand):
             ]
 
             for data in external_data:
-                obj = Partner.objects.filter(customer_code = str(int(data["customerCode"]))).first()
-                if obj:
-                    obj.crm_code = data["customerId"]
-                    obj.save()
+                if data["customerCode"] and data["customerCode"] != "ARI":
+                    obj = Partner.objects.select_related().filter(customer_code = str(int(data["customerCode"]))).first()
+                    if obj:
+                        obj.crm_code = data["customerId"]
+                        obj.save()
         except Exception as e:
             print(e)
         
