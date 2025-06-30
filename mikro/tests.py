@@ -42,3 +42,5 @@ try:
     print(external_data)
 except Exception as e:
     print(e)
+
+

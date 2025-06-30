@@ -41,6 +41,7 @@ class PartnerListSerializer(serializers.Serializer):
     formalName = serializers.CharField(source = "formal_name")
     types = serializers.ListField()
     customerCode = serializers.CharField(source = "customer_code")
+    crmCode = serializers.CharField(source = "crm_code")
     customer = serializers.SerializerMethodField()
     supplier = serializers.SerializerMethodField()
     shareholder = serializers.SerializerMethodField()

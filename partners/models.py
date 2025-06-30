@@ -46,6 +46,7 @@ class Partner(models.Model):
     types = ArrayField(models.CharField(_("Status"), max_length=25, choices=TYPES_CHOICES), default=list, blank=True, null=True)
 
     customer_code = models.CharField(_("Customer Code"), max_length=25, blank=True, null=True)
+    crm_code = models.CharField(_("CRM Code"), max_length=25, blank=True, null=True)
 
 
     vat_office = models.CharField(_("Vat Office"), max_length=50, blank=True, null=True)

@@ -9,10 +9,15 @@ from .serializers import *
 
 class ContractFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
+    code = CharFilter(method = 'filter_code')
 
     class Meta:
         model = Contract
-        fields = ['uuid']
+        fields = ['uuid','code']
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)
+    
+    def filter_code(self, queryset, code, value):
+        return queryset.filter(code = value)
+    

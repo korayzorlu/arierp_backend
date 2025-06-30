@@ -53,7 +53,7 @@ def import_contracts(self, df_json):
             else:
                 lop_open_date = None
             
-            partner = Contract.objects.create(
+            obj = Contract.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
                 code = row['Sözleşme Kodu'],
                 #partner = None,
@@ -69,7 +69,7 @@ def import_contracts(self, df_json):
                 kof_tan_sozlesmeye_aktarim_tarihi = make_aware(kof_tan_sozlesmeye_aktarim_tarihi),
                 lop_open_date = make_aware(lop_open_date),
             )
-            partner.save()
+            obj.save()
 
         self.process.progress = 100
         self.process.status = "completed"

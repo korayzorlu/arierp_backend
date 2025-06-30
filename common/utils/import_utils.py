@@ -197,6 +197,17 @@ class BaseImporter():
             
             #type_list = [item.strip().lower() for item in row["type"].split(",")]
 
+            obj = Partner.objects.filter(customer_code = str(row["Müşteri Kodu"])).first()
+            if obj:
+                obj.customer_code = str(int(row["Müşteri Kodu"]))
+                obj.save()
+
+            nanObjs = Partner.objects.filter(customer_code = "nan")
+            for nanObj in nanObjs:
+                nanObj.customer_code = None
+                nanObj.save()
+
+            """
             if Partner.objects.filter(tc_vkn_no = row["Vergi/TC Kimlik No"], name = row["Ad Soyad"], birthday=datetime.strptime(row["Doğum Tarihi"], "%d.%m.%Y").date() if row["Doğum Tarihi"] else None).exists():
                 continue
 
@@ -225,7 +236,7 @@ class BaseImporter():
                 last_name = row["Soyad"],
                 name = row["Ad Soyad"],
                 formal_name = row["Kurum"],
-                customer_code = str(row["Müşteri Kodu"]),
+                customer_code = str(int(row["Müşteri Kodu"])),
                 vat_no = str(row.get("Vergi No")) or None,
                 vat_office = row.get("Vergi Dairesi") or None,
                 tc_no = row["TC Kimlik No"],
@@ -246,7 +257,7 @@ class BaseImporter():
                 types = ["customer"]
             )
             partner.save()
-
+            """
         self.process.progress = 100
         self.process.status = "completed"
         self.process.save()
