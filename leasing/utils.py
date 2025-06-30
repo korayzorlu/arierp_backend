@@ -45,7 +45,7 @@ def import_leases(self, df_json):
                 previous_progress = current_progress
             
             #type_list = [item.strip().lower() for item in row["type"].split(",")]
-
+            """
             if Lease.objects.filter(code = row["Kira Planı Kodu"]).exists():
                 continue
 
@@ -95,6 +95,7 @@ def import_leases(self, df_json):
                 bbsn = row['BBSN No'],
             )
             obj.save()
+            """
 
             if row["Sözleşme Kodu"]:
                 contract = Contract.objects.select_related("partner").filter(code = str(row["Sözleşme Kodu"])).first()
