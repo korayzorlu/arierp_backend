@@ -96,7 +96,7 @@ def import_leases(self, df_json):
             )
             obj.save()
 
-            if row['Vergi/TC Kimlik No']:
+            if row["Sözleşme Kodu"]:
                 contract = Contract.objects.select_related("partner").filter(code = str(row["Sözleşme Kodu"])).first()
                 if contract:
                     contract.partner = Partner.objects.select_related().filter(crm_code = str(int(row['Müşteri']))).first() or None
