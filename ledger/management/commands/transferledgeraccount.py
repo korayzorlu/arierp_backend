@@ -91,17 +91,17 @@ class Command(BaseCommand):
                 for r in records
             ]
             for data in external_data:
-                if LedgerAccount.objects.filter(account_id = str(int(data["account_id"]))).exists():
+                if LedgerAccount.objects.select_related().filter(account_id = str(int(data["account_id"]))).exists():
                     continue
                 if not pd.isna(data["currency"]) and data["currency"] == "TL":
                     data["currency"] =  "TRY"
                 obj = LedgerAccount.objects.create(
-                    company = Company.objects.filter(id = int(company)).first(),
-                    partner = Partner.objects.filter(crm_code = str(int(data["partner"]))).first() if not pd.isna(data["partner"]) or not data["partner"] == "" else None,
+                    company = Company.objects.select_related().filter(id = int(company)).first(),
+                    partner = Partner.objects.select_related().filter(crm_code = str(data["partner"])).first() if not pd.isna(data["partner"]) else None,
                     account_id = str(int(data["account_id"])) if not pd.isna(data["account_id"]) else "",
                     code = data["code"] if not pd.isna(data["code"]) else "",
                     name = data["name"] if not pd.isna(data["name"]) else "",
-                    currency = Currency.objects.filter(code = data["currency"]).first() if not pd.isna(data["currency"]) else None,
+                    currency = Currency.objects.select_related().filter(code = data["currency"]).first() if not pd.isna(data["currency"]) else None,
                 )
                 obj.save()
         except Exception as e:
