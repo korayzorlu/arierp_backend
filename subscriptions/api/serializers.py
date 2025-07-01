@@ -27,6 +27,12 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
             ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
+            ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Cari", "icon" : "price_change", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
+            ]},
             # {"type" : "sub_menu", "class" : "free", "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
             #     {"type" : "item", "class" : "free", "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
             #     {"type" : "item", "class" : "free", "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},

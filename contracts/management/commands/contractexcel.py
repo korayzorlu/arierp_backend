@@ -29,6 +29,7 @@ class Command(BaseCommand):
             "Kira Planı No": [],
             "Sözleşme No": [],
             "Müşteri Kodu": [],
+            "Müşteri CRM Kodu": [],
             "Müşteri Adı": [],
             "Müşteri TC": []
         }
@@ -40,6 +41,7 @@ class Command(BaseCommand):
             data["Kira Planı No"].append(obj.code)
             data["Sözleşme No"].append(obj.contract.code)
             data["Müşteri Kodu"].append(obj.contract.quotation_obj.partner.customer_code if obj.contract.quotation_obj.partner else "")
+            data["Müşteri CRM Kodu"].append(obj.contract.quotation_obj.partner.crm_code if obj.contract.quotation_obj.partner else "")
             data["Müşteri Adı"].append(obj.contract.quotation_obj.partner.name if obj.contract.quotation_obj.partner else "")
             data["Müşteri TC"].append(obj.contract.quotation_obj.partner.tc_vkn_no if obj.contract.quotation_obj.partner else "")
         

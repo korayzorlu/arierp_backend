@@ -78,6 +78,8 @@ INSTALLED_APPS = [
     "contracts",
     "leasing",
     "quotations",
+    "ledger",
+    "trade",
     
 ]
 
