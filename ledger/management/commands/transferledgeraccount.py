@@ -48,7 +48,7 @@ class Command(BaseCommand):
             conn = pyodbc.connect(connectionString)
             
             SQL_QUERY = """
-            SELECT TOP 1000 *
+            SELECT *
             FROM LedgerAccount
             WHERE
                 AccountType='1'
