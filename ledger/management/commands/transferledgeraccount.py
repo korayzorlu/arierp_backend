@@ -97,7 +97,7 @@ class Command(BaseCommand):
                     data["currency"] =  "TRY"
                 obj = LedgerAccount.objects.create(
                     company = Company.objects.filter(id = int(company)).first(),
-                    partner = Partner.objects.filter(crm_code = str(int(data["partner"]))).first() if not pd.isna(data["partner"]) else None,
+                    partner = Partner.objects.filter(crm_code = str(int(data["partner"]))).first() if not pd.isna(data["partner"]) or not data["partner"] == "" else None,
                     account_id = str(int(data["account_id"])) if not pd.isna(data["account_id"]) else "",
                     code = data["code"] if not pd.isna(data["code"]) else "",
                     name = data["name"] if not pd.isna(data["name"]) else "",
