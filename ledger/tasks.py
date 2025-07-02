@@ -77,6 +77,7 @@ def transfer_ledger_accounts(company):
             }
             for r in records
         ]
+        print(len(external_data))
         for data in external_data:
             if LedgerAccount.objects.select_related().filter(account_id = str(int(data["account_id"]))).exists():
                 continue
