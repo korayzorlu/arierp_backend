@@ -73,6 +73,7 @@ class Command(BaseCommand):
                     AccountCode LIKE '177%'
                 )
             ORDER BY AccountCode
+            OFFSET 197000 ROWS
             """
 
             cursor = conn.cursor()
