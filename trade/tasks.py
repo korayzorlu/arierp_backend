@@ -57,7 +57,7 @@ def transfer_trade_accounts(company):
         for data in external_data:
             if TradeAccount.objects.select_related().filter(account_id = str(int(data["account_id"]))).exists():
                 obj = TradeAccount.objects.select_related().filter(account_id = str(int(data["account_id"]))).first()
-                obj.crm_id = str(data["partner"]) if not pd.isna(data["partner"]) else ""
+                obj.crm_type = "Bireysel Müşteri" if str(data["crm_type"]) == "B" else "Kurumsal Müşteri"
                 obj.save()
                 continue
             obj = TradeAccount.objects.create(
