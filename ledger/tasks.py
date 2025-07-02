@@ -10,7 +10,7 @@ from .models import *
 from users.models import User
 from contracts.models import *
 
-@shared_task(bind=True)
+@shared_task()
 def transfer_ledger_accounts(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
