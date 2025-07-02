@@ -17,7 +17,7 @@ class LedgerAccount(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_ledger_accounts", null=True, blank=True)
     account_id = models.CharField(_("Account ID"), max_length=25, blank=True, null=True)
     code = models.CharField(_("Account Code"), max_length=140, blank=True, null=True)
-    name = models.CharField(_("Name"), max_length=140, null=True, blank=True)
+    name = models.CharField(_("Name"), max_length=250, null=True, blank=True)
 
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_ledger_accounts")
     
