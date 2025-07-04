@@ -17,6 +17,7 @@ class Contract(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="contracts")
 
+    contract_id = models.CharField(_("Contract ID"), max_length=25, null=True, blank=True)
     code = models.CharField(_("Code"), max_length=25)
     quotation_obj = models.ForeignKey(Quotation, on_delete=models.CASCADE, related_name="quotation_contracts", null=True, blank=True)
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_contracts", null=True, blank=True)

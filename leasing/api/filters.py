@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import Q
+from django.db.models import Q,Sum
 from django.db.models.functions import Lower,Upper
 
 from django_filters.rest_framework import FilterSet
@@ -28,6 +28,7 @@ class LeaseFilter(FilterSet):
     vat = CharFilter(method = 'filter_vat')
     currency = CharFilter(method = 'filter_currency')
     lease_status = CharFilter(method = 'filter_lease_status')
+    overdue_amount = CharFilter(method = 'filter_overdue_amount')
 
     class Meta:
         model = Lease
@@ -81,6 +82,16 @@ class LeaseFilter(FilterSet):
     def filter_lease_status(self, queryset, lease_status, value):
         return queryset.annotate(lowercase=Lower('lease_status'),uppercase=Upper('lease_status')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
     
+    def filter_overdue_amount(self, queryset, overdue_amount, value):
+        if value == "true":
+            return queryset.annotate(
+                total_overdue=Sum('lease_installments__overdue_amount')
+            ).filter(total_overdue__gt=0)
+        else:
+            return queryset.annotate(
+                total_overdue=Sum('lease_installments__overdue_amount')
+            ).filter(Q(total_overdue__lte=0) | Q(total_overdue__isnull=True))
+    
 class InstallmentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     lease = CharFilter(method = 'filter_lease')
@@ -88,10 +99,11 @@ class InstallmentFilter(FilterSet):
     partner = CharFilter(method = 'filter_partner')
     currency = CharFilter(method = 'filter_currency')
     sequency = CharFilter(method = 'filter_sequency')
+    overdue_amount = CharFilter(method = 'filter_overdue_amount')
 
     class Meta:
         model = Installment
-        fields = ['uuid','sequency']
+        fields = ['uuid','sequency','payment_date']
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)
@@ -110,3 +122,9 @@ class InstallmentFilter(FilterSet):
     
     def filter_sequency(self, queryset, sequency, value):
         return queryset.filter(sequency = value)
+    
+    def filter_overdue_amount(self, queryset, overdue_amount, value):
+        if value == "true":
+            return queryset.filter(overdue_amount__gt = 0)
+        else:
+            return queryset.filter(overdue_amount__gte = 0)

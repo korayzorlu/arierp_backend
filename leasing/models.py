@@ -68,6 +68,7 @@ class Installment(models.Model):
     vat = models.DecimalField(_("Vat"), default = 0.00, max_digits=5, decimal_places=2)
     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
     paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_amount = models.DecimalField(_("Overdue Amount"), default = 0.00, max_digits=14, decimal_places=2)
     principal = models.DecimalField(_("Principal"), default = 0.00, max_digits=14, decimal_places=2)
     interest = models.DecimalField(_("Interest"), default = 0.00, max_digits=14, decimal_places=2)
     sequency = models.PositiveIntegerField(_("Sequency"), default=0)

@@ -8,6 +8,7 @@ class ContractListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
+    contract_id = serializers.CharField()
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
     kof = serializers.CharField()

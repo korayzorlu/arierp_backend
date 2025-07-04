@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
 
+from decimal import Decimal
+
 from leasing.models import *
 from companies.models import Company,UserCompany
     
@@ -35,6 +37,7 @@ class LeaseListSerializer(serializers.Serializer):
     kof = serializers.SerializerMethodField()
     block = serializers.SerializerMethodField()
     unit = serializers.SerializerMethodField()
+    overdue_amount = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -71,6 +74,13 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else ""
+    
+    def get_overdue_amount(self, obj):
+        installments = obj.lease_installments.all()
+        total_overdue_amount = Decimal("0")
+        for installment in installments:
+            total_overdue_amount += installment.overdue_amount
+        return total_overdue_amount
 
 class InstallmentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -84,6 +94,7 @@ class InstallmentListSerializer(serializers.Serializer):
     payment_date = serializers.DateField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     paid = serializers.DecimalField(max_digits=14,decimal_places=2)
     principal = serializers.DecimalField(max_digits=14,decimal_places=2)
     interest = serializers.DecimalField(max_digits=14,decimal_places=2)
