@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
 
 from decimal import Decimal
+from datetime import date
 
 from leasing.models import *
 from companies.models import Company,UserCompany
@@ -38,6 +39,7 @@ class LeaseListSerializer(serializers.Serializer):
     block = serializers.SerializerMethodField()
     unit = serializers.SerializerMethodField()
     overdue_amount = serializers.SerializerMethodField()
+    overdue_days = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -81,11 +83,24 @@ class LeaseListSerializer(serializers.Serializer):
         for installment in installments:
             total_overdue_amount += installment.overdue_amount
         return total_overdue_amount
+    
+    def get_overdue_days(self, obj):
+        installments = obj.lease_installments.all()
+        overdue_days = 0
+        for installment in installments:
+            if installment.overdue_amount > 0:
+                today = date.today()
+                diff = (today - installment.payment_date).days
+                if diff > overdue_days:
+                    overdue_days = diff
+        return overdue_days
 
 class InstallmentListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     lease = serializers.SerializerMethodField()
+    lease_id = serializers.SerializerMethodField()
     contract = serializers.SerializerMethodField()
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
@@ -95,6 +110,7 @@ class InstallmentListSerializer(serializers.Serializer):
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    overdue_days = serializers.SerializerMethodField()
     paid = serializers.DecimalField(max_digits=14,decimal_places=2)
     principal = serializers.DecimalField(max_digits=14,decimal_places=2)
     interest = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -108,6 +124,9 @@ class InstallmentListSerializer(serializers.Serializer):
     
     def get_lease(self, obj):
         return obj.lease.code if obj.lease else ""
+    
+    def get_lease_id(self, obj):
+        return obj.lease.uuid if obj.lease else ""
     
     def get_contract(self, obj):
         return obj.lease.contract.code if obj.lease.contract else ""
@@ -132,3 +151,8 @@ class InstallmentListSerializer(serializers.Serializer):
     
     def get_unit(self, obj):
         return obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else ""
+    
+    def get_overdue_days(self, obj):
+        today = date.today()
+        diff = (today - obj.payment_date).days
+        return diff

@@ -94,6 +94,7 @@ class LeaseFilter(FilterSet):
     
 class InstallmentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
+    lease_id = CharFilter(method = 'filter_lease_id')
     lease = CharFilter(method = 'filter_lease')
     contract = CharFilter(method = 'filter_contract')
     partner = CharFilter(method = 'filter_partner')
@@ -110,6 +111,9 @@ class InstallmentFilter(FilterSet):
     
     def filter_lease(self, queryset, lease, value):
         return queryset.filter(lease__code = value)
+    
+    def filter_lease_id(self, queryset, lease_id, value):
+        return queryset.filter(lease__uuid = value)
     
     def filter_contract(self, queryset, contract, value):
         return queryset.filter(lease__contract__code = value)
