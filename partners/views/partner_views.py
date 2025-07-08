@@ -177,3 +177,25 @@ class ImportPartnersView(LoginRequiredMixin,View):
         importer.start_import(df_json)
 
         return HttpResponse(status=200)
+    
+class PartnerInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        crm_code = data.get('crm_code')
+        
+        obj = Partner.objects.filter(crm_code = crm_code).first()
+
+        if not obj:
+            return JsonResponse({'message' : 'Sorry, something went wrong!','status':'error'}, status=400)
+        
+        partner_data = {
+                'crm_code': obj.crm_code,
+                'name': obj.name,
+                'tc_vkn_no' : obj.tc_vkn_no,
+                'phone_number':obj.phone_number,
+                'address':obj.address,
+                'city':obj.city.name if obj.city else "",
+                'country':obj.country.name if obj.country else "",
+        }
+
+        return JsonResponse({'partner':partner_data}, status=200)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Lease,Installment
+from .models import Lease,Installment,BankActivity
 
 # Register your models here.
 
@@ -40,3 +40,21 @@ class InstallmentAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Installment
+
+@admin.register(BankActivity)
+class BankActivityAdmin(admin.ModelAdmin):
+    list_display = ["company","bank","bank_account_no","process_date","process_type","amount","currency","receipt_no","description","tc_vkn_no"]
+    list_display_links = ["amount"]
+    search_fields = ["company__name","bank","bank_account_no","process_date","process_type","amount","currency__code","receipt_no","description","tc_vkn_no"]
+    list_filter = []
+    inlines = []
+    ordering = ["bank","bank_account_no","-process_date"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def currency(self,obj):
+        return obj.currency.code if obj.currency else ""
+    
+    class Meta:
+        model = BankActivity

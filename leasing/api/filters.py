@@ -29,10 +29,11 @@ class LeaseFilter(FilterSet):
     currency = CharFilter(method = 'filter_currency')
     lease_status = CharFilter(method = 'filter_lease_status')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
+    leaseflex_automation = CharFilter(method = 'filter_leaseflex_automation')
 
     class Meta:
         model = Lease
-        fields = ['uuid','code','activation_date','vade','leasing_rate','vat']
+        fields = ['uuid','code','activation_date','vade','leasing_rate','vat','leaseflex_automation']
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)
@@ -91,6 +92,12 @@ class LeaseFilter(FilterSet):
             return queryset.annotate(
                 total_overdue=Sum('lease_installments__overdue_amount')
             ).filter(Q(total_overdue__lte=0) | Q(total_overdue__isnull=True))
+        
+    def filter_leaseflex_automation(self, queryset, leaseflex_automation, value):
+        if value == "true":
+            return queryset.filter(leaseflex_automation = True)
+        else:
+            return queryset.filter(leaseflex_automation = False)
     
 class InstallmentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
@@ -132,3 +139,8 @@ class InstallmentFilter(FilterSet):
             return queryset.filter(overdue_amount__gt = 0)
         else:
             return queryset.filter(overdue_amount__gte = 0)
+        
+class BankActivityFilter(FilterSet):
+    class Meta:
+        model = BankActivity
+        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description']

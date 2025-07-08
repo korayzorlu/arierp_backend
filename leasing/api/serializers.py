@@ -34,6 +34,7 @@ class LeaseListSerializer(serializers.Serializer):
     bbsn = serializers.CharField()
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
+    partner_crm_code = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
     block = serializers.SerializerMethodField()
@@ -61,6 +62,9 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_partner_tc(self, obj):
         return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
+    
+    def get_partner_crm_code(self, obj):
+        return obj.contract.partner.crm_code if obj.contract.partner else ""
     
     def get_quotation(self, obj):
         return obj.contract.quotation_obj.code if obj.contract.quotation_obj else ""
@@ -156,3 +160,19 @@ class InstallmentListSerializer(serializers.Serializer):
         today = date.today()
         diff = (today - obj.payment_date).days
         return diff
+    
+class BankActivityListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    bank = serializers.CharField()
+    bank_account_no = serializers.CharField()
+    process_date = serializers.DateTimeField()
+    process_type = serializers.CharField()
+    amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    currency = serializers.SerializerMethodField()
+    receipt_no = serializers.CharField()
+    description = serializers.CharField()
+    tc_vkn_no = serializers.CharField()
+
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ""

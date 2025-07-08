@@ -19,7 +19,7 @@ from common.models import ImportProcess,Country,City
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from contracts.utils import import_contracts
-from leasing.utils import import_leases,import_installments
+from leasing.utils import import_leases,import_installments,import_bank_activities
 from quotations.utils import import_quick_quotations,import_quotations
 
 from dotenv import load_dotenv
@@ -270,6 +270,9 @@ class BaseImporter():
 
     def import_installment(self, df_json):
         import_installments(self, df_json)
+
+    def import_bankactivity(self, df_json):
+        import_bank_activities(self, df_json)
 
     def import_quickquotation(self, df_json):
         import_quick_quotations(self, df_json)

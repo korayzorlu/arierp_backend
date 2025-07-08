@@ -22,6 +22,7 @@ urlpatterns = [
     path('delete_all_partners/', DeleteAllPartnersView.as_view(), name="delete_all_partners"),
     path('partners_template/', PartnersTemplateView.as_view(), name="partners_template"),
     path('import_partners/', ImportPartnersView.as_view(), name="import_partners"),
+    path('partner_information/', PartnerInformationView.as_view(), name="partner_information"),
 
     path('test/', ExampleView.as_view(), name="test"),
     

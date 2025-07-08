@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import io
 from decimal import Decimal
+import re
 
 from .models import *
 from common.models import Status
@@ -166,6 +167,71 @@ def import_installments(self, df_json):
                 sequency = int(row['Kira Planı Sıra No']) if not pd.isna(row['Kira Planı Sıra No']) else int(0),
             )
             obj.save()
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
+
+def import_bank_activities(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = []
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        current_bank_activities = BankActivity.objects.select_related().filter()
+        if current_bank_activities:
+            for current_bank_activity in current_bank_activities:
+                current_bank_activity.delete()
+
+        current_leases = Lease.objects.filter(leaseflex_automation = True)
+        for current_lease in current_leases:
+            current_lease.leaseflex_automation = False
+            current_lease.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+
+            if row['İşlem Tarihi']:
+                process_date = make_aware(datetime.strptime(row['İşlem Tarihi'], "%d.%m.%Y %H:%M"))
+            else:
+                process_date = None
+
+            matches_tc_vkn_no = re.findall(r'\d+', str(row['Açıklama']))
+            tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
+            
+            obj = BankActivity.objects.create(
+                company = self.user.user_companies.filter(is_active=True).first().company,
+                bank = str(row['Banka']),
+                bank_account_no = str(row['Kurum Hesap No']),
+                process_date = process_date,
+                process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
+                amount = Decimal(str(row['Miktar']).replace(",",".")) if not pd.isna(row['Miktar']) else Decimal(str(0)),
+                currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Cinsi"] == "TL" else row["Döviz Cinsi"]).first() or None,
+                receipt_no = str(row['Dekont No']),
+                description = str(row['Açıklama']),
+                tc_vkn_no = tc_vkn_no,
+            )
+            obj.save()
+
+            lease = Lease.objects.filter(contract__partner__tc_vkn_no = str(tc_vkn_no)).order_by("-activation_date").first()
+            if lease:
+                lease.leaseflex_automation = True
+                lease.save()
 
         self.process.progress = 100
         self.process.status = "completed"

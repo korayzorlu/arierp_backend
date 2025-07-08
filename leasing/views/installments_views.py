@@ -23,6 +23,7 @@ import os
 import json
 import pandas as pd
 from decimal import Decimal
+from datetime import date
 
 # Create your views here.
 
@@ -148,3 +149,33 @@ class ImportInstallmentsView(LoginRequiredMixin,View):
         importer.start_import(df_json)
 
         return HttpResponse(status=200)
+    
+class InstallmentInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        lease_code = data.get('lease_code')
+        
+        objs = Installment.objects.filter(lease__code = str(lease_code)).order_by("sequency")
+        print(objs)
+        if not objs:
+            return JsonResponse({'installment':[]}, status=200)
+        
+        installment_data = [
+            {   
+                'id': obj.uuid,
+                'lease':obj.lease.code if obj.lease else "",
+                'sequency': obj.sequency,
+                'vat': obj.vat,
+                'amount' : obj.amount,
+                'paid':obj.paid,
+                'overdue_amount':obj.overdue_amount,
+                'payment_date':obj.payment_date,
+                'principal':obj.principal,
+                'interest':obj.interest,
+                'overdue_days':(date.today() - obj.payment_date).days,
+                'currency':obj.lease.currency.code if obj.lease.currency else ""
+            }
+            for obj in objs
+        ]
+
+        return JsonResponse({'installment':installment_data}, status=200)

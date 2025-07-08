@@ -2,6 +2,7 @@ from django.urls import path, include
 
 from .views.lease_views import *
 from .views.installments_views import *
+from .views.bank_activity_views import *
 from .tests import *
 
 app_name = "leasing"
@@ -22,7 +23,13 @@ urlpatterns = [
     path('delete_all_installments/', DeleteAllInstallmentsView.as_view(), name="delete_all_installments"),
     path('installments_template/', InstallmentsTemplateView.as_view(), name="installments_template"),
     path('import_installments/', ImportInstallmentsView.as_view(), name="import_installments"),
+    path('installment_information/', InstallmentInformationView.as_view(), name="installment_information"),
     
-    
+    path('delete_bank_activity/', DeleteBankActivityView.as_view(), name="delete_bank_activity"),
+    path('delete_bank_activities/', DeleteBankActivitiesView.as_view(), name="delete_bank_activities"),
+    path('delete_all_bank_activities/', DeleteAllBankActivitiesView.as_view(), name="delete_all_bank_activities"),
+    path('bank_activities_template/', BankActivitiesTemplateView.as_view(), name="bank_activities_template"),
+    path('import_bank_activities/', ImportBankActivitiesView.as_view(), name="import_bank_activities"),
+
     path('', include("leasing.api.urls")),
 ]

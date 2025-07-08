@@ -26,6 +26,7 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : "free", "label" : "Kira Planı", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
+                {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/collections"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
