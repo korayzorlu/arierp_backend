@@ -22,10 +22,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
-        SERVER = "192.168.81.8,1433"
+        SERVER = "192.168.81.5,1433"
         DATABASE = "ARI_LEASING"
-        USERNAME = "lflex"
-        PASSWORD = "S!gma2014"
+        USERNAME = "ARILEASING/koray.zorlu"
+        PASSWORD = "Kozo5313-*"
 
         connectionString = f'''
             DRIVER={{ODBC Driver 18 for SQL Server}};

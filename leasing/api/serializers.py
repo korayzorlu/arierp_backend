@@ -86,7 +86,7 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_overdue_days(self, obj):
         installments = obj.lease_installments.all()
-        overdue_days = 0
+        overdue_days = -1
         for installment in installments:
             if installment.overdue_amount > 0:
                 today = date.today()
