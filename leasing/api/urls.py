@@ -5,6 +5,7 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'leases',LeaseList, "leases_api")
+router.register(r'lease_unpages',LeaseUnpageList, "lease_unpages_api")
 router.register(r'installments',InstallmentList, "installments_api")
 router.register(r'bank_activities',BankActivityList, "bank_activities_api")
 

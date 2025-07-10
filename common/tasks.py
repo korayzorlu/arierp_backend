@@ -7,6 +7,7 @@ import io
 
 from .models import ImportProcess
 from .utils.import_utils import BaseImporter
+from .utils.export_utils import BaseExporter
 from users.models import User
 
 
@@ -14,3 +15,8 @@ from users.models import User
 def importData(self,df_json,user_id,app,model_name):
     importer = BaseImporter(user_id=user_id, app=app, model_name=model_name, task_id=self.request.id)
     importer.process_import(df_json)
+
+@shared_task(bind=True)
+def exportData(self,df_json,user_id,app,model_name):
+    exporter = BaseExporter(user_id=user_id, app=app, model_name=model_name, task_id=self.request.id)
+    exporter.process_export(df_json)

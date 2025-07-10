@@ -177,3 +177,17 @@ class ImportLeasesView(LoginRequiredMixin,View):
         importer.start_import(df_json)
 
         return HttpResponse(status=200)
+    
+class UpdateLeaseflexAutomationLeasesView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuids = data.get('uuids')
+
+        for uuid in uuids:
+            obj = Lease.objects.filter(uuid = uuid).first()
+            obj.leaseflex_automation = data.get('select') or False
+            obj.save()
+
+        return JsonResponse({'message': 'Seçim değiştirildi!','status':'success'}, status=200)

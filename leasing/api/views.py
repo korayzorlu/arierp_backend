@@ -15,6 +15,8 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.pagination import LimitOffsetPagination
 
+import traceback
+
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
@@ -109,12 +111,18 @@ class LeaseList(ModelViewSet, QueryListAPIView):
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-
+        ordering = self.request.query_params.get('ordering')
+        
         custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
 
-        queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-activation_date")
+        if ordering:
+            queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by(str(ordering))
+        else:
+            queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-activation_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -125,6 +133,41 @@ class LeaseList(ModelViewSet, QueryListAPIView):
                 q_objects |= Q(**{f"{field}__icontains": query})
             
             queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class LeaseUnpageList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
+
+        if ordering:
+            queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by(str(ordering))
+        else:
+            queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-activation_date")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
         return queryset
     
 class InstallmentList(ModelViewSet, QueryListAPIView):
@@ -170,7 +213,7 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["currency"]
 
-        queryset = BankActivity.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-process_date")
+        queryset = BankActivity.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("tc_vkn_no")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

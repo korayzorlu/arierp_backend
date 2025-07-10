@@ -173,6 +173,45 @@ class BankActivityListSerializer(serializers.Serializer):
     receipt_no = serializers.CharField()
     description = serializers.CharField()
     tc_vkn_no = serializers.CharField()
+    leases = serializers.SerializerMethodField()
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
+    
+    def get_leases(self, obj):
+        leases = obj.leases.all()
+        lease_list = []
+        if leases:
+            for lease in leases:
+                installments = lease.lease_installments.all()
+                total_overdue_amount = Decimal("0")
+                for installment in installments:
+                    total_overdue_amount += installment.overdue_amount
+                installments = lease.lease_installments.all()
+
+                overdue_days = -1
+                for installment in installments:
+                    if installment.overdue_amount > 0:
+                        today = date.today()
+                        diff = (today - installment.payment_date).days
+                        if diff > overdue_days:
+                            overdue_days = diff
+
+                lease_list.append({
+                    "id" : lease.uuid,
+                    "code" : lease.code,
+                    "contract" : lease.contract.code if lease.contract else "",
+                    "lease_status" : lease.lease_status,
+                    "partner" : lease.contract.partner.name if lease.contract.partner else "",
+                    "partner_tc" : lease.contract.partner.tc_vkn_no if lease.contract else "",
+                    "partner_crm_code" : lease.contract.partner.crm_code if lease.contract else "",
+                    "project" : lease.contract.project if lease.contract else "",
+                    "block" : lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj.quick_quotation else "",
+                    "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
+                    "overdue_amount" : total_overdue_amount,
+                    "overdue_days" : overdue_days,
+                    "currency" : lease.currency.code if lease.currency else "",
+                    "lease_status" : lease.lease_status,
+                    "leaseflex_automation" : lease.leaseflex_automation,
+                })
+        return lease_list

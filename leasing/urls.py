@@ -15,6 +15,7 @@ urlpatterns = [
     path('delete_all_leases/', DeleteAllLeasesView.as_view(), name="delete_all_leases"),
     path('leases_template/', LeasesTemplateView.as_view(), name="leases_template"),
     path('import_leases/', ImportLeasesView.as_view(), name="import_leases"),
+    path('update_leaseflex_automation_leases/', UpdateLeaseflexAutomationLeasesView.as_view(), name="update_leaseflex_automation_leases"),
 
     path('add_installment/', AddInstallmentView.as_view(), name="add_installment"),
     path('update_installment/', UpdateInstallmentView.as_view(), name="update_installment"),

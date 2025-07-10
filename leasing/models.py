@@ -101,6 +101,8 @@ class BankActivity(models.Model):
     description = models.CharField(_("Description"), max_length=500, blank=True, null=True)
     tc_vkn_no = models.CharField(_("TC/VKN No"), max_length=50, blank=True, null=True)
 
+    leases = models.ManyToManyField(Lease,related_name='lease_bank_activities', blank = True)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
