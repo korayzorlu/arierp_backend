@@ -165,12 +165,18 @@ class BankActivityListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     uuid = serializers.CharField()
     bank = serializers.CharField()
+    bank_code = serializers.CharField()
+    bank_branch_code = serializers.CharField()
     bank_account_no = serializers.CharField()
-    process_date = serializers.DateTimeField()
+    cross_bank_code = serializers.CharField()
+    cross_bank_branch_code = serializers.CharField()
+    cross_bank_account_no = serializers.CharField()
+    process_date = serializers.DateTimeField(format = "%d.%m.%Y")
     process_type = serializers.CharField()
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     currency = serializers.SerializerMethodField()
     receipt_no = serializers.CharField()
+    name = serializers.CharField()
     description = serializers.CharField()
     tc_vkn_no = serializers.CharField()
     leases = serializers.SerializerMethodField()
@@ -214,4 +220,4 @@ class BankActivityListSerializer(serializers.Serializer):
                     "lease_status" : lease.lease_status,
                     "leaseflex_automation" : lease.leaseflex_automation,
                 })
-        return lease_list
+        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)

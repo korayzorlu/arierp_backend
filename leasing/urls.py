@@ -31,6 +31,8 @@ urlpatterns = [
     path('delete_all_bank_activities/', DeleteAllBankActivitiesView.as_view(), name="delete_all_bank_activities"),
     path('bank_activities_template/', BankActivitiesTemplateView.as_view(), name="bank_activities_template"),
     path('import_bank_activities/', ImportBankActivitiesView.as_view(), name="import_bank_activities"),
+    path('export_bank_activities/', ExportBankActivitiesView.as_view(), name="export_bank_activities"),
+    path('bank_activities_excel/', BankActivitiesExcelView.as_view(), name="bank_activities_excel"),
 
     path('', include("leasing.api.urls")),
 ]

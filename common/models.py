@@ -34,6 +34,24 @@ class ImportProcess(TimestampModel):
     def __str__(self):
         return str(f"{self.model_name} - {self.user.get_full_name()}")
     
+class ExportProcess(TimestampModel):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="export_processes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_export_processes")
+    model_name = models.CharField(_("Model Name"), max_length=140)
+    task_id = models.CharField(_("Task ID"), max_length=250, unique=True)
+    STATUS_CHOICES = (
+        ('pending', ('Pending')),
+        ('in_progress', ('In Progress')),
+        ('completed', ('Completed')),
+        ('rejected', ('Rejected'))
+    )
+    status = models.CharField(_("Status"), max_length=25, default='pending', choices=STATUS_CHOICES, blank=True, null=True)
+    progress = models.PositiveIntegerField(_("Progress"), default=0)
+    items_count = models.PositiveIntegerField(_("Items Count"), default=0)
+
+    def __str__(self):
+        return str(f"{self.model_name} - {self.user.get_full_name()}")
+    
 class Country(models.Model):
     name = models.CharField(_("Name"), max_length=150, blank=True, null=True)
     formal_name = models.CharField(_("Formal Name"), max_length=150, blank=True, null=True)

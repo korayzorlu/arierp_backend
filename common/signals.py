@@ -12,8 +12,8 @@ from PIL import Image
 import io
 import os
 
-from .models import ImportProcess
-from .utils.websocket_utils import send_alert,fetch_import_processes,send_import_process_percent
+from .models import ImportProcess,ExportProcess
+from .utils.websocket_utils import send_alert,fetch_import_processes,send_import_process_percent,fetch_export_processes,send_export_process_percent
 from core.middleware import get_current_user
 
 @receiver(pre_save, sender=ImportProcess)
@@ -56,6 +56,51 @@ def import_process_update(sender, instance, **kwargs):
 @receiver(post_delete, sender=ImportProcess)
 def import_process_delete(sender, instance, **kwargs):
     fetch_import_processes(
+        message={"status":instance.status,"model":instance.model_name,"activeCompany": {"id":instance.company.id}},
+        room=f"private_{instance.user.uuid}"
+    )
+
+@receiver(pre_save, sender=ExportProcess)
+def export_process_update(sender, instance, **kwargs):
+    channel_layer = get_channel_layer()
+    
+    if sender.objects.filter(id=instance.id).exists():
+        old_instance = sender.objects.filter(id=instance.id).first()
+        
+        if old_instance.status != instance.status:
+            if instance.status == "in_progress":
+                fetch_export_processes(
+                    message={"status":instance.status,"model":instance.model_name,"activeCompany": {"id":instance.company.id}},
+                    room=f"private_{instance.user.uuid}"
+                )
+            elif instance.status == "completed":
+                fetch_export_processes(
+                    message={"status":instance.status,"model":instance.model_name,"activeCompany": {"id":instance.company.id}},
+                    room=f"private_{instance.user.uuid}"
+                )
+                send_alert(
+                    message={"message":f"{instance.model_name} items exported successfully!","status":"success"},
+                    room=f"private_{instance.user.uuid}"
+                )
+            elif instance.status == "rejected":
+                fetch_export_processes(
+                    message={"status":instance.status,"model":instance.model_name,"activeCompany": {"id":instance.company.id}},
+                    room=f"private_{instance.user.uuid}"
+                )
+                send_alert(
+                    message={"message":f"{instance.model_name} items export rejected due to invalid data!","status":"error"},
+                    room=f"private_{instance.user.uuid}"
+                )
+        
+        if old_instance.progress != instance.progress:
+            send_export_process_percent(
+                message={"progress":instance.progress,"task":instance.task_id},
+                room=f"private_{instance.user.uuid}"
+            )
+
+@receiver(post_delete, sender=ExportProcess)
+def export_process_delete(sender, instance, **kwargs):
+    fetch_export_processes(
         message={"status":instance.status,"model":instance.model_name,"activeCompany": {"id":instance.company.id}},
         room=f"private_{instance.user.uuid}"
     )

@@ -13,8 +13,9 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 
 from leasing.models import *
 from leasing.utils import is_valid_installment_data,is_valid_installment_data
-from common.models import ImportProcess
+from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
+from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from partners.models import Partner
 from contracts.models import Contract
@@ -90,3 +91,26 @@ class ImportBankActivitiesView(LoginRequiredMixin,View):
 
         return HttpResponse(status=200)
     
+class ExportBankActivitiesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="BankActivity")
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class BankActivitiesExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "bank_activities", "documents","banka-hareketleri.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))

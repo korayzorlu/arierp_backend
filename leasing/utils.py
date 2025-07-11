@@ -7,6 +7,7 @@ import pandas as pd
 import io
 from decimal import Decimal
 import re
+import os
 
 from .models import *
 from common.models import Status
@@ -175,6 +176,7 @@ def import_installments(self, df_json):
 
 def import_bank_activities(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
+        df = df[df["Tutar"].apply(lambda x: float(str(x).replace(",", ".")) >= 0)]
         
         required_columns = []
         empty_rows = df[required_columns].isnull().any(axis=1)
@@ -208,14 +210,15 @@ def import_bank_activities(self, df_json):
                 previous_progress = current_progress
 
             if row['İşlem Tarihi']:
-                process_date = make_aware(datetime.strptime(row['İşlem Tarihi'], "%d.%m.%Y %H:%M"))
+                process_date = make_aware(datetime.strptime(str(row['İşlem Tarihi']), "%y%m%d"))
             else:
                 process_date = None
 
-            matches_tc_vkn_no = re.findall(r'\d+', str(row['Açıklama']))
-            tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
+            # matches_tc_vkn_no = re.findall(r'\d+', str(row['Açıklama']))
+            # tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
 
-            
+            tc_vkn_no = str(row['Gönderen TCKN / VKN']) if not pd.isna(row['Gönderen TCKN / VKN']) else ""
+
             leases = Lease.objects.filter(
                 (
                     Q(contract__partner__tc_vkn_no = str(tc_vkn_no)) |
@@ -232,14 +235,21 @@ def import_bank_activities(self, df_json):
             if leases:
                 obj = BankActivity.objects.create(
                     company = self.user.user_companies.filter(is_active=True).first().company,
-                    bank = str(row['Banka']),
-                    bank_account_no = str(row['Kurum Hesap No']),
+                    bank_code = str(row['Banka Kodu']) if not pd.isna(row['Banka Kodu']) else "",
+                    bank_branch_code = str(row['Şube Kodu']) if not pd.isna(row['Şube Kodu']) else "",
+                    bank_account_no = str(row['Hesap Numarası']) if not pd.isna(row['Hesap Numarası']) else "",
+                    cross_bank_code = str(row['Karşı Banka']) if not pd.isna(row['Karşı Banka']) else "",
+                    cross_bank_branch_code = str(row['Karşı Şube']) if not pd.isna(row['Karşı Şube']) else "",
+                    cross_bank_account_no = str(row['Karşı Hesap']) if not pd.isna(row['Karşı Hesap']) else "",
+                    process_code = str(row['İşlem Kodu']) if not pd.isna(row['İşlem Kodu']) else "",
+                    credit_or_debit = str(row['Borç / Alacak']) if not pd.isna(row['Borç / Alacak']) else "",
+                    kontrat_no = str(row['Kontrat No']) if not pd.isna(row['Kontrat No']) else "",
                     process_date = process_date,
-                    process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
-                    amount = Decimal(str(row['Miktar']).replace(",",".")) if not pd.isna(row['Miktar']) else Decimal(str(0)),
-                    currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Cinsi"] == "TL" else row["Döviz Cinsi"]).first() or None,
-                    receipt_no = str(row['Dekont No']),
-                    description = str(row['Açıklama']),
+                    #process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
+                    amount = Decimal(str(row['Tutar']).replace(",",".")) if not pd.isna(row['Tutar']) else Decimal(str(0)),
+                    currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Kodu"] == "YTL" else row["Döviz Cinsi"]).first() or None,
+                    name = str(row['Gönderen Ünvanı']) if not pd.isna(row['Gönderen Ünvanı']) else "",
+                    description = str(row['Açıklama']) if not pd.isna(row['Açıklama']) else "",
                     tc_vkn_no = tc_vkn_no,
                 )
                 obj.leases.add(*leases)
@@ -255,14 +265,21 @@ def import_bank_activities(self, df_json):
             else:
                 obj = BankActivity.objects.create(
                     company = self.user.user_companies.filter(is_active=True).first().company,
-                    bank = str(row['Banka']),
-                    bank_account_no = str(row['Kurum Hesap No']),
+                    bank_code = str(row['Banka Kodu']) if not pd.isna(row['Banka Kodu']) else "",
+                    bank_branch_code = str(row['Şube Kodu']) if not pd.isna(row['Şube Kodu']) else "",
+                    bank_account_no = str(row['Hesap Numarası']) if not pd.isna(row['Hesap Numarası']) else "",
+                    cross_bank_code = str(row['Karşı Banka']) if not pd.isna(row['Karşı Banka']) else "",
+                    cross_bank_branch_code = str(row['Karşı Şube']) if not pd.isna(row['Karşı Şube']) else "",
+                    cross_bank_account_no = str(row['Karşı Hesap']) if not pd.isna(row['Karşı Hesap']) else "",
+                    process_code = str(row['İşlem Kodu']) if not pd.isna(row['İşlem Kodu']) else "",
+                    credit_or_debit = str(row['Borç / Alacak']) if not pd.isna(row['Borç / Alacak']) else "",
+                    kontrat_no = str(row['Kontrat No']) if not pd.isna(row['Kontrat No']) else "",
                     process_date = process_date,
-                    process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
-                    amount = Decimal(str(row['Miktar']).replace(",",".")) if not pd.isna(row['Miktar']) else Decimal(str(0)),
-                    currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Cinsi"] == "TL" else row["Döviz Cinsi"]).first() or None,
-                    receipt_no = str(row['Dekont No']),
-                    description = str(row['Açıklama']),
+                    #process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
+                    amount = Decimal(str(row['Tutar']).replace(",",".")) if not pd.isna(row['Tutar']) else Decimal(str(0)),
+                    currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Kodu"] == "YTL" else row["Döviz Cinsi"]).first() or None,
+                    name = str(row['Gönderen Ünvanı']) if not pd.isna(row['Gönderen Ünvanı']) else "",
+                    description = str(row['Açıklama']) if not pd.isna(row['Açıklama']) else "",
                     tc_vkn_no = tc_vkn_no,
                 )
 
@@ -270,99 +287,74 @@ def import_bank_activities(self, df_json):
         self.process.status = "completed"
         self.process.save()
 
-def export_bank_activities(self, df_json):
-        df = pd.read_json(io.StringIO(df_json), orient='records')
-        
-        required_columns = []
-        empty_rows = df[required_columns].isnull().any(axis=1)
-        if empty_rows.any():
-            self.process.status = "rejected"
+def export_bank_activities(self):
+    objs = BankActivity.objects.select_related().filter()
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Hesap Numarası": [],
+        "İşlem Tarihi": [],
+        "İşlem Kodu": [],
+        "Borç / Alacak": [],
+        "Döviz kodu": [],
+        "Tutar": [],
+        "Kontrat No": [],
+        "Açıklama": [],
+        "Gönderen Ünvanı": [],
+        "Gönderen TCKN / VKN": [],
+        "Karşı Banka": [],
+        "Karşı Şube": [],
+        "Karşı Hesap": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
             self.process.save()
-            self.process.delete()
-            return
-
-        self.process.status = "in_progress"
-        self.process.items_count = len(df)
-        self.process.save()
+            previous_progress = current_progress
         
-        current_bank_activities = BankActivity.objects.select_related().filter()
-        if current_bank_activities:
-            for current_bank_activity in current_bank_activities:
-                current_bank_activity.delete()
+        leases = obj.leases.filter(leaseflex_automation = True)
 
-        current_leases = Lease.objects.filter(leaseflex_automation = True)
-        for current_lease in current_leases:
-            current_lease.leaseflex_automation = False
-            current_lease.save()
+        for lease in leases:
+            if obj.currency:
+                if obj.currency.code == "TRY":
+                    currency = "YTL"
+                else:
+                    currency = obj.currency.code
+            else:
+                currency = ""
+
+            data["Hesap Numarası"].append(obj.bank_account_no)
+            data["İşlem Tarihi"].append(obj.process_date.strftime("%y%m%d"))
+            data["İşlem Kodu"].append(obj.process_code)
+            data["Borç / Alacak"].append(obj.credit_or_debit)
+            data["Döviz kodu"].append(currency)
+            data["Tutar"].append(float(obj.amount) if obj.amount is not None else None)
+            data["Kontrat No"].append(obj.kontrat_no)
+            data["Açıklama"].append(obj.description)
+            data["Gönderen Ünvanı"].append(lease.contract.code)
+            data["Gönderen TCKN / VKN"].append(obj.tc_vkn_no)
+            data["Karşı Banka"].append(obj.cross_bank_code)
+            data["Karşı Şube"].append(obj.cross_bank_branch_code)
+            data["Karşı Hesap"].append(obj.cross_bank_account_no)
+
+    df = pd.DataFrame(data)
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "bank_activities", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    excel_dosyasi_adi = base_path + "/banka-hareketleri.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Banka Hareketleri', index=False)
         
-        previous_progress = 0
-        for index,row in df.iterrows():
-            current_progress = ((index + 1)/len(df))*100
 
-            if current_progress - previous_progress >= 5:
-                self.process.progress = int(current_progress)
-                self.process.save()
-                previous_progress = current_progress
-
-            if row['İşlem Tarihi']:
-                process_date = make_aware(datetime.strptime(row['İşlem Tarihi'], "%d.%m.%Y %H:%M"))
-            else:
-                process_date = None
-
-            matches_tc_vkn_no = re.findall(r'\d+', str(row['Açıklama']))
-            tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
-
-            
-            leases = Lease.objects.filter(
-                (
-                    Q(contract__partner__tc_vkn_no = str(tc_vkn_no)) |
-                    Q(contract__quotation_obj__partner__tc_vkn_no = str(tc_vkn_no)) |
-                    Q(contract__quotation_obj__quick_quotation__partner__tc_vkn_no = str(tc_vkn_no))
-                ) &
-                (
-                    Q(lease_status = "aktiflestirildi") |
-                    Q(lease_status = "planlandi") |
-                    Q(lease_status = "durduruldu")
-                ) 
-            )
-
-            if leases:
-                obj = BankActivity.objects.create(
-                    company = self.user.user_companies.filter(is_active=True).first().company,
-                    bank = str(row['Banka']),
-                    bank_account_no = str(row['Kurum Hesap No']),
-                    process_date = process_date,
-                    process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
-                    amount = Decimal(str(row['Miktar']).replace(",",".")) if not pd.isna(row['Miktar']) else Decimal(str(0)),
-                    currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Cinsi"] == "TL" else row["Döviz Cinsi"]).first() or None,
-                    receipt_no = str(row['Dekont No']),
-                    description = str(row['Açıklama']),
-                    tc_vkn_no = tc_vkn_no,
-                )
-                obj.leases.add(*leases)
-
-                for lease in leases:
-                    installments = lease.lease_installments.all()
-                    total_overdue_amount = Decimal("0")
-                    for installment in installments:
-                        total_overdue_amount += installment.overdue_amount
-                    if total_overdue_amount > 0:
-                        lease.leaseflex_automation = True
-                        lease.save()
-            else:
-                obj = BankActivity.objects.create(
-                    company = self.user.user_companies.filter(is_active=True).first().company,
-                    bank = str(row['Banka']),
-                    bank_account_no = str(row['Kurum Hesap No']),
-                    process_date = process_date,
-                    process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
-                    amount = Decimal(str(row['Miktar']).replace(",",".")) if not pd.isna(row['Miktar']) else Decimal(str(0)),
-                    currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Cinsi"] == "TL" else row["Döviz Cinsi"]).first() or None,
-                    receipt_no = str(row['Dekont No']),
-                    description = str(row['Açıklama']),
-                    tc_vkn_no = tc_vkn_no,
-                )
-
-        self.process.progress = 100
-        self.process.status = "completed"
-        self.process.save()
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()

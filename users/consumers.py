@@ -52,3 +52,7 @@ class MainConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({ 'type': event['type'], 'message': event['message'] }))
     async def fetch_import_processes(self, event):
         await self.send(text_data=json.dumps({ 'type': event['type'], 'message': event['message'] }))
+    async def send_export_process_percent(self, event):
+        await self.send(text_data=json.dumps({ 'type': event['type'], 'message': event['message'] }))
+    async def fetch_export_processes(self, event):
+        await self.send(text_data=json.dumps({ 'type': event['type'], 'message': event['message'] }))

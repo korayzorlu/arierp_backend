@@ -185,11 +185,37 @@ class ImportProcessList(ModelViewSet, QueryListAPIView):
     def get_queryset(self):
         custom_related_fields = ["user"]
         
-        queryset = ImportProcess.objects.select_related(*custom_related_fields).filter(user = self.request.user, status = "in_progress").order_by("user__email")
+        queryset = ImportProcess.objects.select_related(*custom_related_fields).filter(user = self.request.user, status = "in_progress").order_by("user__username")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
             search_fields = ["model_name","status","user__email"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class ExportProcessList(ModelViewSet, QueryListAPIView):
+    serializer_class = ExportProcessListSerializer
+    filterset_fields = {
+                        'user': ['exact','in', 'isnull'],
+    }
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        custom_related_fields = ["user"]
+        
+        queryset = ExportProcess.objects.select_related(*custom_related_fields).filter(user = self.request.user, status = "in_progress").order_by("user__username")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["model_name","status","user__username"]
             
             q_objects = Q()
             for field in search_fields:

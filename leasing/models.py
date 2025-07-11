@@ -86,7 +86,17 @@ class BankActivity(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="bank_activities")
 
     bank = models.CharField(_("Bank"), max_length=140, blank=True, null=True)
-    bank_account_no = models.CharField(_("Bank Account No"), max_length=140, blank=True, null=True)
+    bank_code = models.CharField(_("Bank Code"), max_length=140, blank=True, null=True)
+    bank_branch_code = models.CharField(_("Bank Branch Code"), max_length=25, blank=True, null=True)
+    bank_account_no = models.CharField(_("Bank Account No"), max_length=25, blank=True, null=True)
+
+    cross_bank_code = models.CharField(_("Cross Bank Code"), max_length=140, blank=True, null=True)
+    cross_bank_branch_code = models.CharField(_("Cross Bank Branch Code"), max_length=25, blank=True, null=True)
+    cross_bank_account_no = models.CharField(_("Cross Bank Account No"), max_length=140, blank=True, null=True)
+
+    process_code = models.CharField(_("Process Code"), max_length=25, blank=True, null=True)
+    credit_or_debit = models.CharField(_("Credit Or Debit"), max_length=25, blank=True, null=True)
+    kontrat_no = models.CharField(_("Kontrat No"), max_length=140, blank=True, null=True)
 
     process_date = models.DateTimeField(_("Process Date"), blank=True, null=True)
 
@@ -99,6 +109,7 @@ class BankActivity(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_bank_activities")
     receipt_no = models.CharField(_("Receipt No"), max_length=140, blank=True, null=True)
     description = models.CharField(_("Description"), max_length=500, blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=500, blank=True, null=True)
     tc_vkn_no = models.CharField(_("TC/VKN No"), max_length=50, blank=True, null=True)
 
     leases = models.ManyToManyField(Lease,related_name='lease_bank_activities', blank = True)

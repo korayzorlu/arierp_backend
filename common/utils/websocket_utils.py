@@ -11,6 +11,16 @@ def fetch_import_processes(message,room):
         }
     )
 
+def fetch_export_processes(message,room):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        room,
+        {
+            "type": "fetch_export_processes",
+            "message": message,
+        }
+    )
+
 def send_alert(message,room):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -27,6 +37,16 @@ def send_import_process_percent(message,room):
         room,
         {
             "type": "send_import_process_percent",
+            "message": message,
+        }
+    )
+
+def send_export_process_percent(message,room):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        room,
+        {
+            "type": "send_export_process_percent",
             "message": message,
         }
     )

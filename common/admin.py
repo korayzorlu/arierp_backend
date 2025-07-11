@@ -63,6 +63,21 @@ class ImportProcessAdmin(admin.ModelAdmin):
     class Meta:
         model = ImportProcess
 
+@admin.register(ExportProcess)
+class ExportProcessAdmin(admin.ModelAdmin):
+    list_display = ["task_id","status","user","model_name","created_date"]
+    list_display_links = ["task_id"]
+    search_fields = ["task_id","status","user__email","model_name","created_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["-id"]
+
+    def user(self,obj):
+        return obj.user.email if obj.user else ""
+    
+    class Meta:
+        model = ExportProcess
+
 @admin.register(MainStatus)
 class MainStatusAdmin(admin.ModelAdmin):
     list_display = ["name","created_date"]

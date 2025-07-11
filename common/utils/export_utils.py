@@ -15,24 +15,13 @@ import ast
 import pickle
 
 from users.models import User
-from common.models import ImportProcess,Country,City
+from common.models import ImportProcess,Country,City,ExportProcess
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from leasing.utils import export_bank_activities
 
 from dotenv import load_dotenv
 load_dotenv()
-
-def save_pickle_to_file(data, prefix="import_data"):
-    os.makedirs("/media/tmp/imports", exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = f"{prefix}_{timestamp}.pkl"
-    filepath = os.path.join("/media/tmp/imports", filename)
-
-    with open(filepath, "wb") as f:
-        pickle.dump(data, f)
-
-    return filepath
 
 class BaseExporter():
     allowed_extensions = ["xls", "xlsx"]
@@ -43,8 +32,7 @@ class BaseExporter():
         "partner": []
     }
 
-    def __init__(self, user_id, app, model_name, file=None, task_id=None):
-        self.file = file
+    def __init__(self, user_id, app, model_name, task_id=None):
         self.user = User.objects.filter(id = int(user_id)).first()
         self.app = app
         self.model_name = model_name
@@ -59,56 +47,12 @@ class BaseExporter():
         except LookupError:
             return None
 
-    def validate_file(self):
-        if not self.file:
-            return {"message": "File not found!"}
-        
-        file_size = self.file.size
-        if file_size > self.max_file_size:
-            return {"message": f"File too large! Max {self.max_file_size // (1024 * 1024)}MB allowed."}
-
-        file_name, file_extension = os.path.splitext(self.file.name)
-        file_extension = file_extension.lower().lstrip('.')
-
-        if file_extension not in self.allowed_extensions:   
-            return {"message": "Invalid file type! Only Excel files are allowed."}
-
-        return 200
-    
-    def get_required_fields(self):
-        excluded_fields = {}
-
-        return [
-            field.name for field in self.model._meta.fields
-            if not field.null and not field.blank and not isinstance(field, BooleanField) and field.name not in excluded_fields
-        ]
-
-    def read_file(self):
-        try:
-            excel_file = pd.ExcelFile(self.file)
-            first_sheet_name = excel_file.sheet_names[0]
-
-            file_data = pd.read_excel(self.file, first_sheet_name)
-            df = pd.DataFrame(file_data)
-            self.df = df
-
-            # required_fields = set(self.get_required_fields())
-            # df_columns = set(df.columns)
-            # missing_columns = required_fields - df_columns
-
-            # if missing_columns:
-            #     return {"message":f"Missing required columns: {list(missing_columns)}"}
-
-            return df.to_json(orient='records')
-        except Exception as e:
-            return {"message": f"File read error: {str(e)}"}
-
-    def start_export(self, df_json):
+    def start_export(self):
         from common.tasks import exportData
-        exportData.delay(df_json, self.user.id, self.app, self.model_name)
+        exportData.delay(self.user.id, self.app, self.model_name)
 
-    def process_export(self, df_json):
-        self.process = ImportProcess.objects.create(
+    def process_export(self):
+        self.process = ExportProcess.objects.create(
             company = self.user.user_companies.filter(is_active=True).first().company,
             user = self.user,
             model_name = self.model_name,
@@ -122,13 +66,13 @@ class BaseExporter():
             self.process.save()
             return {"message": "Sorry, something went wrong! [CM0001]"}
 
-        export_function(df_json)
+        export_function()
 
         self.process.progress = 100
-        self.process.status = "completed"
+        #self.process.status = "completed"
         self.process.save()
     
-    def export_bankactivity(self, df_json):
-        export_bank_activities(self, df_json)
+    def export_bankactivity(self):
+        export_bank_activities(self)
 
  
