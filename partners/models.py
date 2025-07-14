@@ -45,6 +45,12 @@ class Partner(models.Model):
     )
     types = ArrayField(models.CharField(_("Status"), max_length=25, choices=TYPES_CHOICES), default=list, blank=True, null=True)
 
+    CUSTOMER_TYPES_CHOICES = (
+        ('individual', ('Individual')),
+        ('institutional', ('Institutional')),
+    )
+    customer_type = models.CharField(_("Customer Type"), max_length=25, default='individual', choices=CUSTOMER_TYPES_CHOICES, blank=True, null=True)
+
     customer_code = models.CharField(_("Customer Code"), max_length=25, blank=True, null=True)
     crm_code = models.CharField(_("CRM Code"), max_length=25, blank=True, null=True)
 

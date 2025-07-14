@@ -147,6 +147,7 @@ class SectorList(ModelViewSet, QueryListAPIView):
 class PartnerFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     customer_code = CharFilter(method = 'filter_customer_code')
+    customer_type = CharFilter(method = 'filter_customer_type')
     crm_code = CharFilter(method = 'filter_crm_code')
     types = CharFilter(method = 'filter_types')
     name = CharFilter(method = 'filter_name')
@@ -154,7 +155,7 @@ class PartnerFilter(FilterSet):
 
     class Meta:
         model = Partner
-        fields = ['uuid','types','name','crm_code','customer_code']
+        fields = ['uuid','types','name','crm_code','customer_code','customer_type']
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)
@@ -173,6 +174,9 @@ class PartnerFilter(FilterSet):
     
     def filter_country(self, queryset, country, value):
         return queryset.annotate(lowercase=Lower('country__name'),uppercase=Upper('country__name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
+    
+    def filter_customer_type(self, queryset, customer_type, value):
+        return queryset.filter(customer_type = value)
 
     
 class PartnerList(ModelViewSet, QueryListAPIView):

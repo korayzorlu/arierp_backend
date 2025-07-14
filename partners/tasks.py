@@ -301,7 +301,14 @@ def fix_partners(company):
             #         types = ["customer"]
             #     )
 
-            obj = partners.filter(
+            obj = partners.exclude(
+                Q(customer_code = "") |
+                Q(crm_code = "") |
+                (
+                    Q(name = "") &
+                    Q(tc_vkn_no = "")
+                )
+            ).filter(
                 Q(customer_code = str(data["CustomerCode"])) |
                 Q(crm_code = str(data["IndividualCustomerId"])) |
                 (
@@ -377,6 +384,174 @@ def fix_partners(company):
                     phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
                     email = data["Email"] or "",
                     types = ["customer"]
+                )
+    except Exception as e:
+        print(e)
+
+@shared_task()
+def fix_partnersi(company):
+    SERVER = "192.168.81.8,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+        SELECT InstitutionalCustomerName,
+            InstitutionalCustomerId,
+            InstitutionalCustomerCode,
+            EMail,
+            Phone,
+            Address,
+            CountryName,
+            CityName,
+            TaxDepartmentName,
+            TaxNo
+        FROM CrmInstitutionalCustomerList
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {
+                "InstitutionalCustomerName" : r.InstitutionalCustomerName,
+                "InstitutionalCustomerId" : r.InstitutionalCustomerId,
+                "InstitutionalCustomerCode" : r.InstitutionalCustomerCode,
+                "EMail" : r.EMail,
+                "Phone" : r.Phone,
+                "Address" : r.Address,
+                "CountryName" : r.CountryName,
+                "CityName" : r.CityName,
+                "TaxDepartmentName" : r.TaxDepartmentName,
+                "TaxNo" : r.TaxNo
+            }
+            for r in records
+        ]
+
+        # engine = create_engine("mssql+pymssql://lflex:S!gma2014@192.168.81.8:1433/ARI_LEASING")
+        # df = pd.read_sql(SQL_QUERY, engine)
+        # external_data = df.to_dict(orient="records")
+
+        partners = Partner.objects.select_related("sector","city","country").all()
+        sectors = Sector.objects.select_related().all()
+        countries = Country.objects.select_related().all()
+        cities = City.objects.select_related().all()
+
+        previous_progress = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            # obj = partners.filter(crm_code = str(data["IndividualCustomerId"])).first()
+            # if not obj:
+            #     print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
+
+            #     if data["BirthDate"]:
+            #         birthday = data["BirthDate"].date()
+            #     else:
+            #         birthday = None
+            #     Partner.objects.create(
+            #         company = Company.objects.select_related().filter(id = int(company)).first(),
+            #         first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or "",
+            #         last_name = data["Surname"] or "",
+            #         name = data["FullName"] or "",
+            #         formal_name = data["ContactCompanyName"] or "",
+            #         customer_code = str(data["CustomerCode"]) or "",
+            #         crm_code = str(data["IndividualCustomerId"]) or "",
+            #         vat_no = str(data["CommercialTaxNo"]) or "",
+            #         vat_office = data["TaxDepartmentName"] or "",
+            #         tc_no = str(data["TCIdentityNo"]) or "",
+            #         tc_vkn_no = str(data["TaxAndTCIdentity"]) or "",
+            #         passport_no = str(data["PassportNo"]) or "",
+            #         is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
+            #         sector = sectors.filter(code = str(data["MainSectorId"])).first(),
+            #         father_name = data["FathersName"] or "",
+            #         birthday = birthday,
+            #         country = countries.filter(iso2 = data["CountryCode"]).first(),
+            #         city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            #             Q(lowercase__icontains = data["CityName"] or "xxx") |
+            #             Q(uppercase__icontains = data["CityName"] or "xxx")
+            #         ).first(),
+            #         address = data["Address"] or "",
+            #         phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
+            #         email = data["Email"] or "",
+            #         types = ["customer"]
+            #     )
+
+            obj = partners.filter(
+                Q(customer_code = str(data["InstitutionalCustomerCode"])) |
+                Q(crm_code = str(data["InstitutionalCustomerId"])) |
+                (
+                    Q(name = data["InstitutionalCustomerName"]) &
+                    Q(tc_vkn_no = str(data["TaxNo"]))
+                )
+            ).first()
+
+            if not obj:
+                print(f"{str(data["InstitutionalCustomerId"])} - {data["InstitutionalCustomerName"]}: ")
+
+            if obj:
+                obj.customer_code = str(data["InstitutionalCustomerCode"]) or ""
+                obj.crm_code = data["InstitutionalCustomerId"] or ""
+                obj.name = data["InstitutionalCustomerName"] or ""
+                obj.formal_name = data["InstitutionalCustomerName"] or ""
+                obj.vat_office = data["TaxDepartmentName"] or ""
+                obj.vat_no = str(data["TaxNo"]) or ""
+                obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
+                obj.address = data["Address"] or ""
+                obj.city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                    Q(lowercase__icontains = data["CityName"] or "xxx") |
+                    Q(uppercase__icontains = data["CityName"] or "xxx")
+                ).first()
+                obj.country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                    Q(lowercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"]) |
+                    Q(uppercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"])
+                ).first()
+                obj.email = data["EMail"] or ""
+                obj.save()
+            else:
+                Partner.objects.create(
+                    company = Company.objects.select_related().filter(id = int(company)).first(),
+                    name = data["InstitutionalCustomerName"] or "",
+                    formal_name = data["InstitutionalCustomerName"] or "",
+                    customer_code = str(data["InstitutionalCustomerCode"]) or "",
+                    crm_code = str(data["InstitutionalCustomerId"]) or "",
+                    vat_no = str(data["TaxNo"]) or "",
+                    vat_office = data["TaxDepartmentName"] or "",
+                    country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                        Q(lowercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"]) |
+                        Q(uppercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"])
+                    ).first(),
+                    city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                        Q(lowercase__icontains = data["CityName"] or "xxx") |
+                        Q(uppercase__icontains = data["CityName"] or "xxx")
+                    ).first(),
+                    address = data["Address"] or "",
+                    phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
+                    email = data["EMail"] or "",
+                    types = ["customer"],
+                    customer_type = "institutional"
                 )
     except Exception as e:
         print(e)

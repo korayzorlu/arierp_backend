@@ -40,6 +40,7 @@ class PartnerListSerializer(serializers.Serializer):
     name = serializers.CharField()
     formalName = serializers.CharField(source = "formal_name")
     types = serializers.ListField()
+    customer_type = serializers.CharField()
     customerCode = serializers.CharField(source = "customer_code")
     crmCode = serializers.CharField(source = "crm_code")
     customer = serializers.SerializerMethodField()
