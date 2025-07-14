@@ -269,6 +269,38 @@ def fix_partners(company):
             # if not obj:
             #     print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
 
+            #     if data["BirthDate"]:
+            #         birthday = data["BirthDate"].date()
+            #     else:
+            #         birthday = None
+            #     Partner.objects.create(
+            #         company = Company.objects.select_related().filter(id = int(company)).first(),
+            #         first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or "",
+            #         last_name = data["Surname"] or "",
+            #         name = data["FullName"] or "",
+            #         formal_name = data["ContactCompanyName"] or "",
+            #         customer_code = str(data["CustomerCode"]) or "",
+            #         crm_code = str(data["IndividualCustomerId"]) or "",
+            #         vat_no = str(data["CommercialTaxNo"]) or "",
+            #         vat_office = data["TaxDepartmentName"] or "",
+            #         tc_no = str(data["TCIdentityNo"]) or "",
+            #         tc_vkn_no = str(data["TaxAndTCIdentity"]) or "",
+            #         passport_no = str(data["PassportNo"]) or "",
+            #         is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
+            #         sector = sectors.filter(code = str(data["MainSectorId"])).first(),
+            #         father_name = data["FathersName"] or "",
+            #         birthday = birthday,
+            #         country = countries.filter(iso2 = data["CountryCode"]).first(),
+            #         city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            #             Q(lowercase__icontains = data["CityName"] or "xxx") |
+            #             Q(uppercase__icontains = data["CityName"] or "xxx")
+            #         ).first(),
+            #         address = data["Address"] or "",
+            #         phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
+            #         email = data["Email"] or "",
+            #         types = ["customer"]
+            #     )
+
             obj = partners.filter(
                 Q(customer_code = str(data["CustomerCode"])) |
                 Q(crm_code = str(data["IndividualCustomerId"])) |
