@@ -3,10 +3,13 @@ from core.celery import app
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.db.models import Q
+from django.db.models.functions import Lower,Upper
 
 import pandas as pd
 import io
 import pyodbc
+from datetime import datetime
 
 from common.models import ImportProcess
 from users.models import User
@@ -52,7 +55,7 @@ def importPartners(self,df_json,user_id):
     process.save()
         
 @shared_task()
-def fix_partners(company):
+def fix_partnerss(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -147,5 +150,175 @@ def fix_partners(company):
                     types = ["customer"]
                 )
                 obj.save()
+    except Exception as e:
+        print(e)
+
+@shared_task()
+def fix_partners(company):
+    SERVER = "192.168.81.8,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+        SELECT FullName,
+            FirstName,
+            SecondName,
+            Surname,
+            ContactCompanyName,
+            CustomerCode,
+            IndividualCustomerId,
+            IndividualCustomerCode,
+            Phone,
+            Address,
+            DistrictName,
+            CityName,
+            MainSectorId,
+            TaxDepartmentName,
+            CommercialTaxNo,
+            TCIdentityNo,
+            TaxAndTCIdentity,
+            COUNTRYNAME,
+            CountryCode,
+            FathersName,
+            BirthDate,
+            Email,
+            PassportNo,
+            Email,
+            IS_TURKKEP_CUSTOMER
+        FROM CrmIndividualCustomerList
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+        external_data=[
+            {
+                "FullName" : r.FullName,
+                "FirstName" : r.FirstName,
+                "SecondName" : r.SecondName,
+                "Surname" : r.Surname,
+                "ContactCompanyName" : r.ContactCompanyName,
+                "CustomerCode" : r.CustomerCode,
+                "IndividualCustomerId" : r.IndividualCustomerId,
+                "IndividualCustomerCode" : r.IndividualCustomerCode,
+                "Phone" : r.Phone,
+                "Address" : r.Address,
+                "DistrictName" : r.DistrictName,
+                "CityName" : r.CityName,
+                "MainSectorId" : r.MainSectorId,
+                "TaxDepartmentName" : r.TaxDepartmentName,
+                "CommercialTaxNo" : r.CommercialTaxNo,
+                "TCIdentityNo" : r.TCIdentityNo,
+                "TaxAndTCIdentity" : r.TaxAndTCIdentity,
+                "COUNTRYNAME" : r.COUNTRYNAME,
+                "CountryCode" : r.CountryCode,
+                "FathersName" : r.FathersName,
+                "BirthDate" : r.BirthDate,
+                "Email" : r.Email,
+                "PassportNo" : r.PassportNo,
+                "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
+            }
+            for r in records
+        ]
+
+        previous_progress = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 5:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            obj = Partner.objects.select_related("sector","city","country").filter(
+                Q(customer_code = data["CustomerCode"]) |
+                Q(crm_code = data["IndividualCustomerId"]) |
+                (
+                    Q(name = data["FullName"]) &
+                    Q(tc_vkn_no = data["TaxAndTCIdentity"])
+                )
+            ).first()
+            if obj:
+                if data["MainSectorId"]:
+                    sector = Sector.objects.select_related().filter(main_sector_code = data["MainSectorId"]).first()
+                else:
+                    sector = None
+                if data["BirthDate"]:
+                    birthday = data["BirthDate"].date()
+                else:
+                    birthday = None
+                obj.customer_code = data["CustomerCode"] or ""
+                obj.crm_code = data["IndividualCustomerId"] or ""
+                obj.name = data["FullName"] or ""
+                obj.first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or ""
+                obj.last_name = data["Surname"] or ""
+                obj.formal_name = data["ContactCompanyName"] or ""
+                obj.sector = sector
+                obj.vat_office = data["TaxDepartmentName"] or ""
+                obj.vat_no = data["CommercialTaxNo"] or ""
+                obj.phone_number = data["Phone"] or ""
+                obj.address = data["Address"] or ""
+                obj.city = City.objects.select_related().annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                    Q(lowercase__icontains = data["CityName"] or "xxx") |
+                    Q(uppercase__icontains = data["CityName"] or "xxx")
+                ).first()
+                obj.country = Country.objects.select_related().filter(iso2 = data["CountryCode"]).first()
+                obj.tc_no = data["TCIdentityNo"] or ""
+                obj.tc_vkn_no = data["TaxAndTCIdentity"] or ""
+                obj.father_name = data["FathersName"] or ""
+                obj.birthday = birthday
+                obj.email = data["Email"] or ""
+                obj.passport_no = data["PassportNo"] or ""
+                obj.email = data["Email"] or ""
+                obj.is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False
+                obj.save()
+            else:
+                if data["BirthDate"]:
+                    birthday = datetime.strptime(data["BirthDate"], "%d.%m.%Y").date()
+                else:
+                    birthday = None
+                Partner.objects.create(
+                    company = Company.objects.select_related().filter(id = int(company)).first(),
+                    first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or "",
+                    last_name = data["Surname"] or "",
+                    name = data["FullName"] or "",
+                    formal_name = data["ContactCompanyName"] or "",
+                    customer_code = data["CustomerCode"] or "",
+                    vat_no = data["CommercialTaxNo"] or "",
+                    vat_office = data["TaxDepartmentName"] or "",
+                    tc_no = data["TCIdentityNo"] or "",
+                    tc_vkn_no = data["TaxAndTCIdentity"] or "",
+                    passport_no = data["PassportNo"] or "",
+                    is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
+                    sector = Sector.objects.select_related().filter(code = str(data["MainSectorId"])).first(),
+                    father_name = data["FathersName"] or "",
+                    birthday = birthday,
+                    country = Country.objects.select_related().filter(iso2 = data["CountryCode"]).first(),
+                    city = City.objects.select_related().annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                        Q(lowercase__icontains = data["CityName"] or "xxx") |
+                        Q(uppercase__icontains = data["CityName"] or "xxx")
+                    ).first(),
+                    address = data["Address"] or "",
+                    phone_number = data["Phone"].replace("/","") if data["Phone"] else "",
+                    email = data["Email"] or "",
+                    types = ["customer"]
+                )
     except Exception as e:
         print(e)
