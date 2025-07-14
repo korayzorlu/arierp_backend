@@ -429,15 +429,9 @@ def fix_partnersi(company):
         # external_data = df.to_dict(orient="records")
 
         partners = Partner.objects.select_related("sector","city","country").all()
-        sectors = Sector.objects.select_related().all()
         countries = Country.objects.select_related().all()
         cities = City.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
-
-        partners = Partner.objects.select_related("sector","city","country").all()
-        sectors = Sector.objects.select_related().all()
-        countries = Country.objects.select_related().all()
-        cities = City.objects.select_related().all()
 
         partner_by_crm = {p.crm_code: p for p in partners if p.crm_code}
         partner_by_customer = {p.customer_code: p for p in partners if p.customer_code}
@@ -484,24 +478,11 @@ def fix_partnersi(company):
             #         customer_type = "institutional"
             #     )
 
-            obj = partners.exclude(
-                Q(customer_code = "") |
-                Q(crm_code = "") |
-                (
-                    Q(name = "") &
-                    Q(tc_vkn_no = "")
-                )
-            ).filter(
-                Q(customer_code = str(data["InstitutionalCustomerCode"])) |
-                Q(crm_code = str(data["InstitutionalCustomerId"])) |
-                (
-                    Q(name = data["InstitutionalCustomerName"]) &
-                    Q(tc_vkn_no = str(data["TaxNo"]))
-                )
-            ).first()
-
-            if not obj:
-                print(f"{str(data["InstitutionalCustomerId"])} - {data["InstitutionalCustomerName"]}: ")
+            obj = (
+                partner_by_crm.get(str(data["InstitutionalCustomerId"])) or
+                partner_by_customer.get(str(data["InstitutionalCustomerCode"])) or
+                partner_by_name_vkn.get((data["InstitutionalCustomerName"], str(data["TaxNo"])))
+            )
 
             if obj:
                 obj.customer_code = str(data["InstitutionalCustomerCode"]) or ""
@@ -512,33 +493,22 @@ def fix_partnersi(company):
                 obj.vat_no = str(data["TaxNo"]) or ""
                 obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
                 obj.address = data["Address"] or ""
-                obj.city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                    Q(lowercase__icontains = data["CityName"] or "xxx") |
-                    Q(uppercase__icontains = data["CityName"] or "xxx")
-                ).first()
-                obj.country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                    Q(lowercase__icontains = data["CountryName"] or "xxx") |
-                    Q(uppercase__icontains = data["CountryName"] or "xxx")
-                ).first()
+                obj.city = cities_dict.get(normalize(data["CityName"]))
+                obj.country = countries_dict.get(normalize(data["CountryName"]))
                 obj.email = data["EMail"] or ""
                 obj.save()
             else:
+                print(f"{str(data["InstitutionalCustomerId"])} - {data["InstitutionalCustomerName"]}: ")
                 Partner.objects.create(
-                    company = Company.objects.select_related().filter(id = int(company)).first(),
+                    company = company_obj,
                     name = data["InstitutionalCustomerName"] or "",
                     formal_name = data["InstitutionalCustomerName"] or "",
                     customer_code = str(data["InstitutionalCustomerCode"]) or "",
                     crm_code = str(data["InstitutionalCustomerId"]) or "",
                     vat_no = str(data["TaxNo"]) or "",
                     vat_office = data["TaxDepartmentName"] or "",
-                    country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                        Q(lowercase__icontains = data["CountryName"] or "xxx") |
-                        Q(uppercase__icontains = data["CountryName"] or "xxx")
-                    ).first(),
-                    city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                        Q(lowercase__icontains = data["CityName"] or "xxx") |
-                        Q(uppercase__icontains = data["CityName"] or "xxx")
-                    ).first(),
+                    country = countries_dict.get(normalize(data["CountryName"])),
+                    city = cities_dict.get(normalize(data["CityName"])),
                     address = data["Address"] or "",
                     phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
                     email = data["EMail"] or "",
