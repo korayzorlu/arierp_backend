@@ -16,6 +16,14 @@ from common.models import ImportProcess
 from users.models import User
 from .models import *
 
+#tekrar eden düzeltme
+# from django.db.models import Max
+# from django.db.models import Count
+# objs=(Partner.objects.exclude(crm_code__isnull=True).values('crm_code').annotate(count=Count('id')).filter(count__gt=1).values_list('crm_code',flat=True))
+# objs_to_delete=(Partner.objects.filter(crm_code__in=objs).values('crm_code').annotate(latest_id=Max('id')).values_list('latest_id',flat=True))
+# Partner.objects.filter(id__in=objs_to_delete).delete()
+
+
 def sendAlert(message):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -257,8 +265,12 @@ def fix_partners(company):
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
+            # obj = partners.filter(crm_code = str(data["IndividualCustomerId"])).first()
+            # if not obj:
+            #     print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
+
             obj = partners.filter(
-                Q(customer_code = str(data["IndividualCustomerId"])) |
+                Q(customer_code = str(data["CustomerCode"])) |
                 Q(crm_code = str(data["IndividualCustomerId"])) |
                 (
                     Q(name = data["FullName"]) &
