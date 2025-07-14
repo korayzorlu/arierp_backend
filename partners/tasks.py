@@ -217,24 +217,24 @@ def fix_partners(company):
                 "SecondName" : r.SecondName,
                 "Surname" : r.Surname,
                 "ContactCompanyName" : r.ContactCompanyName,
-                "CustomerCode" : r.CustomerCode,
-                "IndividualCustomerId" : r.IndividualCustomerId,
-                "IndividualCustomerCode" : r.IndividualCustomerCode,
-                "Phone" : r.Phone,
+                "CustomerCode" : str(r.CustomerCode),
+                "IndividualCustomerId" : str(r.IndividualCustomerId),
+                "IndividualCustomerCode" : str(r.IndividualCustomerCode),
+                "Phone" : str(r.Phone),
                 "Address" : r.Address,
                 "DistrictName" : r.DistrictName,
                 "CityName" : r.CityName,
-                "MainSectorId" : r.MainSectorId,
+                "MainSectorId" : str(r.MainSectorId),
                 "TaxDepartmentName" : r.TaxDepartmentName,
-                "CommercialTaxNo" : r.CommercialTaxNo,
-                "TCIdentityNo" : r.TCIdentityNo,
-                "TaxAndTCIdentity" : r.TaxAndTCIdentity,
+                "CommercialTaxNo" : str(r.CommercialTaxNo),
+                "TCIdentityNo" : str(r.TCIdentityNo),
+                "TaxAndTCIdentity" : str(r.TaxAndTCIdentity),
                 "COUNTRYNAME" : r.COUNTRYNAME,
                 "CountryCode" : r.CountryCode,
                 "FathersName" : r.FathersName,
                 "BirthDate" : r.BirthDate,
                 "Email" : r.Email,
-                "PassportNo" : r.PassportNo,
+                "PassportNo" : str(r.PassportNo),
                 "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
             }
             for r in records
@@ -256,6 +256,11 @@ def fix_partners(company):
             if current_progress - previous_progress >= 1:
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
+
+            obj = partners.filter(crm_code = data["IndividualCustomerId"]).first()
+
+            # if not obj:
+            #     print(f"{data["IndividualCustomerId"]} - {data["FullName"]}: ")
 
             obj = partners.filter(
                 Q(customer_code = data["CustomerCode"]) |

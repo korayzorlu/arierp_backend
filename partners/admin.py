@@ -40,9 +40,9 @@ class PartnerAdminForm(forms.ModelForm):
 class PartnerAdmin(admin.ModelAdmin):
     form = PartnerAdminForm
     
-    list_display = ["company","types","customer_code","name","formal_name","country","city"]
+    list_display = ["company","types","customer_code","crm_code","name","formal_name","country","city"]
     list_display_links = ["name"]
-    search_fields = ["company__name","customer_code","name","formal_name","country__name","city__name"]
+    search_fields = ["company__name","customer_code","crm_code","name","formal_name","country__name","city__name"]
     list_filter = []
     inlines = []
     ordering = ["name"]
