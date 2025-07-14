@@ -217,24 +217,24 @@ def fix_partners(company):
                 "SecondName" : r.SecondName,
                 "Surname" : r.Surname,
                 "ContactCompanyName" : r.ContactCompanyName,
-                "CustomerCode" : str(r.CustomerCode),
-                "IndividualCustomerId" : str(r.IndividualCustomerId),
-                "IndividualCustomerCode" : str(r.IndividualCustomerCode),
-                "Phone" : str(r.Phone),
+                "CustomerCode" : r.CustomerCode,
+                "IndividualCustomerId" : r.IndividualCustomerId,
+                "IndividualCustomerCode" : r.IndividualCustomerCode,
+                "Phone" : r.Phone,
                 "Address" : r.Address,
                 "DistrictName" : r.DistrictName,
                 "CityName" : r.CityName,
-                "MainSectorId" : str(r.MainSectorId),
+                "MainSectorId" : r.MainSectorId,
                 "TaxDepartmentName" : r.TaxDepartmentName,
-                "CommercialTaxNo" : str(r.CommercialTaxNo),
-                "TCIdentityNo" : str(r.TCIdentityNo),
-                "TaxAndTCIdentity" : str(r.TaxAndTCIdentity),
+                "CommercialTaxNo" : r.CommercialTaxNo,
+                "TCIdentityNo" : r.TCIdentityNo,
+                "TaxAndTCIdentity" : r.TaxAndTCIdentity,
                 "COUNTRYNAME" : r.COUNTRYNAME,
                 "CountryCode" : r.CountryCode,
                 "FathersName" : r.FathersName,
                 "BirthDate" : r.BirthDate,
                 "Email" : r.Email,
-                "PassportNo" : str(r.PassportNo),
+                "PassportNo" : r.PassportNo or "",
                 "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
             }
             for r in records
@@ -257,19 +257,18 @@ def fix_partners(company):
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
-            obj = partners.filter(crm_code = data["IndividualCustomerId"]).first()
-
-            # if not obj:
-            #     print(f"{data["IndividualCustomerId"]} - {data["FullName"]}: ")
-
             obj = partners.filter(
-                Q(customer_code = data["CustomerCode"]) |
-                Q(crm_code = data["IndividualCustomerId"]) |
+                Q(customer_code = str(data["IndividualCustomerId"])) |
+                Q(crm_code = str(data["IndividualCustomerId"])) |
                 (
                     Q(name = data["FullName"]) &
-                    Q(tc_vkn_no = data["TaxAndTCIdentity"])
+                    Q(tc_vkn_no = str(data["TaxAndTCIdentity"]))
                 )
             ).first()
+
+            if not obj:
+                print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
+
             if obj:
                 if data["MainSectorId"]:
                     sector = sectors.filter(main_sector_code = data["MainSectorId"]).first()
@@ -279,7 +278,7 @@ def fix_partners(company):
                     birthday = data["BirthDate"].date()
                 else:
                     birthday = None
-                obj.customer_code = data["CustomerCode"] or ""
+                obj.customer_code = str(data["CustomerCode"]) or ""
                 obj.crm_code = data["IndividualCustomerId"] or ""
                 obj.name = data["FullName"] or ""
                 obj.first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or ""
@@ -287,21 +286,20 @@ def fix_partners(company):
                 obj.formal_name = data["ContactCompanyName"] or ""
                 obj.sector = sector
                 obj.vat_office = data["TaxDepartmentName"] or ""
-                obj.vat_no = data["CommercialTaxNo"] or ""
-                obj.phone_number = data["Phone"] or ""
+                obj.vat_no = str(data["CommercialTaxNo"]) or ""
+                obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
                 obj.address = data["Address"] or ""
                 obj.city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
                     Q(lowercase__icontains = data["CityName"] or "xxx") |
                     Q(uppercase__icontains = data["CityName"] or "xxx")
                 ).first()
                 obj.country = countries.filter(iso2 = data["CountryCode"]).first()
-                obj.tc_no = data["TCIdentityNo"] or ""
-                obj.tc_vkn_no = data["TaxAndTCIdentity"] or ""
+                obj.tc_no = str(data["TCIdentityNo"]) or ""
+                obj.tc_vkn_no = str(data["TaxAndTCIdentity"]) or ""
                 obj.father_name = data["FathersName"] or ""
                 obj.birthday = birthday
                 obj.email = data["Email"] or ""
-                obj.passport_no = data["PassportNo"] or ""
-                obj.email = data["Email"] or ""
+                obj.passport_no = str(data["PassportNo"]) or ""
                 obj.is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False
                 obj.save()
             else:
@@ -315,12 +313,13 @@ def fix_partners(company):
                     last_name = data["Surname"] or "",
                     name = data["FullName"] or "",
                     formal_name = data["ContactCompanyName"] or "",
-                    customer_code = data["CustomerCode"] or "",
-                    vat_no = data["CommercialTaxNo"] or "",
+                    customer_code = str(data["CustomerCode"]) or "",
+                    crm_code = str(data["IndividualCustomerId"]) or "",
+                    vat_no = str(data["CommercialTaxNo"]) or "",
                     vat_office = data["TaxDepartmentName"] or "",
-                    tc_no = data["TCIdentityNo"] or "",
-                    tc_vkn_no = data["TaxAndTCIdentity"] or "",
-                    passport_no = data["PassportNo"] or "",
+                    tc_no = str(data["TCIdentityNo"]) or "",
+                    tc_vkn_no = str(data["TaxAndTCIdentity"]) or "",
+                    passport_no = str(data["PassportNo"]) or "",
                     is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
                     sector = sectors.filter(code = str(data["MainSectorId"])).first(),
                     father_name = data["FathersName"] or "",
@@ -331,7 +330,7 @@ def fix_partners(company):
                         Q(uppercase__icontains = data["CityName"] or "xxx")
                     ).first(),
                     address = data["Address"] or "",
-                    phone_number = data["Phone"].replace("/","") if data["Phone"] else "",
+                    phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
                     email = data["Email"] or "",
                     types = ["customer"]
                 )
