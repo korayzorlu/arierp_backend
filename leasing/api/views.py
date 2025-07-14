@@ -225,3 +225,31 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class BankActivityLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = BankActivityLeaseListSerializer
+    filterset_class = BankActivityLeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["bank_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
+
+        queryset = BankActivityLease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-bank_activity__payment_date")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["bank_activity__uuid","lease__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset

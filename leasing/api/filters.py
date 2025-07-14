@@ -144,3 +144,16 @@ class BankActivityFilter(FilterSet):
     class Meta:
         model = BankActivity
         fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description']
+
+class BankActivityLeaseFilter(FilterSet):
+    bank_activity = CharFilter(method = 'filter_bank_activity')
+    lease = CharFilter(method = 'filter_lease')
+    class Meta:
+        model = BankActivityLease
+        fields = ['uuid','bank_activity','lease']
+
+    def filter_bank_activity(self, queryset, bank_activity, value):
+        return queryset.filter(bank_activity__uuid = value)
+    
+    def filter_lease(self, queryset, lease, value):
+        return queryset.filter(lease__lease = value)

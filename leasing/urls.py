@@ -16,6 +16,7 @@ urlpatterns = [
     path('leases_template/', LeasesTemplateView.as_view(), name="leases_template"),
     path('import_leases/', ImportLeasesView.as_view(), name="import_leases"),
     path('update_leaseflex_automation_leases/', UpdateLeaseflexAutomationLeasesView.as_view(), name="update_leaseflex_automation_leases"),
+    path('update_lease_processed_amount/', UpdateLeaseProcessedAmountView.as_view(), name="update_lease_processed_amount"),
 
     path('add_installment/', AddInstallmentView.as_view(), name="add_installment"),
     path('update_installment/', UpdateInstallmentView.as_view(), name="update_installment"),
@@ -33,6 +34,8 @@ urlpatterns = [
     path('import_bank_activities/', ImportBankActivitiesView.as_view(), name="import_bank_activities"),
     path('export_bank_activities/', ExportBankActivitiesView.as_view(), name="export_bank_activities"),
     path('bank_activities_excel/', BankActivitiesExcelView.as_view(), name="bank_activities_excel"),
+    path('update_leaseflex_automation_bank_activity_leases/', UpdateLeaseflexAutomationBankActivityLeasesView.as_view(), name="update_leaseflex_automation_bank_activity_leases"),
+    path('update_bank_activity_lease_processed_amount/', UpdateBankActivityLeaseProcessedAmountView.as_view(), name="update_bank_activity_lease_processed_amount"),
 
     path('', include("leasing.api.urls")),
 ]

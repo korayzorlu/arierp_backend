@@ -22,6 +22,59 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("processing...")
         
-        
+        SERVER = "192.168.81.8,1433"
+        DATABASE = "ARI_LEASING"
+        USERNAME = "lflex"
+        PASSWORD = "S!gma2014"
+
+        connectionString = f'''
+            DRIVER={{ODBC Driver 18 for SQL Server}};
+            SERVER={SERVER};
+            DATABASE={DATABASE};
+            UID={USERNAME};
+            PWD={PASSWORD};
+            Provider=SQLNCLI11;
+            Integrated Security=SSPI;
+            Persist Security Info=False;
+            Initial Catalog=MASTER;
+            TrustServerCertificate=yes;
+        '''
+
+        try:
+            conn = pyodbc.connect(connectionString)
+            
+            SQL_QUERY = """
+            SELECT * 
+            FROM CrmIndividualCustomerList
+            """
+
+            cursor = conn.cursor()
+            cursor.execute(SQL_QUERY)
+            
+            records = cursor.fetchall()
+
+            external_data=[
+                {
+                    "FullName" : r.FullName,
+                    "FirstName" : r.FirstName,
+                    "SecondName" : r.SecondName,
+                    "Surname" : r.Surname,
+                    "ContractCompanyName" : r.ContractCompanyName,
+                    "CustomerCode" : r.CustomerCode,
+                    "IndividualCustomerId" : r.IndividualCustomerId,
+                    "IndividualCustomerCode" : r.IndividualCustomerCode,
+
+                }
+                for r in records
+            ]
+
+            for data in external_data:
+                if data["customerCode"] and data["customerCode"] != "ARI":
+                    obj = Partner.objects.select_related().filter(customer_code = str(int(data["customerCode"]))).first()
+                    if obj:
+                        obj.crm_code = data["customerId"]
+                        obj.save()
+        except Exception as e:
+            print(e)
         
         print("done!")

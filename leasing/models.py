@@ -1,8 +1,10 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models import Q
 from django.contrib.postgres.fields import ArrayField
 
 from django.utils.translation import gettext_lazy as _
 import uuid
+from decimal import Decimal
 
 from companies.models import Company
 from common.models import Currency, Status
@@ -54,6 +56,7 @@ class Lease(models.Model):
     bbsn = models.CharField(_("BBSN"), max_length=25, blank=True, null=True)
 
     leaseflex_automation = models.BooleanField(default=False)
+    processed_amount = models.DecimalField(_("Processed Amount"), default = 0.00, max_digits=14, decimal_places=2)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -120,3 +123,73 @@ class BankActivity(models.Model):
     def __str__(self):
         return str(self.amount)
     
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            is_new = self._state.adding
+
+            super().save(*args, **kwargs)
+
+            if is_new:
+                leases = Lease.objects.filter(
+                    (
+                        Q(contract__partner__tc_vkn_no = self.tc_vkn_no) |
+                        Q(contract__quotation_obj__partner__tc_vkn_no = self.tc_vkn_no) |
+                        Q(contract__quotation_obj__quick_quotation__partner__tc_vkn_no = self.tc_vkn_no)
+                    ) &
+                    (
+                        Q(lease_status = "aktiflestirildi") |
+                        Q(lease_status = "planlandi") |
+                        Q(lease_status = "durduruldu")
+                    ) 
+                ).order_by('contract_id', '-activation_date').distinct('contract_id')
+
+                if leases:
+                    for lease in leases:
+                        bank_activity_lease = BankActivityLease.objects.create(
+                            company = self.company,
+                            bank_activity = self,
+                            lease = lease
+                        )
+
+                        processed_amount = self.amount
+                        
+                        installments = lease.lease_installments.all()
+                        total_overdue_amount = Decimal("0")
+                        for installment in installments:
+                            total_overdue_amount += installment.overdue_amount
+                        total_overdue_amount = total_overdue_amount - lease.processed_amount #test
+                        if total_overdue_amount > 0:
+                            bank_activity_lease.leaseflex_automation = True
+                            if processed_amount > 0:
+                                if total_overdue_amount <= processed_amount:
+                                    bank_activity_lease.processed_amount = total_overdue_amount
+                                    processed_amount -= total_overdue_amount
+                                else:
+                                    bank_activity_lease.processed_amount = processed_amount
+                                    processed_amount = 0
+                            else:
+                                bank_activity_lease.leaseflex_automation = False
+                            bank_activity_lease.save()
+                        bank_activity_leases = lease.lease_bank_acitivity_leases.select_related().all()
+                        total_bank_activity_leases_processed_amount = Decimal("0")
+                        for item in bank_activity_leases:
+                            total_bank_activity_leases_processed_amount += item.processed_amount
+                        lease.processed_amount = total_bank_activity_leases_processed_amount
+                        lease.save()
+
+          
+    
+class BankActivityLease(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="bank_activity_leases")
+
+    bank_activity = models.ForeignKey(BankActivity, on_delete=models.CASCADE, related_name="bank_activity_bank_acitivity_leases")
+    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_bank_acitivity_leases")
+    processed_amount = models.DecimalField(_("Processed Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    leaseflex_automation = models.BooleanField(default=False)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.bank_activity.tc_vkn_no)

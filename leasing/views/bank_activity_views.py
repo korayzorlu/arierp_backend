@@ -114,3 +114,29 @@ class BankActivitiesExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+    
+class UpdateLeaseflexAutomationBankActivityLeasesView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuids = data.get('uuids')
+
+        for uuid in uuids:
+            obj = BankActivityLease.objects.filter(uuid = uuid).first()
+            obj.leaseflex_automation = data.get('select') or False
+            obj.save()
+
+        return JsonResponse({'message': 'Seçim değiştirildi!','status':'success'}, status=200)
+    
+class UpdateBankActivityLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = BankActivityLease
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = BankActivityLease.objects.filter(uuid = data.get('uuid')).first()
+        obj.processed_amount = Decimal(str(data.get('amount')).replace(",","."))
+        obj.save()
+
+        return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)

@@ -194,3 +194,15 @@ class UpdateLeaseflexAutomationLeasesView(LoginRequiredMixin,CompanyOwnershipReq
             obj.save()
 
         return JsonResponse({'message': 'Seçim değiştirildi!','status':'success'}, status=200)
+    
+class UpdateLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = Lease.objects.filter(uuid = data.get('uuid')).first()
+        obj.processed_amount = Decimal(str(data.get('amount')).replace(",","."))
+        obj.save()
+
+        return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Lease,Installment,BankActivity
+from .models import Lease,Installment,BankActivity,BankActivityLease
 
 # Register your models here.
 
@@ -58,3 +58,24 @@ class BankActivityAdmin(admin.ModelAdmin):
     
     class Meta:
         model = BankActivity
+
+@admin.register(BankActivityLease)
+class BankActivityLeaseAdmin(admin.ModelAdmin):
+    list_display = ["company","bank_activity","lease"]
+    list_display_links = ["bank_activity"]
+    search_fields = ["company__name","bank_activity__uuid","lease__code"]
+    list_filter = []
+    inlines = []
+    ordering = ["created_date"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def bank_activity(self,obj):
+        return obj.bank_activity.uuid if obj.bank_activity else ""
+    
+    def lease(self,obj):
+        return obj.lease.code if obj.lease else ""
+    
+    class Meta:
+        model = BankActivityLease
