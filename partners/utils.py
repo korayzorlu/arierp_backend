@@ -21,3 +21,4 @@ def get_partner_types(data):
     if data.get('shareholder'):
         types.append("shareholder")
     return types
+

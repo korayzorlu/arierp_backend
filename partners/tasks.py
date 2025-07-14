@@ -13,6 +13,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 
 from common.models import ImportProcess
+from common.utils.common_utils import normalize
 from users.models import User
 from .models import *
 
@@ -196,14 +197,12 @@ def fix_partners(company):
             IndividualCustomerCode,
             Phone,
             Address,
-            DistrictName,
             CityName,
             MainSectorId,
             TaxDepartmentName,
             CommercialTaxNo,
             TCIdentityNo,
             TaxAndTCIdentity,
-            COUNTRYNAME,
             CountryCode,
             FathersName,
             BirthDate,
@@ -230,14 +229,12 @@ def fix_partners(company):
                 "IndividualCustomerCode" : r.IndividualCustomerCode,
                 "Phone" : r.Phone,
                 "Address" : r.Address,
-                "DistrictName" : r.DistrictName,
                 "CityName" : r.CityName,
                 "MainSectorId" : r.MainSectorId,
                 "TaxDepartmentName" : r.TaxDepartmentName,
                 "CommercialTaxNo" : r.CommercialTaxNo,
                 "TCIdentityNo" : r.TCIdentityNo,
                 "TaxAndTCIdentity" : r.TaxAndTCIdentity,
-                "COUNTRYNAME" : r.COUNTRYNAME,
                 "CountryCode" : r.CountryCode,
                 "FathersName" : r.FathersName,
                 "BirthDate" : r.BirthDate,
@@ -256,6 +253,17 @@ def fix_partners(company):
         sectors = Sector.objects.select_related().all()
         countries = Country.objects.select_related().all()
         cities = City.objects.select_related().all()
+
+        partner_by_crm = {p.crm_code: p for p in partners if p.crm_code}
+        partner_by_customer = {p.customer_code: p for p in partners if p.customer_code}
+        partner_by_name_vkn = {
+            (p.name, p.tc_vkn_no): p
+            for p in partners
+            if p.name and p.tc_vkn_no
+        }
+        cities_dict = {normalize(c.name): c for c in cities}
+        countries_dict = {c.iso2: c for c in countries}
+        sectors_dict = {s.main_sector_code: s for s in sectors}
 
         previous_progress = 0
         for index,data in enumerate(external_data):
@@ -301,63 +309,36 @@ def fix_partners(company):
             #         types = ["customer"]
             #     )
 
-            obj = partners.exclude(
-                Q(customer_code = "") |
-                Q(crm_code = "") |
-                (
-                    Q(name = "") &
-                    Q(tc_vkn_no = "")
-                )
-            ).filter(
-                Q(customer_code = str(data["CustomerCode"])) |
-                Q(crm_code = str(data["IndividualCustomerId"])) |
-                (
-                    Q(name = data["FullName"]) &
-                    Q(tc_vkn_no = str(data["TaxAndTCIdentity"]))
-                )
-            ).first()
-
-            if not obj:
-                print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
+            obj = (
+                partner_by_crm.get(str(data["IndividualCustomerId"])) or
+                partner_by_customer.get(str(data["CustomerCode"])) or
+                partner_by_name_vkn.get((data["FullName"], str(data["TaxAndTCIdentity"])))
+            )
 
             if obj:
-                if data["MainSectorId"]:
-                    sector = sectors.filter(main_sector_code = data["MainSectorId"]).first()
-                else:
-                    sector = None
-                if data["BirthDate"]:
-                    birthday = data["BirthDate"].date()
-                else:
-                    birthday = None
                 obj.customer_code = str(data["CustomerCode"]) or ""
                 obj.crm_code = data["IndividualCustomerId"] or ""
                 obj.name = data["FullName"] or ""
                 obj.first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or ""
                 obj.last_name = data["Surname"] or ""
                 obj.formal_name = data["ContactCompanyName"] or ""
-                obj.sector = sector
+                obj.sector = sectors_dict.get(data["MainSectorId"])
                 obj.vat_office = data["TaxDepartmentName"] or ""
                 obj.vat_no = str(data["CommercialTaxNo"]) or ""
                 obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
                 obj.address = data["Address"] or ""
-                obj.city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                    Q(lowercase__icontains = data["CityName"] or "xxx") |
-                    Q(uppercase__icontains = data["CityName"] or "xxx")
-                ).first()
-                obj.country = countries.filter(iso2 = data["CountryCode"]).first()
+                obj.city = cities_dict.get(normalize(data["CityName"]))
+                obj.country = countries_dict.get(data["CountryCode"])
                 obj.tc_no = str(data["TCIdentityNo"]) or ""
                 obj.tc_vkn_no = str(data["TaxAndTCIdentity"]) or ""
                 obj.father_name = data["FathersName"] or ""
-                obj.birthday = birthday
+                obj.birthday = data["BirthDate"].date() if data["BirthDate"] else None
                 obj.email = data["Email"] or ""
                 obj.passport_no = str(data["PassportNo"]) or ""
                 obj.is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False
                 obj.save()
             else:
-                if data["BirthDate"]:
-                    birthday = data["BirthDate"].date()
-                else:
-                    birthday = None
+                print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
                 Partner.objects.create(
                     company = Company.objects.select_related().filter(id = int(company)).first(),
                     first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or "",
@@ -372,14 +353,11 @@ def fix_partners(company):
                     tc_vkn_no = str(data["TaxAndTCIdentity"]) or "",
                     passport_no = str(data["PassportNo"]) or "",
                     is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
-                    sector = sectors.filter(code = str(data["MainSectorId"])).first(),
+                    sector = sectors_dict.get(data["MainSectorId"]),
                     father_name = data["FathersName"] or "",
-                    birthday = birthday,
-                    country = countries.filter(iso2 = data["CountryCode"]).first(),
-                    city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                        Q(lowercase__icontains = data["CityName"] or "xxx") |
-                        Q(uppercase__icontains = data["CityName"] or "xxx")
-                    ).first(),
+                    birthday = data["BirthDate"].date() if data["BirthDate"] else None,
+                    country = countries_dict.get(data["CountryCode"]),
+                    city = cities_dict.get(normalize(data["CityName"])),
                     address = data["Address"] or "",
                     phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
                     email = data["Email"] or "",
@@ -438,7 +416,7 @@ def fix_partnersi(company):
                 "EMail" : r.EMail,
                 "Phone" : r.Phone,
                 "Address" : r.Address,
-                "CountryName" : r.CountryName,
+                "CountryName" : "Turkey" if r.CountryName == "TÜRKİYE" else r.CountryName,
                 "CityName" : r.CityName,
                 "TaxDepartmentName" : r.TaxDepartmentName,
                 "TaxNo" : r.TaxNo
@@ -454,6 +432,22 @@ def fix_partnersi(company):
         sectors = Sector.objects.select_related().all()
         countries = Country.objects.select_related().all()
         cities = City.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        partners = Partner.objects.select_related("sector","city","country").all()
+        sectors = Sector.objects.select_related().all()
+        countries = Country.objects.select_related().all()
+        cities = City.objects.select_related().all()
+
+        partner_by_crm = {p.crm_code: p for p in partners if p.crm_code}
+        partner_by_customer = {p.customer_code: p for p in partners if p.customer_code}
+        partner_by_name_vkn = {
+            (p.name, p.tc_vkn_no): p
+            for p in partners
+            if p.name and p.tc_vkn_no
+        }
+        cities_dict = {normalize(c.name): c for c in cities}
+        countries_dict = {c.iso2: c for c in countries}
 
         previous_progress = 0
         for index,data in enumerate(external_data):
@@ -463,43 +457,41 @@ def fix_partnersi(company):
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
-            # obj = partners.filter(crm_code = str(data["IndividualCustomerId"])).first()
+            # obj = partners.filter(crm_code = str(data["InstitutionalCustomerId"])).first()
             # if not obj:
-            #     print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
+            #     print(f"{str(data["InstitutionalCustomerId"])} - {data["InstitutionalCustomerName"]}: ")
 
-            #     if data["BirthDate"]:
-            #         birthday = data["BirthDate"].date()
-            #     else:
-            #         birthday = None
             #     Partner.objects.create(
-            #         company = Company.objects.select_related().filter(id = int(company)).first(),
-            #         first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or "",
-            #         last_name = data["Surname"] or "",
-            #         name = data["FullName"] or "",
-            #         formal_name = data["ContactCompanyName"] or "",
-            #         customer_code = str(data["CustomerCode"]) or "",
-            #         crm_code = str(data["IndividualCustomerId"]) or "",
-            #         vat_no = str(data["CommercialTaxNo"]) or "",
+            #         company = company_obj,
+            #         name = data["InstitutionalCustomerName"] or "",
+            #         formal_name = data["InstitutionalCustomerName"] or "",
+            #         customer_code = str(data["InstitutionalCustomerCode"]) or "",
+            #         crm_code = str(data["InstitutionalCustomerId"]) or "",
+            #         vat_no = str(data["TaxNo"]) or "",
             #         vat_office = data["TaxDepartmentName"] or "",
-            #         tc_no = str(data["TCIdentityNo"]) or "",
-            #         tc_vkn_no = str(data["TaxAndTCIdentity"]) or "",
-            #         passport_no = str(data["PassportNo"]) or "",
-            #         is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
-            #         sector = sectors.filter(code = str(data["MainSectorId"])).first(),
-            #         father_name = data["FathersName"] or "",
-            #         birthday = birthday,
-            #         country = countries.filter(iso2 = data["CountryCode"]).first(),
+            #         country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            #             Q(lowercase__icontains = data["CountryName"] or "xxx") |
+            #             Q(uppercase__icontains = data["CountryName"] or "xxx")
+            #         ).first(),
             #         city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
             #             Q(lowercase__icontains = data["CityName"] or "xxx") |
             #             Q(uppercase__icontains = data["CityName"] or "xxx")
             #         ).first(),
             #         address = data["Address"] or "",
             #         phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
-            #         email = data["Email"] or "",
-            #         types = ["customer"]
+            #         email = data["EMail"] or "",
+            #         types = ["customer"],
+            #         customer_type = "institutional"
             #     )
 
-            obj = partners.filter(
+            obj = partners.exclude(
+                Q(customer_code = "") |
+                Q(crm_code = "") |
+                (
+                    Q(name = "") &
+                    Q(tc_vkn_no = "")
+                )
+            ).filter(
                 Q(customer_code = str(data["InstitutionalCustomerCode"])) |
                 Q(crm_code = str(data["InstitutionalCustomerId"])) |
                 (
@@ -525,8 +517,8 @@ def fix_partnersi(company):
                     Q(uppercase__icontains = data["CityName"] or "xxx")
                 ).first()
                 obj.country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                    Q(lowercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"]) |
-                    Q(uppercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"])
+                    Q(lowercase__icontains = data["CountryName"] or "xxx") |
+                    Q(uppercase__icontains = data["CountryName"] or "xxx")
                 ).first()
                 obj.email = data["EMail"] or ""
                 obj.save()
@@ -540,8 +532,8 @@ def fix_partnersi(company):
                     vat_no = str(data["TaxNo"]) or "",
                     vat_office = data["TaxDepartmentName"] or "",
                     country = countries.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-                        Q(lowercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"]) |
-                        Q(uppercase__icontains = "Turkey" if data["CountryName"] == "TÜRKİYE" else data["CountryName"])
+                        Q(lowercase__icontains = data["CountryName"] or "xxx") |
+                        Q(uppercase__icontains = data["CountryName"] or "xxx")
                     ).first(),
                     city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
                         Q(lowercase__icontains = data["CityName"] or "xxx") |
