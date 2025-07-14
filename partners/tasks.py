@@ -10,6 +10,7 @@ import pandas as pd
 import io
 import pyodbc
 from datetime import datetime
+from sqlalchemy import create_engine
 
 from common.models import ImportProcess
 from users.models import User
@@ -200,58 +201,63 @@ def fix_partners(company):
             BirthDate,
             Email,
             PassportNo,
-            Email,
             IS_TURKKEP_CUSTOMER
         FROM CrmIndividualCustomerList
         """
 
-        # cursor = conn.cursor()
-        # cursor.execute(SQL_QUERY)
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
         
-        # records = cursor.fetchall()
+        records = cursor.fetchall()
 
-        # external_data=[
-        #     {
-        #         "FullName" : r.FullName,
-        #         "FirstName" : r.FirstName,
-        #         "SecondName" : r.SecondName,
-        #         "Surname" : r.Surname,
-        #         "ContactCompanyName" : r.ContactCompanyName,
-        #         "CustomerCode" : r.CustomerCode,
-        #         "IndividualCustomerId" : r.IndividualCustomerId,
-        #         "IndividualCustomerCode" : r.IndividualCustomerCode,
-        #         "Phone" : r.Phone,
-        #         "Address" : r.Address,
-        #         "DistrictName" : r.DistrictName,
-        #         "CityName" : r.CityName,
-        #         "MainSectorId" : r.MainSectorId,
-        #         "TaxDepartmentName" : r.TaxDepartmentName,
-        #         "CommercialTaxNo" : r.CommercialTaxNo,
-        #         "TCIdentityNo" : r.TCIdentityNo,
-        #         "TaxAndTCIdentity" : r.TaxAndTCIdentity,
-        #         "COUNTRYNAME" : r.COUNTRYNAME,
-        #         "CountryCode" : r.CountryCode,
-        #         "FathersName" : r.FathersName,
-        #         "BirthDate" : r.BirthDate,
-        #         "Email" : r.Email,
-        #         "PassportNo" : r.PassportNo,
-        #         "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
-        #     }
-        #     for r in records
-        # ]
+        external_data=[
+            {
+                "FullName" : r.FullName,
+                "FirstName" : r.FirstName,
+                "SecondName" : r.SecondName,
+                "Surname" : r.Surname,
+                "ContactCompanyName" : r.ContactCompanyName,
+                "CustomerCode" : r.CustomerCode,
+                "IndividualCustomerId" : r.IndividualCustomerId,
+                "IndividualCustomerCode" : r.IndividualCustomerCode,
+                "Phone" : r.Phone,
+                "Address" : r.Address,
+                "DistrictName" : r.DistrictName,
+                "CityName" : r.CityName,
+                "MainSectorId" : r.MainSectorId,
+                "TaxDepartmentName" : r.TaxDepartmentName,
+                "CommercialTaxNo" : r.CommercialTaxNo,
+                "TCIdentityNo" : r.TCIdentityNo,
+                "TaxAndTCIdentity" : r.TaxAndTCIdentity,
+                "COUNTRYNAME" : r.COUNTRYNAME,
+                "CountryCode" : r.CountryCode,
+                "FathersName" : r.FathersName,
+                "BirthDate" : r.BirthDate,
+                "Email" : r.Email,
+                "PassportNo" : r.PassportNo,
+                "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
+            }
+            for r in records
+        ]
 
-        df = pd.read_sql(SQL_QUERY, conn)
-        external_data = df.to_dict(orient="records")
+        # engine = create_engine("mssql+pymssql://lflex:S!gma2014@192.168.81.8:1433/ARI_LEASING")
+        # df = pd.read_sql(SQL_QUERY, engine)
+        # external_data = df.to_dict(orient="records")
+
+        partners = Partner.objects.select_related("sector","city","country").all()
+        sectors = Sector.objects.select_related().all()
+        countries = Country.objects.select_related().all()
+        cities = City.objects.select_related().all()
 
         previous_progress = 0
         for index,data in enumerate(external_data):
             current_progress = ((index + 1)/len(external_data))*100
 
-            if current_progress - previous_progress >= 5:
+            if current_progress - previous_progress >= 1:
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
-            obj = Partner.objects.select_related("sector","city","country").filter(
+            obj = partners.filter(
                 Q(customer_code = data["CustomerCode"]) |
                 Q(crm_code = data["IndividualCustomerId"]) |
                 (
@@ -261,7 +267,7 @@ def fix_partners(company):
             ).first()
             if obj:
                 if data["MainSectorId"]:
-                    sector = Sector.objects.select_related().filter(main_sector_code = data["MainSectorId"]).first()
+                    sector = sectors.filter(main_sector_code = data["MainSectorId"]).first()
                 else:
                     sector = None
                 if data["BirthDate"]:
@@ -279,11 +285,11 @@ def fix_partners(company):
                 obj.vat_no = data["CommercialTaxNo"] or ""
                 obj.phone_number = data["Phone"] or ""
                 obj.address = data["Address"] or ""
-                obj.city = City.objects.select_related().annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                obj.city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
                     Q(lowercase__icontains = data["CityName"] or "xxx") |
                     Q(uppercase__icontains = data["CityName"] or "xxx")
                 ).first()
-                obj.country = Country.objects.select_related().filter(iso2 = data["CountryCode"]).first()
+                obj.country = countries.filter(iso2 = data["CountryCode"]).first()
                 obj.tc_no = data["TCIdentityNo"] or ""
                 obj.tc_vkn_no = data["TaxAndTCIdentity"] or ""
                 obj.father_name = data["FathersName"] or ""
@@ -311,11 +317,11 @@ def fix_partners(company):
                     tc_vkn_no = data["TaxAndTCIdentity"] or "",
                     passport_no = data["PassportNo"] or "",
                     is_turkkep = True if data["IS_TURKKEP_CUSTOMER"] == "Evet" else False,
-                    sector = Sector.objects.select_related().filter(code = str(data["MainSectorId"])).first(),
+                    sector = sectors.filter(code = str(data["MainSectorId"])).first(),
                     father_name = data["FathersName"] or "",
                     birthday = birthday,
-                    country = Country.objects.select_related().filter(iso2 = data["CountryCode"]).first(),
-                    city = City.objects.select_related().annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+                    country = countries.filter(iso2 = data["CountryCode"]).first(),
+                    city = cities.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
                         Q(lowercase__icontains = data["CityName"] or "xxx") |
                         Q(uppercase__icontains = data["CityName"] or "xxx")
                     ).first(),
