@@ -317,7 +317,7 @@ def fix_partners(company):
 
             if obj:
                 obj.customer_code = str(data["CustomerCode"]) or ""
-                obj.crm_code = data["IndividualCustomerId"] or ""
+                obj.crm_code = str(data["IndividualCustomerId"]) or ""
                 obj.name = data["FullName"] or ""
                 obj.first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or ""
                 obj.last_name = data["Surname"] or ""
@@ -486,7 +486,7 @@ def fix_partnersi(company):
 
             if obj:
                 obj.customer_code = str(data["InstitutionalCustomerCode"]) or ""
-                obj.crm_code = data["InstitutionalCustomerId"] or ""
+                obj.crm_code = str(data["InstitutionalCustomerId"]) or ""
                 obj.name = data["InstitutionalCustomerName"] or ""
                 obj.formal_name = data["InstitutionalCustomerName"] or ""
                 obj.vat_office = data["TaxDepartmentName"] or ""
