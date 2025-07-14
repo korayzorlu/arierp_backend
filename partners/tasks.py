@@ -205,39 +205,43 @@ def fix_partners(company):
         FROM CrmIndividualCustomerList
         """
 
-        cursor = conn.cursor()
-        cursor.execute(SQL_QUERY)
+        # cursor = conn.cursor()
+        # cursor.execute(SQL_QUERY)
         
-        records = cursor.fetchall()
-        external_data=[
-            {
-                "FullName" : r.FullName,
-                "FirstName" : r.FirstName,
-                "SecondName" : r.SecondName,
-                "Surname" : r.Surname,
-                "ContactCompanyName" : r.ContactCompanyName,
-                "CustomerCode" : r.CustomerCode,
-                "IndividualCustomerId" : r.IndividualCustomerId,
-                "IndividualCustomerCode" : r.IndividualCustomerCode,
-                "Phone" : r.Phone,
-                "Address" : r.Address,
-                "DistrictName" : r.DistrictName,
-                "CityName" : r.CityName,
-                "MainSectorId" : r.MainSectorId,
-                "TaxDepartmentName" : r.TaxDepartmentName,
-                "CommercialTaxNo" : r.CommercialTaxNo,
-                "TCIdentityNo" : r.TCIdentityNo,
-                "TaxAndTCIdentity" : r.TaxAndTCIdentity,
-                "COUNTRYNAME" : r.COUNTRYNAME,
-                "CountryCode" : r.CountryCode,
-                "FathersName" : r.FathersName,
-                "BirthDate" : r.BirthDate,
-                "Email" : r.Email,
-                "PassportNo" : r.PassportNo,
-                "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
-            }
-            for r in records
-        ]
+        # records = cursor.fetchall()
+
+        # external_data=[
+        #     {
+        #         "FullName" : r.FullName,
+        #         "FirstName" : r.FirstName,
+        #         "SecondName" : r.SecondName,
+        #         "Surname" : r.Surname,
+        #         "ContactCompanyName" : r.ContactCompanyName,
+        #         "CustomerCode" : r.CustomerCode,
+        #         "IndividualCustomerId" : r.IndividualCustomerId,
+        #         "IndividualCustomerCode" : r.IndividualCustomerCode,
+        #         "Phone" : r.Phone,
+        #         "Address" : r.Address,
+        #         "DistrictName" : r.DistrictName,
+        #         "CityName" : r.CityName,
+        #         "MainSectorId" : r.MainSectorId,
+        #         "TaxDepartmentName" : r.TaxDepartmentName,
+        #         "CommercialTaxNo" : r.CommercialTaxNo,
+        #         "TCIdentityNo" : r.TCIdentityNo,
+        #         "TaxAndTCIdentity" : r.TaxAndTCIdentity,
+        #         "COUNTRYNAME" : r.COUNTRYNAME,
+        #         "CountryCode" : r.CountryCode,
+        #         "FathersName" : r.FathersName,
+        #         "BirthDate" : r.BirthDate,
+        #         "Email" : r.Email,
+        #         "PassportNo" : r.PassportNo,
+        #         "IS_TURKKEP_CUSTOMER" : r.IS_TURKKEP_CUSTOMER,
+        #     }
+        #     for r in records
+        # ]
+
+        df = pd.read_sql(SQL_QUERY, conn)
+        external_data = df.to_dict(orient="records")
 
         previous_progress = 0
         for index,data in enumerate(external_data):
@@ -291,7 +295,7 @@ def fix_partners(company):
                 obj.save()
             else:
                 if data["BirthDate"]:
-                    birthday = datetime.strptime(data["BirthDate"], "%d.%m.%Y").date()
+                    birthday = data["BirthDate"].date()
                 else:
                     birthday = None
                 Partner.objects.create(
