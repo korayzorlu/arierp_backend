@@ -309,11 +309,20 @@ def fix_partners(company):
             #         types = ["customer"]
             #     )
 
-            obj = (
-                partner_by_crm.get(str(data["IndividualCustomerId"])) or
-                partner_by_customer.get(str(data["CustomerCode"])) or
-                partner_by_name_vkn.get((data["FullName"], str(data["TaxAndTCIdentity"])))
-            )
+            if str(data["IndividualCustomerId"]):
+                obj = (
+                    partner_by_crm.get(str(data["IndividualCustomerId"]))
+                )
+            elif str(data["CustomerCode"]):
+                obj = (
+                    partner_by_customer.get(str(data["CustomerCode"]))
+                )
+            elif str(data["FullName"]) and str(data["TaxAndTCIdentity"]):
+                obj = (
+                    partner_by_name_vkn.get((data["FullName"], str(data["TaxAndTCIdentity"])))
+                )
+            else:
+                obj = None
 
             if obj:
                 obj.customer_code = str(data["CustomerCode"]) or ""
@@ -478,11 +487,26 @@ def fix_partnersi(company):
             #         customer_type = "institutional"
             #     )
 
-            obj = (
-                partner_by_crm.get(str(data["InstitutionalCustomerId"])) or
-                partner_by_customer.get(str(data["InstitutionalCustomerCode"])) or
-                partner_by_name_vkn.get((data["InstitutionalCustomerName"], str(data["TaxNo"])))
-            )
+            # obj = (
+            #     partner_by_crm.get(str(data["InstitutionalCustomerId"])) or
+            #     partner_by_customer.get(str(data["InstitutionalCustomerCode"])) or
+            #     partner_by_name_vkn.get((data["InstitutionalCustomerName"], str(data["TaxNo"])))
+            # )
+
+            if str(data["InstitutionalCustomerId"]):
+                obj = (
+                    partner_by_crm.get(str(data["InstitutionalCustomerId"]))
+                )
+            elif str(data["InstitutionalCustomerCode"]):
+                obj = (
+                    partner_by_customer.get(str(data["InstitutionalCustomerCode"]))
+                )
+            elif str(data["InstitutionalCustomerName"]) and str(data["TaxNo"]):
+                obj = (
+                    partner_by_name_vkn.get((data["InstitutionalCustomerName"], str(data["TaxNo"])))
+                )
+            else:
+                obj = None
 
             if obj:
                 obj.customer_code = str(data["InstitutionalCustomerCode"]) or ""
