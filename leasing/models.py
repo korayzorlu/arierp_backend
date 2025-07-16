@@ -72,6 +72,8 @@ class Installment(models.Model):
     lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_installments")
     payment_date = models.DateField(_("Payment Date"), blank=True, null=True)
     vat = models.DecimalField(_("Vat"), default = 0.00, max_digits=5, decimal_places=2)
+    vat_amount = models.DecimalField(_("Vat Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    payment = models.DecimalField(_("Payment"), default = 0.00, max_digits=14, decimal_places=2)
     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
     paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_amount = models.DecimalField(_("Overdue Amount"), default = 0.00, max_digits=14, decimal_places=2)

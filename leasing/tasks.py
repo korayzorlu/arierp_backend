@@ -158,7 +158,112 @@ def fix_leases(company):
         print(e)
 
 @shared_task()
-def fix_installments(lease_code):
+def fix_installments(company):
+    SERVER = "192.168.81.8,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+        SELECT OPERATIONPROJECTID,
+            SequenceNo,
+            PAYMENTDATE,
+            VATRATE,
+            VATAMOUNT,
+            PAYMENT,
+            TOTALPAYMENTAMOUNT,
+            PRINCIPALDISPLAY,
+            INTERESTDISPLAY
+        FROM LOPPAYMENTDUELISTFORARI
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {   
+                "OPERATIONPROJECTID" : r.OPERATIONPROJECTID,
+                "SequenceNo" : r.SequenceNo,
+                "PAYMENTDATE" : r.PAYMENTDATE,
+                "VATRATE" : r.VATRATE,
+                "VATAMOUNT" : r.VATAMOUNT,
+                "PAYMENT" : r.PAYMENT,
+                "TOTALPAYMENTAMOUNT" : r.TOTALPAYMENTAMOUNT,
+                "PRINCIPALDISPLAY" : r.PRINCIPALDISPLAY,
+                "INTERESTDISPLAY" : r.INTERESTDISPLAY,
+            }
+            for r in records
+        ]
+
+        installments = Installment.objects.select_related("lease").all()
+        leases = Lease.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency}
+        leases_dict = {l.lease_id: l for l in leases}
+
+        previous_progress = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
+                obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
+            else:
+                obj = None
+
+            if obj:
+                obj.lease = leases_dict.get(str(data["OPERATIONPROJECTID"]))
+                obj.payment_date = data["PAYMENTDATE"].date() if data["PAYMENTDATE"] else None
+                obj.vat = safe_decimal(data["VATRATE"])
+                obj.vat_amount = safe_decimal(data["VATAMOUNT"])
+                obj.payment = safe_decimal(data["PAYMENT"])
+                obj.amount = safe_decimal(data["TOTALPAYMENTAMOUNT"])
+                obj.principal = safe_decimal(data["PRINCIPALDISPLAY"])
+                obj.interest = safe_decimal(data["INTERESTDISPLAY"])
+                obj.sequency = int(data["SequenceNo"])
+                obj.save()
+            else:
+                print(f"{str(data["OPERATIONPROJECTID"])} - {data["SequenceNo"]}: ")
+                Installment.objects.create(
+                    company = company_obj,
+                    lease = leases_dict.get(str(data["OPERATIONPROJECTID"])),
+                    payment_date = data["PAYMENTDATE"].date() if data["PAYMENTDATE"] else None,
+                    vat = safe_decimal(data["VATRATE"]),
+                    vat_amount = safe_decimal(data["VATAMOUNT"]),
+                    payment = safe_decimal(data["PAYMENT"]),
+                    amount = safe_decimal(data["TOTALPAYMENTAMOUNT"]),
+                    principal = safe_decimal(data["PRINCIPALDISPLAY"]),
+                    interest = safe_decimal(data["INTERESTDISPLAY"]),
+                    sequency = int(data["SequenceNo"]),
+                )
+    except Exception as e:
+        print(e)
+
+
+@shared_task()
+def fix_collections(lease_code):
     obj = Lease.objects.select_related("contract").filter(code = lease_code).first()
 
     SERVER = "192.168.81.8,1433"
