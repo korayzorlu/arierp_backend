@@ -58,7 +58,6 @@ def fix_leases(company):
             IS_LAST_PROJECT,
             CurrentRequest
         FROM LeasingOperationProjectList
-        WHERE RiskIncludingTypeName='Planlandı' OR RiskIncludingTypeName='Aktifleştirildi' OR RiskIncludingTypeName='Durduruldu'
         """
 
         cursor = conn.cursor()
@@ -96,7 +95,7 @@ def fix_leases(company):
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        lease_by_code = {l.code: l for l in leases if l.code}
+        lease_by_code = {l.lease_id: l for l in leases if l.lease_id}
         contracts_dict = {c.code: c for c in contracts}
         statuses_dict = {s.name: s for s in statuses}
         currencies_dict = {c.code: c for c in currencies}
@@ -109,8 +108,8 @@ def fix_leases(company):
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
-            if str(data["OperationProjectCode"]):
-                obj = (lease_by_code.get(str(data["OperationProjectCode"])))
+            if str(data["OperationProjectId"]):
+                obj = (lease_by_code.get(str(data["OperationProjectId"])))
             else:
                 obj = None
 
@@ -121,7 +120,7 @@ def fix_leases(company):
                 obj.type = str(data["TypeName"]) or ""
                 obj.vat = safe_decimal(data["VatRate"])
                 obj.activation_date = data["ActivationDate"].date() if data["ActivationDate"] else None
-                obj.lease_status = get_lease_status_value(str(data["TypeName"])) or None
+                obj.lease_status = get_lease_status_value(str(data["RiskIncludingTypeName"])) or None
                 obj.currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
                 obj.musteri_baz_maliyet = safe_decimal(data["CustomerBaseCost"])
                 obj.vade = int(data["PaymentCount"]) or ""
@@ -143,7 +142,7 @@ def fix_leases(company):
                     type = str(data["TypeName"]) or "",
                     vat = safe_decimal(data["VatRate"]),
                     activation_date = data["ActivationDate"].date() if data["ActivationDate"] else None,
-                    lease_status = get_lease_status_value(str(data["TypeName"])) or None,
+                    lease_status = get_lease_status_value(str(data["RiskIncludingTypeName"])) or None,
                     currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"]),
                     musteri_baz_maliyet = safe_decimal(data["CustomerBaseCost"]),
                     vade = int(data["PaymentCount"]) or "",
