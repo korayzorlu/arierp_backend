@@ -264,6 +264,7 @@ def fix_partners(company):
         cities_dict = {normalize(c.name): c for c in cities}
         countries_dict = {c.iso2: c for c in countries}
         sectors_dict = {s.main_sector_code: s for s in sectors}
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         previous_progress = 0
         for index,data in enumerate(external_data):
@@ -310,17 +311,7 @@ def fix_partners(company):
             #     )
 
             if str(data["IndividualCustomerId"]):
-                obj = (
-                    partner_by_crm.get(str(data["IndividualCustomerId"]))
-                )
-            elif str(data["CustomerCode"]):
-                obj = (
-                    partner_by_customer.get(str(data["CustomerCode"]))
-                )
-            elif str(data["FullName"]) and str(data["TaxAndTCIdentity"]):
-                obj = (
-                    partner_by_name_vkn.get((data["FullName"], str(data["TaxAndTCIdentity"])))
-                )
+                obj = (partner_by_crm.get(str(data["IndividualCustomerId"])))
             else:
                 obj = None
 
@@ -349,7 +340,7 @@ def fix_partners(company):
             else:
                 print(f"{str(data["IndividualCustomerId"])} - {data["FullName"]}: ")
                 Partner.objects.create(
-                    company = Company.objects.select_related().filter(id = int(company)).first(),
+                    company = company_obj,
                     first_name = f"{data["FirstName"]} {data["SecondName"]}" if data["SecondName"] else data["FirstName"] or "",
                     last_name = data["Surname"] or "",
                     name = data["FullName"] or "",
@@ -494,17 +485,7 @@ def fix_partnersi(company):
             # )
 
             if str(data["InstitutionalCustomerId"]):
-                obj = (
-                    partner_by_crm.get(str(data["InstitutionalCustomerId"]))
-                )
-            elif str(data["InstitutionalCustomerCode"]):
-                obj = (
-                    partner_by_customer.get(str(data["InstitutionalCustomerCode"]))
-                )
-            elif str(data["InstitutionalCustomerName"]) and str(data["TaxNo"]):
-                obj = (
-                    partner_by_name_vkn.get((data["InstitutionalCustomerName"], str(data["TaxNo"])))
-                )
+                obj = (partner_by_crm.get(str(data["InstitutionalCustomerId"])))
             else:
                 obj = None
 
