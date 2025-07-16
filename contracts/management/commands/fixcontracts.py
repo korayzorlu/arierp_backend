@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
 from contracts.models import *
-from contracts.tasks import *
 from leasing.models import *
+from contracts.tasks import fix_contracts
 
 import pandas as pd
 import json
@@ -18,11 +18,15 @@ class Command(BaseCommand):
             return classmodel.objects.get(**kwargs)
         except classmodel.DoesNotExist:
             return None
-    
+
+    def add_arguments(self, parser):
+        parser.add_argument('-c', type=str, help='Company to associate with operation')
 
     def handle(self, *args, **options):
+        company = options.get('c')
+
         print("processing...")
         
-        fix_contracts.delay()
+        fix_contracts.delay(company)
         
         print("done!")

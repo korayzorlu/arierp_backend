@@ -38,8 +38,8 @@ class Command(BaseCommand):
                     print(current_progress)
                     previous_progress = current_progress
 
-                fix_leases.delay(obj.code)
+                fix_installments.delay(obj.code)
         else:
-            fix_leases.delay(lease_code)
+            fix_installments.delay(lease_code)
         
         print("done!")
