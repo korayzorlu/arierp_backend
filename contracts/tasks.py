@@ -118,7 +118,7 @@ def fix_contracts(company):
                     contract_id = str(data["ContractHeaderId"]) or "",
                     code = str(data["ContractHeaderCode"]) or "",
                     partner = partners_dict.get(str(data["CustomerId"])),
-                    quotation = quotations_dict.get(str(data["QuotationHeaderId"])),
+                    quotation_obj = quotations_dict.get(str(data["QuotationHeaderId"])),
                     committe = str(data["CommitteeName"]) or "",
                     credit_type = str(data["CreditTypeName"]) or "",
                     customer_representative = str(data["CustomerRepresentative"]) or "",

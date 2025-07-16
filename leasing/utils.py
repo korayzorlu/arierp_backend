@@ -23,6 +23,27 @@ def is_valid_installment_data(data):
         return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)
     return True, None
 
+def get_lease_status_value(display_label):
+    LEASE_STATUS_CHOICES = (
+        ('aktiflestirildi', ('Aktifleştirildi')),
+        ('iptal_edildi', ('İptal Edildi')),
+        ('devredildi', ('Devredildi')),
+        ('baskasina_transfer_edildi', ('Başkasına Transfer Edildi')),
+        ('planlandi', ('Planlandı')),
+        ('durduruldu', ('Durduruldu')),
+        ('feshedildi', ('Feshedildi')),
+        ('revize_edildi', ('Revize Edildi')),
+        ('pert', ('Pert')),
+        ('envantere_alindi', ('Envantere Alındı')),
+        ('para_birimi_degisti', ('Para Birimi Değişti')),
+        ('kanuni_takibe_alindi', ('Kanuni Takibe Alındı')),
+    )
+    
+    for value, label in LEASE_STATUS_CHOICES:
+        if label == display_label:
+            return value
+    return None
+
 def import_leases(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
         

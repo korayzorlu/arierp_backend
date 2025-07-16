@@ -8,11 +8,13 @@ import pyodbc
 from decimal import Decimal
 
 from .models import *
+from .utils import get_lease_status_value
 from users.models import User
 from leasing.models import *
 from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency
-
+from common.utils.common_utils import normalize,safe_decimal
+from partners.models import Partner
 
 @shared_task()
 def fix_leases(company):
@@ -38,18 +40,23 @@ def fix_leases(company):
         conn = pyodbc.connect(connectionString)
         
         SQL_QUERY = """
-        SELECT ContractHeaderId,
+        SELECT OperationProjectCode,
             ContractHeaderCode,
-            CustomerId,
-            QuotationHeaderId,
-            CommitteeName,
-            CreditTypeName,
-            CustomerRepresentative,
-            Vendor,
-            Project,
-            SubStatuteName,
-            LopOpenDate
-        FROM ContractHeaderLightList
+            TypeName,
+            VatRate,
+            ActivationDate,
+            RiskIncludingTypeName,
+            CurrencyCode,
+            CustomerBaseCost,
+            PaymentCount,
+            AnnualRate,
+            OperationBaseIRR,
+            SubStatusName,
+            LeasingTypeName,
+            ApplicationID,
+            IS_LAST_PROJECT,
+            CurrentRequest,
+        FROM LeasingOperationProjectList
         """
 
         cursor = conn.cursor()
@@ -59,31 +66,37 @@ def fix_leases(company):
 
         external_data=[
             {
-                "ContractHeaderId" : r.ContractHeaderId,
+                "OperationProjectCode" : r.OperationProjectCode,
                 "ContractHeaderCode" : r.ContractHeaderCode,
-                "CustomerId" : r.CustomerId,
-                "QuotationHeaderId" : r.QuotationHeaderId,
-                "CommitteeName" : r.CommitteeName,
-                "CreditTypeName" : r.CreditTypeName,
-                "CustomerRepresentative" : r.CustomerRepresentative,
-                "Vendor" : r.Vendor,
-                "Project" : r.Project,
-                "SubStatuteName" : r.SubStatuteName,
-                "LopOpenDate" : r.LopOpenDate,
+                "TypeName" : r.TypeName,
+                "VatRate" : r.VatRate,
+                "ActivationDate" : r.ActivationDate,
+                "RiskIncludingTypeName" : r.RiskIncludingTypeName,
+                "CurrencyCode" : r.CurrencyCode,
+                "CustomerBaseCost" : r.CustomerBaseCost,
+                "PaymentCount" : r.PaymentCount,
+                "AnnualRate" : r.AnnualRate,
+                "OperationBaseIRR" : r.OperationBaseIRR,
+                "SubStatusName" : r.SubStatusName,
+                "LeasingTypeName" : r.LeasingTypeName,
+                "ApplicationID" : r.ApplicationID,
+                "IS_LAST_PROJECT" : r.IS_LAST_PROJECT,
+                "CurrentRequest" : r.CurrentRequest,
+                "IS_LAST_PROJECT" : r.IS_LAST_PROJECT,
             }
             for r in records
         ]
 
-        contracts = Contract.objects.select_related("status","company","quotation_obj","partner").all()
+        leases = Lease.objects.select_related("status","company","quotation_obj","partner").all()
+        contracts = Contract.objects.select_related().all()
         statuses = Status.objects.select_related().all()
-        partners = Partner.objects.select_related().all()
-        quotations = Quotation.objects.select_related().all()
+        currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        contract_by_code = {c.contract_id: c for c in contracts if c.contract_id}
+        lease_by_code = {l.code: l for l in leases if l.code}
+        contracts_dict = {c.name: c for c in contracts}
         statuses_dict = {s.name: s for s in statuses}
-        partners_dict = {p.crm_code: p for p in partners}
-        quotations_dict = {q.code: q for q in quotations}
+        currencies_dict = {c.code: c for c in currencies}
 
         previous_progress = 0
         for index,data in enumerate(external_data):
@@ -93,40 +106,49 @@ def fix_leases(company):
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
-            if str(data["ContractHeaderId"]):
-                obj = (contract_by_code.get(str(data["ContractHeaderId"])))
+            if str(data["OperationProjectCode"]):
+                obj = (lease_by_code.get(str(data["OperationProjectCode"])))
             else:
                 obj = None
 
             if obj:
-                obj.contract_id = str(data["ContractHeaderId"]) or ""
-                obj.code = str(data["ContractHeaderCode"]) or ""
-                obj.partner = partners_dict.get(str(data["CustomerId"]))
-                obj.quotation_obj = quotations_dict.get(str(data["QuotationHeaderId"]))
-                obj.committe = str(data["CommitteeName"]) or ""
-                obj.credit_type = str(data["CreditTypeName"]) or ""
-                obj.customer_representative = str(data["CustomerRepresentative"]) or ""
-                obj.supplier = data["Vendor"] or ""
-                obj.project = data["Project"] or ""
-                obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
-                obj.lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None
-                
+                obj.code = str(data["OperationProjectCode"]) or ""
+                obj.contract = contracts_dict.get(str(data["ContractHeaderCode"]))
+                obj.type = str(data["TypeName"]) or ""
+                obj.vat = safe_decimal(data["LeasingBaseCost"])
+                obj.activation_date = data["ActivationDate"].date() if data["ActivationDate"] else None
+                obj.lease_status = get_lease_status_value(str(data["TypeName"])) or None
+                obj.currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
+                obj.musteri_baz_maliyet = safe_decimal(data["CustomerBaseCost"])
+                obj.vade = int(data["PaymentCount"]) or ""
+                obj.leasing_rate = safe_decimal(data["AnnualRate"])
+                obj.irr = safe_decimal(data["OperationBaseIRR"])
+                obj.status = statuses_dict.get(normalize(data["SubStatusName"]))
+                obj.leasing_type = str(data["LeasingTypeName"]) or ""
+                obj.application_no = str(data["ApplicationID"]) or ""
+                obj.is_last_project = True if str(data["IS_LAST_PROJECT"]) == "1" else False
+                obj.current_request = str(data["CurrentRequest"]) or ""
                 obj.save()
             else:
-                print(f"{str(data["ContractHeaderId"])} - {data["CustomerId"]}: ")
-                Contract.objects.create(
+                print(f"{str(data["OperationProjectCode"])} - {data["CustomerId"]}: ")
+                Lease.objects.create(
                     company = company_obj,
-                    contract_id = str(data["ContractHeaderId"]) or "",
-                    code = str(data["ContractHeaderCode"]) or "",
-                    partner = partners_dict.get(str(data["CustomerId"])),
-                    quotation = quotations_dict.get(str(data["QuotationHeaderId"])),
-                    committe = str(data["CommitteeName"]) or "",
-                    credit_type = str(data["CreditTypeName"]) or "",
-                    customer_representative = str(data["CustomerRepresentative"]) or "",
-                    supplier = data["Vendor"] or "",
-                    project = data["Project"] or "",
-                    status = statuses_dict.get(normalize(data["SubStatuteName"])),
-                    lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None
+                    code = str(data["OperationProjectCode"]) or "",
+                    contract = contracts_dict.get(str(data["ContractHeaderCode"])),
+                    type = str(data["TypeName"]) or "",
+                    vat = safe_decimal(data["LeasingBaseCost"]),
+                    activation_date = data["ActivationDate"].date() if data["ActivationDate"] else None,
+                    lease_status = get_lease_status_value(str(data["TypeName"])) or None,
+                    currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"]),
+                    musteri_baz_maliyet = safe_decimal(data["CustomerBaseCost"]),
+                    vade = int(data["PaymentCount"]) or "",
+                    leasing_rate = safe_decimal(data["AnnualRate"]),
+                    irr = safe_decimal(data["OperationBaseIRR"]),
+                    status = statuses_dict.get(normalize(data["SubStatusName"])),
+                    leasing_type = str(data["LeasingTypeName"]) or "",
+                    application_no = str(data["ApplicationID"]) or "",
+                    is_last_project = True if str(data["IS_LAST_PROJECT"]) == "1" else False,
+                    current_request = str(data["CurrentRequest"]) or "",
                 )
     except Exception as e:
         print(e)
