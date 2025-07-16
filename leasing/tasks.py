@@ -40,7 +40,8 @@ def fix_leases(company):
         conn = pyodbc.connect(connectionString)
         
         SQL_QUERY = """
-        SELECT OperationProjectCode,
+        SELECT OperationProjectId,
+            OperationProjectCode,
             ContractHeaderCode,
             TypeName,
             VatRate,
@@ -51,12 +52,13 @@ def fix_leases(company):
             PaymentCount,
             AnnualRate,
             OperationBaseIRR,
-            SubStatusName,
+            SubStatuteName,
             LeasingTypeName,
             ApplicationID,
             IS_LAST_PROJECT,
-            CurrentRequest,
+            CurrentRequest
         FROM LeasingOperationProjectList
+        WHERE RiskIncludingTypeName='Planlandı' OR RiskIncludingTypeName='Aktifleştirildi' OR RiskIncludingTypeName='Durduruldu'
         """
 
         cursor = conn.cursor()
@@ -65,7 +67,8 @@ def fix_leases(company):
         records = cursor.fetchall()
 
         external_data=[
-            {
+            {   
+                "OperationProjectId" : r.OperationProjectId,
                 "OperationProjectCode" : r.OperationProjectCode,
                 "ContractHeaderCode" : r.ContractHeaderCode,
                 "TypeName" : r.TypeName,
@@ -77,7 +80,7 @@ def fix_leases(company):
                 "PaymentCount" : r.PaymentCount,
                 "AnnualRate" : r.AnnualRate,
                 "OperationBaseIRR" : r.OperationBaseIRR,
-                "SubStatusName" : r.SubStatusName,
+                "SubStatuteName" : r.SubStatuteName,
                 "LeasingTypeName" : r.LeasingTypeName,
                 "ApplicationID" : r.ApplicationID,
                 "IS_LAST_PROJECT" : r.IS_LAST_PROJECT,
@@ -87,14 +90,14 @@ def fix_leases(company):
             for r in records
         ]
 
-        leases = Lease.objects.select_related("status","company","quotation_obj","partner").all()
+        leases = Lease.objects.select_related("status","company","contract","currency").all()
         contracts = Contract.objects.select_related().all()
         statuses = Status.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         lease_by_code = {l.code: l for l in leases if l.code}
-        contracts_dict = {c.name: c for c in contracts}
+        contracts_dict = {c.code: c for c in contracts}
         statuses_dict = {s.name: s for s in statuses}
         currencies_dict = {c.code: c for c in currencies}
 
@@ -112,10 +115,11 @@ def fix_leases(company):
                 obj = None
 
             if obj:
+                obj.lease_id = str(data["OperationProjectId"]) or ""
                 obj.code = str(data["OperationProjectCode"]) or ""
                 obj.contract = contracts_dict.get(str(data["ContractHeaderCode"]))
                 obj.type = str(data["TypeName"]) or ""
-                obj.vat = safe_decimal(data["LeasingBaseCost"])
+                obj.vat = safe_decimal(data["VatRate"])
                 obj.activation_date = data["ActivationDate"].date() if data["ActivationDate"] else None
                 obj.lease_status = get_lease_status_value(str(data["TypeName"])) or None
                 obj.currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
@@ -123,20 +127,21 @@ def fix_leases(company):
                 obj.vade = int(data["PaymentCount"]) or ""
                 obj.leasing_rate = safe_decimal(data["AnnualRate"])
                 obj.irr = safe_decimal(data["OperationBaseIRR"])
-                obj.status = statuses_dict.get(normalize(data["SubStatusName"]))
+                obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
                 obj.leasing_type = str(data["LeasingTypeName"]) or ""
                 obj.application_no = str(data["ApplicationID"]) or ""
                 obj.is_last_project = True if str(data["IS_LAST_PROJECT"]) == "1" else False
                 obj.current_request = str(data["CurrentRequest"]) or ""
                 obj.save()
             else:
-                print(f"{str(data["OperationProjectCode"])} - {data["CustomerId"]}: ")
+                print(f"{str(data["OperationProjectCode"])} - {data["ContractHeaderCode"]}: ")
                 Lease.objects.create(
                     company = company_obj,
+                    lease_id = str(data["OperationProjectId"]) or "",
                     code = str(data["OperationProjectCode"]) or "",
                     contract = contracts_dict.get(str(data["ContractHeaderCode"])),
                     type = str(data["TypeName"]) or "",
-                    vat = safe_decimal(data["LeasingBaseCost"]),
+                    vat = safe_decimal(data["VatRate"]),
                     activation_date = data["ActivationDate"].date() if data["ActivationDate"] else None,
                     lease_status = get_lease_status_value(str(data["TypeName"])) or None,
                     currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"]),
@@ -144,7 +149,7 @@ def fix_leases(company):
                     vade = int(data["PaymentCount"]) or "",
                     leasing_rate = safe_decimal(data["AnnualRate"]),
                     irr = safe_decimal(data["OperationBaseIRR"]),
-                    status = statuses_dict.get(normalize(data["SubStatusName"])),
+                    status = statuses_dict.get(normalize(data["SubStatuteName"])),
                     leasing_type = str(data["LeasingTypeName"]) or "",
                     application_no = str(data["ApplicationID"]) or "",
                     is_last_project = True if str(data["IS_LAST_PROJECT"]) == "1" else False,

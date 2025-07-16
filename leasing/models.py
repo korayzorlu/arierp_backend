@@ -16,6 +16,7 @@ class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
 
+    lease_id = models.CharField(_("Lease ID"), max_length=25, null=True, blank=True)
     code = models.CharField(_("Code"), max_length=25)
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_leases")
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
