@@ -6,7 +6,6 @@ import pandas as pd
 import io
 import pyodbc
 from decimal import Decimal
-from collections import defaultdict
 
 from .models import *
 from .utils import get_lease_status_value
@@ -265,6 +264,8 @@ def fix_installments(company):
 
 @shared_task()
 def fix_collections(lease_code):
+    obj = Lease.objects.select_related("contract").filter(code = lease_code).first()
+
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -482,7 +483,7 @@ def fix_collections(lease_code):
                 AND TrnAccountType = 11 
                 AND TrnAccountId <> 0 
                 AND TrnDueDate <= CONVERT(DATETIME, '2025-7-17', 102)
-                --AND TrnOprContractId = int(obj.contract.contract_id) if obj else 0
+                AND TrnOprContractId = {int(obj.contract.contract_id) if obj else 0}
                 --AND JrnStpPstGrpName = 'Kira'
 
             ORDER BY 
@@ -501,8 +502,7 @@ def fix_collections(lease_code):
                 "due_date" : r.TrnDueDate,
                 "group" : r.JrnStpPstGrpName,
                 "posting_type" : r.viewTrnPostingType,
-                "document_no" : r.TrnReturnDocumentNo,
-                "TrnOprContractId" : r.TrnOprContractId
+                "document_no" : r.TrnReturnDocumentNo
             }
             for r in records
         ]
@@ -517,76 +517,52 @@ def fix_collections(lease_code):
 
         # print(result["type1"] - result["type0"])
 
-        leases = Lease.objects.select_related("contract").all()
-        installments = Installment.objects.select_related("lease").filter()
-        
-        #data_dict = {d["TrnOprContractId"]: d for d in external_data}
-        data_dict = defaultdict(list)
-        previous_progress = 0
-        for index,d in enumerate(external_data):
-            current_progress = ((index + 1)/len(leases))*100
 
-            if current_progress - previous_progress >= 1:
-                previous_progress = current_progress
-                print(f"{int(current_progress)} %")
-            data_dict[d["TrnOprContractId"]].append(d)
-        installment_by_code = {(i.lease.lease_id, i.payment_date): i for i in installments if i.lease.lease_id and i.payment_date}
+        borclar = sorted([x for x in external_data if x['type'] == 1], key=lambda x: x['due_date'])
+        tahsilatlar = sorted([x for x in external_data if x['type'] == 0], key=lambda x: x['due_date'])
 
-        previous_progress = 0
-        for index,lease in enumerate(leases):
-            current_progress = ((index + 1)/len(leases))*100
+        # Ödeme işlemi
+        i = 0  # tahsilat index
+        for borc in borclar:
+            while borc['amount'] > 0 and i < len(tahsilatlar):
+                tahsilat = tahsilatlar[i]
+                if tahsilat['amount'] == 0:
+                    i += 1
+                    continue
 
-            if current_progress - previous_progress >= 1:
-                previous_progress = current_progress
-                print(f"{int(current_progress)} %")
+                odenecek = min(borc['amount'], tahsilat['amount'])
+                borc['amount'] -= odenecek
+                tahsilat['amount'] -= odenecek
 
-            objs = data_dict.get(lease.contract.contract_id)
+                if tahsilat['amount'] == 0:
+                    i += 1  # sonraki tahsilata geç
 
-            borclar = sorted([x for x in objs if x['type'] == 1], key=lambda x: x['due_date'])
-            tahsilatlar = sorted([x for x in objs if x['type'] == 0], key=lambda x: x['due_date'])
+        # Kalan borçları yazdırmadan önce belgeye göre 'Kira - Kira - Normal' tarihlerini bulalım
+        def get_latest_kira_normal_due_date(document_no, data):
+            if not document_no:
+                return None
+            kira_normaller = [d['due_date'] for d in data 
+                            if d['document_no'] == document_no and d['posting_type'] == 'Kira - Normal']
+            if kira_normaller:
+                return max(kira_normaller).date()
+            else:
+                return None
 
-            # Ödeme işlemi
-            i = 0  # tahsilat index
-            for borc in borclar:
-                while borc['amount'] > 0 and i < len(tahsilatlar):
-                    tahsilat = tahsilatlar[i]
-                    if tahsilat['amount'] == 0:
-                        i += 1
-                        continue
+        kalan_borclar = [b for b in borclar if b['amount'] > 0]
 
-                    odenecek = min(borc['amount'], tahsilat['amount'])
-                    borc['amount'] -= odenecek
-                    tahsilat['amount'] -= odenecek
-
-                    if tahsilat['amount'] == 0:
-                        i += 1  # sonraki tahsilata geç
-
-            # Kalan borçları yazdırmadan önce belgeye göre 'Kira - Kira - Normal' tarihlerini bulalım
-            def get_latest_kira_normal_due_date(document_no, data):
-                if not document_no:
-                    return None
-                kira_normaller = [d['due_date'] for d in data 
-                                if d['document_no'] == document_no and d['posting_type'] == 'Kira - Normal']
-                if kira_normaller:
-                    return max(kira_normaller).date()
-                else:
-                    return None
-
-            kalan_borclar = [b for b in borclar if b['amount'] > 0]
-
-            #print("🎯 Kalan Borçlar:")
-            toplam_borc = Decimal("0")
-            for b in kalan_borclar:
-                belge = b['document_no']
-                kira_normal_tarih = get_latest_kira_normal_due_date(belge, objs)
-                gosterilecek_tarih = kira_normal_tarih or b['due_date'].date()
-                toplam_borc += b['amount']
-                installment_obj = installment_by_code.get((lease.id, gosterilecek_tarih)).first()
-                installment_obj.overdue_amount = Decimal(str(b['amount']))
-                installment_obj.save()
-                #print(f"Kira Planı: {installment_obj.lease.code} - Ödeme Tarihi: {installment_obj.payment_date} - Sıra No: {installment_obj.sequency}")
-                #print(f"Belge No: {belge or '[belgesiz]'}, Vade: {gosterilecek_tarih}, Kalan Borç: {b['amount']}")
-            #print(f"Toplam Borç: {toplam_borc}")
+        #print("🎯 Kalan Borçlar:")
+        toplam_borc = Decimal("0")
+        for b in kalan_borclar:
+            belge = b['document_no']
+            kira_normal_tarih = get_latest_kira_normal_due_date(belge, external_data)
+            gosterilecek_tarih = kira_normal_tarih or b['due_date'].date()
+            toplam_borc += b['amount']
+            installment_obj = Installment.objects.select_related().filter(lease = obj, payment_date = gosterilecek_tarih).first()
+            installment_obj.overdue_amount = Decimal(str(b['amount']))
+            installment_obj.save()
+            #print(f"Kira Planı: {installment_obj.lease.code} - Ödeme Tarihi: {installment_obj.payment_date} - Sıra No: {installment_obj.sequency}")
+            #print(f"Belge No: {belge or '[belgesiz]'}, Vade: {gosterilecek_tarih}, Kalan Borç: {b['amount']}")
+        #print(f"Toplam Borç: {toplam_borc}")
 
     except Exception as e:
         print(e)
