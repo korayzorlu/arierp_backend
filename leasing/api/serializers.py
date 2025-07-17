@@ -6,6 +6,7 @@ from datetime import date
 
 from leasing.models import *
 from companies.models import Company,UserCompany
+from partners.models import Partner
     
 class LeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -256,3 +257,10 @@ class BankActivityLeaseListSerializer(serializers.Serializer):
             }
         else:
             return ""
+        
+class RiskPartnerListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    crm_code = serializers.CharField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.CharField()

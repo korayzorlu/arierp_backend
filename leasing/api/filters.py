@@ -157,3 +157,8 @@ class BankActivityLeaseFilter(FilterSet):
     
     def filter_lease(self, queryset, lease, value):
         return queryset.filter(lease__lease = value)
+    
+class RiskPartnerFilter(FilterSet):
+    class Meta:
+        model = Partner
+        fields = ['uuid','name','tc_vkn_no']
