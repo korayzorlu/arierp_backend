@@ -340,7 +340,7 @@ def export_bank_activities(self):
         data["İşlem Kodu"].append(obj.bank_activity.process_code)
         data["Borç / Alacak"].append(obj.bank_activity.credit_or_debit)
         data["Döviz kodu"].append(currency)
-        data["Tutar"].append(float(obj.lease.processed_amount) if obj.lease.processed_amount is not None else None)
+        data["Tutar"].append(float(obj.processed_amount) if obj.processed_amount is not None else None)
         data["Kontrat No"].append(obj.bank_activity.kontrat_no)
         data["Açıklama"].append(obj.bank_activity.description)
         data["Gönderen Ünvanı"].append(obj.lease.contract.code)
