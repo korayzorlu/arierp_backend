@@ -283,8 +283,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',  # giriş yapmış kullanıcılar için limit
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '10/second',  # anonim kullanıcılar için limit
-        'user': '10/second',  # kullanıcı başına günlük limit
+        'anon': '20/second',  # anonim kullanıcılar için limit
+        'user': '20/second',  # kullanıcı başına günlük limit
     }
 }
 

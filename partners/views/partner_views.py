@@ -83,7 +83,7 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         valid, response = is_valid_partner_data(data)
         if not valid:
             return response
-
+        
         # country = Country.objects.filter(iso2 = data.get('country') if data.get('country') else 0).first()
         # city = City.objects.filter(country__iso2 = data.get('country') if data.get('country') else 0,id = int(data.get('city').get("id")) if data.get('city') else 0).first()
         # billing_country = Country.objects.filter(iso2 = data.get('billingCountry') if data.get('billingCountry') else 0).first()

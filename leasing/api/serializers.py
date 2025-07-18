@@ -36,6 +36,7 @@ class LeaseListSerializer(serializers.Serializer):
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
     partner_crm_code = serializers.SerializerMethodField()
+    partner_special = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
     block = serializers.SerializerMethodField()
@@ -67,6 +68,9 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_partner_crm_code(self, obj):
         return obj.contract.partner.crm_code if obj.contract.partner else ""
+    
+    def get_partner_special(self, obj):
+        return True if "special" in obj.contract.partner.types else False
     
     def get_quotation(self, obj):
         return obj.contract.quotation_obj.code if obj.contract.quotation_obj else ""
@@ -187,7 +191,14 @@ class BankActivityListSerializer(serializers.Serializer):
         return obj.currency.code if obj.currency else ""
     
     def get_leases(self, obj):
-        bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__uuid = obj.uuid)
+        bank_activity_leases = BankActivityLease.objects.select_related().filter(
+            Q(bank_activity__uuid = obj.uuid) &
+            (
+                Q(lease__lease_status='aktiflestirildi') |
+                Q(lease__lease_status='planlandi') |
+                Q(lease__lease_status='durduruldu')
+            )
+        )
         bank_activity_lease_list = []
         if bank_activity_leases:
             for bank_activity_lease in bank_activity_leases:

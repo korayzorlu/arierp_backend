@@ -46,6 +46,7 @@ class PartnerListSerializer(serializers.Serializer):
     customer = serializers.SerializerMethodField()
     supplier = serializers.SerializerMethodField()
     shareholder = serializers.SerializerMethodField()
+    special = serializers.SerializerMethodField()
     companyId = serializers.SerializerMethodField()
     vatOffice = serializers.CharField(source = "vat_office")
     vatNo = serializers.CharField(source = "vat_no")

@@ -241,7 +241,14 @@ class BankActivityLeaseList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["bank_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
 
-        queryset = BankActivityLease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-bank_activity__process_date")
+        queryset = BankActivityLease.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            (
+                Q(lease__lease_status='aktiflestirildi') |
+                Q(lease__lease_status='planlandi') |
+                Q(lease__lease_status='durduruldu')
+            )
+        ).order_by("-bank_activity__process_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
