@@ -8,6 +8,8 @@ import io
 from decimal import Decimal
 import re
 import os
+import random
+import string
 
 from .models import *
 from common.models import Status
@@ -334,7 +336,7 @@ def export_bank_activities(self):
                 currency = obj.lease.currency.code
         else:
             currency = ""
-
+        print(obj.bank_activity.process_date.strftime("%y%m%d"))
         data["Hesap Numarası"].append(obj.bank_activity.bank_account_no)
         data["İşlem Tarihi"].append(obj.bank_activity.process_date.strftime("%y%m%d"))
         data["İşlem Kodu"].append(obj.bank_activity.process_code)
@@ -358,7 +360,10 @@ def export_bank_activities(self):
     if not os.path.exists(base_path):
             os.makedirs(base_path)
 
-    excel_dosyasi_adi = base_path + "/banka-hareketleri.xlsx"
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/banka-hareketleri-{rastgele_deger}.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Banka Hareketleri', index=False)
         
