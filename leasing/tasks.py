@@ -282,13 +282,7 @@ def fix_collections(company):
         TrustServerCertificate=yes;
     '''
 
-
-    
-
-    def get_connection():
-        return pyodbc.connect(connectionString)
-
-    conn = get_connection()
+    conn = pyodbc.connect(connectionString)
     cursor = conn.cursor()
 
     leases = Lease.objects.select_related("contract").all()
@@ -579,7 +573,7 @@ def fix_collections(company):
                 kira_normal_tarih = get_latest_kira_normal_due_date(belge, external_data)
                 gosterilecek_tarih = kira_normal_tarih or b['due_date'].date()
                 toplam_borc += b['amount']
-                installment_obj = (installment_by_code.get((lease.id,gosterilecek_tarih)))
+                installment_obj = (installment_by_code.get((lease.lease_id,gosterilecek_tarih)))
                 installment_obj.overdue_amount = Decimal(str(b['amount']))
                 installment_obj.save()
                 #print(f"Kira Planı: {installment_obj.lease.code} - Ödeme Tarihi: {installment_obj.payment_date} - Sıra No: {installment_obj.sequency}")

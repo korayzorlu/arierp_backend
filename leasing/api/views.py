@@ -241,7 +241,7 @@ class BankActivityLeaseList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["bank_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
 
-        queryset = BankActivityLease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-bank_activity__payment_date")
+        queryset = BankActivityLease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-bank_activity__process_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -267,13 +267,21 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["bank_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
+        custom_related_fields = ["country","billing_country"]
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("name")
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(partner_contracts__contract_leases__lease_installments__overdue_amount__gt=0) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            )
+        ).distinct().order_by("name")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["bank_activity__uuid","lease__code"]
+            search_fields = ["country__name","billing__country"]
             
             q_objects = Q()
             for field in search_fields:

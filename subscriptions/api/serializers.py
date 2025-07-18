@@ -27,7 +27,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/collections"},
-                {"type" : "item", "class" : "free", "label" : "Risk İzleme", "icon" : "policy", "route" : "/risk"},
+                {"type" : "item", "class" : "free", "label" : "Risk İzleme", "icon" : "policy", "route" : "/risk-partners"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},

@@ -159,6 +159,13 @@ class BankActivityLeaseFilter(FilterSet):
         return queryset.filter(lease__lease = value)
     
 class RiskPartnerFilter(FilterSet):
+    name = CharFilter(method = 'filter_name')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
+
+    def filter_name(self, queryset, name, value):
+        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            Q(lowercase__icontains = value) |
+            Q(uppercase__icontains = value)
+        )

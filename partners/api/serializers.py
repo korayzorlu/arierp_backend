@@ -76,6 +76,9 @@ class PartnerListSerializer(serializers.Serializer):
     def get_shareholder(self, obj):
         return True if "shareholder" in obj.types else False
     
+    def get_special(self, obj):
+        return True if "special" in obj.types else False
+    
     def get_country(self, obj):
         return obj.country.iso2 if obj.country else ''
     

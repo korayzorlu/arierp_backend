@@ -84,34 +84,35 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         if not valid:
             return response
 
-        country = Country.objects.filter(iso2 = data.get('country') if data.get('country') else 0).first()
-        city = City.objects.filter(country__iso2 = data.get('country') if data.get('country') else 0,id = int(data.get('city').get("id")) if data.get('city') else 0).first()
-        billing_country = Country.objects.filter(iso2 = data.get('billingCountry') if data.get('billingCountry') else 0).first()
-        billing_city = City.objects.filter(country__iso2 = data.get('billingCountry') if data.get('billingCountry') else 0,id = int(data.get('billingCity').get("id")) if data.get('billingCity') else 0).first()
+        # country = Country.objects.filter(iso2 = data.get('country') if data.get('country') else 0).first()
+        # city = City.objects.filter(country__iso2 = data.get('country') if data.get('country') else 0,id = int(data.get('city').get("id")) if data.get('city') else 0).first()
+        # billing_country = Country.objects.filter(iso2 = data.get('billingCountry') if data.get('billingCountry') else 0).first()
+        # billing_city = City.objects.filter(country__iso2 = data.get('billingCountry') if data.get('billingCountry') else 0,id = int(data.get('billingCity').get("id")) if data.get('billingCity') else 0).first()
 
-        phone_country = Country.objects.filter(iso2 = data.get('phoneCountry') if data.get('phoneCountry') else 0).first()
+        # phone_country = Country.objects.filter(iso2 = data.get('phoneCountry') if data.get('phoneCountry') else 0).first()
 
-        partner = Partner.objects.filter(uuid = data.get('uuid')).first()
-        partner.types = get_partner_types(data)
-        partner.name = data.get('name')
-        partner.formal_name = data.get('formalName')
-        partner.vat_office = data.get('vatOffice')
-        partner.vat_no = data.get('vatNo')
-        partner.country = country if country else None
-        partner.city = city if city else None
-        partner.address = data.get('address')
-        partner.address2 = data.get('address2')
-        partner.is_billing_same = data.get('isBillingSame') or False
-        partner.billing_country = country if data.get('isBillingSame') else billing_country
-        partner.billing_city = city if data.get('isBillingSame') else billing_city
-        partner.billing_address = data.get('address') if data.get('isBillingSame') else data.get('billingAddress')
-        partner.billing_address2 = data.get('address2') if data.get('isBillingSame') else data.get('billingAddress2')
-        partner.phone_country = phone_country if data.get('phoneNumber') else None
-        partner.phone_number = data.get('phoneNumber') if phone_country else None
-        partner.email = data.get('email')
-        partner.web = data.get('web')
-        partner.about = data.get('about')
-        partner.save()
+        obj = Partner.objects.filter(uuid = data.get('uuid')).first()
+        # obj.types = get_partner_types(data)
+        obj.name = data.get('name')
+        obj.formal_name = data.get('formalName')
+        # obj.vat_office = data.get('vatOffice')
+        # obj.vat_no = data.get('vatNo')
+        # obj.country = country if country else None
+        # obj.city = city if city else None
+        # obj.address = data.get('address')
+        # obj.address2 = data.get('address2')
+        # obj.is_billing_same = data.get('isBillingSame') or False
+        # obj.billing_country = country if data.get('isBillingSame') else billing_country
+        # obj.billing_city = city if data.get('isBillingSame') else billing_city
+        # obj.billing_address = data.get('address') if data.get('isBillingSame') else data.get('billingAddress')
+        # obj.billing_address2 = data.get('address2') if data.get('isBillingSame') else data.get('billingAddress2')
+        # obj.phone_country = phone_country if data.get('phoneNumber') else None
+        # obj.phone_number = data.get('phoneNumber') if phone_country else None
+        # obj.email = data.get('email')
+        # obj.web = data.get('web')
+        # obj.about = data.get('about')
+        obj.types = get_partner_types(data)
+        obj.save()
 
         return JsonResponse({'message': 'Saved successfully!','status':'success'}, status=200)
     
