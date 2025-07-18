@@ -308,7 +308,9 @@ def export_bank_activities(self):
         "Kontrat No": [],
         "Açıklama": [],
         "Gönderen Ünvanı": [],
+        "Gönderen İsmi": [],
         "Gönderen TCKN / VKN": [],
+        "3. Şahıs Ödemesi": [],
         "Karşı Banka": [],
         "Karşı Şube": [],
         "Karşı Hesap": []
@@ -342,7 +344,9 @@ def export_bank_activities(self):
         data["Kontrat No"].append(obj.bank_activity.kontrat_no)
         data["Açıklama"].append(obj.bank_activity.description)
         data["Gönderen Ünvanı"].append(obj.lease.contract.code)
+        data["Gönderen İsmi"].append(obj.lease.contract.partner.name)
         data["Gönderen TCKN / VKN"].append(obj.bank_activity.tc_vkn_no)
+        data["3. Şahıs Ödemesi"].append("Evet" if obj.is_third_person else "")
         data["Karşı Banka"].append(obj.bank_activity.cross_bank_code)
         data["Karşı Şube"].append(obj.bank_activity.cross_bank_branch_code)
         data["Karşı Hesap"].append(obj.bank_activity.cross_bank_account_no)

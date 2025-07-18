@@ -35,6 +35,7 @@ class SectorListSerializer(serializers.Serializer):
         return instance
     
 class PartnerListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
     uuid = serializers.CharField()
     image = serializers.ImageField()
     name = serializers.CharField()

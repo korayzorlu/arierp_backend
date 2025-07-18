@@ -36,6 +36,7 @@ urlpatterns = [
     path('bank_activities_excel/', BankActivitiesExcelView.as_view(), name="bank_activities_excel"),
     path('update_leaseflex_automation_bank_activity_leases/', UpdateLeaseflexAutomationBankActivityLeasesView.as_view(), name="update_leaseflex_automation_bank_activity_leases"),
     path('update_bank_activity_lease_processed_amount/', UpdateBankActivityLeaseProcessedAmountView.as_view(), name="update_bank_activity_lease_processed_amount"),
+    path('update_bank_activity_leases/', UpdateBankActivityLeasesView.as_view(), name="update_bank_activity_leases"),
 
     path('', include("leasing.api.urls")),
 ]

@@ -141,3 +141,67 @@ class UpdateBankActivityLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwner
         obj.save()
 
         return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)
+    
+class UpdateBankActivityLeasesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        partner = Partner.objects.select_related().filter(uuid = data.get('uuid')).first()
+        bank_activity = BankActivity.objects.select_related().filter(uuid = data.get('bank_activity_uuid')).first()
+   
+        bank_activity_leases = bank_activity.bank_activity_bank_acitivity_leases.all()
+        
+        if bank_activity_leases:
+            for bank_activity_lease in bank_activity_leases:
+                current_lease = bank_activity_lease.lease
+                current_lease.leaseflex_automation = False
+                current_lease.processed_amount = Decimal("0")
+                current_lease.save()
+            bank_activity_leases.delete()
+
+        leases = Lease.objects.filter(
+            Q(contract__partner__uuid = partner.uuid) &
+            (
+                Q(lease_status = "aktiflestirildi") |
+                Q(lease_status = "planlandi") |
+                Q(lease_status = "durduruldu")
+            ) 
+        ).order_by('contract_id', '-activation_date').distinct('contract_id')
+
+        if leases:
+            for lease in leases:
+                bank_activity_lease = BankActivityLease.objects.create(
+                    company = bank_activity.company,
+                    bank_activity = bank_activity,
+                    lease = lease
+                )
+
+                processed_amount = bank_activity.amount
+                
+                installments = lease.lease_installments.all()
+                total_overdue_amount = Decimal("0")
+                for installment in installments:
+                    total_overdue_amount += installment.overdue_amount
+                total_overdue_amount = total_overdue_amount - lease.processed_amount #test
+                if total_overdue_amount > 0:
+                    #bank_activity_lease.leaseflex_automation = True
+                    if bank_activity_lease.lease.contract.partner.tc_vkn_no != bank_activity.tc_vkn_no:
+                        bank_activity_lease.is_third_person = True
+                    if processed_amount > 0:
+                        if total_overdue_amount <= processed_amount:
+                            bank_activity_lease.processed_amount = total_overdue_amount
+                            processed_amount -= total_overdue_amount
+                        else:
+                            bank_activity_lease.processed_amount = processed_amount
+                            processed_amount = 0
+                    # else:
+                    #     bank_activity_lease.leaseflex_automation = False
+                    bank_activity_lease.save()
+                bank_activity_leases = lease.lease_bank_acitivity_leases.select_related().all()
+                total_bank_activity_leases_processed_amount = Decimal("0")
+                for item in bank_activity_leases:
+                    total_bank_activity_leases_processed_amount += item.processed_amount
+                lease.processed_amount = total_bank_activity_leases_processed_amount
+                lease.save()
+
+        return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)

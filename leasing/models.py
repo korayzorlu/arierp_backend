@@ -162,7 +162,7 @@ class BankActivity(models.Model):
                             total_overdue_amount += installment.overdue_amount
                         total_overdue_amount = total_overdue_amount - lease.processed_amount #test
                         if total_overdue_amount > 0:
-                            bank_activity_lease.leaseflex_automation = True
+                            #bank_activity_lease.leaseflex_automation = True
                             if processed_amount > 0:
                                 if total_overdue_amount <= processed_amount:
                                     bank_activity_lease.processed_amount = total_overdue_amount
@@ -170,8 +170,8 @@ class BankActivity(models.Model):
                                 else:
                                     bank_activity_lease.processed_amount = processed_amount
                                     processed_amount = 0
-                            else:
-                                bank_activity_lease.leaseflex_automation = False
+                            # else:
+                            #     bank_activity_lease.leaseflex_automation = False
                             bank_activity_lease.save()
                         bank_activity_leases = lease.lease_bank_acitivity_leases.select_related().all()
                         total_bank_activity_leases_processed_amount = Decimal("0")
@@ -190,6 +190,7 @@ class BankActivityLease(models.Model):
     lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_bank_acitivity_leases")
     processed_amount = models.DecimalField(_("Processed Amount"), default = 0.00, max_digits=14, decimal_places=2)
     leaseflex_automation = models.BooleanField(default=False)
+    is_third_person = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
