@@ -282,7 +282,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
     def get_overdue_days(self, obj):
-        installments = Installment.objects.filter(lease__contract__partner = obj)
+        installments = Installment.objects.select_related().filter(lease__contract__partner = obj)
         overdue_days = -1
         for installment in installments:
             if installment.overdue_amount > 0:
@@ -301,6 +301,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 total_overdue_amount = Decimal("0")
                 for installment in installments:
                     total_overdue_amount += installment.overdue_amount
+                if total_overdue_amount < 100:
+                    total_overdue_amount = Decimal("0")
 
                 overdue_days = -1
                 for installment in installments:
