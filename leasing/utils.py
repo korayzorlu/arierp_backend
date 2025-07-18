@@ -336,7 +336,7 @@ def export_bank_activities(self):
                 currency = obj.lease.currency.code
         else:
             currency = ""
-        print(obj.bank_activity.process_date.strftime("%y%m%d"))
+        print(obj.bank_activity.process_date)
         data["Hesap Numarası"].append(obj.bank_activity.bank_account_no)
         data["İşlem Tarihi"].append(obj.bank_activity.process_date.strftime("%y%m%d"))
         data["İşlem Kodu"].append(obj.bank_activity.process_code)
