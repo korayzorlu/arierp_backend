@@ -185,8 +185,6 @@ class UpdateBankActivityLeasesView(LoginRequiredMixin,View):
                 total_overdue_amount = total_overdue_amount - lease.processed_amount #test
                 if total_overdue_amount > 0:
                     #bank_activity_lease.leaseflex_automation = True
-                    if bank_activity_lease.lease.contract.partner.tc_vkn_no != bank_activity.tc_vkn_no:
-                        bank_activity_lease.is_third_person = True
                     if processed_amount > 0:
                         if total_overdue_amount <= processed_amount:
                             bank_activity_lease.processed_amount = total_overdue_amount
@@ -197,6 +195,9 @@ class UpdateBankActivityLeasesView(LoginRequiredMixin,View):
                     # else:
                     #     bank_activity_lease.leaseflex_automation = False
                     bank_activity_lease.save()
+                if partner.tc_vkn_no != bank_activity.tc_vkn_no:
+                        bank_activity_lease.is_third_person = True
+                        bank_activity_lease.save()
                 bank_activity_leases = lease.lease_bank_acitivity_leases.select_related().all()
                 total_bank_activity_leases_processed_amount = Decimal("0")
                 for item in bank_activity_leases:
