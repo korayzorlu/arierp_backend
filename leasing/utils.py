@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, localtime
 from django.db.models import Q
 
 from datetime import datetime
@@ -10,6 +10,7 @@ import re
 import os
 import random
 import string
+import pytz
 
 from .models import *
 from common.models import Status
@@ -239,6 +240,7 @@ def import_bank_activities(self, df_json):
 
             if row['İşlem Tarihi']:
                 process_date = make_aware(datetime.strptime(str(row['İşlem Tarihi']), "%y%m%d"))
+                print(process_date)
             else:
                 process_date = None
 
@@ -258,7 +260,7 @@ def import_bank_activities(self, df_json):
                 process_code = str(row['İşlem Kodu']) if not pd.isna(row['İşlem Kodu']) else "",
                 credit_or_debit = str(row['Borç / Alacak']) if not pd.isna(row['Borç / Alacak']) else "",
                 kontrat_no = str(row['Kontrat No']) if not pd.isna(row['Kontrat No']) else "",
-                process_date = process_date,
+                process_date_date = process_date,
                 #process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
                 amount = Decimal(str(row['Tutar']).replace(",",".")) if not pd.isna(row['Tutar']) else Decimal(str(0)),
                 currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Kodu"] == "YTL" else row["Döviz Cinsi"]).first() or None,
@@ -336,9 +338,9 @@ def export_bank_activities(self):
                 currency = obj.lease.currency.code
         else:
             currency = ""
-        print(obj.bank_activity.process_date)
+        
         data["Hesap Numarası"].append(obj.bank_activity.bank_account_no)
-        data["İşlem Tarihi"].append(obj.bank_activity.process_date.strftime("%y%m%d"))
+        data["İşlem Tarihi"].append(obj.bank_activity.process_date_date.strftime("%y%m%d"))
         data["İşlem Kodu"].append(obj.bank_activity.process_code)
         data["Borç / Alacak"].append(obj.bank_activity.credit_or_debit)
         data["Döviz kodu"].append(currency)
@@ -363,7 +365,7 @@ def export_bank_activities(self):
     karakterler = string.ascii_letters + string.digits
     rastgele_deger = ''.join(random.choices(karakterler, k=8))
 
-    excel_dosyasi_adi = f"{base_path}/banka-hareketleri-{rastgele_deger}.xlsx"
+    excel_dosyasi_adi = f"{base_path}/banka-hareketleri.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Banka Hareketleri', index=False)
         

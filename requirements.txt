@@ -93,3 +93,4 @@ django-auth-ldap==5.2.0
 lxml==5.4.0
 beautifulsoup4==4.13.4
 unidecode==1.4.0
+tqdm==4.67.1

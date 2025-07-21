@@ -105,6 +105,7 @@ class BankActivity(models.Model):
     kontrat_no = models.CharField(_("Kontrat No"), max_length=140, blank=True, null=True)
 
     process_date = models.DateTimeField(_("Process Date"), blank=True, null=True)
+    process_date_date = models.DateField(_("Process Date Date"), blank=True, null=True)
 
     PROCESS_TYPE_CHOICES = (
         ('in', ('In')),
