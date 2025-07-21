@@ -274,9 +274,9 @@ def fix_partners(company):
 
             if current_progress - previous_progress >= 1:
                 previous_progress = current_progress
-                #print(f"{int(current_progress)} %")
-                sys.stdout.write(f"\r%{current_progress} tamamlandı")  # \r ile satır başına dönülür
-                sys.stdout.flush()
+                print(f"{int(current_progress)} %")
+                # sys.stdout.write(f"\r%{current_progress} tamamlandı")  # \r ile satır başına dönülür
+                # sys.stdout.flush()
 
             # obj = partners.filter(crm_code = str(data["IndividualCustomerId"])).first()
             # if not obj:

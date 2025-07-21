@@ -203,7 +203,7 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
     filterset_class = BankActivityFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    #pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -266,7 +266,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
     filterset_class = RiskPartnerFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    #pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     

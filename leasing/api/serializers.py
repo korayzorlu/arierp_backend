@@ -178,6 +178,7 @@ class BankActivityListSerializer(serializers.Serializer):
     cross_bank_branch_code = serializers.CharField()
     cross_bank_account_no = serializers.CharField()
     process_date = serializers.DateTimeField(format = "%d.%m.%Y")
+    process_date_date = serializers.DateField(format = "%d.%m.%Y")
     process_type = serializers.CharField()
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     currency = serializers.SerializerMethodField()
