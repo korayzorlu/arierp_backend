@@ -80,6 +80,7 @@ class Installment(models.Model):
     principal = models.DecimalField(_("Principal"), default = 0.00, max_digits=14, decimal_places=2)
     interest = models.DecimalField(_("Interest"), default = 0.00, max_digits=14, decimal_places=2)
     sequency = models.PositiveIntegerField(_("Sequency"), default=0)
+    lease_type = models.CharField(_("Lease Type"), max_length=50, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

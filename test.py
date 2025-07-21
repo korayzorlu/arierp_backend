@@ -1,15 +1,8 @@
 from decimal import Decimal, ROUND_HALF_UP
+from leasing.models import Lease,Installment
 
-a = 0.1
-b = 0.1
-c = 0.1
+installments = Installment.objects.select_related("lease").all()
+installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency}
+obj = (installment_by_code.get(("91556",0)))
 
-result = a*b*c
-result2 = Decimal(str(a)) * Decimal(str(b)) * Decimal(str(c))
-
-print(result)
-print(result2)
-
-value = Decimal('5.685')
-rounded_value = value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-print(rounded_value)  # 5.69
+print(obj)

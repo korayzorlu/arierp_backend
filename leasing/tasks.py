@@ -189,7 +189,8 @@ def fix_installments(company):
             PAYMENT,
             TOTALPAYMENTAMOUNT,
             PRINCIPALDISPLAY,
-            INTERESTDISPLAY
+            INTERESTDISPLAY,
+            LeaseType
         FROM LOPPAYMENTDUELISTFORARI
         """
 
@@ -209,6 +210,7 @@ def fix_installments(company):
                 "TOTALPAYMENTAMOUNT" : r.TOTALPAYMENTAMOUNT,
                 "PRINCIPALDISPLAY" : r.PRINCIPALDISPLAY,
                 "INTERESTDISPLAY" : r.INTERESTDISPLAY,
+                "LeaseType" : r.LeaseType,
             }
             for r in records
         ]
@@ -217,7 +219,7 @@ def fix_installments(company):
         leases = Lease.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency}
+        installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency is not None}
         leases_dict = {l.lease_id: l for l in leases}
 
         previous_progress = 0
@@ -230,6 +232,9 @@ def fix_installments(company):
 
             if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
                 obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
+                if int(data["SequenceNo"]) == 0:
+                    obj.delete()
+                obj = None
             else:
                 obj = None
 
@@ -243,6 +248,7 @@ def fix_installments(company):
                 obj.principal = safe_decimal(data["PRINCIPALDISPLAY"])
                 obj.interest = safe_decimal(data["INTERESTDISPLAY"])
                 obj.sequency = int(data["SequenceNo"])
+                obj.lease_type = data["LeaseType"] or ""
                 obj.save()
             else:
                 print(f"{str(data["OPERATIONPROJECTID"])} - {data["SequenceNo"]}: ")
@@ -257,6 +263,7 @@ def fix_installments(company):
                     principal = safe_decimal(data["PRINCIPALDISPLAY"]),
                     interest = safe_decimal(data["INTERESTDISPLAY"]),
                     sequency = int(data["SequenceNo"]),
+                    lease_type = data["LeaseType"] or ""
                 )
     except Exception as e:
         print(e)
@@ -320,7 +327,7 @@ def fix_collections(company):
                                     (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                                     OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                                 )
-                                AND TrnDueDate <= '20250717'
+                                AND TrnDueDate <= '20250721'
                                 AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                             )
                             THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -339,7 +346,7 @@ def fix_collections(company):
                                             (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                                             OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                                         )
-                                        AND TrnDueDate <= '20250717'
+                                        AND TrnDueDate <= '20250721'
                                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                                     )
                                     THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -462,7 +469,7 @@ def fix_collections(company):
                                 (TrnPostingType >= 110 AND TrnPostingType <= 120) 
                                 OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                             )
-                            AND TrnDueDate <= '20250717' 
+                            AND TrnDueDate <= '20250721' 
                             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                         )
                     )
@@ -476,13 +483,13 @@ def fix_collections(company):
                             lopStatu.RiskIncludingTypeId = 6 
                             AND TrnLedgerStatu = 10 
                             AND TrnPostingType >= 110 AND TrnPostingType <= 120 
-                            AND TrnDueDate <= '20250717' 
+                            AND TrnDueDate <= '20250721' 
                             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                         )
                     )
                     AND TrnAccountType = 11 
                     AND TrnAccountId <> 0 
-                    AND TrnDueDate <= CONVERT(DATETIME, '2025-7-17', 102)
+                    AND TrnDueDate <= CONVERT(DATETIME, '2025-7-30', 102)
                     AND TrnOprContractId = {int(lease.contract.contract_id) if lease else 0}
                     --AND JrnStpPstGrpName = 'Kira'
 
