@@ -9,6 +9,7 @@ from decimal import Decimal
 from companies.models import Company
 from common.models import Currency, Status
 from contracts.models import Contract
+from partners.models import Partner
 
 # Create your models here.
 
@@ -199,3 +200,11 @@ class BankActivityLease(models.Model):
 
     def __str__(self):
         return str(self.bank_activity.tc_vkn_no)
+    
+class PartnerOverdueView(models.Model):
+    partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
+    max_overdue_days = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'partner_max_overdue_days'

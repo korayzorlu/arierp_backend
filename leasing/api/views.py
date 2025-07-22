@@ -266,7 +266,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
     filterset_class = RiskPartnerFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    #pagination_class = DatatablesPagination
+    pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -274,7 +274,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = ["country","billing_country","partneroverdueview"]
 
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
@@ -285,7 +285,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             )
-        ).distinct().order_by("name")
+        ).distinct().order_by("-partneroverdueview__max_overdue_days")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
