@@ -201,10 +201,10 @@ class BankActivityLease(models.Model):
     def __str__(self):
         return str(self.bank_activity.tc_vkn_no)
     
-# class PartnerOverdueView(models.Model):
-#     partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
-#     max_overdue_days = models.IntegerField()
+class PartnerOverdueView(models.Model):
+    partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
+    max_overdue_days = models.IntegerField()
 
-#     class Meta:
-#         managed = False
-#         db_table = 'partner_max_overdue_days'
+    class Meta:
+        managed = False
+        db_table = 'partner_max_overdue_days'
