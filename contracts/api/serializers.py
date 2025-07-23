@@ -54,3 +54,38 @@ class ContractListSerializer(serializers.Serializer):
             field.set(value)
         
         return instance
+    
+class ContractPaymentListSerializer(serializers.Serializer):
+    id = serializers.CharField(source='uuid')
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    contract = serializers.SerializerMethodField()
+    trn_id = serializers.CharField()
+    trn_from_id = serializers.CharField()
+    ledger_account_id = serializers.CharField()
+    ledger_account_name = serializers.CharField()
+    trade_account_code = serializers.CharField()
+    type = serializers.CharField()
+    posting_type = serializers.CharField()
+    group_name = serializers.CharField()
+    account_code = serializers.CharField()
+    account_name = serializers.CharField()
+    date = serializers.DateField()
+    due_date = serializers.DateField()
+    debit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    credit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    local_debit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    local_credit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    currency = serializers.SerializerMethodField()
+    exchange_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    user_name = serializers.CharField()
+    description = serializers.CharField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_contract(self, obj):
+        return obj.contract.code if obj.contract else ""
+    
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ""

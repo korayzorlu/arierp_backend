@@ -223,6 +223,8 @@ def fix_installments(company):
         leases_dict = {l.lease_id: l for l in leases}
 
         previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
         for index,data in enumerate(external_data):
             current_progress = ((index + 1)/len(external_data))*100
 
@@ -239,6 +241,7 @@ def fix_installments(company):
                 obj = None
 
             if obj:
+                old_obj_count += 1
                 obj.lease = leases_dict.get(str(data["OPERATIONPROJECTID"]))
                 obj.payment_date = data["PAYMENTDATE"].date() if data["PAYMENTDATE"] else None
                 obj.vat = safe_decimal(data["VATRATE"])
@@ -251,7 +254,7 @@ def fix_installments(company):
                 obj.lease_type = data["LeaseType"] or ""
                 obj.save()
             else:
-                print(f"{str(data["OPERATIONPROJECTID"])} - {data["SequenceNo"]}: ")
+                new_obj_count += 1
                 Installment.objects.create(
                     company = company_obj,
                     lease = leases_dict.get(str(data["OPERATIONPROJECTID"])),
@@ -265,6 +268,7 @@ def fix_installments(company):
                     sequency = int(data["SequenceNo"]),
                     lease_type = data["LeaseType"] or ""
                 )
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for installments.")
     except Exception as e:
         print(e)
 
@@ -543,6 +547,7 @@ def fix_collections(company):
 
             borclar = sorted([x for x in external_data if x['type'] == 1], key=lambda x: x['due_date'])
             tahsilatlar = sorted([x for x in external_data if x['type'] == 0], key=lambda x: x['due_date'])
+            
 
             # Ödeme işlemi
             i = 0  # tahsilat index

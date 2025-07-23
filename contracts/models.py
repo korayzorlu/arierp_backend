@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
 import uuid
 
-from common.models import Status
+from common.models import Status,Currency
 from companies.models import Company
 from partners.models import Partner
 from quotations.models import Quotation
@@ -39,3 +39,34 @@ class Contract(models.Model):
     def __str__(self):
         return str(self.code)
     
+class ContractPayment(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_contract_payments")
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_contract_payments")
+    trn_id = models.CharField(_("Trn ID"), max_length=25, null=True, blank=True)
+    trn_from_id = models.CharField(_("Trn From ID"), max_length=25, null=True, blank=True)
+    ledger_account_id = models.CharField(_("Ledger Account ID"), max_length=25, null=True, blank=True)
+    ledger_account_name = models.CharField(_("Ledger Account Name"), max_length=250, null=True, blank=True)
+    trade_account_code = models.CharField(_("Trade Account Code"), max_length=25, null=True, blank=True)
+    type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
+    posting_type = models.CharField(_("Posting Type"), max_length=25, null=True, blank=True)
+    group_name = models.CharField(_("Group Name"), max_length=50, null=True, blank=True)
+    account_code = models.CharField(_("Account Code"), max_length=25, null=True, blank=True)
+    account_name = models.CharField(_("Account Name"), max_length=250, null=True, blank=True)
+    date = models.DateField(_("Date"), blank=True, null=True)
+    due_date = models.DateField(_("Due Date"), blank=True, null=True)
+    debit_amount = models.DecimalField(_("Debit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    credit_amount = models.DecimalField(_("Credit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    local_debit_amount = models.DecimalField(_("Local Debit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    local_credit_amount = models.DecimalField(_("Local Credit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_contract_payments")
+    exchange_rate = models.DecimalField(_("Exchange Rate"), default = 0.00, max_digits=14, decimal_places=2)
+    description = models.CharField(_("Description"), max_length=1000, blank=True, null=True)
+    user_name = models.CharField(_("User Name"), max_length=250, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.account_name)

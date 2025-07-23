@@ -26,7 +26,13 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : "free", "label" : "Kira Planı", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
-                {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/collections"},
+            ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Tahsilat", "icon" : "paid", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
+                {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
+            ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Vadesi Geçmiş Alacaklar", "icon" : "policy", "route" : "/ledger-accounts"},
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme", "icon" : "policy", "route" : "/risk-partners"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [

@@ -45,6 +45,8 @@ class Lease(models.Model):
     vade = models.IntegerField(_("Vade"), default = 0)
     leasing_rate = models.DecimalField(_("Leasing Rate"), default = 0.00, max_digits=14, decimal_places=2)
     irr = models.DecimalField(_("IRR"), default = 0.00, max_digits=14, decimal_places=2)
+    paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_amount = models.DecimalField(_("Overdue Amount"), default = 0.00, max_digits=14, decimal_places=2)
 
     project_no = models.CharField(_("Project No"), max_length=25, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_rents", null=True, blank=True)
@@ -88,6 +90,16 @@ class Installment(models.Model):
 
     def __str__(self):
         return str(self.lease.code)
+    
+
+    
+class PartnerOverdueView(models.Model):
+    partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
+    max_overdue_days = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'partner_max_overdue_days'
     
 class BankActivity(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -208,3 +220,4 @@ class PartnerOverdueView(models.Model):
     class Meta:
         managed = False
         db_table = 'partner_max_overdue_days'
+
