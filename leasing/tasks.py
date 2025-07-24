@@ -1145,3 +1145,28 @@ def fetch_leases_overdue_amount(company):
         print(f"{old_obj_count} objects updated for contract leases.")
     except Exception as e:
         print(e)
+
+@shared_task()
+def fetch_overdue_leases(company):
+    excel_file = pd.ExcelFile("files/24-07-2025-vadesi-gecmis-sadece-borc.xlsx")
+    sheet_name = excel_file.sheet_names[0]
+
+    file_data = pd.read_excel("files/24-07-2025-vadesi-gecmis-sadece-borc.xlsx", sheet_name)
+    df = pd.DataFrame(file_data)
+
+    for index,row in df.iterrows():
+        objs = Lease.objects.select_related().filter(
+            Q(code=row['Kira Planı']) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            )
+        )
+        if objs:
+            if len(objs) == 1:
+                for obj in objs:
+                    obj.overdue_days = int(row['Gecikme günü'])
+                    obj.save()
+            else:
+                print(f"{row['Kira Planı']} kira planı {len(objs)} adet var.")

@@ -167,6 +167,7 @@ class BankActivityLeaseFilter(FilterSet):
     
 class RiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
+    special = CharFilter(method = 'filter_special')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -176,3 +177,9 @@ class RiskPartnerFilter(FilterSet):
             Q(lowercase__icontains = value) |
             Q(uppercase__icontains = value)
         )
+    
+    def filter_special(self, queryset, special, value):
+        if value == "true":
+            return queryset.filter()
+        else:
+            return queryset.exclude(types__contains=["special"])

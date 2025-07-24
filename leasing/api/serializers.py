@@ -283,9 +283,13 @@ class RiskPartnerListSerializer(serializers.Serializer):
     tc_vkn_no = serializers.SerializerMethodField()
     overdue_days = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
+    special = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
+    
+    def get_special(self, obj):
+        return True if "special" in obj.types else False
     
     def get_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
@@ -326,7 +330,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
                     "id" : lease.uuid,
                     "code" : lease.code,
                     "contract" : lease.contract.code if lease.contract else "",
-                    "lease_status" : lease.lease_status,
                     "partner" : lease.contract.partner.name if lease.contract.partner else "",
                     "partner_tc" : lease.contract.partner.tc_vkn_no if lease.contract else "",
                     "partner_crm_code" : lease.contract.partner.crm_code if lease.contract else "",
@@ -336,6 +339,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
                     "overdue_amount" : lease.overdue_amount,
                     "overdue_days" : lease.overdue_days,
                     "currency" : lease.currency.code if lease.currency else "",
-                    "lease_status" : lease.lease_status,
+                    "lease_status" : lease.get_lease_status_display(),
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
