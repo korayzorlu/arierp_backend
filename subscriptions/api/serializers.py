@@ -34,7 +34,9 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Vadesi Geçmiş Alacaklar", "icon" : "policy", "route" : "/overdue-leases"},
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme", "icon" : "policy", "route" : "/risk-partners"},
-                {"type" : "item", "class" : "free", "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/warning-notices"},
+                {"type" : "item", "class" : "free", "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
+                {"type" : "item", "class" : "free", "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
+                {"type" : "item", "class" : "free", "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},
                 {"type" : "item", "class" : "free", "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
