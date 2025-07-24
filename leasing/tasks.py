@@ -1158,9 +1158,9 @@ def fetch_overdue_leases(company):
         objs = Lease.objects.select_related().filter(
             Q(code=row['Kira Planı']) &
             (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             )
         )
         if objs:
