@@ -526,3 +526,26 @@ def fix_partnersi(company):
                 )
     except Exception as e:
         print(e)
+
+@shared_task()
+def fetch_special_partners(company):
+    excel_file = pd.ExcelFile("files/ozel-musteriler.xlsx")
+    sheet_name = excel_file.sheet_names[0]
+
+    file_data = pd.read_excel("files/ozel-musteriler.xlsx", sheet_name)
+    df = pd.DataFrame(file_data)
+
+    for index,row in df.iterrows():
+        objs = Partner.objects.select_related().annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            Q(lowercase__icontains = row['MÜŞTERİ ADI']) |
+            Q(uppercase__icontains = row['MÜŞTERİ ADI'])
+        )
+        if objs:
+            if len(objs) == 1:
+                for obj in objs:
+                    obj.types = ["customer","special"]
+                    obj.save()
+            else:
+                print(f"{row['MÜŞTERİ ADI']} için bulunanlar;")
+                for obj in objs:
+                    print(f"....{obj.name} - {obj.tc_vkn_no}")
