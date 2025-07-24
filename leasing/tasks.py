@@ -1,6 +1,7 @@
 from celery import shared_task
 from core.celery import app
 from django.http import JsonResponse
+from django.db.models import Q
 
 import pandas as pd
 import io
