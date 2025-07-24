@@ -278,14 +278,14 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
 
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__lease_installments__overdue_amount__gt=100) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
             Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             )
-        ).distinct().order_by("-partneroverdueview__max_overdue_days")
+        ).distinct().order_by("partneroverdueview__max_overdue_days")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

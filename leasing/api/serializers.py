@@ -41,7 +41,7 @@ class LeaseListSerializer(serializers.Serializer):
     kof = serializers.SerializerMethodField()
     block = serializers.SerializerMethodField()
     unit = serializers.SerializerMethodField()
-    overdue_amount = serializers.SerializerMethodField()
+    overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.SerializerMethodField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     
@@ -86,13 +86,6 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else ""
-    
-    def get_overdue_amount(self, obj):
-        installments = obj.lease_installments.all()
-        total_overdue_amount = Decimal("0")
-        for installment in installments:
-            total_overdue_amount += installment.overdue_amount
-        return total_overdue_amount
     
     def get_overdue_days(self, obj):
         installments = obj.lease_installments.all()
@@ -272,7 +265,7 @@ class BankActivityLeaseListSerializer(serializers.Serializer):
                     "project" : obj.lease.contract.project if obj.lease.contract else "",
                     "block" : obj.lease.contract.quotation_obj.quick_quotation.block if obj.lease.contract.quotation_obj.quick_quotation else "",
                     "unit" : obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else "",
-                    "overdue_amount" : total_overdue_amount,
+                    "overdue_amount" : obj.lease.overdue_amount,
                     "processed_amount" : obj.lease.processed_amount,
                     "overdue_days" : overdue_days,
                     "currency" : obj.lease.currency.code if obj.lease.currency else "",
@@ -335,7 +328,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
                     "project" : lease.contract.project if lease.contract else "",
                     "block" : lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj.quick_quotation else "",
                     "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
-                    "overdue_amount" : total_overdue_amount,
+                    "overdue_amount" : lease.overdue_amount,
                     "overdue_days" : overdue_days,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.lease_status,

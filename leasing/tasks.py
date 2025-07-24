@@ -595,3 +595,219 @@ def fix_collections(company):
         except Exception as e:
             print(e)
         
+@shared_task()
+def fetch_leases_overdue_amount(company):
+    SERVER = "192.168.81.8,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+            SELECT
+                TrnOprContractId,
+                TrnOprLeasingOperationPrjId,
+                TrnPostingGroupId,
+                TrnCurrencyCode,
+
+                SUM((
+                    CASE
+                        WHEN (
+                            (lopStatu.RiskIncludingTypeId IN (6)
+                                AND TrnLedgerStatu = 10
+                                AND TrnPostingType BETWEEN 110 AND 120
+                                AND TrnIsDeleted <> 9
+                                AND TrnDueDate <= '20250723'
+                                AND ISNULL(xx.OperationProjectId_Count, 0) = 0)
+                            OR
+                            (lopStatu.RiskIncludingTypeId IN (6)
+                                AND TrnLedgerStatu = 10
+                                AND TrnPostingType BETWEEN 110 AND 120
+                                AND TrnIsDeleted <> 9
+                                AND TrnDueDate <= '20250723'
+                                AND ISNULL(xx.OperationProjectId_Count, 0) = 1)
+                        )
+                        THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
+                        ELSE TrnAmount
+                    END
+                ) * TrnAmountType) AS AmountDebit,
+
+                SUM((
+                    CASE
+                        WHEN (
+                            lopStatu.RiskIncludingTypeId = 6
+                            AND TrnLedgerStatu = 10
+                            AND (
+                                (TrnIsDeleted <> 9 AND TrnPostingType BETWEEN 110 AND 120)
+                                OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
+                            )
+                            AND TrnDueDate <= '20250723'
+                            AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                        )
+                        THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
+                        ELSE TrnAmount
+                    END
+                ) * (1 - TrnAmountType)) AS AmountCredit
+
+            FROM TradeTransaction (NOLOCK)
+
+            LEFT JOIN LeasingOperationProject lopStatu (NOLOCK)
+                ON TrnOprLeasingOperationPrjId = lopStatu.SourceLOPId
+
+            LEFT JOIN (
+                SELECT
+                    kk.OperationProjectId AS OperationProject_Id,
+                    COUNT(*) AS OperationProjectId_Count
+                FROM LeasingOperationProject kk (NOLOCK)
+                WHERE NOT (
+                    kk.RiskIncludingTypeId IN (3, 6)
+                    OR (kk.RiskIncludingTypeId IN (9, 5, 7) AND kk.OperationTypeId = 1)
+                )
+                GROUP BY kk.OperationProjectId
+            ) xx ON xx.OperationProject_Id = lopStatu.OperationProjectId
+
+            LEFT JOIN LeasingOperationProject lopX (NOLOCK)
+                ON lopX.OperationProjectId = (
+                    CASE
+                        WHEN TrnOprRevisionLOPId <> 0 THEN TrnOprRevisionLOPId
+                        ELSE TrnOprLeasingOperationPrjId
+                    END
+                )
+
+            WHERE
+                TrnDummy = 0
+                AND (
+                    CASE
+                        WHEN TrnIsDeleted = 4
+                            AND lopStatu.RiskIncludingTypeId = 7
+                            AND (
+                                SELECT lll.RiskIncludingTypeId
+                                FROM LeasingOperationProject lll (NOLOCK)
+                                WHERE lll.OperationProjectId = lopStatu.OperationProjectId
+                            ) = 6 THEN 3
+
+                        WHEN TrnIsDeleted = 4
+                            AND lopStatu.RiskIncludingTypeId = 6
+                            AND (
+                                SELECT TOP 1 lll.RiskIncludingTypeId
+                                FROM LOPRevisionJoinListOutPlan lll (NOLOCK)
+                                WHERE (
+                                    lll.OperationProjectId = TrnOprRevisionLOPId AND TrnOprRevisionLOPId <> 0
+                                ) OR (
+                                    lll.OperationProjectId = TrnOprLeasingOperationPrjId AND TrnOprRevisionLOPId = 0
+                                )
+                            ) = 7 THEN 3
+
+                        ELSE TrnIsDeleted
+                    END NOT IN (6, 4, 2, 8, 1)
+                    OR (TrnIsDeleted = 6 AND TrnAmount <> 0)
+                )
+                AND TrnPostingType NOT IN (461, 113)
+                AND (
+                    TrnLayer = 1
+                    OR (
+                        lopStatu.RiskIncludingTypeId IN (6, 7)
+                        AND TrnLayer = 3
+                        AND TrnPostingType BETWEEN 110 AND 120
+                        AND TrnDueDate <= '20250723'
+                        AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                    )
+                    OR (
+                        lopStatu.RiskIncludingTypeId = 7
+                        AND TrnLayer = 3
+                        AND TrnPostingType BETWEEN 110 AND 120
+                        AND TrnDueDate <= '20250723'
+                        AND ISNULL(xx.OperationProjectId_Count, 0) = 1
+                    )
+                )
+                AND (
+                    TrnLedgerStatu = 50
+                    OR (
+                        lopStatu.RiskIncludingTypeId IN (6, 7)
+                        AND TrnLedgerStatu = 10
+                        AND TrnPostingType BETWEEN 110 AND 120
+                        AND TrnDueDate <= '20250723'
+                        AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                    )
+                    OR (
+                        lopStatu.RiskIncludingTypeId = 7
+                        AND TrnLedgerStatu = 10
+                        AND TrnPostingType BETWEEN 110 AND 120
+                        AND TrnDueDate <= '20250723'
+                        AND ISNULL(xx.OperationProjectId_Count, 0) = 1
+                    )
+                )
+                AND TrnAccountType = 11
+                AND lopStatu.IS_LAST_PROJECT = 1
+                AND TrnOprLeasingOperationPrjId <> 0
+                AND NOT (
+                    lopX.OperationTypeId = 1
+                    AND lopX.RiskIncludingTypeId IN (9)
+                    AND TrnPostingType BETWEEN 110 AND 120
+                )
+                --AND TrnOprLeasingOperationPrjId IN (55734, 75289)
+                AND TrnDueDate <= CONVERT(DATETIME, '2025-7-23', 102)
+
+            GROUP BY
+                TrnOprContractId,
+                TrnOprLeasingOperationPrjId,
+                TrnPostingGroupId,
+                TrnCurrencyCode;
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {   
+                "TrnOprLeasingOperationPrjId" : r.TrnOprLeasingOperationPrjId,
+                "AmountDebit" : r.AmountDebit,
+                "AmountCredit" : r.AmountCredit,
+            }
+            for r in records
+        ]
+
+        leases = Lease.objects.select_related("status","company","contract","currency").all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        lease_by_code = {l.lease_id: l for l in leases if l.lease_id}
+
+        previous_progress = 0
+        old_obj_count = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            if str(data["TrnOprLeasingOperationPrjId"]):
+                obj = (lease_by_code.get(str(data["TrnOprLeasingOperationPrjId"])))
+            else:
+                obj = None
+
+            if obj:
+                old_obj_count += 1
+                obj.paid = safe_decimal(data["AmountCredit"])
+                obj.overdue_amount = safe_decimal(data["AmountDebit"]) - safe_decimal(data["AmountCredit"])
+                obj.save()
+        print(f"{old_obj_count} objects updated for contract leases.")
+    except Exception as e:
+        print(e)
