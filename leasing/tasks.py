@@ -762,6 +762,7 @@ def fetch_leases_overdue_amount(company):
                 )
                 --AND TrnOprLeasingOperationPrjId IN (55734, 75289)
                 AND TrnDueDate <= CONVERT(DATETIME, '2025-7-23', 102)
+                AND TrnPostingGroupId=1
 
             GROUP BY
                 TrnOprContractId,

@@ -30,6 +30,7 @@ class LeaseFilter(FilterSet):
     lease_status = CharFilter(method = 'filter_lease_status')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     leaseflex_automation = CharFilter(method = 'filter_leaseflex_automation')
+    overdue = CharFilter(method = 'filter_overdue')
 
     class Meta:
         model = Lease
@@ -98,6 +99,12 @@ class LeaseFilter(FilterSet):
             return queryset.filter(leaseflex_automation = True)
         else:
             return queryset.filter(leaseflex_automation = False)
+        
+    def filter_overdue(self, queryset, overdue, value):
+        if value:
+            return queryset.filter(overdue_amount__gt=0)
+        else:
+            return queryset.filter()
     
 class InstallmentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
