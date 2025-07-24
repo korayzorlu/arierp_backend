@@ -47,6 +47,7 @@ class Lease(models.Model):
     irr = models.DecimalField(_("IRR"), default = 0.00, max_digits=14, decimal_places=2)
     paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_amount = models.DecimalField(_("Overdue Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_days = models.IntegerField(_("Overdue Days"), default=0)
 
     project_no = models.CharField(_("Project No"), max_length=25, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_rents", null=True, blank=True)

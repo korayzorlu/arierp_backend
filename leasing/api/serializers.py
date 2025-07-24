@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
+from django.db.models import Q
 
 from decimal import Decimal
 from datetime import date
@@ -42,7 +43,7 @@ class LeaseListSerializer(serializers.Serializer):
     block = serializers.SerializerMethodField()
     unit = serializers.SerializerMethodField()
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    overdue_days = serializers.SerializerMethodField()
+    overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     
     def get_companyId(self, obj):
@@ -87,16 +88,16 @@ class LeaseListSerializer(serializers.Serializer):
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else ""
     
-    def get_overdue_days(self, obj):
-        installments = obj.lease_installments.all()
-        overdue_days = -1
-        for installment in installments:
-            if installment.overdue_amount > 0:
-                today = date.today()
-                diff = (today - installment.payment_date).days
-                if diff > overdue_days:
-                    overdue_days = diff
-        return overdue_days
+    # def get_overdue_days(self, obj):
+    #     installments = obj.lease_installments.all()
+    #     overdue_days = -1
+    #     for installment in installments:
+    #         if installment.overdue_amount > 0:
+    #             today = date.today()
+    #             diff = (today - installment.payment_date).days
+    #             if diff > overdue_days:
+    #                 overdue_days = diff
+    #     return overdue_days
 
 class InstallmentListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
@@ -267,7 +268,7 @@ class BankActivityLeaseListSerializer(serializers.Serializer):
                     "unit" : obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else "",
                     "overdue_amount" : obj.lease.overdue_amount,
                     "processed_amount" : obj.lease.processed_amount,
-                    "overdue_days" : overdue_days,
+                    "overdue_days" : obj.lease.overdue_days,
                     "currency" : obj.lease.currency.code if obj.lease.currency else "",
                     "lease_status" : obj.lease.lease_status,
                     "leaseflex_automation" : obj.lease.leaseflex_automation,
@@ -287,14 +288,18 @@ class RiskPartnerListSerializer(serializers.Serializer):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
     def get_overdue_days(self, obj):
-        installments = Installment.objects.select_related().filter(lease__contract__partner = obj)
-        overdue_days = -1
-        for installment in installments:
-            if installment.overdue_amount > 0:
-                today = date.today()
-                diff = (today - installment.payment_date).days
-                if diff > overdue_days:
-                    overdue_days = diff
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        )
+        overdue_days = 0
+        for lease in leases:
+            if lease.overdue_days > overdue_days:
+                overdue_days = lease.overdue_days
         return overdue_days
     
     def get_leases(self, obj):
@@ -329,7 +334,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
                     "block" : lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj.quick_quotation else "",
                     "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
                     "overdue_amount" : lease.overdue_amount,
-                    "overdue_days" : overdue_days,
+                    "overdue_days" : lease.overdue_days,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.lease_status,
                 })

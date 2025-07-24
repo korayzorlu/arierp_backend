@@ -6,6 +6,8 @@ import pandas as pd
 import io
 import pyodbc
 from decimal import Decimal
+from datetime import datetime,date
+from collections import defaultdict
 
 from .models import *
 from .utils import get_lease_status_value
@@ -301,6 +303,10 @@ def fix_collections(company):
 
     installment_by_code = {(i.lease.lease_id, i.payment_date): i for i in installments if i.lease.lease_id and i.payment_date}
 
+    today = datetime.now().date().strftime("%Y%m%d")
+    formatted_today = datetime.now().date()
+    formatted_today = f"{formatted_today.year}-{formatted_today.month}-{formatted_today.day}"
+
     previous_progress = 0
     for index,lease in enumerate(leases):
         current_progress = ((index + 1)/len(leases))*100
@@ -331,7 +337,7 @@ def fix_collections(company):
                                     (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                                     OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                                 )
-                                AND TrnDueDate <= '20250721'
+                                AND TrnDueDate <= '{today}'
                                 AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                             )
                             THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -350,7 +356,7 @@ def fix_collections(company):
                                             (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                                             OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                                         )
-                                        AND TrnDueDate <= '20250721'
+                                        AND TrnDueDate <= '{today}'
                                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                                     )
                                     THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -473,7 +479,7 @@ def fix_collections(company):
                                 (TrnPostingType >= 110 AND TrnPostingType <= 120) 
                                 OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                             )
-                            AND TrnDueDate <= '20250721' 
+                            AND TrnDueDate <= '{today}' 
                             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                         )
                     )
@@ -487,13 +493,13 @@ def fix_collections(company):
                             lopStatu.RiskIncludingTypeId = 6 
                             AND TrnLedgerStatu = 10 
                             AND TrnPostingType >= 110 AND TrnPostingType <= 120 
-                            AND TrnDueDate <= '20250721' 
+                            AND TrnDueDate <= '{today}' 
                             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                         )
                     )
                     AND TrnAccountType = 11 
                     AND TrnAccountId <> 0 
-                    AND TrnDueDate <= CONVERT(DATETIME, '2025-7-30', 102)
+                    AND TrnDueDate <= CONVERT(DATETIME, '{formatted_today}', 102)
                     AND TrnOprContractId = {int(lease.contract.contract_id) if lease else 0}
                     --AND JrnStpPstGrpName = 'Kira'
 
@@ -594,7 +600,334 @@ def fix_collections(company):
 
         except Exception as e:
             print(e)
+
+@shared_task()
+def fix_collectionss(company):
+    SERVER = "192.168.81.8,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+
+        today = datetime.now().date().strftime("%Y%m%d")
+        formatted_today = datetime.now().date()
+        formatted_today = f"{formatted_today.year}-{formatted_today.month}-{formatted_today.day}"
         
+        SQL_QUERY =f"""
+            SELECT
+                TrnIsDeleted,
+                TrnPostingType,
+                TrnPostingGroupId,
+                TrnAccountId,
+                TrnOprCustomerId,
+                TrnOprContractId,
+                TrnOprProjectId,
+                TrnOprLeasingOperationPrjId,
+                TrnAmountType,
+
+                (
+                    CASE 
+                        WHEN (
+                            lopStatu.RiskIncludingTypeId = 6 
+                            AND TrnLedgerStatu = 10 
+                            AND (
+                                (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
+                                OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
+                            )
+                            AND TrnDueDate <= '{today}'
+                            AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                        )
+                        THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
+                        ELSE TrnAmount
+                    END
+                ) AS TrnAmount,
+
+                ROUND(
+                    (
+                        (
+                            CASE 
+                                WHEN (
+                                    lopStatu.RiskIncludingTypeId = 6 
+                                    AND TrnLedgerStatu = 10 
+                                    AND (
+                                        (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
+                                        OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
+                                    )
+                                    AND TrnDueDate <= '{today}'
+                                    AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                                )
+                                THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
+                                ELSE TrnAmount
+                            END
+                        ) * TrnExchangeRateLocal
+                    ), 
+                    2
+                ) AS TrnAmountLocal,
+
+                TrnExchangeRateLocal,
+                TrnAmountCapital,
+                TrnAmountInterest,
+                TrnVATAmount,
+                TrnDueDate,
+                TrnReturnDocumentNo,
+                JrnStpPstGrpName AS JrnStpPstGrpName,
+                ISNULL(JrnStpPstGrpOverdueId, JrnStpPstGrpId) AS TrnPostingGroupIdOverdue,
+                PART_ID,
+                con.CustomerTypeId,
+                lopStatu.VatRate,
+                lopStatu.RiskIncludingTypeId,
+                lopStatu.OperationProjectCode,
+                CAST(0 AS NUMERIC(18,2)) AS TrnRateBSMV,
+                lopStatu.AppliedTaxAdvantageAmount AS TrnRateKKDF,
+                lopStatu.OVERDUE_GRACE_PERIOD,
+                cp.ContractProjectCode,
+                e1.JrnStpEnumDescription AS viewTrnPostingType,
+                0 AS IsDeleted,
+
+                ContractHeaderCode = CASE 
+                    WHEN ISNULL(con.TransferCode, '') = '' 
+                    THEN con.ContractHeaderCode  
+                    ELSE con.TransferCode 
+                END,
+
+                ContractHeaderCodeLop = CASE 
+                    WHEN ISNULL(lopStatu.TransferCode, '') = '' 
+                    THEN lopStatu.OperationProjectCode  
+                    ELSE lopStatu.TransferCode 
+                END,
+
+                dbo.CrmGetCustomerMailAddress(
+                    CrmCustomerWithTypesLight.OBJECT_ID,
+                    CrmCustomerWithTypesLight.CustomerTypeId
+                ) AS Email
+
+            FROM 
+                TradeTransaction (NOLOCK)
+
+            LEFT JOIN 
+                LOPRevisionJoinMainList lopStatu (NOLOCK)
+                ON TrnOprLeasingOperationPrjId = lopStatu.SourceLOPId 
+                AND TrnOprCustomerId = lopStatu.CustomerId
+
+            LEFT JOIN 
+                (
+                    SELECT 
+                        kk.OperationProjectId AS OperationProject_Id,
+                        COUNT(*) AS OperationProjectId_Count
+                    FROM 
+                        LeasingOperationProject kk (NOLOCK)
+                    WHERE 
+                        NOT (
+                            kk.RiskIncludingTypeId IN (3, 6) 
+                            OR (kk.RiskIncludingTypeId IN (9, 5) AND kk.OperationTypeId = 1)
+                        )
+                    GROUP BY 
+                        kk.OperationProjectId
+                ) xx 
+                ON xx.OperationProject_Id = lopStatu.OperationProjectId
+
+            LEFT JOIN 
+                LeasingOperationProject lopX (NOLOCK) 
+                ON lopX.OperationProjectId = (
+                    CASE 
+                        WHEN TrnOprRevisionLOPId <> 0 
+                        THEN TrnOprRevisionLOPId 
+                        ELSE TrnOprLeasingOperationPrjId 
+                    END
+                )
+
+            LEFT JOIN 
+                JournalSetupPostingTypeGroups (NOLOCK) 
+                ON TrnPostingGroupId = JournalSetupPostingTypeGroups.JrnStpPstGrpId
+
+            LEFT JOIN 
+                TradeAccount (NOLOCK) 
+                ON TrnAccountId = TradeAccount.AccId
+
+            LEFT JOIN 
+                ContractProject cp (NOLOCK) 
+                ON TrnOprProjectId = cp.ContractProjectId
+
+            LEFT JOIN 
+                ContractHeader con (NOLOCK) 
+                ON TrnOprContractId = con.ContractHeaderId
+
+            LEFT JOIN 
+                JournalSetupEnums e1 (NOLOCK) 
+                ON TrnPostingType = e1.JrnStpEnumValue 
+                AND e1.JrnStpEnumType = 50
+
+            LEFT JOIN 
+                CrmCustomerWithTypesLight (NOLOCK) 
+                ON con.CustomerId = CrmCustomerWithTypesLight.CustomerId
+
+            WHERE 
+                TrnDummy = 0 
+                AND (
+                    TrnIsDeleted NOT IN (6, 4, 2, 8, 1) 
+                    OR (TrnIsDeleted = 6 AND TrnAmount <> 0)
+                )
+                AND (
+                    TrnLayer = 1 
+                    OR (
+                        lopStatu.RiskIncludingTypeId = 6 
+                        AND TrnLayer = 3 
+                        AND (
+                            (TrnPostingType >= 110 AND TrnPostingType <= 120) 
+                            OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
+                        )
+                        AND TrnDueDate <= '{today}' 
+                        AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                    )
+                )
+                AND (
+                    ISNULL(xx.OperationProjectId_Count, 0) > 0 
+                    OR (ISNULL(xx.OperationProjectId_Count, 0) = 0 AND TrnPostingType <> 126)
+                )
+                AND (
+                    TrnLedgerStatu = 50 
+                    OR (
+                        lopStatu.RiskIncludingTypeId = 6 
+                        AND TrnLedgerStatu = 10 
+                        AND TrnPostingType >= 110 AND TrnPostingType <= 120 
+                        AND TrnDueDate <= '{today}' 
+                        AND ISNULL(xx.OperationProjectId_Count, 0) = 0
+                    )
+                )
+                AND TrnAccountType = 11 
+                AND TrnAccountId <> 0 
+                AND TrnDueDate <= CONVERT(DATETIME, '{formatted_today}', 102)
+                --AND TrnOprContractId = int(lease.contract.contract_id) if lease else 0
+                --AND JrnStpPstGrpName = 'Kira'
+
+            ORDER BY 
+                TrnDueDate
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {   
+                "TrnAmountType" : r.TrnAmountType,
+                "TrnAmount" : r.TrnAmount,
+                "TrnDueDate" : r.TrnDueDate,
+                "JrnStpPstGrpName" : r.JrnStpPstGrpName,
+                "viewTrnPostingType" : r.viewTrnPostingType,
+                "TrnReturnDocumentNo" : r.TrnReturnDocumentNo,
+                "TrnOprContractId" : r.TrnOprContractId,
+                "TrnOprLeasingOperationPrjId" : r.TrnOprLeasingOperationPrjId,
+            }
+            for r in records
+        ]
+
+        leases = Lease.objects.select_related("status","company","contract","currency").all()
+        installments = Installment.objects.select_related("lease").all()
+
+        lease_by_code = {l.lease_id: l for l in leases if l.lease_id}
+        installment_by_code = {(i.lease.lease_id, i.payment_date): i for i in installments if i.lease.lease_id and i.payment_date}
+
+        grouped_data = defaultdict(list)
+        for item in external_data:
+            keyy = item["TrnOprLeasingOperationPrjId"]
+            grouped_data[keyy].append(item)
+
+        previous_progress = 0
+        old_obj_count = 0
+        for index, (key, data_list) in enumerate(grouped_data.items()):
+            current_progress = ((index + 1)/len(grouped_data.items()))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+            print(key)
+            if str(key):
+                obj = (lease_by_code.get(str(key)))
+            else:
+                obj = None
+
+            if obj:
+                old_obj_count += 1
+                borclar = sorted([x for x in data_list if x['TrnAmountType'] == 1], key=lambda x: x['TrnDueDate'])
+                tahsilatlar = sorted([x for x in data_list if x['TrnAmountType'] == 0], key=lambda x: x['TrnDueDate'])
+                
+                # Ödeme işlemi
+                i = 0  # tahsilat index
+                for borc in borclar:
+                    while borc['TrnAmount'] > 0 and i < len(tahsilatlar):
+                        tahsilat = tahsilatlar[i]
+                        if tahsilat['TrnAmount'] == 0:
+                            i += 1
+                            continue
+
+                        odenecek = min(borc['TrnAmount'], tahsilat['TrnAmount'])
+                        borc['TrnAmount'] -= odenecek
+                        tahsilat['TrnAmount'] -= odenecek
+
+                        if tahsilat['TrnAmount'] == 0:
+                            i += 1  # sonraki tahsilata geç
+
+                # Kalan borçları yazdırmadan önce belgeye göre 'Kira - Kira - Normal' tarihlerini bulalım
+                def get_latest_kira_normal_due_date(document_no, data_list):
+                    if not document_no:
+                        return None
+                    kira_normaller = [d['TrnDueDate'] for d in data_list 
+                                    if d['TrnReturnDocumentNo'] == document_no and d['viewTrnPostingType'] == 'Kira - Normal']
+                    if kira_normaller:
+                        return max(kira_normaller).date()
+                    else:
+                        return None
+
+                kalan_borclar = [b for b in borclar if b['TrnAmount'] > 0]
+
+                #print("🎯 Kalan Borçlar:")
+                toplam_borc = Decimal("0")
+                for b in kalan_borclar:
+                    belge = b['TrnReturnDocumentNo']
+                    kira_normal_tarih = get_latest_kira_normal_due_date(belge, data_list)
+                    gosterilecek_tarih = kira_normal_tarih or b['TrnDueDate'].date()
+                    toplam_borc += b['TrnAmount']
+                    installment_obj = (installment_by_code.get((obj.lease_id,gosterilecek_tarih)))
+                    if installment_obj:
+                        installment_obj.overdue_amount = Decimal(str(b['TrnAmount']))
+                        installment_obj.save()
+
+                lease_installments = obj.lease_installments.all()
+                if lease_installments:
+                    overdue_days = -1
+                    for installment in lease_installments:
+                        if installment.overdue_amount > 0:
+                            today = date.today()
+                            diff = (today - installment.payment_date).days
+                            if diff > overdue_days:
+                                overdue_days = diff
+                    if overdue_days <= 0:
+                        obj.overdue_days = 0
+                    elif overdue_days > 0:
+                        obj.overdue_days = overdue_days
+                    obj.save()
+        print(f"{old_obj_count} objects updated for overdue days.")
+    except Exception as e:
+        print(e)
+
+
 @shared_task()
 def fetch_leases_overdue_amount(company):
     SERVER = "192.168.81.8,1433"

@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet, Q,Max
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -285,7 +285,9 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             )
-        ).distinct().order_by("partneroverdueview__max_overdue_days")
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
+        ).order_by('-max_overdue_days')
 
         query = self.request.query_params.get('search[value]', None)
         if query:
