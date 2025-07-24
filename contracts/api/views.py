@@ -170,3 +170,44 @@ class ContractPaymentList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class WarningNoticeList(ModelViewSet, QueryListAPIView):
+    serializer_class = WarningNoticeListSerializer
+    filterset_class = WarningNoticeFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","contract","contract__currency"]
+
+        queryset = WarningNotice.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-process_start_date","contract__code")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = [
+                    "uuid",
+                    "contract__code",
+                    "document_id",
+                    "risk_id",
+                    "customer_id",
+                    "daily_wages_date",
+                    "process_start_date",
+                    "service_date",
+                    "official_cancellation_date",
+                    "state",
+                    "approval_state",
+                    "contract__currency_code",
+                ]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset

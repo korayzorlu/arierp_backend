@@ -73,3 +73,40 @@ class ContractPaymentFilter(FilterSet):
             Q(lowercase__icontains = value) |
             Q(uppercase__icontains = value)
         )
+    
+class WarningNoticeFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    contract = CharFilter(method = 'filter_contract')
+    document_id = CharFilter(method = 'filter_document_id')
+    risk_id = CharFilter(method = 'filter_risk_id')
+    customer_id = CharFilter(method = 'filter_customer_id')
+    process_start_date = CharFilter(method = 'filter_process_start_date')
+    service_date = CharFilter(method = 'filter_service_date')
+    official_cancellation_date = CharFilter(method = 'filter_official_cancellation_date')
+    state = CharFilter(method = 'filter_state')
+    approval_state = CharFilter(method = 'filter_approval_state')
+    currency = CharFilter(method = 'filter_currency')
+    partner = CharFilter(method = 'filter_partner')
+    partner_crm_code = CharFilter(method = 'filter_partner_crm_code')
+
+    class Meta:
+        model = WarningNotice
+        fields = ['uuid','document_id','risk_id','customer_id','process_start_date','service_date','official_cancellation_date','state','approval_state']
+
+    def filter_uuid(self, queryset, uuid, value):
+        return queryset.filter(uuid = value)
+    
+    def filter_contract(self, queryset, contract, value):
+        return queryset.filter(contract__code = str(value))
+    
+    def filter_currency(self, queryset, currency, value):
+        return queryset.annotate(lowercase=Lower('contract__currency__code'),uppercase=Upper('contract__currency__code')).filter(Q(lowercase = value) | Q(uppercase = value))
+    
+    def filter_partner(self, queryset, partner, value):
+        return queryset.annotate(lowercase=Lower('contract__partner__name'),uppercase=Upper('contract__partner__name')).filter(
+            Q(lowercase__icontains = value) |
+            Q(uppercase__icontains = value)
+        )
+    
+    def filter_partner_crm_code(self, queryset, partner_crm_code, value):
+        return queryset.filter(contract__partner__crm_code = str(value))

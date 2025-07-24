@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
 
+from datetime import timedelta
+
 from contracts.models import *
 from companies.models import Company,UserCompany
     
@@ -89,3 +91,35 @@ class ContractPaymentListSerializer(serializers.Serializer):
     
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
+    
+class WarningNoticeListSerializer(serializers.Serializer):
+    id = serializers.CharField(source='uuid')
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    contract = serializers.SerializerMethodField()
+    partner = serializers.SerializerMethodField()
+    document_id = serializers.CharField()
+    risk_id = serializers.CharField()
+    customer_id = serializers.CharField()
+    debit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    daily_wages_date = serializers.DateField()
+    process_start_date = serializers.DateField()
+    service_date = serializers.DateField()
+    official_cancellation_date = serializers.DateField()
+    paid = serializers.DecimalField(max_digits=14,decimal_places=2)
+    diff = serializers.DecimalField(max_digits=14,decimal_places=2)
+    state = serializers.CharField()
+    approval_state = serializers.CharField()
+    termination_days = serializers.SerializerMethodField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_contract(self, obj):
+        return obj.contract.code if obj.contract else ""
+    
+    def get_partner(self, obj):
+        return obj.contract.partner.name if obj.contract.partner else ""
+    
+    def get_termination_days(self, obj):
+        return (obj.official_cancellation_date - obj.service_date).days if obj.official_cancellation_date and obj.service_date else ""

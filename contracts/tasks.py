@@ -14,7 +14,7 @@ from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 
 @shared_task()
-def fix_contracts(company):
+def fetch_contracts(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -47,7 +47,8 @@ def fix_contracts(company):
             Vendor,
             Project,
             SubStatuteName,
-            LopOpenDate
+            LopOpenDate,
+            CurrencyCode
         FROM ContractHeaderLightList
         """
 
@@ -69,6 +70,7 @@ def fix_contracts(company):
                 "Project" : r.Project,
                 "SubStatuteName" : r.SubStatuteName,
                 "LopOpenDate" : r.LopOpenDate,
+                "CurrencyCode" : r.CurrencyCode,
             }
             for r in records
         ]
@@ -77,14 +79,18 @@ def fix_contracts(company):
         statuses = Status.objects.select_related().all()
         partners = Partner.objects.select_related().all()
         quotations = Quotation.objects.select_related().all()
+        currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         contract_by_code = {c.contract_id: c for c in contracts if c.contract_id}
         statuses_dict = {s.name: s for s in statuses}
         partners_dict = {p.crm_code: p for p in partners}
         quotations_dict = {q.code: q for q in quotations}
+        currencies_dict = {c.code: c for c in currencies}
 
         previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
         for index,data in enumerate(external_data):
             current_progress = ((index + 1)/len(external_data))*100
 
@@ -98,6 +104,7 @@ def fix_contracts(company):
                 obj = None
 
             if obj:
+                old_obj_count += 1
                 obj.contract_id = str(data["ContractHeaderId"]) or ""
                 obj.code = str(data["ContractHeaderCode"]) or ""
                 obj.partner = partners_dict.get(str(data["CustomerId"]))
@@ -109,10 +116,10 @@ def fix_contracts(company):
                 obj.project = data["Project"] or ""
                 obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
                 obj.lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None
-                
+                obj.currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
                 obj.save()
             else:
-                print(f"{str(data["ContractHeaderId"])} - {data["CustomerId"]}: ")
+                new_obj_count += 1
                 Contract.objects.create(
                     company = company_obj,
                     contract_id = str(data["ContractHeaderId"]) or "",
@@ -125,8 +132,10 @@ def fix_contracts(company):
                     supplier = data["Vendor"] or "",
                     project = data["Project"] or "",
                     status = statuses_dict.get(normalize(data["SubStatuteName"])),
-                    lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None
+                    lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None,
+                    currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
                 )
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
     except Exception as e:
         print(e)
 
@@ -374,3 +383,135 @@ def fix_contract_payments(company):
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contract payments.")
     except Exception as e:
         print(e)
+
+@shared_task()
+def fetch_warning_notices(company):
+    SERVER = "192.168.81.8,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+            SELECT RiskDocumentId,
+                RiskHeaderId,
+                CustomerId,
+                OrgContractHeaderId,
+                Debit,
+                ProcessStartDate,
+                DailyWagesDate,
+                ServiceDate,
+                OfficialCancellationDate,
+                Paid,
+                Diff,
+                State,
+                ApprovalState,
+                ResultId,
+                PROCESS_SITUATION_ID
+                FROM RiskDocumentWarningFollowListBaseLPDDOR
+                WHERE
+                    (PROCESS_SITUATION_ID is null or ResultId in (0,1,2)) 
+                    AND 1=1
+                    --AND CustomerId=29308
+                    AND ResultId in (0,1) 
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {
+                "RiskDocumentId" : r.RiskDocumentId,
+                "RiskHeaderId" : r.RiskHeaderId,
+                "CustomerId" : r.CustomerId,
+                "OrgContractHeaderId" : r.OrgContractHeaderId,
+                "Debit" : r.Debit,
+                "ProcessStartDate" : r.ProcessStartDate,
+                "DailyWagesDate" : r.DailyWagesDate,
+                "ServiceDate" : r.ServiceDate,
+                "OfficialCancellationDate" : r.OfficialCancellationDate,
+                "Paid" : r.Paid,
+                "Diff" : r.Diff,
+                "State" : r.State,
+                "ApprovalState" : r.ApprovalState,
+            }
+            for r in records
+        ]
+
+        warning_notices = WarningNotice.objects.select_related("company","contract","contract__currency").all()
+        contracts = Contract.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        warning_notice_by_code = {c.trn_id: c for c in warning_notices if c.trn_id}
+        contracts_dict = {c.contract_id: c for c in contracts}
+
+        previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+            
+            if str(data["RiskDocumentId"]):
+                obj = (warning_notice_by_code.get(str(data["RiskDocumentId"])))
+            else:
+                obj = None
+
+            if obj:
+                old_obj_count += 1
+                obj.contract = contracts_dict.get(str(data["OrgContractHeaderId"]))
+                obj.document_id = str(data["RiskDocumentId"]) or ""
+                obj.risk_id = str(data["RiskHeaderId"]) or ""
+                obj.customer_id = str(data["CustomerId"]) or ""
+                obj.debit_amount = safe_decimal(data["Debit"])
+                obj.daily_wages_date = data["DailyWagesDate"].date() if data["DailyWagesDate"] else None
+                obj.process_start_date = data["ProcessStartDate"].date() if data["ProcessStartDate"] else None
+                obj.service_date = data["ServiceDate"].date() if data["ServiceDate"] else None
+                obj.official_cancellation_date = data["OfficialCancellationDate"].date() if data["OfficialCancellationDate"] else None
+                obj.paid = safe_decimal(data["Paid"])
+                obj.diff = safe_decimal(data["Diff"])
+                obj.state = str(data["State"]) or ""
+                obj.approval_state = str(data["ApprovalState"]) or ""
+                obj.save()
+            else:
+                if data["OrgContractHeaderId"] and contracts_dict.get(str(data["OrgContractHeaderId"])):
+                    new_obj_count += 1
+                    WarningNotice.objects.create(
+                        company = company_obj,
+                        contract = contracts_dict.get(str(data["OrgContractHeaderId"])),
+                        document_id = str(data["RiskDocumentId"]) or "",
+                        risk_id = str(data["RiskHeaderId"]) or "",
+                        customer_id = str(data["CustomerId"]) or "",
+                        debit_amount = safe_decimal(data["Debit"]),
+                        daily_wages_date = data["DailyWagesDate"].date() if data["DailyWagesDate"] else None,
+                        process_start_date = data["ProcessStartDate"].date() if data["ProcessStartDate"] else None,
+                        service_date = data["ServiceDate"].date() if data["ServiceDate"] else None,
+                        official_cancellation_date = data["OfficialCancellationDate"].date() if data["OfficialCancellationDate"] else None,
+                        paid = safe_decimal(data["Paid"]),
+                        diff = safe_decimal(data["Diff"]),
+                        state = str(data["State"]) or "",
+                        approval_state = str(data["ApprovalState"]) or "",
+                    )
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for warning notices.")
+    except Exception as e:
+        print(e)     

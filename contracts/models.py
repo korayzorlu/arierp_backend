@@ -21,6 +21,7 @@ class Contract(models.Model):
     code = models.CharField(_("Code"), max_length=25)
     quotation_obj = models.ForeignKey(Quotation, on_delete=models.CASCADE, related_name="quotation_contracts", null=True, blank=True)
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_contracts", null=True, blank=True)
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_contracts")
     kof = models.CharField(_("Kof"), max_length=25, null=True, blank=True)
     quotation = models.CharField(_("Quotation"), max_length=25, null=True, blank=True)
     committe = models.CharField(_("Committe"), max_length=25, null=True, blank=True)
@@ -70,3 +71,27 @@ class ContractPayment(models.Model):
 
     def __str__(self):
         return str(self.account_name)
+    
+class WarningNotice(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_warning_notices")
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_warning_notices")
+    document_id = models.CharField(_("Document ID"), max_length=25, null=True, blank=True)
+    risk_id = models.CharField(_("Risk ID"), max_length=25, null=True, blank=True)
+    customer_id = models.CharField(_("Customer ID"), max_length=25, null=True, blank=True)
+    debit_amount = models.DecimalField(_("Debit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    daily_wages_date = models.DateField(_("Daily Wages Date"), blank=True, null=True)
+    process_start_date = models.DateField(_("Process Start Date"), blank=True, null=True)
+    service_date = models.DateField(_("Service Date"), blank=True, null=True)
+    official_cancellation_date = models.DateField(_("Official Cancellation Date"), blank=True, null=True)
+    paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
+    diff = models.DecimalField(_("Diff"), default = 0.00, max_digits=14, decimal_places=2)
+    state = models.CharField(_("State"), max_length=250, null=True, blank=True)
+    approval_state = models.CharField(_("Approval State"), max_length=250, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.contract.code)
