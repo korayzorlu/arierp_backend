@@ -221,7 +221,7 @@ class BankActivityListSerializer(serializers.Serializer):
                     "project" : bank_activity_lease.lease.contract.project if bank_activity_lease.lease.contract else "",
                     "block" : bank_activity_lease.lease.contract.quotation_obj.quick_quotation.block if bank_activity_lease.lease.contract.quotation_obj.quick_quotation else "",
                     "unit" : bank_activity_lease.lease.contract.quotation_obj.quick_quotation.unit if bank_activity_lease.lease.contract.quotation_obj.quick_quotation else "",
-                    "overdue_amount" : total_overdue_amount,
+                    "overdue_amount" : bank_activity_lease.lease.overdue_amount,
                     "processed_amount" : bank_activity_lease.processed_amount,
                     "overdue_days" : overdue_days,
                     "currency" : bank_activity_lease.lease.currency.code if bank_activity_lease.lease.currency else "",
