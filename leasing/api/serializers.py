@@ -294,17 +294,18 @@ class RiskPartnerListSerializer(serializers.Serializer):
     def get_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
-            )
+            ) &
+            Q(is_kdv_diff = False)
         )
         overdue_days = 0
         for lease in leases:
-            if not lease.is_kdv_diff:
-                if lease.overdue_days > overdue_days:
-                    overdue_days = lease.overdue_days
+            if lease.overdue_days > overdue_days:
+                overdue_days = lease.overdue_days
         return overdue_days
     
     def get_leases(self, obj):
@@ -374,13 +375,13 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
-            )
+            ) &
+            Q(is_kdv_diff = True)
         )
         overdue_days = 0
         for lease in leases:
-            if lease.is_kdv_diff:
-                if lease.overdue_days > overdue_days:
-                    overdue_days = lease.overdue_days
+            if lease.overdue_days > overdue_days:
+                overdue_days = lease.overdue_days
         return overdue_days
     
     def get_leases(self, obj):
