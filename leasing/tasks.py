@@ -1166,7 +1166,11 @@ def fetch_overdue_leases(company):
         if objs:
             if len(objs) == 1:
                 for obj in objs:
+                    if float(row['Oran'].replace("% ","")) >= 98:
+                        print(row['Oran'].replace("% ",""))
+                        obj.is_kdv_diff = True
                     obj.overdue_days = int(row['Gecikme günü'])
                     obj.save()
             else:
                 print(f"{row['Kira Planı']} kira planı {len(objs)} adet var.")
+

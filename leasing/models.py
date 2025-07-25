@@ -63,6 +63,8 @@ class Lease(models.Model):
     leaseflex_automation = models.BooleanField(default=False)
     processed_amount = models.DecimalField(_("Processed Amount"), default = 0.00, max_digits=14, decimal_places=2)
 
+    is_kdv_diff = models.BooleanField(default=False)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

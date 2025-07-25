@@ -248,7 +248,8 @@ def import_bank_activities(self, df_json):
             # tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
 
             tc_vkn_no = str(row['Gönderen TCKN / VKN']) if not pd.isna(row['Gönderen TCKN / VKN']) else ""
-
+            print(type(tc_vkn_no))
+            print(tc_vkn_no)
             obj = BankActivity.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
                 bank_code = str(row['Banka Kodu']) if not pd.isna(row['Banka Kodu']) else "",
@@ -296,7 +297,7 @@ def import_bank_activities(self, df_json):
         self.process.save()
 
 def export_bank_activities(self):
-    objs = BankActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("-bank_activity__process_date","lease__code")
+    objs = BankActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("bank_activity__bank_code","bank_activity__tc_vkn_no")
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)

@@ -198,6 +198,39 @@ class RiskPartnerFilter(FilterSet):
         else:
             return queryset.exclude(types__contains=["special"])
         
+class RiskPartnerKDVFilter(FilterSet):
+    name = CharFilter(method = 'filter_name')
+    special = CharFilter(method = 'filter_special')
+    overdue_amount = CharFilter(method = 'filter_overdue_amount')
+    bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
+    class Meta:
+        model = Partner
+        fields = ['uuid','name','tc_vkn_no']
+
+    def filter_name(self, queryset, name, value):
+        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            Q(lowercase__icontains = value) |
+            Q(uppercase__icontains = value)
+        )
+    
+    def filter_overdue_amount(self, queryset, overdue_amount, value):
+        if value == "true":
+            return queryset.filter(partner_contracts__contract_leases__overdue_amount__gt=0)
+        else:
+            return queryset.filter()
+        
+    def filter_bigger_than_100(self, queryset, bigger_than_100, value):
+        if value == "true":
+            return queryset.filter(partner_contracts__contract_leases__overdue_amount__gt=100)
+        else:
+            return queryset.filter()
+    
+    def filter_special(self, queryset, special, value):
+        if value == "true":
+            return queryset.filter()
+        else:
+            return queryset.exclude(types__contains=["special"])
+        
 class TomorrowPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
