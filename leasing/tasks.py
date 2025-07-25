@@ -237,8 +237,7 @@ def fix_installments(company):
 
             if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
                 obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
-                if int(data["SequenceNo"]) == 0:
-                    obj.delete()
+                obj.delete()
                 obj = None
             else:
                 obj = None
