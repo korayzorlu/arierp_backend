@@ -3,7 +3,7 @@ from django.conf import settings
 
 from contracts.models import *
 from leasing.models import *
-from quotations.tasks import fix_quotation
+from leasing.tasks import fetch_installments
 
 import pandas as pd
 import json
@@ -27,6 +27,6 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        fix_quotation.delay(company)
+        fetch_installments.delay(company)
         
         print("done!")

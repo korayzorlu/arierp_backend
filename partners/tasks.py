@@ -166,7 +166,7 @@ def fix_partnerss(company):
         print(e)
 
 @shared_task()
-def fix_partners(company):
+def fetch_partners(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -371,7 +371,7 @@ def fix_partners(company):
         print(e)
 
 @shared_task()
-def fix_partnersi(company):
+def fetch_partnersi(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"

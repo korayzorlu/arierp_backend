@@ -3,7 +3,7 @@ from django.conf import settings
 
 from contracts.models import *
 from leasing.models import *
-from partners.tasks import fix_partnersi
+from leasing.tasks import fetch_leases
 
 import pandas as pd
 import json
@@ -27,6 +27,6 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        fix_partnersi.delay(company)
+        fetch_leases.delay(company)
         
         print("done!")

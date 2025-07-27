@@ -20,7 +20,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 
 @shared_task()
-def fix_leases(company):
+def fetch_leases(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -161,7 +161,7 @@ def fix_leases(company):
         print(e)
 
 @shared_task()
-def fix_installments(company):
+def fetch_installments(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -237,7 +237,8 @@ def fix_installments(company):
 
             if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
                 obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
-                obj.delete()
+                if obj:
+                    obj.delete()
                 obj = None
             else:
                 obj = None

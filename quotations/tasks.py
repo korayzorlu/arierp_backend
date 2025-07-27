@@ -19,7 +19,7 @@ from users.models import User
 from .models import *
 
 @shared_task()
-def fix_quick_quotation(company):
+def fetch_quick_quotation(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -189,7 +189,7 @@ def fix_quick_quotation(company):
         print(e)
 
 @shared_task()
-def fix_quotation(company):
+def fetch_quotation(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
