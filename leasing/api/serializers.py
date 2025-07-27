@@ -281,7 +281,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
-    overdue_days = serializers.SerializerMethodField()
+    max_overdue_days = serializers.SerializerMethodField()
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
@@ -292,7 +292,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
     def get_special(self, obj):
         return True if "special" in obj.types else False
     
-    def get_overdue_days(self, obj):
+    def get_max_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
@@ -376,6 +376,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
     overdue_days = serializers.SerializerMethodField()
+    total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
 
@@ -388,6 +389,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     def get_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -401,6 +403,22 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 overdue_days = lease.overdue_days
         return overdue_days
     
+    def get_total_overdue_amount(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = True)
+        )
+        overdue_amount = 0
+        for lease in leases:
+            overdue_amount += lease.overdue_amount
+        return overdue_amount
+    
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
@@ -408,7 +426,8 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
-            )
+            ) &
+            Q(is_kdv_diff = True)
         ).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:

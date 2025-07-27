@@ -237,7 +237,7 @@ def fetch_installments(company):
 
             if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
                 obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
-                if obj:
+                if obj and obj.pk:
                     obj.delete()
                 obj = None
             else:
