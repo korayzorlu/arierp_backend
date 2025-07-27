@@ -96,8 +96,8 @@ class WarningNoticeListSerializer(serializers.Serializer):
     id = serializers.CharField(source='uuid')
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
-    contract = serializers.SerializerMethodField()
-    partner = serializers.SerializerMethodField()
+    contract_code = serializers.SerializerMethodField()
+    partner_name = serializers.SerializerMethodField()
     document_id = serializers.CharField()
     risk_id = serializers.CharField()
     customer_id = serializers.CharField()
@@ -115,10 +115,10 @@ class WarningNoticeListSerializer(serializers.Serializer):
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
     
-    def get_contract(self, obj):
+    def get_contract_code(self, obj):
         return obj.contract.code if obj.contract else ""
     
-    def get_partner(self, obj):
+    def get_partner_name(self, obj):
         return obj.contract.partner.name if obj.contract.partner else ""
     
     def get_termination_days(self, obj):

@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet, Q,F
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -175,7 +175,8 @@ class WarningNoticeList(ModelViewSet, QueryListAPIView):
     serializer_class = WarningNoticeListSerializer
     filterset_class = WarningNoticeFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    ordering_fields = ['contract_code','partner_name','process_start_date','service_date','official_cancellation_date','debit_amount','paid','diff']
+    ordering = ['-official_cancellation_date']
     pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
@@ -184,9 +185,14 @@ class WarningNoticeList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["company","contract","contract__currency"]
+        custom_related_fields = ["company","contract","contract__currency","contract__partner"]
 
-        queryset = WarningNotice.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-process_start_date","contract__code")
+        queryset = WarningNotice.objects.select_related(*custom_related_fields).filter(
+            company = active_company.company if active_company else None
+        ).annotate(
+            contract_code=F('contract__code'),
+            partner_name=F('contract__partner__name')
+        ).order_by("-process_start_date","contract__code")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

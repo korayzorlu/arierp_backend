@@ -309,7 +309,8 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
     serializer_class = RiskPartnerKDVListSerializer
     filterset_class = RiskPartnerKDVFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
     pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
@@ -332,8 +333,9 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=True)
         ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-        ).order_by('-max_overdue_days')
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:

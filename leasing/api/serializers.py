@@ -375,7 +375,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
-    overdue_days = serializers.SerializerMethodField()
+    max_overdue_days = serializers.SerializerMethodField()
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
@@ -386,7 +386,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     def get_special(self, obj):
         return True if "special" in obj.types else False
     
-    def get_overdue_days(self, obj):
+    def get_max_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &

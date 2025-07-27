@@ -219,6 +219,7 @@ def fetch_installments(company):
         ]
 
         installments = Installment.objects.select_related("lease").all()
+        installments.delete()
         leases = Lease.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
@@ -237,9 +238,6 @@ def fetch_installments(company):
 
             if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
                 obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
-                if obj and obj.pk:
-                    obj.delete()
-                obj = None
             else:
                 obj = None
 
