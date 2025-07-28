@@ -1,9 +1,10 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
+from django.utils.timezone import now
 
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django_filters import CharFilter
@@ -347,7 +348,120 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+
+
+class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
+    serializer_class = ToWarnedRiskPartnerListSerializer
+    filterset_class = ToWarnedRiskPartnerFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
     
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        is_kdv = self.request.query_params.get('kdv')
+
+        custom_related_fields = ["country","billing_country"]
+
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count=0)
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["country__name","billing__country"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
+class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
+    serializer_class = ToTerminatedRiskPartnerListSerializer
+    filterset_class = ToTerminatedRiskPartnerFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        is_kdv = self.request.query_params.get('kdv')
+
+        custom_related_fields = ["country","billing_country"]
+
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+            overdue_check=Case(
+                When(
+                    customer_type='individual',
+                    then=Case(
+                        When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                When(
+                    customer_type='institutional',
+                    then=Case(
+                        When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                default=Value(False),
+                output_field=BooleanField()
+            )
+        ).filter(warning_notice_count__gt=0,overdue_check=True)
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["country__name","billing__country"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
+
 class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
     serializer_class = TomorrowPartnerListSerializer
     filterset_class = TomorrowPartnerFilter

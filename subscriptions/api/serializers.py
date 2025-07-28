@@ -34,7 +34,9 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Vadesi Geçmiş Alacaklar", "icon" : "policy", "route" : "/overdue-leases"},
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme", "icon" : "policy", "route" : "/risk-partners"},
-                {"type" : "item", "class" : "free", "label" : "Risk İzleme KDV", "icon" : "policy", "route" : "/kdv-risk-partners"},
+                {"type" : "item", "class" : "free", "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
+                {"type" : "item", "class" : "free", "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
+                {"type" : "item", "class" : "free", "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
                 {"type" : "item", "class" : "free", "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
                 #{"type" : "item", "class" : "free", "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},

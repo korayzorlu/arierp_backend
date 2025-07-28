@@ -219,7 +219,6 @@ def fetch_installments(company):
         ]
 
         installments = Installment.objects.select_related("lease").all()
-        installments.delete()
         leases = Lease.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
@@ -236,7 +235,7 @@ def fetch_installments(company):
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
 
-            if str(data["OPERATIONPROJECTID"]) and str(data["SequenceNo"]):
+            if str(data["OPERATIONPROJECTID"]) and int(data["SequenceNo"]):
                 obj = (installment_by_code.get((str(data["OPERATIONPROJECTID"]),int(data["SequenceNo"]))))
             else:
                 obj = None
@@ -1056,14 +1055,14 @@ def fetch_leases_overdue_amount(company):
                         lopStatu.RiskIncludingTypeId IN (6, 7)
                         AND TrnLayer = 3
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250723'
+                        AND TrnDueDate <= '20250728'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                     OR (
                         lopStatu.RiskIncludingTypeId = 7
                         AND TrnLayer = 3
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250723'
+                        AND TrnDueDate <= '20250728'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 1
                     )
                 )
@@ -1073,14 +1072,14 @@ def fetch_leases_overdue_amount(company):
                         lopStatu.RiskIncludingTypeId IN (6, 7)
                         AND TrnLedgerStatu = 10
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250723'
+                        AND TrnDueDate <= '20250728'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                     OR (
                         lopStatu.RiskIncludingTypeId = 7
                         AND TrnLedgerStatu = 10
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250723'
+                        AND TrnDueDate <= '20250728'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 1
                     )
                 )

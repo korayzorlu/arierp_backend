@@ -140,7 +140,7 @@ def fetch_contracts(company):
         print(e)
 
 @shared_task()
-def fix_contract_payments(company):
+def fetch_contract_payments(company):
     SERVER = "192.168.81.8,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -260,7 +260,7 @@ def fix_contract_payments(company):
                 )
                 AND TrnAccountType IN (21, 11, 1)
                 --AND TrnDate >= CONVERT(DATETIME, '2015-7-4', 102)
-                --AND TrnDate <= CONVERT(DATETIME, '2025-7-23', 102)
+                --AND TrnDate <= CONVERT(DATETIME, '2025-7-28', 102)
                 --AND TrnOprContractId = 41727
                 AND TrnLayer = 1
                 AND TrnLedgerStatu = 50

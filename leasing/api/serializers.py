@@ -8,6 +8,7 @@ from datetime import date,timedelta,datetime
 from leasing.models import *
 from companies.models import Company,UserCompany
 from partners.models import Partner
+from contracts.models import WarningNotice
     
 class LeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -285,12 +286,20 @@ class RiskPartnerListSerializer(serializers.Serializer):
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_status(self, obj):
+        warningNotices = WarningNotice.objects.select_related("contract__partner").filter(contract__partner = obj)
+        if warningNotices:
+            return "İhtar Çekildi"
+        else:
+            return ""
     
     def get_max_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
@@ -464,6 +473,212 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                     "is_kdv_diff" : lease.is_kdv_diff
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+
+class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    crm_code = serializers.CharField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.SerializerMethodField()
+    max_overdue_days = serializers.SerializerMethodField()
+    total_overdue_amount = serializers.SerializerMethodField()
+    leases = serializers.SerializerMethodField()
+    special = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    def get_tc_vkn_no(self, obj):
+        return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
+    
+    def get_special(self, obj):
+        return True if "special" in obj.types else False
+    
+    def get_status(self, obj):
+        warningNotices = WarningNotice.objects.select_related("contract__partner").filter(contract__partner = obj)
+        if warningNotices:
+            return "İhtar Çekildi"
+        else:
+            return ""
+    
+    def get_max_overdue_days(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False)
+        )
+        overdue_days = 0
+        for lease in leases:
+            if lease.overdue_days > overdue_days:
+                overdue_days = lease.overdue_days
+        return overdue_days
+    
+    def get_total_overdue_amount(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False)
+        )
+        overdue_amount = 0
+        for lease in leases:
+            overdue_amount += lease.overdue_amount
+        return overdue_amount
+    
+    def get_leases(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        lease_list = []
+        if leases:
+            for lease in leases:
+                installments = lease.lease_installments.all()
+                total_overdue_amount = Decimal("0")
+                for installment in installments:
+                    total_overdue_amount += installment.overdue_amount
+                if total_overdue_amount < 100:
+                    total_overdue_amount = Decimal("0")
+
+                overdue_days = -1
+                for installment in installments:
+                    if installment.overdue_amount > 0:
+                        today = date.today()
+                        diff = (today - installment.payment_date).days
+                        if diff > overdue_days:
+                            overdue_days = diff
+
+                lease_list.append({
+                    "id" : lease.uuid,
+                    "code" : lease.code,
+                    "contract" : lease.contract.code if lease.contract else "",
+                    "partner" : lease.contract.partner.name if lease.contract.partner else "",
+                    "partner_tc" : lease.contract.partner.tc_vkn_no if lease.contract else "",
+                    "partner_crm_code" : lease.contract.partner.crm_code if lease.contract else "",
+                    "project" : lease.contract.project if lease.contract else "",
+                    "block" : lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj.quick_quotation else "",
+                    "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
+                    "overdue_amount" : lease.overdue_amount,
+                    "overdue_days" : lease.overdue_days,
+                    "currency" : lease.currency.code if lease.currency else "",
+                    "lease_status" : lease.get_lease_status_display(),
+                    "is_kdv_diff" : lease.is_kdv_diff
+                })
+        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+
+class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    crm_code = serializers.CharField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.SerializerMethodField()
+    max_overdue_days = serializers.SerializerMethodField()
+    total_overdue_amount = serializers.SerializerMethodField()
+    leases = serializers.SerializerMethodField()
+    special = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    def get_tc_vkn_no(self, obj):
+        return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
+    
+    def get_special(self, obj):
+        return True if "special" in obj.types else False
+    
+    def get_status(self, obj):
+        warningNotices = WarningNotice.objects.select_related("contract__partner").filter(contract__partner = obj)
+        if warningNotices:
+            return "İhtar Çekildi"
+        else:
+            return ""
+    
+    def get_max_overdue_days(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False)
+        )
+        overdue_days = 0
+        for lease in leases:
+            if lease.overdue_days > overdue_days:
+                overdue_days = lease.overdue_days
+        return overdue_days
+    
+    def get_total_overdue_amount(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False)
+        )
+        overdue_amount = 0
+        for lease in leases:
+            overdue_amount += lease.overdue_amount
+        return overdue_amount
+    
+    def get_leases(self, obj):
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        lease_list = []
+        if leases:
+            for lease in leases:
+                installments = lease.lease_installments.all()
+                total_overdue_amount = Decimal("0")
+                for installment in installments:
+                    total_overdue_amount += installment.overdue_amount
+                if total_overdue_amount < 100:
+                    total_overdue_amount = Decimal("0")
+
+                overdue_days = -1
+                for installment in installments:
+                    if installment.overdue_amount > 0:
+                        today = date.today()
+                        diff = (today - installment.payment_date).days
+                        if diff > overdue_days:
+                            overdue_days = diff
+
+                lease_list.append({
+                    "id" : lease.uuid,
+                    "code" : lease.code,
+                    "contract" : lease.contract.code if lease.contract else "",
+                    "partner" : lease.contract.partner.name if lease.contract.partner else "",
+                    "partner_tc" : lease.contract.partner.tc_vkn_no if lease.contract else "",
+                    "partner_crm_code" : lease.contract.partner.crm_code if lease.contract else "",
+                    "project" : lease.contract.project if lease.contract else "",
+                    "block" : lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj.quick_quotation else "",
+                    "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
+                    "overdue_amount" : lease.overdue_amount,
+                    "overdue_days" : lease.overdue_days,
+                    "currency" : lease.currency.code if lease.currency else "",
+                    "lease_status" : lease.get_lease_status_display(),
+                    "is_kdv_diff" : lease.is_kdv_diff
+                })
+        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+
+
 
 class TomorrowPartnerListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
