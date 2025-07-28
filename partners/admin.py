@@ -14,6 +14,7 @@ class SectorAdmin(admin.ModelAdmin):
     inlines = []
     ordering = ["name"]
     
+    
     def company(self,obj):
         return obj.company.name if obj.company else ""
     
@@ -50,6 +51,7 @@ class PartnerAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["name"]
+    autocomplete_fields = ["country","billing_country","phone_country","city","billing_city","sector"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
