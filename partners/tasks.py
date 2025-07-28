@@ -536,6 +536,10 @@ def fetch_special_partners(company):
     df = pd.DataFrame(file_data)
 
     for index,row in df.iterrows():
+        special_partners = Partner.objects.select_related().filter(types__contains=["special"])
+        for special_partner in special_partners:
+            special_partner.types.remove('special')
+            special_partner.save()
         objs = Partner.objects.select_related().annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
             Q(lowercase__icontains = row['MÜŞTERİ ADI']) |
             Q(uppercase__icontains = row['MÜŞTERİ ADI'])
@@ -543,7 +547,12 @@ def fetch_special_partners(company):
         if objs:
             if len(objs) == 1:
                 for obj in objs:
-                    obj.types = ["customer","special"]
+                    if row['Arayacak Kişi'] == "ÖZEL MÜŞTERİ":
+                        obj.types = ["customer","special"]
+                    elif row['Arayacak Kişi'] == "BARTER":
+                        obj.types = ["customer","barter"]
+                    elif row['Arayacak Kişi'] == "VİRMAN":
+                        obj.types = ["customer","virman"]
                     obj.save()
             else:
                 print(f"{row['MÜŞTERİ ADI']} için bulunanlar;")

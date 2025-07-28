@@ -43,6 +43,8 @@ class Partner(models.Model):
         ('supplier', ('Supplier')),
         ('shareholder', ('Shareholder')),
         ('special', ('Special')),
+        ('barter', ('Barter')),
+        ('virman', ('Virman')),
     )
     types = ArrayField(models.CharField(_("Status"), max_length=25, choices=TYPES_CHOICES), default=list, blank=True, null=True)
 
