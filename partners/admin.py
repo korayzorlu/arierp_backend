@@ -21,10 +21,14 @@ class SectorAdmin(admin.ModelAdmin):
         model = Sector
 
 class PartnerAdminForm(forms.ModelForm):
-    TYPES_CHOICES = [
-        ('customer', 'Customer'),
-        ('supplier', 'Supplier')
-    ]
+    TYPES_CHOICES = (
+        ('customer', ('Customer')),
+        ('supplier', ('Supplier')),
+        ('shareholder', ('Shareholder')),
+        ('special', ('Special')),
+        ('barter', ('Barter')),
+        ('virman', ('Virman')),
+    )
 
     types = forms.MultipleChoiceField(
         choices=TYPES_CHOICES,
