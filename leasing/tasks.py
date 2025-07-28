@@ -1146,10 +1146,10 @@ def fetch_leases_overdue_amount(company):
 
 @shared_task()
 def fetch_overdue_leases(company):
-    excel_file = pd.ExcelFile("files/24-07-2025-vadesi-gecmis-sadece-borc.xlsx")
+    excel_file = pd.ExcelFile("files/28-07-2025-vadesi-gecmis-sadece-borc.xlsx")
     sheet_name = excel_file.sheet_names[0]
 
-    file_data = pd.read_excel("files/24-07-2025-vadesi-gecmis-sadece-borc.xlsx", sheet_name)
+    file_data = pd.read_excel("files/28-07-2025-vadesi-gecmis-sadece-borc.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
     for index,row in df.iterrows():
