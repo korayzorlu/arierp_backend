@@ -306,7 +306,6 @@ def fetch_contract_payments(company):
         ]
 
         contract_payments = ContractPayment.objects.select_related("company","contract","currency").all()
-        contract_payments.delete()
         contracts = Contract.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
@@ -460,7 +459,7 @@ def fetch_warning_notices(company):
         contracts = Contract.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        warning_notice_by_code = {c.trn_id: c for c in warning_notices if c.trn_id}
+        warning_notice_by_code = {c.document_id: c for c in warning_notices if c.document_id}
         contracts_dict = {c.contract_id: c for c in contracts}
 
         previous_progress = 0
