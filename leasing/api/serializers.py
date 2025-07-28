@@ -286,6 +286,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    barter = serializers.SerializerMethodField()
+    virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
@@ -293,6 +295,12 @@ class RiskPartnerListSerializer(serializers.Serializer):
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_barter(self, obj):
+        return True if "barter" in obj.types else False
+    
+    def get_virman(self, obj):
+        return True if "virman" in obj.types else False
     
     def get_status(self, obj):
         warningNotices = WarningNotice.objects.select_related("contract__partner").filter(contract__partner = obj)
@@ -388,12 +396,20 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    barter = serializers.SerializerMethodField()
+    virman = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_barter(self, obj):
+        return True if "barter" in obj.types else False
+    
+    def get_virman(self, obj):
+        return True if "virman" in obj.types else False
     
     def get_max_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
@@ -483,6 +499,8 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    barter = serializers.SerializerMethodField()
+    virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
@@ -490,6 +508,12 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_barter(self, obj):
+        return True if "barter" in obj.types else False
+    
+    def get_virman(self, obj):
+        return True if "virman" in obj.types else False
     
     def get_status(self, obj):
         warningNotices = WarningNotice.objects.select_related("contract__partner").filter(contract__partner = obj)
@@ -585,6 +609,8 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    barter = serializers.SerializerMethodField()
+    virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
@@ -592,6 +618,12 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_barter(self, obj):
+        return True if "barter" in obj.types else False
+    
+    def get_virman(self, obj):
+        return True if "virman" in obj.types else False
     
     def get_status(self, obj):
         warningNotices = WarningNotice.objects.select_related("contract__partner").filter(contract__partner = obj)
@@ -688,12 +720,20 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
     overdue_days = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    barter = serializers.SerializerMethodField()
+    virman = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_barter(self, obj):
+        return True if "barter" in obj.types else False
+    
+    def get_virman(self, obj):
+        return True if "virman" in obj.types else False
     
     def get_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
@@ -757,12 +797,20 @@ class TodayPartnerListSerializer(serializers.Serializer):
     overdue_days = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
+    barter = serializers.SerializerMethodField()
+    virman = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
     def get_special(self, obj):
         return True if "special" in obj.types else False
+    
+    def get_barter(self, obj):
+        return True if "barter" in obj.types else False
+    
+    def get_virman(self, obj):
+        return True if "virman" in obj.types else False
     
     def get_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(

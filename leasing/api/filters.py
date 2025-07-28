@@ -168,6 +168,8 @@ class BankActivityLeaseFilter(FilterSet):
 class RiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
@@ -194,13 +196,27 @@ class RiskPartnerFilter(FilterSet):
     
     def filter_special(self, queryset, special, value):
         if value == "true":
-            return queryset.filter()
+            return queryset.filter(types__contains=["special"])
         else:
             return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
         
 class RiskPartnerKDVFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
@@ -227,13 +243,27 @@ class RiskPartnerKDVFilter(FilterSet):
     
     def filter_special(self, queryset, special, value):
         if value == "true":
-            return queryset.filter()
+            return queryset.filter(types__contains=["special"])
         else:
             return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
 
 class ToWarnedRiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
@@ -260,13 +290,27 @@ class ToWarnedRiskPartnerFilter(FilterSet):
     
     def filter_special(self, queryset, special, value):
         if value == "true":
-            return queryset.filter()
+            return queryset.filter(types__contains=["special"])
         else:
             return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
 
 class ToTerminatedRiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
@@ -293,13 +337,27 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
     
     def filter_special(self, queryset, special, value):
         if value == "true":
-            return queryset.filter()
+            return queryset.filter(types__contains=["special"])
         else:
             return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
 
 class TomorrowPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     tomorrow = CharFilter(method = 'filter_tomorrow')
     class Meta:
@@ -314,13 +372,27 @@ class TomorrowPartnerFilter(FilterSet):
     
     def filter_special(self, queryset, special, value):
         if value == "true":
-            return queryset.filter()
+            return queryset.filter(types__contains=["special"])
         else:
             return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
         
 class TodayPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     today = CharFilter(method = 'filter_today')
     class Meta:
@@ -335,6 +407,18 @@ class TodayPartnerFilter(FilterSet):
     
     def filter_special(self, queryset, special, value):
         if value == "true":
-            return queryset.filter()
+            return queryset.filter(types__contains=["special"])
         else:
             return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
