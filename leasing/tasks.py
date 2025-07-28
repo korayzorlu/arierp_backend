@@ -1152,7 +1152,15 @@ def fetch_overdue_leases(company):
     file_data = pd.read_excel("files/28-07-2025-vadesi-gecmis-sadece-borc.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
+    previous_progress = 0
+    old_obj_count = 0
     for index,row in df.iterrows():
+        current_progress = ((index + 1)/len(df.iterrows()))*100
+
+        if current_progress - previous_progress >= 1:
+            previous_progress = current_progress
+            print(f"{int(current_progress)} %")
+
         objs = Lease.objects.select_related().filter(
             Q(code=row['Kira Planı']) &
             (
@@ -1164,11 +1172,13 @@ def fetch_overdue_leases(company):
         if objs:
             if len(objs) == 1:
                 for obj in objs:
+                    old_obj_count += 1
                     if float(row['Oran'].replace("% ","")) >= 98:
-                        print(row['Oran'].replace("% ",""))
                         obj.is_kdv_diff = True
                     obj.overdue_days = int(row['Gecikme günü'])
                     obj.save()
             else:
                 print(f"{row['Kira Planı']} kira planı {len(objs)} adet var.")
+
+    print(f"{old_obj_count} objects updated for leases.")
 
