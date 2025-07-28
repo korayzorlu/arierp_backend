@@ -18,6 +18,7 @@ from common.models import ImportProcess
 from common.utils.common_utils import normalize
 from users.models import User
 from .models import *
+from leasing.models import Lease
 
 #tekrar eden düzeltme
 # from django.db.models import Max
@@ -558,3 +559,55 @@ def fetch_special_partners(company):
                 print(f"{row['MÜŞTERİ ADI']} için bulunanlar;")
                 for obj in objs:
                     print(f"....{obj.name} - {obj.tc_vkn_no}")
+
+@shared_task()
+def fetch_phone_numbers(company):
+    excel_file = pd.ExcelFile("files/musteri-tel-no.xlsx")
+    sheet_name = excel_file.sheet_names[0]
+
+    file_data = pd.read_excel("files/musteri-tel-no.xlsx", sheet_name)
+    df = pd.DataFrame(file_data)
+
+    previous_progress = 0
+    for index,row in df.iterrows():
+        current_progress = ((index + 1)/30000)*100
+
+        if current_progress - previous_progress >= 1:
+            previous_progress = current_progress
+            print(f"{int(current_progress)} %")
+
+        objs = Lease.objects.select_related().filter(
+            Q(code = str(row['OperationProjectCode']))
+        )
+        if objs:
+            for obj in objs:
+                partner = obj.contract.partner
+                if partner and not pd.isna(row['CommunicationValue']):
+                    partner.phone_number = str(row['CommunicationValue'])
+                    partner.save()
+
+    excel_file = pd.ExcelFile("files/musteri-tel-no.xlsx")
+    sheet_name = excel_file.sheet_names[1]
+
+    file_data = pd.read_excel("files/musteri-tel-no.xlsx", sheet_name)
+    df = pd.DataFrame(file_data)
+
+    previous_progress = 0
+    for index,row in df.iterrows():
+        current_progress = ((index + 1)/3000)*100
+
+        if current_progress - previous_progress >= 1:
+            previous_progress = current_progress
+            print(f"{int(current_progress)} %")
+
+        objs = Partner.objects.select_related().filter(
+            Q(crm_code = str(row['CustomerId']))
+        )
+        if objs:
+            for obj in objs:
+                if not pd.isna(row['Phone']):
+                    obj.phone_number = str(row['Phone'])
+                    obj.save()
+                if not pd.isna(row['Email']):
+                    obj.email = str(row['Email'])
+                    obj.save()

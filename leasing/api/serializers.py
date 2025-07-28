@@ -4,6 +4,7 @@ from django.db.models import Q
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
+from django.utils import timezone
 
 from leasing.models import *
 from companies.models import Company,UserCompany
@@ -212,6 +213,14 @@ class BankActivityListSerializer(serializers.Serializer):
                         if diff > overdue_days:
                             overdue_days = diff
 
+                first_future_payment = (
+                    bank_activity_lease.lease.lease_installments
+                    .filter(payment_date__gte=timezone.now().date())
+                    .order_by('payment_date')
+                    .values_list('amount', flat=True)
+                    .first()
+                )
+
                 bank_activity_lease_list.append({
                     "id" : bank_activity_lease.uuid,
                     "code" : bank_activity_lease.lease.code,
@@ -229,6 +238,7 @@ class BankActivityListSerializer(serializers.Serializer):
                     "currency" : bank_activity_lease.lease.currency.code if bank_activity_lease.lease.currency else "",
                     "lease_status" : bank_activity_lease.lease.lease_status,
                     "leaseflex_automation" : bank_activity_lease.leaseflex_automation,
+                    "next_payment" : first_future_payment
                 })
         return sorted(bank_activity_lease_list, key=lambda x: x["overdue_days"], reverse=True)
     
