@@ -306,6 +306,7 @@ def fetch_contract_payments(company):
         ]
 
         contract_payments = ContractPayment.objects.select_related("company","contract","currency").all()
+        contract_payments.delete()
         contracts = Contract.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
