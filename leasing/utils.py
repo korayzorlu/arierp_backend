@@ -47,6 +47,21 @@ def get_lease_status_value(display_label):
             return value
     return None
 
+
+def extract_contract_numbers(description):
+    # Parantez içindeki tüm numaraları yakalar
+    matches = re.findall(r'sözleşme.*?\(?(\d{4,})[-–]?(\d{0,})\)?', description.lower())
+    contract_numbers = []
+    for match in matches:
+        contract_numbers.append(match[0])
+        if match[1]:
+            contract_numbers.append(match[1])
+    return contract_numbers
+
+
+
+
+
 def import_leases(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
         
@@ -248,8 +263,7 @@ def import_bank_activities(self, df_json):
             # tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
 
             tc_vkn_no = str(row['Gönderen TCKN / VKN']) if not pd.isna(row['Gönderen TCKN / VKN']) else ""
-            print(type(tc_vkn_no))
-            print(tc_vkn_no)
+
             obj = BankActivity.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
                 bank_code = str(row['Banka Kodu']) if not pd.isna(row['Banka Kodu']) else "",

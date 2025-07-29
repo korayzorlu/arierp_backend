@@ -379,6 +379,15 @@ class RiskPartnerListSerializer(serializers.Serializer):
                         if diff > overdue_days:
                             overdue_days = diff
 
+                if lease.contract.contract_warning_notices.all():
+                    status = "İhtar Çekildi"
+                elif lease.is_kdv_diff:
+                    status = "KDV Farkı"
+                elif lease.overdue_amount > 1000 and lease.overdue_days > 30:
+                    status = "İhtar Çek"
+                else:
+                    status = "SMS"
+
                 lease_list.append({
                     "id" : lease.uuid,
                     "code" : lease.code,
@@ -394,7 +403,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
-                    "paid_rate" : lease.paid_rate
+                    "paid_rate" : lease.paid_rate,
+                    "status" : status
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -483,6 +493,15 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                         if diff > overdue_days:
                             overdue_days = diff
 
+                if lease.contract.contract_warning_notices.all():
+                    status = "İhtar Çekildi"
+                elif lease.is_kdv_diff:
+                    status = "KDV Farkı"
+                elif lease.overdue_amount > 1000 and lease.overdue_days > 30:
+                    status = "İhtar Çek"
+                else:
+                    status = "SMS"
+
                 lease_list.append({
                     "id" : lease.uuid,
                     "code" : lease.code,
@@ -497,7 +516,9 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                     "overdue_days" : lease.overdue_days,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
-                    "is_kdv_diff" : lease.is_kdv_diff
+                    "is_kdv_diff" : lease.is_kdv_diff,
+                    "paid_rate" : lease.paid_rate,
+                    "statu" : status
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -593,6 +614,15 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                         if diff > overdue_days:
                             overdue_days = diff
 
+                if lease.contract.contract_warning_notices.all():
+                    status = "İhtar Çekildi"
+                elif lease.is_kdv_diff:
+                    status = "KDV Farkı"
+                elif lease.overdue_amount > 1000 and lease.overdue_days > 30:
+                    status = "İhtar Çek"
+                else:
+                    status = "SMS"
+
                 lease_list.append({
                     "id" : lease.uuid,
                     "code" : lease.code,
@@ -607,7 +637,9 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     "overdue_days" : lease.overdue_days,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
-                    "is_kdv_diff" : lease.is_kdv_diff
+                    "is_kdv_diff" : lease.is_kdv_diff,
+                    "paid_rate" : lease.paid_rate,
+                    "status" : status
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -703,6 +735,15 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                         if diff > overdue_days:
                             overdue_days = diff
 
+                if lease.contract.contract_warning_notices.all():
+                    status = "İhtar Çekildi"
+                elif lease.is_kdv_diff:
+                    status = "KDV Farkı"
+                elif lease.overdue_amount > 1000 and lease.overdue_days > 30:
+                    status = "İhtar Çek"
+                else:
+                    status = "SMS"
+
                 lease_list.append({
                     "id" : lease.uuid,
                     "code" : lease.code,
@@ -717,7 +758,9 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                     "overdue_days" : lease.overdue_days,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
-                    "is_kdv_diff" : lease.is_kdv_diff
+                    "is_kdv_diff" : lease.is_kdv_diff,
+                    "paid_rate" : lease.paid_rate,
+                    "status" : status
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -830,6 +873,15 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                         diff = (today - installment.payment_date).days
                         if diff > overdue_days:
                             overdue_days = diff
+                
+                if lease.contract.contract_warning_notices.all():
+                    status = "İhtar Çekildi"
+                elif lease.is_kdv_diff:
+                    status = "KDV Farkı"
+                elif lease.overdue_amount > 1000 and lease.overdue_days > 30:
+                    status = "İhtar Çek"
+                else:
+                    status = "SMS"
 
                 lease_list.append({
                     "id" : lease.uuid,
@@ -846,7 +898,8 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
-                    "paid_rate" : lease.paid_rate
+                    "paid_rate" : lease.paid_rate,
+                    "status" : status
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 

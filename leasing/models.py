@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
 import uuid
 from decimal import Decimal
+import re
 
 from companies.models import Company
 from common.models import Currency, Status
@@ -13,6 +14,70 @@ from partners.models import Partner
 
 # Create your models here.
 
+def extract_contract_numbers(description):
+    # Parantez içindeki tüm numaraları yakalar
+    # matches = re.findall(r'sözleşme.*?\(?(\d{4,})[-–]?(\d{0,})\)?', description.lower())
+    # contract_numbers = []
+    # for match in matches:
+    #     contract_numbers.append(match[0])
+    #     if match[1]:
+    #         contract_numbers.append(match[1])
+    # return contract_numbers
+
+    # if not isinstance(description, str):
+    #     return []
+######
+    # pattern = r"""
+    #     (?:
+    #         sözleşme\s*no[:\s]*       # sözleşme no: 12345
+    #         |
+    #         sözleşme\s*[:\s]*
+    #         |
+    #         söz\.?\s*no[:\s]*
+    #         |
+    #         no[:\s]+
+    #         |
+    #         nolu\s+sözleşme           # 12345 nolu sözleşme
+    #     )
+    #     [^\d]*(\d[\d\-_]*)            # sözleşme numarası (rakam, alt çizgi, tire içerebilir)
+    # """
+
+    # matches = re.findall(pattern, description.lower(), re.VERBOSE)
+    # return matches
+######
+    if not isinstance(description, str):
+        return []
+
+    matches = []
+
+    # 1. sözleşme no, no:, söz. no, nolu sözleşme gibi ifadeler
+    pattern_named = r"""
+        (?:
+            sözleşme\s*no[:\s]*       |
+            sözleşme\s*[:\s]*         |
+            söz\.?\s*no[:\s]*         |
+            kontrat\s*no[:\s]*        |
+            no[:\s]+                  |
+            nolu\s+sözleşme
+        )
+        [^\d]*(\d[\d\-_]*)            # numara
+    """
+    matches += re.findall(pattern_named, description.lower(), re.VERBOSE)
+
+    # 2. Parantez içindeki 5+ haneli numaralar
+    pattern_parens = r'\((\d{5,}(?:[-_]\d{2,})*)\)'
+    matches += re.findall(pattern_parens, description)
+
+    # 3. Açıkta geçen 5-12 haneli numaralar
+    pattern_standalone = r'\b(?<!\d)(\d{5,12})(?!\d)\b'
+    raw_matches = re.findall(pattern_standalone, description)
+
+    # Tekrarları ve bariz TC'leri filtrele (isteğe bağlı)
+    for m in raw_matches:
+        if m not in matches:
+            matches.append(m)
+
+    return matches
 class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
@@ -153,6 +218,14 @@ class BankActivity(models.Model):
             super().save(*args, **kwargs)
 
             if is_new:
+                contract_numbers = extract_contract_numbers(self.description)
+                contracts = Contract.objects.filter(
+                    Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
+                )
+
+                for contract in contracts:
+                    print(f"{contract.partner.name} - {contract.code}")
+                
                 leases = Lease.objects.filter(
                     (
                         Q(contract__partner__tc_vkn_no = self.tc_vkn_no) |

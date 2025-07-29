@@ -17,6 +17,7 @@ from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
 from partners.models import Partner
+from companies.models import UserCompany
 
 import os
 import json
@@ -157,3 +158,39 @@ class ImportContractsView(LoginRequiredMixin,View):
         importer.start_import(df_json)
 
         return HttpResponse(status=200)
+    
+class WarningNoticeInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        contract = data.get('contract')
+
+        active_company_uuid = data.get('active_company')
+        print(active_company_uuid)
+        active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
+        print(active_company)
+        
+        obj = WarningNotice.objects.filter(company = active_company.company, contract__code = contract).first()
+
+        if not obj:
+            return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
+        
+        warning_notice_data = {
+            'partner': obj.contract.partner.name if obj.contract else "",
+            'contract': obj.contract.code if obj.contract else "",
+            'currency': obj.contract.currency.code if obj.contract else "",
+            'document_id': obj.document_id,
+            'risk_id': obj.risk_id,
+            'customer_id': obj.customer_id,
+            'debit_amount': obj.debit_amount,
+            'daily_wages_date': obj.daily_wages_date.strftime('%d.%m.%Y') if obj.daily_wages_date else "",
+            'process_start_date': obj.process_start_date.strftime('%d.%m.%Y') if obj.process_start_date else "",
+            'service_date': obj.service_date.strftime('%d.%m.%Y') if obj.service_date else "",
+            'official_cancellation_date': obj.official_cancellation_date.strftime('%d.%m.%Y') if obj.official_cancellation_date else "",
+            'paid': obj.paid,
+            'diff': obj.diff,
+            'state': obj.state,
+            'approval_state': obj.approval_state,
+            'termination_days': (obj.official_cancellation_date - obj.service_date).days if obj.official_cancellation_date and obj.service_date else "",
+        }
+
+        return JsonResponse({'warning_notice':warning_notice_data}, status=200)

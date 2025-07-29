@@ -13,6 +13,7 @@ urlpatterns = [
     path('delete_all_contracts/', DeleteAllContractsView.as_view(), name="delete_all_contracts"),
     path('contracts_template/', ContractsTemplateView.as_view(), name="contracts_template"),
     path('import_contracts/', ImportContractsView.as_view(), name="import_contracts"),
+    path('warning_notice_information/', WarningNoticeInformationView.as_view(), name="warning_notice_information"),
     
     path('', include("contracts.api.urls")),
 ]
