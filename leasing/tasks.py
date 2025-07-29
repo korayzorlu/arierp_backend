@@ -949,7 +949,11 @@ def fetch_leases_overdue_amount(company):
     try:
         conn = pyodbc.connect(connectionString)
         
-        SQL_QUERY = """
+        today = datetime.now().date().strftime("%Y%m%d")
+        formatted_today = datetime.now().date()
+        formatted_today = f"{formatted_today.year}-{formatted_today.month}-{formatted_today.day}"
+
+        SQL_QUERY = f"""
             SELECT
                 TrnOprContractId,
                 TrnOprLeasingOperationPrjId,
@@ -963,14 +967,14 @@ def fetch_leases_overdue_amount(company):
                                 AND TrnLedgerStatu = 10
                                 AND TrnPostingType BETWEEN 110 AND 120
                                 AND TrnIsDeleted <> 9
-                                AND TrnDueDate <= '20250723'
+                                AND TrnDueDate <= '{today}'
                                 AND ISNULL(xx.OperationProjectId_Count, 0) = 0)
                             OR
                             (lopStatu.RiskIncludingTypeId IN (6)
                                 AND TrnLedgerStatu = 10
                                 AND TrnPostingType BETWEEN 110 AND 120
                                 AND TrnIsDeleted <> 9
-                                AND TrnDueDate <= '20250723'
+                                AND TrnDueDate <= '{today}'
                                 AND ISNULL(xx.OperationProjectId_Count, 0) = 1)
                         )
                         THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -987,7 +991,7 @@ def fetch_leases_overdue_amount(company):
                                 (TrnIsDeleted <> 9 AND TrnPostingType BETWEEN 110 AND 120)
                                 OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                             )
-                            AND TrnDueDate <= '20250723'
+                            AND TrnDueDate <= '{today}'
                             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                         )
                         THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -1055,14 +1059,14 @@ def fetch_leases_overdue_amount(company):
                         lopStatu.RiskIncludingTypeId IN (6, 7)
                         AND TrnLayer = 3
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250728'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                     OR (
                         lopStatu.RiskIncludingTypeId = 7
                         AND TrnLayer = 3
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250728'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 1
                     )
                 )
@@ -1072,14 +1076,14 @@ def fetch_leases_overdue_amount(company):
                         lopStatu.RiskIncludingTypeId IN (6, 7)
                         AND TrnLedgerStatu = 10
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250728'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                     OR (
                         lopStatu.RiskIncludingTypeId = 7
                         AND TrnLedgerStatu = 10
                         AND TrnPostingType BETWEEN 110 AND 120
-                        AND TrnDueDate <= '20250728'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 1
                     )
                 )
@@ -1092,7 +1096,7 @@ def fetch_leases_overdue_amount(company):
                     AND TrnPostingType BETWEEN 110 AND 120
                 )
                 --AND TrnOprLeasingOperationPrjId IN (55734, 75289)
-                AND TrnDueDate <= CONVERT(DATETIME, '2025-7-23', 102)
+                AND TrnDueDate <= CONVERT(DATETIME, '{formatted_today}', 102)
                 AND TrnPostingGroupId=1
 
             GROUP BY
@@ -1146,39 +1150,41 @@ def fetch_leases_overdue_amount(company):
 
 @shared_task()
 def fetch_overdue_leases(company):
-    excel_file = pd.ExcelFile("files/28-07-2025-vadesi-gecmis-sadece-borc.xlsx")
+    excel_file = pd.ExcelFile("files/vadesi-gecmis-borc.xlsx")
     sheet_name = excel_file.sheet_names[0]
 
-    file_data = pd.read_excel("files/28-07-2025-vadesi-gecmis-sadece-borc.xlsx", sheet_name)
+    file_data = pd.read_excel("files/vadesi-gecmis-borc.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
+
+    leases = Lease.objects.select_related().filter()
+    leases.update(overdue_days = 0)
 
     previous_progress = 0
     old_obj_count = 0
     for index,row in df.iterrows():
-        current_progress = ((index + 1)/len(df.iterrows()))*100
+        current_progress = ((index + 1)/len(df))*100
 
         if current_progress - previous_progress >= 1:
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
 
-        objs = Lease.objects.select_related().filter(
+        obj = Lease.objects.select_related().filter(
             Q(code=row['Kira Planı']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        )
-        if objs:
-            if len(objs) == 1:
-                for obj in objs:
-                    old_obj_count += 1
-                    if float(row['Oran'].replace("% ","")) >= 98:
-                        obj.is_kdv_diff = True
-                    obj.overdue_days = int(row['Gecikme günü'])
-                    obj.save()
-            else:
-                print(f"{row['Kira Planı']} kira planı {len(objs)} adet var.")
+        ).first()
+        if obj:
+            old_obj_count += 1
+            if float(row['Oran'].replace("% ","")) >= 98:
+                obj.is_kdv_diff = True
+            obj.paid_rate = Decimal(str(row['Oran'].replace("% ","")))
+            obj.total_payment = Decimal(str(row['Kdv Dahil Kira Toplamı']))
+            obj.paid = Decimal(str(row['Tahsilat Tutarı']))
+            obj.overdue_days = int(row['Gecikme günü'])
+            obj.save()
 
     print(f"{old_obj_count} objects updated for leases.")
 
