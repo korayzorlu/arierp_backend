@@ -5,6 +5,7 @@ from django.db.models.functions import Lower,Upper
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter
 from django.utils.timezone import make_aware
+from django.utils import timezone
 
 from datetime import datetime,timedelta
 from decimal import Decimal
@@ -313,6 +314,7 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
+    overdue_terminated = CharFilter(method = 'filter_overdue_terminated')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -352,6 +354,13 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
+        
+    def filter_overdue_terminated(self, queryset, overdue_terminated, value):
+        if value == "true":
+            today = timezone.localdate()
+            return queryset.filter(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today())
+        else:
+            return queryset.filter() 
 
 class TomorrowPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')

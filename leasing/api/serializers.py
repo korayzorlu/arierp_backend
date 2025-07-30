@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import Q
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
@@ -238,7 +238,20 @@ class BankActivityListSerializer(serializers.Serializer):
                     "currency" : bank_activity_lease.lease.currency.code if bank_activity_lease.lease.currency else "",
                     "lease_status" : bank_activity_lease.lease.lease_status,
                     "leaseflex_automation" : bank_activity_lease.leaseflex_automation,
-                    "next_payment" : first_future_payment
+                    "next_payment" : first_future_payment,
+                    "overdues" : [
+                        {   
+                            'id': bank_activity_lease.lease.code,
+                            'lease': bank_activity_lease.lease.code,
+                            'overdue_0_30': bank_activity_lease.lease.overdue_0_30,
+                            'overdue_31_60': bank_activity_lease.lease.overdue_31_60,
+                            'overdue_61_90': bank_activity_lease.lease.overdue_61_90,
+                            'overdue_91_120': bank_activity_lease.lease.overdue_91_120,
+                            'overdue_121_150': bank_activity_lease.lease.overdue_121_150,
+                            'overdue_151_180': bank_activity_lease.lease.overdue_151_180,
+                            'overdue_181_gte': bank_activity_lease.lease.overdue_181_gte,
+                        }
+                    ]
                 })
         return sorted(bank_activity_lease_list, key=lambda x: x["overdue_days"], reverse=True)
     
@@ -687,7 +700,8 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     def get_max_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -695,7 +709,9 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count__gt=0)
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -705,7 +721,8 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     def get_total_overdue_amount(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -713,7 +730,9 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count__gt=0)
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -722,13 +741,26 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
-            )
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+            ) &
+            Q(is_kdv_diff = False)
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date")
+
+        latest_lease = leases.filter(
+            contract__code=OuterRef('contract__code')
+        ).order_by('-activation_date')
+
+        leases = leases.filter(
+            id=Subquery(latest_lease.values('id')[:1])
+        )
         lease_list = []
         if leases:
             for lease in leases:

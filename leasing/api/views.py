@@ -423,7 +423,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) 
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),

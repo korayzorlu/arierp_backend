@@ -213,10 +213,10 @@ class OverdueInformationView(LoginRequiredMixin,View):
         data = json.loads(request.body)
         lease_code = data.get('lease_code')
 
-        active_company_uuid = data.get('active_company')
-        active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
+        # active_company_uuid = data.get('active_company')
+        # active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
         
-        objs = Lease.objects.select_related().filter(company = active_company.company,code = str(lease_code))
+        objs = Lease.objects.select_related().filter(code = str(lease_code))
         
         if not objs:
             return JsonResponse({'overdue':[]}, status=200)
