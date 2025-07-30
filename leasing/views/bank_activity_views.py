@@ -17,6 +17,7 @@ from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
+from common.utils.common_utils import parse_amount
 from partners.models import Partner
 from contracts.models import Contract
 
@@ -137,7 +138,10 @@ class UpdateBankActivityLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwner
         data = json.loads(request.body)
 
         obj = BankActivityLease.objects.filter(uuid = data.get('uuid')).first()
-        obj.processed_amount = Decimal(str(data.get('amount')).replace(",","."))
+
+        parsed_amount = parse_amount(data.get('amount'))
+
+        obj.processed_amount = parsed_amount
         obj.save()
 
         return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)

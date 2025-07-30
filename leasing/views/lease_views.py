@@ -17,6 +17,7 @@ from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
+from common.utils.common_utils import parse_amount
 from partners.models import Partner
 from contracts.models import Contract
 from companies.models import UserCompany
@@ -203,6 +204,8 @@ class UpdateLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwnershipRequired
         data = json.loads(request.body)
 
         obj = Lease.objects.filter(uuid = data.get('uuid')).first()
+
+        
         obj.processed_amount = Decimal(str(data.get('amount')).replace(",","."))
         obj.save()
 
