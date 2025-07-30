@@ -323,6 +323,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -340,6 +341,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -355,6 +357,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -436,6 +439,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -453,6 +457,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -468,6 +473,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -558,6 +564,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -575,6 +582,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -590,6 +598,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -679,6 +688,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -696,6 +706,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -711,6 +722,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -801,6 +813,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount=0) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -818,6 +831,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount=0) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -834,6 +848,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount=0) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -1007,6 +1022,7 @@ class TodayPartnerListSerializer(serializers.Serializer):
     def get_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -1022,6 +1038,7 @@ class TodayPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |

@@ -1184,6 +1184,13 @@ def fetch_overdue_leases(company):
             obj.total_payment = Decimal(str(row['Kdv Dahil Kira Toplamı']))
             obj.paid = Decimal(str(row['Tahsilat Tutarı']))
             obj.overdue_days = int(row['Gecikme günü'])
+            obj.overdue_0_30 = Decimal(str(row['0 - 30']))
+            obj.overdue_31_60 = Decimal(str(row['31 - 60']))
+            obj.overdue_61_90 = Decimal(str(row['61 - 90']))
+            obj.overdue_91_120 = Decimal(str(row['91 - 120']))
+            obj.overdue_121_150 = Decimal(str(row['121 - 150']))
+            obj.overdue_151_180 = Decimal(str(row['151 - 180']))
+            obj.overdue_181_gte = Decimal(str(row['181 >']))
             obj.save()
 
     print(f"{old_obj_count} objects updated for leases.")

@@ -156,7 +156,7 @@ class InstallmentInformationView(LoginRequiredMixin,View):
         lease_code = data.get('lease_code')
         
         objs = Installment.objects.filter(lease__code = str(lease_code)).order_by("sequency")
-        print(objs)
+    
         if not objs:
             return JsonResponse({'installment':[]}, status=200)
         

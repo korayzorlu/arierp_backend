@@ -48,36 +48,63 @@ def extract_contract_numbers(description):
     if not isinstance(description, str):
         return []
 
+    text = description.lower() # Tüm metni küçük harfe çevir
+
     matches = []
 
-    # 1. sözleşme no, no:, söz. no, nolu sözleşme gibi ifadeler
+    # 1. 'sözleşme no', 'no:', 'söz. no', 'nolu sözleşme' gibi tanımlayıcılarla birlikte geçen numaralar
+    #    Nokta ile ayrılmış sayıları da yakalamak için [\d\.-_]+ kullanıldı.
     pattern_named = r"""
         (?:
-            sözleşme\s*no[:\s]*       |
-            sözleşme\s*[:\s]*         |
-            söz\.?\s*no[:\s]*         |
-            kontrat\s*no[:\s]*        |
-            no[:\s]+                  |
-            nolu\s+sözleşme
+            sözleşme\s*no[:\s]* | # sözleşme no:
+            sözleşme\s*[:\s]* | # sözleşme:
+            söz\.?\s*no[:\s]* | # söz. no:
+            kontrat\s*no[:\s]* | # kontrat no:
+            no[:\s]+                  | # no:
+            nolu\s+sözleşme             # nolu sözleşme
         )
-        [^\d]*(\d[\d\-_]*)            # numara
+        [^\d]*([\d\.-_]+)             # numara (rakam, nokta, tire, alt çizgi içerebilir)
     """
-    matches += re.findall(pattern_named, description.lower(), re.VERBOSE)
+    matches.extend(re.findall(pattern_named, text, re.VERBOSE))
 
-    # 2. Parantez içindeki 5+ haneli numaralar
-    pattern_parens = r'\((\d{5,}(?:[-_]\d{2,})*)\)'
-    matches += re.findall(pattern_parens, description)
+    # 2. Parantez içindeki 5+ haneli (veya nokta/tire/alt çizgi içeren) numaralar
+    pattern_parens = r'\(([\d\.-_]{5,}(?:[-_]\d{2,})*)\)'
+    matches.extend(re.findall(pattern_parens, text))
 
-    # 3. Açıkta geçen 5-12 haneli numaralar
-    pattern_standalone = r'\b(?<!\d)(\d{5,12})(?!\d)\b'
-    raw_matches = re.findall(pattern_standalone, description)
+    # 3. 'sözleşme' kelimesinden hemen önce veya sonra gelen veya içinde geçen numaralar
+    # Bu, '48.152 sözleşme' gibi durumları yakalamak için eklendi.
+    pattern_proximity = r'(?:\b(\d[\d\.-_]*)\s*sözleşme\b|\bsözleşme\s*(\d[\d\.-_]*)\b)'
+    proximity_matches = re.findall(pattern_proximity, text)
+    for m in proximity_matches:
+        if m[0]: # eğer ilk grup eşleştiyse
+            matches.append(m[0])
+        if m[1]: # eğer ikinci grup eşleştiyse
+            matches.append(m[1])
 
-    # Tekrarları ve bariz TC'leri filtrele (isteğe bağlı)
-    for m in raw_matches:
-        if m not in matches:
-            matches.append(m)
+    # 4. Açıkta geçen 5-12 haneli numaralar (daha dikkatli bir filtreleme ile)
+    # Bu kısmı daha güvenli hale getirmek için, banka hareketlerinde TC, IBAN veya tarih gibi sayıları ayırt etmek gerekebilir.
+    # Ancak genel bir 'standalone' numara arayışı için kullanılabilir.
+    # Şimdilik bu bölümü çok geniş tutmamak adına, sadece belirli bir uzunluktaki sayıları alalım.
+    # Daha fazla false positive önlemek için, bu kısmı, eğer diğer kurallar işe yaramazsa son çare olarak kullanmak daha mantıklı olabilir.
+    # Örneğin: YIL/AY/GÜN, veya 11 haneli TC, 26 haneli IBAN desenleri dışındaki sayıları hedefleyebiliriz.
+    pattern_standalone = r'\b(\d{5,12})\b' # 5-12 haneli sayılar
+    raw_standalone_matches = re.findall(pattern_standalone, text)
 
-    return matches
+    # Bulunan tüm eşleşmeleri bir set'e atarak tekrar edenleri kaldır ve temizle
+    unique_matches = set()
+    for match in matches:
+        # Yakalanan numara genellikle string formatında olacaktır.
+        # İstenirse burada daha fazla doğrulama veya temizleme yapılabilir (örneğin baştaki/sondaki tireleri kaldırma)
+        unique_matches.add(match.strip('-_. ')) # Boşluk, nokta, tire, alt çizgi gibi karakterleri temizle
+
+    # Standalone eşleşmeleri de kontrol edip ekle
+    for m in raw_standalone_matches:
+        # TC veya IBAN gibi duran sayıları eleyebiliriz, ancak bu her zaman kesin bir çözüm değildir.
+        # Bu kısım uygulamanın iş mantığına göre daha fazla geliştirilebilir.
+        if m not in unique_matches and len(m) != 11: # Basit bir TC kimlik numarası elemesi
+            unique_matches.add(m)
+
+    return list(unique_matches)
 class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
@@ -115,6 +142,13 @@ class Lease(models.Model):
     paid_rate = models.DecimalField(_("Paid Rate"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_amount = models.DecimalField(_("Overdue Amount"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_days = models.IntegerField(_("Overdue Days"), default=0)
+    overdue_0_30 = models.DecimalField(_("Overdue 0 - 30"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_31_60 = models.DecimalField(_("Overdue 31 - 60"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_61_90 = models.DecimalField(_("Overdue 61 - 90"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_91_120 = models.DecimalField(_("Overdue 91 - 120"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_121_150 = models.DecimalField(_("Overdue 121 - 150"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_151_180 = models.DecimalField(_("Overdue 151 - 180"), default = 0.00, max_digits=14, decimal_places=2)
+    overdue_181_gte = models.DecimalField(_("Overdue 181 >"), default = 0.00, max_digits=14, decimal_places=2)
 
     project_no = models.CharField(_("Project No"), max_length=25, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_rents", null=True, blank=True)
@@ -129,6 +163,7 @@ class Lease(models.Model):
 
     leaseflex_automation = models.BooleanField(default=False)
     processed_amount = models.DecimalField(_("Processed Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    is_processed = models.BooleanField(default=False)
 
     is_kdv_diff = models.BooleanField(default=False)
 
@@ -240,6 +275,7 @@ class BankActivity(models.Model):
                 ).order_by('contract_id', '-activation_date').distinct('contract_id')
 
                 if leases:
+                    total_processed_amount = 0
                     for lease in leases:
                         bank_activity_lease = BankActivityLease.objects.create(
                             company = self.company,
@@ -272,6 +308,11 @@ class BankActivity(models.Model):
                             total_bank_activity_leases_processed_amount += item.processed_amount
                         lease.processed_amount = total_bank_activity_leases_processed_amount
                         lease.save()
+                        total_processed_amount += total_bank_activity_leases_processed_amount
+
+                    if total_processed_amount == self.amount:
+                        self.is_processed = True
+                        self.save()
 
           
     

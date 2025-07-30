@@ -19,6 +19,7 @@ from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from partners.models import Partner
 from contracts.models import Contract
+from companies.models import UserCompany
 
 import os
 import json
@@ -206,3 +207,33 @@ class UpdateLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwnershipRequired
         obj.save()
 
         return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)
+    
+class OverdueInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        lease_code = data.get('lease_code')
+
+        active_company_uuid = data.get('active_company')
+        active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
+        
+        objs = Lease.objects.select_related().filter(company = active_company.company,code = str(lease_code))
+        
+        if not objs:
+            return JsonResponse({'overdue':[]}, status=200)
+        
+        overdue_data = [
+            {   
+                'id': obj.uuid,
+                'lease': obj.code if obj else "",
+                'overdue_0_30': obj.overdue_0_30 if obj else Decimal("0.00"),
+                'overdue_31_60': obj.overdue_31_60 if obj else Decimal("0.00"),
+                'overdue_61_90': obj.overdue_61_90 if obj else Decimal("0.00"),
+                'overdue_91_120': obj.overdue_91_120 if obj else Decimal("0.00"),
+                'overdue_121_150': obj.overdue_121_150 if obj else Decimal("0.00"),
+                'overdue_151_180': obj.overdue_151_180 if obj else Decimal("0.00"),
+                'overdue_181_gte': obj.overdue_181_gte if obj else Decimal("0.00"),
+            }
+            for obj in objs
+        ]
+
+        return JsonResponse({'overdue':overdue_data}, status=200)
