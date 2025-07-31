@@ -606,8 +606,8 @@ def fetch_phone_numbers(company):
         if objs:
             for obj in objs:
                 if not pd.isna(row['Phone']):
-                    obj.phone_number = str(row['Phone'])
+                    obj.phone_number = str(row['Phone']) if not pd.isna(row['Phone']) else ""
                     obj.save()
                 if not pd.isna(row['Email']):
-                    obj.email = str(row['Email'])
+                    obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
                     obj.save()
