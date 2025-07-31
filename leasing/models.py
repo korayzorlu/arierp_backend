@@ -258,7 +258,7 @@ class BankActivity(models.Model):
 
             if is_new:
                 contract_numbers = extract_contract_numbers(self.description)
-                contracts = Contract.objects.filter(
+                contracts = Contract.objects.select_related().filter(
                     Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
                 )
 
