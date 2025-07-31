@@ -252,7 +252,6 @@ def import_bank_activities(self, df_json):
 
             if row['İşlem Tarihi']:
                 process_date = make_aware(datetime.strptime(str(row['İşlem Tarihi']), "%y%m%d"))
-                print(process_date)
             else:
                 process_date = None
 

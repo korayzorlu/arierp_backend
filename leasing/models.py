@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.db.models import Q
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -240,6 +241,8 @@ class BankActivity(models.Model):
 
     leases = models.ManyToManyField(Lease,related_name='lease_bank_activities', blank = True)
 
+    is_processed = models.BooleanField(default=False)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -274,6 +277,8 @@ class BankActivity(models.Model):
                     ) 
                 ).order_by('contract_id', '-activation_date').distinct('contract_id')
 
+                
+
                 if leases:
                     total_processed_amount = 0
                     for lease in leases:
@@ -294,10 +299,10 @@ class BankActivity(models.Model):
                             #bank_activity_lease.leaseflex_automation = True
                             if processed_amount > 0:
                                 if total_overdue_amount <= processed_amount:
-                                    bank_activity_lease.processed_amount = total_overdue_amount
+                                    #bank_activity_lease.processed_amount = total_overdue_amount
                                     processed_amount -= total_overdue_amount
                                 else:
-                                    bank_activity_lease.processed_amount = processed_amount
+                                    #bank_activity_lease.processed_amount = processed_amount
                                     processed_amount = 0
                             # else:
                             #     bank_activity_lease.leaseflex_automation = False
@@ -306,14 +311,46 @@ class BankActivity(models.Model):
                         total_bank_activity_leases_processed_amount = Decimal("0")
                         for item in bank_activity_leases:
                             total_bank_activity_leases_processed_amount += item.processed_amount
-                        lease.processed_amount = total_bank_activity_leases_processed_amount
+                        #lease.processed_amount = total_bank_activity_leases_processed_amount
                         lease.save()
                         total_processed_amount += total_bank_activity_leases_processed_amount
 
-                    if total_processed_amount == self.amount:
-                        self.is_processed = True
-                        self.save()
+                    # if total_processed_amount == self.amount:
+                    #     self.is_processed = True
+                    #     self.save()
 
+                if len(contracts) == 1:
+                    for contract in contracts:
+                        contract_lease = Lease.objects.select_related().filter(contract=contract).order_by("-lease_id").first()
+                        bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = contract_lease).first()
+                        if not bank_activity_lease and contract_lease:
+                            bank_activity_lease = BankActivityLease.objects.create(
+                                company = self.company,
+                                bank_activity = self,
+                                lease = contract_lease
+                            )
+                        
+                        if bank_activity_lease:
+                            first_future_payment = (
+                                bank_activity_lease.lease.lease_installments
+                                .filter(payment_date__gte=timezone.now().date())
+                                .order_by('payment_date')
+                                .values_list('amount', flat=True)
+                                .first()
+                            )
+                            if self.amount == first_future_payment:
+                                bank_activity_lease.processed_amount = self.amount
+                                bank_activity_lease.leaseflex_automation = True
+                                bank_activity_lease.save()
+
+            ba_leases = self.bank_activity_bank_acitivity_leases.all()
+            total_ba_leases_amount = 0
+            for ba_lease in ba_leases:
+                total_ba_leases_amount += ba_lease.processed_amount
+
+            if self.amount == total_ba_leases_amount:
+                self.is_processed = True
+                super().save(update_fields=['is_processed'])
           
     
 class BankActivityLease(models.Model):

@@ -183,6 +183,7 @@ class BankActivityListSerializer(serializers.Serializer):
     description = serializers.CharField()
     tc_vkn_no = serializers.CharField()
     leases = serializers.SerializerMethodField()
+    is_processed = serializers.BooleanField()
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
