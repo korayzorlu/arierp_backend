@@ -1,5 +1,6 @@
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Q,IntegerField
+from django.db.models.functions import Cast
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 
@@ -321,7 +322,7 @@ class BankActivity(models.Model):
 
                 if len(contracts) == 1:
                     for contract in contracts:
-                        contract_lease = Lease.objects.select_related().filter(contract=contract).order_by("-lease_id").first()
+                        contract_lease = Lease.objects.select_related().filter(contract=contract).annotate(lease_id_as_int=Cast('lease_id', IntegerField())).order_by("-lease_id_as_int").first()
                         bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = contract_lease).first()
                         if not bank_activity_lease and contract_lease:
                             bank_activity_lease = BankActivityLease.objects.create(
