@@ -300,7 +300,17 @@ class BankActivityLeaseListSerializer(serializers.Serializer):
             }
         else:
             return ""
-        
+
+class ProcessedBankActivityLeaseListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    bank_activity = serializers.SerializerMethodField()
+    lease = serializers.SerializerMethodField()
+    processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+
+    def get_bank_activity(self, obj):
+        return obj.bank_activity.uuid if obj.bank_activity else ""
+
 class RiskPartnerListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     crm_code = serializers.CharField()

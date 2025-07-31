@@ -377,6 +377,21 @@ class BankActivityLease(models.Model):
     def __str__(self):
         return str(self.bank_activity.tc_vkn_no)
     
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            is_new = self._state.adding
+
+            super().save(*args, **kwargs)
+            
+            ba_leases = BankActivityLease.objects.filter(bank_activity = self.bank_activity)
+            total_ba_leases_amount = 0
+            for ba_lease in ba_leases:
+                total_ba_leases_amount += ba_lease.processed_amount
+
+            if self.bank_activity.amount == total_ba_leases_amount:
+                self.bank_activity.is_processed = True
+                self.bank_activity.save()
+    
 class PartnerOverdueView(models.Model):
     partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
     max_overdue_days = models.IntegerField()

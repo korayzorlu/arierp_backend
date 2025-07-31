@@ -30,6 +30,7 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : "free", "label" : "Tahsilat", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
+                {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/collectionss"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Vadesi Geçmiş Alacaklar", "icon" : "policy", "route" : "/overdue-leases"},
