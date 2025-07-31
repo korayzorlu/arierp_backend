@@ -183,10 +183,18 @@ class BankActivityListSerializer(serializers.Serializer):
     description = serializers.CharField()
     tc_vkn_no = serializers.CharField()
     leases = serializers.SerializerMethodField()
+    processed_amount = serializers.SerializerMethodField()
     is_processed = serializers.BooleanField()
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
+    
+    def get_processed_amount(self, obj):
+        ba_leases = obj.bank_activity_bank_acitivity_leases.all()
+        total_ba_leases_amount = 0
+        for ba_lease in ba_leases:
+            total_ba_leases_amount += ba_lease.processed_amount
+        return total_ba_leases_amount
     
     def get_leases(self, obj):
         bank_activity_leases = BankActivityLease.objects.select_related().filter(
