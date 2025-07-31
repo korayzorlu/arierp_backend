@@ -338,7 +338,7 @@ class BankActivity(models.Model):
                                 .values_list('amount', flat=True)
                                 .first()
                             )
-                            if self.amount == first_future_payment:
+                            if abs(self.amount == first_future_payment) <= 2:
                                 bank_activity_lease.processed_amount = self.amount
                                 bank_activity_lease.leaseflex_automation = True
                                 bank_activity_lease.save()
