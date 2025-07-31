@@ -18,7 +18,7 @@ from users.models import User
 from common.models import ImportProcess,Country,City,ExportProcess
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
-from leasing.utils import export_bank_activities
+from leasing.utils import export_bank_activities,export_today_partners,export_tomorrow_partners,export_risk_partners,export_kdv_risk_partners,export_to_warned_risk_partners,export_to_terminated_risk_partners
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -32,10 +32,12 @@ class BaseExporter():
         "partner": []
     }
 
-    def __init__(self, user_id, app, model_name, task_id=None):
+    def __init__(self, user_id, app, model_name, file_name, export_url, task_id=None):
         self.user = User.objects.filter(id = int(user_id)).first()
         self.app = app
         self.model_name = model_name
+        self.file_name = file_name
+        self.export_url = export_url
         self.model = self.get_model()
         self.task_id = task_id
         self.process = None
@@ -49,13 +51,15 @@ class BaseExporter():
 
     def start_export(self):
         from common.tasks import exportData
-        exportData.delay(self.user.id, self.app, self.model_name)
+        exportData.delay(self.user.id, self.app, self.model_name, self.file_name, self.export_url)
 
     def process_export(self):
         self.process = ExportProcess.objects.create(
             company = self.user.user_companies.filter(is_active=True).first().company,
             user = self.user,
             model_name = self.model_name,
+            file_name = self.file_name,
+            export_url = self.export_url,
             task_id = self.task_id
         )
         self.process.save()
@@ -74,5 +78,23 @@ class BaseExporter():
     
     def export_bankactivity(self):
         export_bank_activities(self)
+
+    def export_todaypartner(self):
+        export_today_partners(self)
+
+    def export_tomorrowpartner(self):
+        export_tomorrow_partners(self)
+
+    def export_riskpartner(self):
+        export_risk_partners(self)
+
+    def export_kdvriskpartner(self):
+        export_kdv_risk_partners(self)
+
+    def export_towarnedriskpartner(self):
+        export_to_warned_risk_partners(self)
+
+    def export_toterminatedriskpartner(self):
+        export_to_terminated_risk_partners(self)
 
  

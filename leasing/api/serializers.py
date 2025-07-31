@@ -576,7 +576,8 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     def get_max_overdue_days(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -584,7 +585,9 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count=0)
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -594,7 +597,8 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     def get_total_overdue_amount(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -602,7 +606,9 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count=0)
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -611,13 +617,27 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
-            )
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+            ) &
+            Q(is_kdv_diff = False)
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count=0)
+
+        latest_lease = leases.filter(
+            contract__code=OuterRef('contract__code')
+        ).order_by('-activation_date')
+
+        leases = leases.filter(
+            id=Subquery(latest_lease.values('id')[:1])
+        )
+
         lease_list = []
         if leases:
             for lease in leases:

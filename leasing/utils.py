@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.utils.timezone import make_aware, localtime
-from django.db.models import Q
+from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
 
-from datetime import datetime
+from datetime import datetime,date,timedelta
 import pandas as pd
 import io
 from decimal import Decimal
@@ -57,9 +57,6 @@ def extract_contract_numbers(description):
         if match[1]:
             contract_numbers.append(match[1])
     return contract_numbers
-
-
-
 
 
 def import_leases(self, df_json):
@@ -371,7 +368,7 @@ def export_bank_activities(self):
         data["Karşı Hesap"].append(obj.bank_activity.cross_bank_account_no)
 
     df = pd.DataFrame(data)
-    df = df.drop_duplicates()
+    # df = df.drop_duplicates()
     
     base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "bank_activities", "documents")
     if not os.path.exists(base_path):
@@ -380,11 +377,396 @@ def export_bank_activities(self):
     karakterler = string.ascii_letters + string.digits
     rastgele_deger = ''.join(random.choices(karakterler, k=8))
 
-    excel_dosyasi_adi = f"{base_path}/banka-hareketleri.xlsx"
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-banka-hareketleri.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Banka Hareketleri', index=False)
         
 
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
+def export_today_partners(self):
+    today = date.today()
+
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        )
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
+    ).order_by('-max_overdue_days')
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "today_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-bugün-ödemesi-olanlar.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
+def export_tomorrow_partners(self):
+    tomorrow = date.today() + timedelta(days=1)
+
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        )
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
+        ).order_by('-max_overdue_days')
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "tomorrow_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-yarın-ödemesi-olanlar.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
+def export_risk_partners(self):
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        ) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False)
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+    )
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "risk_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
+def export_kdv_risk_partners(self):
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        ) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=True)
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+    )
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "kdv_risk_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-kdv-farkı-uygulananlar.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
+def export_to_warned_risk_partners(self):
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        ) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False)
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+        warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
+    ).filter(warning_notice_count=0)
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "to_warned_risk_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilecekler.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
+def export_to_terminated_risk_partners(self):
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        ) &
+        #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) 
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+        warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+        overdue_check=Case(
+            When(
+                customer_type='individual',
+                then=Case(
+                    When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
+            ),
+            When(
+                customer_type='institutional',
+                then=Case(
+                    When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
+            ),
+            default=Value(False),
+            output_field=BooleanField()
+        )
+    ).filter(warning_notice_count__gt=0,overdue_check=True)
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "to_terminated_risk_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-fesih-edilecekler.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()

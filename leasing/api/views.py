@@ -525,6 +525,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -565,6 +566,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |

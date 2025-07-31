@@ -17,6 +17,6 @@ def importData(self,df_json,user_id,app,model_name):
     importer.process_import(df_json)
 
 @shared_task(bind=True)
-def exportData(self,user_id,app,model_name):
-    exporter = BaseExporter(user_id=user_id, app=app, model_name=model_name, task_id=self.request.id)
+def exportData(self,user_id,app,model_name,file_name,export_url):
+    exporter = BaseExporter(user_id=user_id, app=app, model_name=model_name, file_name=file_name, export_url=export_url, task_id=self.request.id)
     exporter.process_export()

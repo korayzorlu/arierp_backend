@@ -62,6 +62,8 @@ class ExportProcessListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     user = serializers.SerializerMethodField()
     model_name = serializers.CharField()
+    file_name = serializers.CharField()
+    export_url = serializers.CharField()
     task_id = serializers.CharField()
     status = serializers.CharField()
     progress = serializers.IntegerField()

@@ -38,6 +38,8 @@ class ExportProcess(TimestampModel):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="export_processes")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_export_processes")
     model_name = models.CharField(_("Model Name"), max_length=140)
+    file_name = models.CharField(_("File Name"), max_length=250,null=True,blank=True)
+    export_url = models.CharField(_("Export Url"), max_length=250,null=True,blank=True)
     task_id = models.CharField(_("Task ID"), max_length=250, unique=True)
     STATUS_CHOICES = (
         ('pending', ('Pending')),

@@ -39,5 +39,23 @@ urlpatterns = [
     path('update_bank_activity_lease_processed_amount/', UpdateBankActivityLeaseProcessedAmountView.as_view(), name="update_bank_activity_lease_processed_amount"),
     path('update_bank_activity_leases/', UpdateBankActivityLeasesView.as_view(), name="update_bank_activity_leases"),
 
+    path('export_today_partners/', ExportTodayPartnersView.as_view(), name="export_today_partners"),
+    path('today_partners_excel/', TodayPartnersExcelView.as_view(), name="today_partners_excel"),
+
+    path('export_tomorrow_partners/', ExportTomorrowPartnersView.as_view(), name="export_tomorrow_partners"),
+    path('tomorrow_partners_excel/', TomorrowPartnersExcelView.as_view(), name="tomorrow_partners_excel"),
+
+    path('export_risk_partners/', ExportRiskPartnersView.as_view(), name="export_risk_partners"),
+    path('risk_partners_excel/', RiskPartnersExcelView.as_view(), name="risk_partners_excel"),
+
+    path('export_kdv_risk_partners/', ExportKDVRiskPartnersView.as_view(), name="export_kdv_risk_partners"),
+    path('risk_kdv_partners_excel/', KDVRiskPartnersExcelView.as_view(), name="kdv_risk_partners_excel"),
+
+    path('export_to_warned_risk_partners/', ExportToWarnedRiskPartnersView.as_view(), name="export_to_warned_risk_partners"),
+    path('to_warned_risk_partners_excel/', ToWarnedRiskPartnersExcelView.as_view(), name="to_warned_risk_partners_excel"),
+
+    path('export_to_terminated_risk_partners/', ExportToTerminatedRiskPartnersView.as_view(), name="export_to_terminated_risk_partners"),
+    path('to_terminated_risk_partners_excel/', ToTerminatedRiskPartnersExcelView.as_view(), name="to_terminated_risk_partners_excel"),
+
     path('', include("leasing.api.urls")),
 ]

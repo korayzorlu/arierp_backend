@@ -25,7 +25,7 @@ import os
 import json
 import pandas as pd
 from decimal import Decimal
-from datetime import date
+from datetime import date,datetime
 
 # Create your views here.
     
@@ -94,7 +94,7 @@ class ImportBankActivitiesView(LoginRequiredMixin,View):
     
 class ExportBankActivitiesView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="BankActivity")
+        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="BankActivity", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-banka-hareketleri.xlsx", export_url="/leasing/bank_activities_excel")
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
@@ -104,7 +104,7 @@ class ExportBankActivitiesView(LoginRequiredMixin,View):
 
 class BankActivitiesExcelView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
-        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "bank_activities", "documents","banka-hareketleri.xlsx")
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "bank_activities", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-banka-hareketleri.xlsx")
       
         if not os.path.exists(file_path):
             return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
