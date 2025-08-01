@@ -5,7 +5,7 @@ from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
 from datetime import datetime,date,timedelta
 import pandas as pd
 import io
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import re
 import os
 import random
@@ -47,6 +47,22 @@ def get_lease_status_value(display_label):
         if label == display_label:
             return value
     return None
+
+def format_currency_tr(value):
+    try:
+        # Sayıya çevirmeye çalış
+        if isinstance(value, str):
+            value = value.replace('.', '').replace(',', '.')
+        value = Decimal(value).quantize(Decimal("0.01"))
+
+        # Binlik ve ondalık ayracı formatla
+        parts = f"{value:,.2f}".split(".")
+        integer_part = parts[0].replace(",", ".")
+        decimal_part = parts[1]
+        return f"{integer_part},{decimal_part}"
+    except (InvalidOperation, ValueError, TypeError):
+        # Hatalı değer gelirse boş string döndür
+        return ""
 
 
 def extract_contract_numbers(description):
@@ -539,6 +555,7 @@ def export_risk_partners(self):
         "Crm Kodu": [],
         "Tel": [],
         "Email": [],
+        "Tutar": [],
         "Metin": []
     }
 
@@ -564,8 +581,8 @@ def export_risk_partners(self):
             )
         ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
 
+        total_overdue_amount = Decimal("0")
         if leases:
-            total_overdue_amount = Decimal("0")
             for lease in leases:
                 installments = lease.lease_installments.all()
                 for installment in installments:
@@ -573,13 +590,16 @@ def export_risk_partners(self):
                 if total_overdue_amount < 100:
                     total_overdue_amount = Decimal("0")
         
-        metin = f"İhtar: Sinpaş Kızılbük projesi’ne ait {locale.setlocale(locale.total_overdue_amount, 'tr_TR.UTF-8')} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"İhtar: Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        else:
+             metin = ""
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
+        data["Tutar"].append(total_overdue_amount)
         data["Metin"].append(metin)
 
     df = pd.DataFrame(data)
@@ -687,6 +707,7 @@ def export_to_warned_risk_partners(self):
         "Crm Kodu": [],
         "Tel": [],
         "Email": [],
+        "Tutar": [],
         "Metin": []
     }
 
@@ -715,8 +736,8 @@ def export_to_warned_risk_partners(self):
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
 
+        total_overdue_amount = Decimal("0")
         if leases:
-            total_overdue_amount = Decimal("0")
             for lease in leases:
                 installments = lease.lease_installments.all()
                 for installment in installments:
@@ -724,13 +745,16 @@ def export_to_warned_risk_partners(self):
                 if total_overdue_amount < 100:
                     total_overdue_amount = Decimal("0")
         
-        metin = f"İhtar: Sinpaş Kızılbük projesi’ne ait {locale.setlocale(locale.total_overdue_amount, 'tr_TR.UTF-8')} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"İhtar: Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        else:
+             metin = ""
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
+        data["Tutar"].append(total_overdue_amount)
         data["Metin"].append(metin)
 
     df = pd.DataFrame(data)
@@ -799,6 +823,7 @@ def export_to_terminated_risk_partners(self):
         "Crm Kodu": [],
         "Tel": [],
         "Email": [],
+        "Tutar": [],
         "Metin": []
     }
 
@@ -827,8 +852,8 @@ def export_to_terminated_risk_partners(self):
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
 
+        total_overdue_amount = Decimal("0")
         if leases:
-            total_overdue_amount = Decimal("0")
             for lease in leases:
                 installments = lease.lease_installments.all()
                 for installment in installments:
@@ -836,13 +861,16 @@ def export_to_terminated_risk_partners(self):
                 if total_overdue_amount < 100:
                     total_overdue_amount = Decimal("0")
         
-        metin = f"Fesih: Sinpaş Kızılbük projesi’ne {locale.setlocale(locale.total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Fesih: Sinpaş Kızılbük projesi’ne {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        else:
+             metin = ""
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
+        data["Tutar"].append(total_overdue_amount)
         data["Metin"].append(metin)
 
     df = pd.DataFrame(data)
