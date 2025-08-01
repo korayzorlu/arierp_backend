@@ -426,6 +426,7 @@ def export_today_partners(self):
         "TC/VKN No": [],
         "Crm Kodu": [],
         "Tel": [],
+        "Metin": [],
         "Email": []
     }
 
