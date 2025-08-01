@@ -426,8 +426,8 @@ def export_today_partners(self):
         "TC/VKN No": [],
         "Crm Kodu": [],
         "Tel": [],
+        "Email": [],
         "Metin": [],
-        "Email": []
     }
 
     previous_progress = 0
