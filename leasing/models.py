@@ -319,7 +319,7 @@ class BankActivity(models.Model):
                     #     self.is_processed = True
                     #     self.save()
 
-                if len(contracts) == 1:
+                if len(contracts) > 0:
                     total_contract_ba_leases_amount = Decimal("0.00")
                     contract_ba_lease_queryset = []
                     for contract in contracts:
