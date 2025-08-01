@@ -439,7 +439,8 @@ def export_today_partners(self):
             self.process.save()
             previous_progress = current_progress
         
-        metin = f"Bilgilendirme: Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        #metin = f"Bilgilendirme: Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, online ödeme sistemimizden veya EFT/Havale yoluyla gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. İyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
@@ -503,7 +504,7 @@ def export_tomorrow_partners(self):
             self.process.save()
             previous_progress = current_progress
         
-        metin = f"Bilgilendirme: Sinpaş Kızılbük projesi’ne  ait {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemeniz yaklaşmaktadır. Ödeme gününü hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne  ait {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemeniz yaklaşmaktadır. Ödeme gününü hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
@@ -581,17 +582,17 @@ def export_risk_partners(self):
                 Q(lease_status='durduruldu')
             )
         ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
-        print(leases)
-        total_overdue_amount = Decimal("0")
+        
+        total_overdue_amount = 0
         if leases:
             for lease in leases:
                 installments = lease.lease_installments.all()
                 for installment in installments:
                     total_overdue_amount += installment.overdue_amount
                 if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
+                    total_overdue_amount = 0
         
-            metin = f"İhtar: Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -746,7 +747,7 @@ def export_to_warned_risk_partners(self):
                 if total_overdue_amount < 100:
                     total_overdue_amount = Decimal("0")
         
-            metin = f"İhtar: Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -862,7 +863,7 @@ def export_to_terminated_risk_partners(self):
                 if total_overdue_amount < 100:
                     total_overdue_amount = Decimal("0")
         
-            metin = f"Fesih: Sinpaş Kızılbük projesi’ne {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
