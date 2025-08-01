@@ -356,6 +356,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(overdue_days__lte=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -363,7 +364,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -374,6 +375,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(overdue_days__lte=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -381,7 +383,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -390,13 +392,15 @@ class RiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(overdue_amount__gt=100) &
+            Q(overdue_days__lte=30) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:
             for lease in leases:
@@ -479,7 +483,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = True)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -497,7 +501,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = True)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -513,7 +517,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = True)
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:
             for lease in leases:
@@ -607,7 +611,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -628,7 +632,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -648,7 +652,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')
@@ -751,7 +755,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0)
+        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -772,7 +776,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0)
+        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"])
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -792,7 +796,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date")
+        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')
@@ -892,7 +896,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -910,7 +914,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -927,7 +931,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False)
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         paid_rate = 0
         for lease in leases:
             if lease.paid_rate > paid_rate:
@@ -942,7 +946,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:
             for lease in leases:
@@ -1015,14 +1019,16 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
         return True if "virman" in obj.types else False
     
     def get_overdue_days(self, obj):
+        tomorrow = date.today() + timedelta(days=1)
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__contract_leases__lease_installments__payment_date=tomorrow) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -1030,14 +1036,16 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
         return overdue_days
     
     def get_leases(self, obj):
+        tomorrow = date.today() + timedelta(days=1)
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__contract_leases__lease_installments__payment_date=tomorrow) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:
             for lease in leases:
@@ -1092,15 +1100,17 @@ class TodayPartnerListSerializer(serializers.Serializer):
         return True if "virman" in obj.types else False
     
     def get_overdue_days(self, obj):
+        today = date.today()
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__contract_leases__lease_installments__payment_date=today) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        )
+        ).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -1108,15 +1118,17 @@ class TodayPartnerListSerializer(serializers.Serializer):
         return overdue_days
     
     def get_leases(self, obj):
+        today = date.today()
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
+            Q(contract__contract_leases__lease_installments__payment_date=today) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        ).order_by("contract__code","-activation_date").distinct("contract__code")
+        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:
             for lease in leases:

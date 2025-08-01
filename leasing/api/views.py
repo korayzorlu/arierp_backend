@@ -283,6 +283,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
+            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
             Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
@@ -293,7 +294,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-        )
+        ).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -336,7 +337,7 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-        )
+        ).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -382,7 +383,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+        ).filter(warning_notice_count=0).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -448,7 +449,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
+        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -492,7 +493,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-        )
+        ).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -533,7 +534,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
             )
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-        ).order_by('-max_overdue_days')
+        ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -574,7 +575,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
             )
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-        ).order_by('-max_overdue_days')
+        ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
 
         query = self.request.query_params.get('search[value]', None)
         if query:

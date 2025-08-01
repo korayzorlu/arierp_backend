@@ -398,7 +398,7 @@ def export_today_partners(self):
         )
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-    ).order_by('-max_overdue_days')
+    ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -458,7 +458,7 @@ def export_tomorrow_partners(self):
         )
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-        ).order_by('-max_overdue_days')
+        ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -518,7 +518,7 @@ def export_risk_partners(self):
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-    )
+    ).exclude(types__contains=["special"])
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -578,7 +578,7 @@ def export_kdv_risk_partners(self):
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-    )
+    ).exclude(types__contains=["special"])
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -640,7 +640,7 @@ def export_to_warned_risk_partners(self):
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
         warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
-    ).filter(warning_notice_count=0)
+    ).exclude(types__contains=["special"]).filter(warning_notice_count=0)
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -723,7 +723,7 @@ def export_to_terminated_risk_partners(self):
             default=Value(False),
             output_field=BooleanField()
         )
-    ).filter(warning_notice_count__gt=0,overdue_check=True)
+    ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)

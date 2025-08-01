@@ -435,20 +435,20 @@ class BankActivityLease(models.Model):
     def __str__(self):
         return str(self.bank_activity.tc_vkn_no)
     
-    # def save(self, *args, **kwargs):
-    #     with transaction.atomic():
-    #         is_new = self._state.adding
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            is_new = self._state.adding
 
-    #         super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
             
-            # if not is_new:
-            #     ba_leases = BankActivityLease.objects.filter(bank_activity = self.bank_activity)
-            #     total_ba_leases_amount = 0
-            #     for ba_lease in ba_leases:
-            #         total_ba_leases_amount += ba_lease.processed_amount
+            if not is_new:
+                ba_leases = BankActivityLease.objects.filter(bank_activity = self.bank_activity)
+                total_ba_leases_amount = 0
+                for ba_lease in ba_leases:
+                    total_ba_leases_amount += ba_lease.processed_amount
 
-            #     if self.bank_activity.amount == total_ba_leases_amount:
-            #         BankActivity.objects.filter(pk=self.bank_activity.pk).update(is_processed=True)
+                if self.bank_activity.amount == total_ba_leases_amount:
+                    BankActivity.objects.filter(pk=self.bank_activity.pk).update(is_processed=True)
     
 class PartnerOverdueView(models.Model):
     partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
