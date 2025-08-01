@@ -580,7 +580,7 @@ def export_risk_partners(self):
                 Q(lease_status='durduruldu')
             )
         ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
-
+        print(leases)
         total_overdue_amount = Decimal("0")
         if leases:
             for lease in leases:
