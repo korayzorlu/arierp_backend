@@ -36,6 +36,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
                 {"type" : "item", "class" : "free", "label" : "Vadesi Geçmişler", "icon" : "policy", "route" : "/risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
+                {"type" : "item", "class" : "free", "label" : "İhtar Çekilenler", "icon" : "policy", "route" : "/warned-risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},

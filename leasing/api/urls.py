@@ -12,6 +12,7 @@ router.register(r'bank_activity_leases',BankActivityLeaseList, "bank_activity_le
 router.register(r'risk_partners',RiskPartnerList, "risk_partners_api")
 router.register(r'kdv_risk_partners',RiskPartnerKDVList, "kdv_risk_partners_api")
 router.register(r'to_warned_risk_partners',ToWarnedRiskPartnerList, "to_warned_risk_partners_api")
+router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_partners_api")
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
