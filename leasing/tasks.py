@@ -1156,8 +1156,10 @@ def fetch_overdue_leases(company):
     file_data = pd.read_excel("files/vadesi-gecmis-borc.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    leases = Lease.objects.select_related().filter()
+    leases = Lease.objects.select_related().all()
     leases.update(overdue_days = 0)
+
+    lease_by_code = {l.code: l for l in leases if l.code}
 
     previous_progress = 0
     old_obj_count = 0
@@ -1168,14 +1170,16 @@ def fetch_overdue_leases(company):
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
 
-        obj = Lease.objects.select_related().filter(
-            Q(code=row['Kira Planı']) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            )
-        ).first()
+        obj = (lease_by_code.get(str(row['Kira Planı'])))
+
+        # obj = Lease.objects.select_related().filter(
+        #     Q(code=str(row['Kira Planı'])) &
+        #     (
+        #         Q(lease_status='aktiflestirildi') |
+        #         Q(lease_status='planlandi') |
+        #         Q(lease_status='durduruldu')
+        #     )
+        # ).first()
         if obj:
             old_obj_count += 1
             if not pd.isna(row['Oran']) and float(row['Oran'].replace("% ","")) >= 98:
@@ -1183,6 +1187,7 @@ def fetch_overdue_leases(company):
             obj.paid_rate = Decimal(str(row['Oran'].replace("% ",""))) if not pd.isna(row['Oran']) else Decimal("0.00")
             obj.total_payment = Decimal(str(row['Kdv Dahil Kira Toplamı'])) if not pd.isna(row['Kdv Dahil Kira Toplamı']) else Decimal("0.00")
             obj.paid = Decimal(str(row['Tahsilat Tutarı'])) if not pd.isna(row['Tahsilat Tutarı']) else Decimal("0.00")
+            obj.overdue_amount = Decimal(str(row['Borç Bakiye'])) if not pd.isna(row['Borç Bakiye']) else Decimal("0.00")
             obj.overdue_days = int(row['Gecikme günü']) if not pd.isna(row['Gecikme günü']) else 0
             obj.overdue_0_30 = Decimal(str(row['0 - 30'])) if not pd.isna(row['0 - 30']) else Decimal("0.00")
             obj.overdue_31_60 = Decimal(str(row['31 - 60'])) if not pd.isna(row['31 - 60']) else Decimal("0.00")

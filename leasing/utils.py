@@ -738,11 +738,7 @@ def export_to_warned_risk_partners(self):
         total_overdue_amount = Decimal("0")
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
+                total_overdue_amount += lease.overdue_amount
         
             metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
@@ -854,11 +850,7 @@ def export_to_terminated_risk_partners(self):
         total_overdue_amount = Decimal("0")
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
+                total_overdue_amount += lease.overdue_amount
         
             metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:

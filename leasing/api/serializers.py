@@ -404,20 +404,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
         lease_list = []
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
-                total_overdue_amount = Decimal("0")
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
-
-                overdue_days = -1
-                for installment in installments:
-                    if installment.overdue_amount > 0:
-                        today = date.today()
-                        diff = (today - installment.payment_date).days
-                        if diff > overdue_days:
-                            overdue_days = diff
 
                 if lease.contract.contract_warning_notices.all():
                     status = "İhtar Çekildi"
