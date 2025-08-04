@@ -770,6 +770,137 @@ def export_to_warned_risk_partners(self):
     #self.process.status = "completed"
     self.process.save()
 
+def export_warned_risk_partners(self):
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        ) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False)
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+        warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+        overdue_check=Case(
+            When(
+                customer_type='individual',
+                then=Case(
+                    When(partner_contracts__contract_leases__overdue_days__lte=60, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
+            ),
+            When(
+                customer_type='institutional',
+                then=Case(
+                    When(partner_contracts__contract_leases__overdue_days__lte=90, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
+            ),
+            default=Value(False),
+            output_field=BooleanField()
+        )
+    ).exclude(types__contains=["special"]).filter(warning_notice_count__gt=0,overdue_check=True)
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Tel": [],
+        "Email": [],
+        "Tutar": [],
+        "Metin": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
+            Q(contract__currency__code="TRY") &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False)
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            overdue_check=Case(
+            When(
+                contract__partner__customer_type='individual',
+                then=Case(
+                    When(overdue_days__lte=60, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
+            ),
+            When(
+                contract__partner__customer_type='institutional',
+                then=Case(
+                    When(overdue_days__lte=90, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
+            ),
+            default=Value(False),
+            output_field=BooleanField()
+        )
+        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
+
+        total_overdue_amount = Decimal("0")
+        if leases:
+            for lease in leases:
+                total_overdue_amount += lease.overdue_amount
+        
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        else:
+             metin = ""
+
+        data["Müşteri İsmi"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["Crm Kodu"].append(obj.crm_code)
+        data["Tel"].append(obj.phone_number if obj.phone_number else "")
+        data["Email"].append(obj.email if obj.email else "")
+        data["Tutar"].append(total_overdue_amount)
+        data["Metin"].append(metin)
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "warned_risk_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
 def export_to_terminated_risk_partners(self):
     objs = Partner.objects.select_related().filter(
         Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
@@ -835,6 +966,7 @@ def export_to_terminated_risk_partners(self):
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=1000) &
             Q(overdue_days__gt=30) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(contract__currency__code="TRY") &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (

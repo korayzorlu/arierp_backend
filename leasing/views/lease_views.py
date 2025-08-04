@@ -362,7 +362,31 @@ class ToWarnedRiskPartnersExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
-    
+
+class ExportWarnedRiskPartnersView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="WarnedRiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler.xlsx", export_url="/leasing/warned_risk_partners_excel")
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class WarnedRiskPartnersExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "warned_risk_partners", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+
 class ExportToTerminatedRiskPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="ToTerminatedRiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-fesih-edilecekler.xlsx", export_url="/leasing/to_terminated_risk_partners_excel")
