@@ -945,8 +945,28 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff = False)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"])
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            overdue_check=Case(
+                When(
+                    contract__partner__customer_type='individual',
+                    then=Case(
+                        When(overdue_days__gt=65, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                When(
+                    contract__partner__customer_type='institutional',
+                    then=Case(
+                        When(overdue_days__gt=95, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                default=Value(False),
+                output_field=BooleanField()
+            )
+        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -966,8 +986,28 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff = False)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"])
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            overdue_check=Case(
+                When(
+                    contract__partner__customer_type='individual',
+                    then=Case(
+                        When(overdue_days__gt=65, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                When(
+                    contract__partner__customer_type='institutional',
+                    then=Case(
+                        When(overdue_days__gt=95, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                default=Value(False),
+                output_field=BooleanField()
+            )
+        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -986,8 +1026,28 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff = False)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            overdue_check=Case(
+                When(
+                    contract__partner__customer_type='individual',
+                    then=Case(
+                        When(overdue_days__gt=65, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                When(
+                    contract__partner__customer_type='institutional',
+                    then=Case(
+                        When(overdue_days__gt=95, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                default=Value(False),
+                output_field=BooleanField()
+            )
+        ).filter(warning_notice_count__gt=0,overdue_check=True).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')

@@ -1,5 +1,6 @@
 from unidecode import unidecode
 from decimal import Decimal,InvalidOperation
+from datetime import timedelta
 
 def normalize(name):
     return unidecode(name or "").strip().lower()
@@ -39,3 +40,14 @@ def parse_amount(amount_str):
         return Decimal(amount_str)
     except:
         return Decimal('0.00')  # fallback
+    
+def add_business_days(start_date, business_days):
+    current_date = start_date
+    days_added = 0
+
+    while days_added < business_days:
+        current_date += timedelta(days=1)
+        if current_date.weekday() < 5:
+            days_added += 1
+
+    return current_date

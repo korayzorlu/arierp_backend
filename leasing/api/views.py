@@ -479,6 +479,9 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["country","billing_country"]
 
+        #after_60_days = datetime.today() + timedelta(days=60)
+        #after_30_days = datetime.today() + timedelta(days=30)
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
@@ -500,7 +503,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 When(
                     customer_type='individual',
                     then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
+                        When(partner_contracts__contract_leases__overdue_days__gt=65, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -508,7 +511,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 When(
                     customer_type='institutional',
                     then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
+                        When(partner_contracts__contract_leases__overdue_days__gt=95, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )

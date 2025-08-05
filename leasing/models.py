@@ -407,6 +407,9 @@ class BankActivity(models.Model):
                                 contract_ba_lease.processed_amount = first_future_payment
                                 contract_ba_lease.leaseflex_automation = True
                                 contract_ba_lease.save()
+
+                if len(contracts) == 0:
+                    pass
                 
             ba_leases = self.bank_activity_bank_acitivity_leases.filter(leaseflex_automation = True)
             if ba_leases:
