@@ -546,7 +546,11 @@ def export_risk_partners(self):
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-    ).exclude(types__contains=["special"])
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -582,7 +586,11 @@ def export_risk_partners(self):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
+        ).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        ).order_by("contract__code","-activation_date").distinct("contract__code")
         
         total_overdue_amount = 0
         if leases:
@@ -632,7 +640,11 @@ def export_kdv_risk_partners(self):
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-    ).exclude(types__contains=["special"])
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -694,7 +706,11 @@ def export_to_warned_risk_partners(self):
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
         warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
-    ).exclude(types__contains=["special"]).filter(warning_notice_count=0)
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    ).filter(warning_notice_count=0)
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -733,7 +749,11 @@ def export_to_warned_risk_partners(self):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count=0).exclude(
+             Q(contract__partner__types__contains=["special"]) |
+             Q(contract__partner__types__contains=["barter"]) |
+             Q(contract__partner__types__contains=["virman"])
+        )
 
         total_overdue_amount = Decimal("0")
         if leases:
@@ -805,7 +825,11 @@ def export_warned_risk_partners(self):
             default=Value(False),
             output_field=BooleanField()
         )
-    ).exclude(types__contains=["special"]).filter(warning_notice_count__gt=0,overdue_check=True)
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    ).filter(warning_notice_count__gt=0,overdue_check=True)
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -864,7 +888,11 @@ def export_warned_risk_partners(self):
             default=Value(False),
             output_field=BooleanField()
         )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        )
 
         total_overdue_amount = Decimal("0")
         if leases:
@@ -937,7 +965,11 @@ def export_to_terminated_risk_partners(self):
             default=Value(False),
             output_field=BooleanField()
         )
-    ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
+    ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -977,7 +1009,11 @@ def export_to_terminated_risk_partners(self):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        )
 
         total_overdue_amount = Decimal("0")
         if leases:
@@ -1028,7 +1064,11 @@ def export_delivery_confirms(self):
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-    ).exclude(types__contains=["special"])
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -1070,7 +1110,11 @@ def export_delivery_confirms(self):
             Q(is_kdv_diff = False)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        )
 
         total_overdue_amount = Decimal("0")
         if leases:
