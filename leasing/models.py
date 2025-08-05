@@ -408,9 +408,24 @@ class BankActivity(models.Model):
                                 contract_ba_lease.leaseflex_automation = True
                                 contract_ba_lease.save()
 
-                if len(contracts) == 0:
-                    pass
-                
+                if len(contracts) == 0 and self.tc_vkn_no:
+                    partner = Partner.objects.select_related().filter(tc_vkn_no = self.tc_vkn_no).first()
+
+                    if partner:
+                        total_customer_leases_amount = Decimal("0.00")
+                        customer_leases = Lease.objects.select_related().filter(
+                            Q(contract__partner=partner) &
+                            (
+                                Q(lease_status='aktiflestirildi') |
+                                Q(lease_status='planlandi') |
+                                Q(lease_status='durduruldu')
+                            )
+                        ).annotate(lease_id_as_int=Cast('lease_id', IntegerField())).order_by("-lease_id_as_int")
+
+                        for customer_lease in customer_leases:
+                            total_customer_leases_amount += customer_lease.total_payment
+
+
             ba_leases = self.bank_activity_bank_acitivity_leases.filter(leaseflex_automation = True)
             if ba_leases:
                 total_ba_leases_amount = Decimal("0.00")

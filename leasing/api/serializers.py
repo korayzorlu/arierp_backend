@@ -1196,7 +1196,8 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
-            )
+            ) &
+            Q(is_kdv_diff = False)
         ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
         lease_list = []
         if leases:

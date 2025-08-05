@@ -1013,3 +1013,94 @@ def export_to_terminated_risk_partners(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+
+def export_delivery_confirms(self):
+    objs = Partner.objects.select_related().filter(
+        Q(partner_contracts__contract_leases__overdue_amount=0) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        Q(partner_contracts__contract_leases__paid_rate__gte=30) &
+        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        )
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+    ).exclude(types__contains=["special"])
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Sözleşme No": [],
+        "Tahsilat Oranı": [],
+        "Gecikmiş Bakiye": [],
+        "Blok": [],
+        "Bağımsız Bölüm": [],
+        "Müşteri İsmi": [],
+        "Müşteri TC": [],
+        "Müşteri Tel": [],
+        "Müşteri CRM Kodu": []
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__gt=1000) &
+            Q(overdue_days__gt=30) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
+            Q(contract__currency__code="TRY") &
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False)
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(contract__partner__types__contains=["special"])
+
+        total_overdue_amount = Decimal("0")
+        if leases:
+            for lease in leases:
+                total_overdue_amount += lease.overdue_amount
+
+                data["Sözleşme No"].append(lease.contract.code)
+                data["Tahsilat Oranı"].append(lease.paid_rate)
+                data["Gecikmiş Bakiye"].append(lease.overdue_amount)
+                data["Blok"].append(lease.contract.quotation_obj.quick_quotation.block)
+                data["Bağımsız Bölüm"].append(lease.contract.quotation_obj.quick_quotation.unit)
+                data["Müşteri İsmi"].append(lease.contract.partner.name)
+                data["Müşteri TC"].append(lease.contract.partner.tc_vkn_no)
+                data["Müşteri Tel"].append(lease.contract.partner.phone_number)
+                data["Müşteri CRM Kodu"].append(lease.contract.partner.crm_code)
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "delivery_confirms", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-teslim-onay.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()

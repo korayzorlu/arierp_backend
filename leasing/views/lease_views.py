@@ -410,3 +410,27 @@ class ToTerminatedRiskPartnersExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+    
+class ExportDeliveryConfirmsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="DeliveryConfirm", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-teslim-onay.xlsx", export_url="/leasing/delivery_confirms_excel")
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class DeliveryConfirmsExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "delivery_confirms", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-teslim-onay.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))

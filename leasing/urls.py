@@ -60,5 +60,8 @@ urlpatterns = [
     path('export_to_terminated_risk_partners/', ExportToTerminatedRiskPartnersView.as_view(), name="export_to_terminated_risk_partners"),
     path('to_terminated_risk_partners_excel/', ToTerminatedRiskPartnersExcelView.as_view(), name="to_terminated_risk_partners_excel"),
 
+    path('export_delivery_confirms/', ExportDeliveryConfirmsView.as_view(), name="export_delivery_confirms"),
+    path('delivery_confirms_excel/', DeliveryConfirmsExcelView.as_view(), name="delivery_confirms_excel"),
+
     path('', include("leasing.api.urls")),
 ]
