@@ -358,7 +358,7 @@ def export_bank_activities(self):
             self.process.save()
             previous_progress = current_progress
 
-        ba_leases = bank_activity.bank_activity_bank_acitivity_leases.all()
+        ba_leases = bank_activity.bank_activity_bank_acitivity_leases.filter(leaseflex_automation = True)
 
         if ba_leases:
             for ba_lease in ba_leases:
