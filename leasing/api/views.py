@@ -491,7 +491,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
+            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() + timedelta(days=5)) &
             Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
