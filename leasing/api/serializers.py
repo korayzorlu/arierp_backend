@@ -989,7 +989,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=1000) &
             Q(overdue_days__gt=30) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() + timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -1031,7 +1031,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=1000) &
             Q(overdue_days__gt=30) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() + timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -1072,7 +1072,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=1000) &
             Q(overdue_days__gt=30) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() + timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
