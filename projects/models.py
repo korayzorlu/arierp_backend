@@ -15,7 +15,7 @@ class Project(models.Model):
 
     project_id = models.CharField(_("Project ID"), max_length=25, null=True, blank=True)
     name = models.CharField(_("Name"), max_length=500, null=True, blank=True)
-    vendor_id = models.CharField(_("Vendor ID"), max_length=25, null=True, blank=True)
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_projects", null=True, blank=True)
     comission_rate = models.DecimalField(_("Comission Rate"), default = 0.00, max_digits=14, decimal_places=2)
     term_diff_rate = models.DecimalField(_("Term Diff Rate"), default = 0.00, max_digits=14, decimal_places=2)
 

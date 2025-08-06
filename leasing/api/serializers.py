@@ -85,7 +85,7 @@ class LeaseListSerializer(serializers.Serializer):
         return obj.contract.project if obj.contract else ""
     
     def get_block(self, obj):
-        return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else ""
+        return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else ""
