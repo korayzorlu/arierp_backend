@@ -6,7 +6,7 @@ from decimal import Decimal
 from datetime import date,timedelta,datetime
 from django.utils import timezone
 
-from leasing.models import *
+from projects.models import *
 from companies.models import Company,UserCompany
 from partners.models import Partner
 from contracts.models import WarningNotice

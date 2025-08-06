@@ -18,6 +18,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
                 {"type" : "item", "class" : "free", "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
             ]},
+            {"type" : "item", "class" : "free", "label" : "Projeler", "icon" : "home_work", "route" : "/projects"},
             {"type" : "sub_menu", "class" : "free", "label" : "Teklif", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
                 {"type" : "item", "class" : "free", "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},

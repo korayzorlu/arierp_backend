@@ -104,3 +104,34 @@ class DatatablesPagination(LimitOffsetPagination):
             'data': data
         })
     
+class ProjectList(ModelViewSet, QueryListAPIView):
+    serializer_class = ProjectListSerializer
+    filterset_class = ProjectFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","partner"]
+
+        queryset = Project.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-project_id")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["partner__crm_code","partner__name","partner_id","name"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
