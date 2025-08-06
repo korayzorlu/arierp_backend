@@ -103,3 +103,4 @@ class DatatablesPagination(LimitOffsetPagination):
             'recordsFiltered': self.count,
             'data': data
         })
+    

@@ -324,6 +324,7 @@ def import_bank_activities(self, df_json):
         self.process.save()
 
 def export_bank_activities(self):
+    bank_activities = BankActivity.objects.select_related().filter().order_by("id")
     objs = BankActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("bank_activity__bank_code","bank_activity__tc_vkn_no")
 
     self.process.status = "in_progress"
@@ -349,39 +350,92 @@ def export_bank_activities(self):
     }
 
     previous_progress = 0
-    for index,obj in enumerate(objs):
+    for index,bank_activity in enumerate(bank_activities):
         current_progress = ((index + 1)/len(objs))*100
 
         if current_progress - previous_progress >= 5:
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
-        
-        
-        #bank_activity_leases = lease.lease_bank_acitivity_leases.filter(leaseflex_automation = True)
-        if obj.lease.currency:
-            if obj.lease.currency.code == "TRY":
-                currency = "YTL"
-            else:
-                currency = obj.lease.currency.code
+
+        ba_leases = bank_activity.bank_activity_bank_acitivity_leases.all()
+
+        if ba_leases:
+            for ba_lease in ba_leases:
+                if ba_lease.lease.currency:
+                    if ba_lease.lease.currency.code == "TRY":
+                        currency = "YTL"
+                    else:
+                        currency = ba_lease.lease.currency.code
+                else:
+                    currency = ""
+
+                data["Hesap Numarası"].append(ba_lease.bank_activity.bank_account_no)
+                data["İşlem Tarihi"].append(ba_lease.bank_activity.process_date_date.strftime("%y%m%d"))
+                data["İşlem Kodu"].append(ba_lease.bank_activity.process_code)
+                data["Borç / Alacak"].append(ba_lease.bank_activity.credit_or_debit)
+                data["Döviz kodu"].append(currency)
+                data["Tutar"].append(float(ba_lease.processed_amount) if ba_lease.processed_amount is not None else None)
+                data["Kontrat No"].append(ba_lease.bank_activity.kontrat_no)
+                data["Açıklama"].append(ba_lease.bank_activity.description)
+                data["Gönderen Ünvanı"].append(ba_lease.lease.contract.code)
+                data["Gönderen İsmi"].append(ba_lease.lease.contract.partner.name)
+                data["Gönderen TCKN / VKN"].append(ba_lease.bank_activity.tc_vkn_no)
+                data["3. Şahıs Ödemesi"].append("Evet" if ba_lease.is_third_person else "")
+                data["Karşı Banka"].append(ba_lease.bank_activity.cross_bank_code)
+                data["Karşı Şube"].append(ba_lease.bank_activity.cross_bank_branch_code)
+                data["Karşı Hesap"].append(ba_lease.bank_activity.cross_bank_account_no)
         else:
-            currency = ""
+            data["Hesap Numarası"].append(bank_activity.bank_account_no)
+            data["İşlem Tarihi"].append(bank_activity.process_date_date.strftime("%y%m%d"))
+            data["İşlem Kodu"].append(bank_activity.process_code)
+            data["Borç / Alacak"].append(bank_activity.credit_or_debit)
+            data["Döviz kodu"].append(bank_activity.currency.code if bank_activity.currency else "")
+            data["Tutar"].append(bank_activity.amount)
+            data["Kontrat No"].append(bank_activity.kontrat_no)
+            data["Açıklama"].append(bank_activity.description)
+            data["Gönderen Ünvanı"].append("")
+            data["Gönderen İsmi"].append("")
+            data["Gönderen TCKN / VKN"].append(bank_activity.tc_vkn_no)
+            data["3. Şahıs Ödemesi"].append("")
+            data["Karşı Banka"].append(bank_activity.cross_bank_code)
+            data["Karşı Şube"].append(bank_activity.cross_bank_branch_code)
+            data["Karşı Hesap"].append(bank_activity.cross_bank_account_no)
+
+    # previous_progress = 0
+    # for index,obj in enumerate(objs):
+    #     current_progress = ((index + 1)/len(objs))*100
+
+    #     if current_progress - previous_progress >= 5:
+    #         self.process.progress = int(current_progress)
+    #         self.process.save()
+    #         previous_progress = current_progress
         
-        data["Hesap Numarası"].append(obj.bank_activity.bank_account_no)
-        data["İşlem Tarihi"].append(obj.bank_activity.process_date_date.strftime("%y%m%d"))
-        data["İşlem Kodu"].append(obj.bank_activity.process_code)
-        data["Borç / Alacak"].append(obj.bank_activity.credit_or_debit)
-        data["Döviz kodu"].append(currency)
-        data["Tutar"].append(float(obj.processed_amount) if obj.processed_amount is not None else None)
-        data["Kontrat No"].append(obj.bank_activity.kontrat_no)
-        data["Açıklama"].append(obj.bank_activity.description)
-        data["Gönderen Ünvanı"].append(obj.lease.contract.code)
-        data["Gönderen İsmi"].append(obj.lease.contract.partner.name)
-        data["Gönderen TCKN / VKN"].append(obj.bank_activity.tc_vkn_no)
-        data["3. Şahıs Ödemesi"].append("Evet" if obj.is_third_person else "")
-        data["Karşı Banka"].append(obj.bank_activity.cross_bank_code)
-        data["Karşı Şube"].append(obj.bank_activity.cross_bank_branch_code)
-        data["Karşı Hesap"].append(obj.bank_activity.cross_bank_account_no)
+        
+    #     #bank_activity_leases = lease.lease_bank_acitivity_leases.filter(leaseflex_automation = True)
+    #     if obj.lease.currency:
+    #         if obj.lease.currency.code == "TRY":
+    #             currency = "YTL"
+    #         else:
+    #             currency = obj.lease.currency.code
+    #     else:
+    #         currency = ""
+        
+    #     data["Hesap Numarası"].append(obj.bank_activity.bank_account_no)
+    #     data["İşlem Tarihi"].append(obj.bank_activity.process_date_date.strftime("%y%m%d"))
+    #     data["İşlem Kodu"].append(obj.bank_activity.process_code)
+    #     data["Borç / Alacak"].append(obj.bank_activity.credit_or_debit)
+    #     data["Döviz kodu"].append(currency)
+    #     data["Tutar"].append(float(obj.processed_amount) if obj.processed_amount is not None else None)
+    #     data["Kontrat No"].append(obj.bank_activity.kontrat_no)
+    #     data["Açıklama"].append(obj.bank_activity.description)
+    #     data["Gönderen Ünvanı"].append(obj.lease.contract.code)
+    #     data["Gönderen İsmi"].append(obj.lease.contract.partner.name)
+    #     data["Gönderen TCKN / VKN"].append(obj.bank_activity.tc_vkn_no)
+    #     data["3. Şahıs Ödemesi"].append("Evet" if obj.is_third_person else "")
+    #     data["Karşı Banka"].append(obj.bank_activity.cross_bank_code)
+    #     data["Karşı Şube"].append(obj.bank_activity.cross_bank_branch_code)
+    #     data["Karşı Hesap"].append(obj.bank_activity.cross_bank_account_no)
 
     df = pd.DataFrame(data)
     # df = df.drop_duplicates()
