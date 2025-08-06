@@ -9,7 +9,7 @@ import requests
 # print(obj)
 
 
-url = 'http://localhost:8000/api/leasing/kizilbuk_risk_partners/?ac=899bc2f0-17d9-4067-a2a2-231b92bb9e59'
+url = 'http://localhost:8000/api/leasing/kizilbuk_risk_partners/?ac=899bc2f0-17d9-4067-a2a2-231b92bb9e59&format=datatables'
 
 response = requests.get(url).json()
 print(response)

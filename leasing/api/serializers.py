@@ -430,7 +430,20 @@ class RiskPartnerListSerializer(serializers.Serializer):
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
-                    "status" : status
+                    "status" : status,
+                    "overdues" : [
+                        {   
+                            'id': lease.code,
+                            'lease': lease.code,
+                            'overdue_0_30': lease.overdue_0_30,
+                            'overdue_31_60': lease.overdue_31_60,
+                            'overdue_61_90': lease.overdue_61_90,
+                            'overdue_91_120': lease.overdue_91_120,
+                            'overdue_121_150': lease.overdue_121_150,
+                            'overdue_151_180': lease.overdue_151_180,
+                            'overdue_181_gte': lease.overdue_181_gte,
+                        }
+                    ]
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -547,7 +560,20 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
-                    "statu" : status
+                    "statu" : status,
+                    "overdues" : [
+                        {   
+                            'id': lease.code,
+                            'lease': lease.code,
+                            'overdue_0_30': lease.overdue_0_30,
+                            'overdue_31_60': lease.overdue_31_60,
+                            'overdue_61_90': lease.overdue_61_90,
+                            'overdue_91_120': lease.overdue_91_120,
+                            'overdue_121_150': lease.overdue_121_150,
+                            'overdue_151_180': lease.overdue_151_180,
+                            'overdue_181_gte': lease.overdue_181_gte,
+                        }
+                    ]
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -691,7 +717,20 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
-                    "status" : status
+                    "status" : status,
+                    "overdues" : [
+                        {   
+                            'id': lease.code,
+                            'lease': lease.code,
+                            'overdue_0_30': lease.overdue_0_30,
+                            'overdue_31_60': lease.overdue_31_60,
+                            'overdue_61_90': lease.overdue_61_90,
+                            'overdue_91_120': lease.overdue_91_120,
+                            'overdue_121_150': lease.overdue_121_150,
+                            'overdue_151_180': lease.overdue_151_180,
+                            'overdue_181_gte': lease.overdue_181_gte,
+                        }
+                    ]
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -895,7 +934,20 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
-                    "status" : status
+                    "status" : status,
+                    "overdues" : [
+                        {   
+                            'id': lease.code,
+                            'lease': lease.code,
+                            'overdue_0_30': lease.overdue_0_30,
+                            'overdue_31_60': lease.overdue_31_60,
+                            'overdue_61_90': lease.overdue_61_90,
+                            'overdue_91_120': lease.overdue_91_120,
+                            'overdue_121_150': lease.overdue_121_150,
+                            'overdue_151_180': lease.overdue_151_180,
+                            'overdue_181_gte': lease.overdue_181_gte,
+                        }
+                    ]
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
@@ -1102,7 +1154,20 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
-                    "status" : status
+                    "status" : status,
+                    "overdues" : [
+                        {   
+                            'id': lease.code,
+                            'lease': lease.code,
+                            'overdue_0_30': lease.overdue_0_30,
+                            'overdue_31_60': lease.overdue_31_60,
+                            'overdue_61_90': lease.overdue_61_90,
+                            'overdue_91_120': lease.overdue_91_120,
+                            'overdue_121_150': lease.overdue_121_150,
+                            'overdue_151_180': lease.overdue_151_180,
+                            'overdue_181_gte': lease.overdue_181_gte,
+                        }
+                    ]
                 })
         return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
 
