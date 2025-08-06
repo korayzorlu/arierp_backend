@@ -177,7 +177,7 @@ class WarningNoticeList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['contract_code','partner_name','process_start_date','service_date','official_cancellation_date','debit_amount','paid','diff']
     ordering = ['-official_cancellation_date']
-    pagination_class = DatatablesPagination
+    #pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     

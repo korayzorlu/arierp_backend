@@ -456,6 +456,7 @@ def fetch_warning_notices(company):
         ]
 
         warning_notices = WarningNotice.objects.select_related("company","contract","contract__currency").all()
+        warning_notices.delete()
         contracts = Contract.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
