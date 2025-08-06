@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "quotations",
     "ledger",
     "trade",
+    "projects",
     
 ]
 
