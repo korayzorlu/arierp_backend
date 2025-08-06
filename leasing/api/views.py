@@ -15,6 +15,7 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 
 import traceback
 from datetime import datetime,timedelta
@@ -274,12 +275,16 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('active_company')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = ["country","billing_country"]
-
+        
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
@@ -646,6 +651,67 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
         ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["country__name","billing__country"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+
+
+
+####out api
+class OutRiskPartnerList(ModelViewSet, QueryListAPIView):
+    serializer_class = RiskPartnerListSerializer
+    filterset_class = RiskPartnerFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
+    #pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        user = self.request.user
+        active_company_uuid = self.request.query_params.get('ac')
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+
+        is_kdv = self.request.query_params.get('kdv')
+
+        custom_related_fields = ["country","billing_country"]
+
+        distinct_authors = Contract.objects.values_list('project', flat=True).distinct()
+        for distinct_author in distinct_authors:
+            print(distinct_author)
+
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
+            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(
+            Q(types__contains=["special"]) |
+            Q(types__contains=["barter"]) |
+            Q(types__contains=["virman"])
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
