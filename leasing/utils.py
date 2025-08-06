@@ -391,7 +391,7 @@ def export_bank_activities(self):
             data["İşlem Kodu"].append(bank_activity.process_code)
             data["Borç / Alacak"].append(bank_activity.credit_or_debit)
             data["Döviz kodu"].append(bank_activity.currency.code if bank_activity.currency else "")
-            data["Tutar"].append(bank_activity.amount)
+            data["Tutar"].append(float(bank_activity.amount))
             data["Kontrat No"].append(bank_activity.kontrat_no)
             data["Açıklama"].append(bank_activity.description)
             data["Gönderen Ünvanı"].append("")
