@@ -677,7 +677,7 @@ class OutRiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    #pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [AllowAny]
     
