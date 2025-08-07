@@ -531,7 +531,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
+        ).filter(warning_notice_count__gt=0).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
