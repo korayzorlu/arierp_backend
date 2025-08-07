@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -284,11 +284,14 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = ["country","billing_country"]
+
+        contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
         
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
             Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+            Q(partner_contracts__contract_warning_notices__isnull=True) &
             Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |

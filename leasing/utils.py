@@ -590,6 +590,7 @@ def export_risk_partners(self):
         Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
         Q(partner_contracts__contract_leases__overdue_days__lte=30) &
         Q(partner_contracts__currency__code="TRY") &
+        Q(partner_contracts__contract_warning_notices__isnull=True) &
         Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
@@ -634,6 +635,7 @@ def export_risk_partners(self):
             Q(overdue_amount__gt=100) &
             Q(overdue_days__lte=30) &
             Q(contract__currency__code="TRY") &
+            Q(contract__contract_warning_notices__isnull=True) &
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
