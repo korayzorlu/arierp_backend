@@ -12,7 +12,7 @@ from contracts.models import *
 
 @shared_task()
 def transfer_ledger_accounts(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"

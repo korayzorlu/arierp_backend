@@ -20,7 +20,7 @@ from .models import *
 
 @shared_task()
 def fetch_quick_quotation(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -190,7 +190,7 @@ def fetch_quick_quotation(company):
 
 @shared_task()
 def fetch_quotation(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"

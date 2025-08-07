@@ -69,7 +69,7 @@ def importPartners(self,df_json,user_id):
         
 @shared_task()
 def fix_partnerss(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -168,7 +168,7 @@ def fix_partnerss(company):
 
 @shared_task()
 def fetch_partners(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -248,7 +248,7 @@ def fetch_partners(company):
             for r in records
         ]
 
-        # engine = create_engine("mssql+pymssql://lflex:S!gma2014@192.168.81.8:1433/ARI_LEASING")
+        # engine = create_engine("mssql+pymssql://lflex:S!gma2014@192.168.82.31:1433/ARI_LEASING")
         # df = pd.read_sql(SQL_QUERY, engine)
         # external_data = df.to_dict(orient="records")
 
@@ -373,7 +373,7 @@ def fetch_partners(company):
 
 @shared_task()
 def fetch_partnersi(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -429,7 +429,7 @@ def fetch_partnersi(company):
             for r in records
         ]
 
-        # engine = create_engine("mssql+pymssql://lflex:S!gma2014@192.168.81.8:1433/ARI_LEASING")
+        # engine = create_engine("mssql+pymssql://lflex:S!gma2014@192.168.82.31:1433/ARI_LEASING")
         # df = pd.read_sql(SQL_QUERY, engine)
         # external_data = df.to_dict(orient="records")
 

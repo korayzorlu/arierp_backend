@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         # print(f"{obj.sequency} - {obj.payment_date} - {obj.amount}")
 
-        SERVER = "192.168.81.8,1433"
+        SERVER = "192.168.82.31,1433"
         DATABASE = "ARI_LEASING"
         USERNAME = "lflex"
         PASSWORD = "S!gma2014"

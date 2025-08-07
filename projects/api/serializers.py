@@ -19,6 +19,9 @@ class ProjectListSerializer(serializers.Serializer):
     partner_crm_code = serializers.SerializerMethodField()
     partner_name = serializers.SerializerMethodField()
 
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
     def get_partner_crm_code(self, obj):
         return obj.partner.crm_code if obj.partner else ""
     

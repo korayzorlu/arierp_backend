@@ -21,7 +21,7 @@ from partners.models import Partner
 
 @shared_task()
 def fetch_leases(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -162,7 +162,7 @@ def fetch_leases(company):
 
 @shared_task()
 def fetch_installments(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -275,7 +275,7 @@ def fetch_installments(company):
 
 @shared_task()
 def fix_collections(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -601,7 +601,7 @@ def fix_collections(company):
 
 @shared_task()
 def fix_collectionss(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -928,7 +928,7 @@ def fix_collectionss(company):
 
 @shared_task()
 def fetch_leases_overdue_amount(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"

@@ -15,7 +15,7 @@ from common.utils.common_utils import normalize,safe_decimal
 
 @shared_task()
 def fetch_contracts(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -141,7 +141,7 @@ def fetch_contracts(company):
 
 @shared_task()
 def fetch_contract_payments(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
@@ -386,7 +386,7 @@ def fetch_contract_payments(company):
 
 @shared_task()
 def fetch_warning_notices(company):
-    SERVER = "192.168.81.8,1433"
+    SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
     PASSWORD = "S!gma2014"
