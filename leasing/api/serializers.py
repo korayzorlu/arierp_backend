@@ -1146,18 +1146,18 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
             (
-                Q(partner_contracts__contract_warning_notices__state='Yeni') |
-                Q(partner_contracts__contract_warning_notices__state='Geçerli')
+                Q(contract__contract_warning_notices__state='Yeni') |
+                Q(contract__contract_warning_notices__state='Geçerli')
             ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
