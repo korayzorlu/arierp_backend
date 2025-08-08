@@ -292,7 +292,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
             Q(partner_contracts__contract_leases__overdue_days__lte=30) &
             Q(partner_contracts__contract_warning_notices__isnull=True) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -335,7 +335,7 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -380,7 +380,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+           # Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -425,7 +425,7 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -499,7 +499,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_warning_notices__state='Yeni') |
                 Q(partner_contracts__contract_warning_notices__state='Geçerli')
             ) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -566,7 +566,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__overdue_amount=0) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__paid_rate__gte=30) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+           # Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -608,7 +608,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -649,7 +649,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+           # Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -704,7 +704,7 @@ class OutRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(company = active_company.company if active_company else None) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
             Q(partner_contracts__contract_leases__overdue_days__lte=30) &
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |

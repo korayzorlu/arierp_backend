@@ -163,6 +163,7 @@ class InstallmentInformationView(LoginRequiredMixin,View):
         installment_data = [
             {   
                 'id': obj.uuid,
+                'project':obj.lease.contract.project if obj.lease.contract else "",
                 'lease':obj.lease.code if obj.lease else "",
                 'sequency': obj.sequency,
                 'vat': obj.vat,

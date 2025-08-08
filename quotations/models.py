@@ -7,6 +7,7 @@ import uuid
 from companies.models import Company
 from common.models import Currency, Status
 from partners.models import Partner
+from projects.models import Project
 
 # Create your models here.
 
@@ -21,6 +22,7 @@ class QuickQuotation(models.Model):
 
     customer_type = models.CharField(_("Customer Type"), max_length=25, null=True, blank=True)
     project = models.CharField(_("Project"), max_length=250, null=True, blank=True)
+    project_obj = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name="project_quick_quotations", null=True, blank=True)
     block = models.CharField(_("Block"), max_length=25, null=True, blank=True)
     unit = models.CharField(_("Unit"), max_length=25, null=True, blank=True)
 

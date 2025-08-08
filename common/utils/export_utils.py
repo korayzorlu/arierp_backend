@@ -32,7 +32,7 @@ class BaseExporter():
         "partner": []
     }
 
-    def __init__(self, user_id, app, model_name, file_name, export_url, task_id=None):
+    def __init__(self, user_id, app, model_name, file_name, export_url, task_id=None,params=None):
         self.user = User.objects.filter(id = int(user_id)).first()
         self.app = app
         self.model_name = model_name
@@ -40,6 +40,7 @@ class BaseExporter():
         self.export_url = export_url
         self.model = self.get_model()
         self.task_id = task_id
+        self.params = params
         self.process = None
         self.df = None
 
@@ -51,7 +52,7 @@ class BaseExporter():
 
     def start_export(self):
         from common.tasks import exportData
-        exportData.delay(self.user.id, self.app, self.model_name, self.file_name, self.export_url)
+        exportData.delay(self.user.id, self.app, self.model_name, self.file_name, self.export_url,self.params)
 
     def process_export(self):
         self.process = ExportProcess.objects.create(

@@ -385,6 +385,93 @@ def fetch_contract_payments(company):
         print(e)
 
 @shared_task()
+def fetch_contract_projects(company):
+    SERVER = "192.168.82.31,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+        SELECT 
+            v.CustomerId AS VendorId,
+            c.ContractHeaderId AS ContractHeaderId
+        FROM 
+            dbo.QuotationLine l
+
+            RIGHT JOIN dbo.InventoryStockCode isc 
+                ON l.StockCodeId = isc.StockCodeId
+
+            LEFT JOIN dbo.CrmCustomerWithTypesLight v 
+                ON l.VendorId = v.CustomerId
+
+            LEFT JOIN dbo.ContractHeaderLightList c 
+                ON l.QuotationHeaderId = c.QuotationHeaderId
+        WHERE  
+            l.Deleted = 0 
+            AND l.ItemType = 0
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {
+                "VendorId" : r.VendorId,
+                "ContractHeaderId" : r.ContractHeaderId,
+            }
+            for r in records
+        ]
+
+        contracts = Contract.objects.select_related("project_obj","company").all()
+        vendors = Partner.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        contract_by_code = {c.contract_id: c for c in contracts if c.contract_id}
+        vendors_dict = {p.crm_code: p for p in vendors}
+
+        previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            if str(data["ContractHeaderId"]):
+                obj = (contract_by_code.get(str(data["ContractHeaderId"])))
+            else:
+                obj = None
+
+            if obj:
+                old_obj_count += 1
+                obj.vendor = vendors_dict.get(str(data["VendorId"]))
+                obj.save()
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
+    except Exception as e:
+        print(e)
+
+
+@shared_task()
 def fetch_warning_notices(company):
     SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"

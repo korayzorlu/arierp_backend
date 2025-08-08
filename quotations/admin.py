@@ -7,9 +7,9 @@ from .models import QuickQuotation,Quotation
 
 @admin.register(QuickQuotation)
 class QuickQuotationAdmin(admin.ModelAdmin):
-    list_display = ["company","code","quotation_no","partner"]
+    list_display = ["company","code","quotation_no","partner","project","project_obj"]
     list_display_links = ["code"]
-    search_fields = ["company__name","code","partner__name","quotation_no"]
+    search_fields = ["company__name","code","partner__name","quotation_no","project","project_obj__name"]
     list_filter = []
     inlines = []
     ordering = ["start_date"]
@@ -19,6 +19,9 @@ class QuickQuotationAdmin(admin.ModelAdmin):
     
     def partner(self,obj):
         return obj.partner.name if obj.partner else ""
+    
+    def project_obj(self,obj):
+        return obj.project_obj.name if obj.project_obj else ""
     
     class Meta:
         model = QuickQuotation

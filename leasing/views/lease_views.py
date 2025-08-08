@@ -293,7 +293,16 @@ class TomorrowPartnersExcelView(LoginRequiredMixin,View):
     
 class ExportRiskPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="RiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar.xlsx", export_url="/leasing/risk_partners_excel")
+        data = json.loads(request.body)
+        
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="RiskPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar.xlsx",
+            export_url="/leasing/risk_partners_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             

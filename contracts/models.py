@@ -8,6 +8,7 @@ from common.models import Status,Currency
 from companies.models import Company
 from partners.models import Partner
 from quotations.models import Quotation
+from projects.models import Project
 
 # Create your models here.
 
@@ -29,6 +30,8 @@ class Contract(models.Model):
     customer_representative = models.CharField(_("Customer Representative"), max_length=140, null=True, blank=True)
     supplier = models.CharField(_("Supplier"), max_length=140, null=True, blank=True)
     project = models.CharField(_("Project"), max_length=250, null=True, blank=True)
+    project_obj = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name="project_contracts", null=True, blank=True)
+    vendor = models.ForeignKey(Partner, on_delete=models.SET_NULL, related_name="vendor_contracts", null=True, blank=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_contracts", null=True, blank=True)
     mkk_tesciline_gonderilecek_mi = models.BooleanField(default=False)
     kof_tan_sozlesmeye_aktarim_tarihi = models.DateTimeField(_("Kof'tan Sözleşmeye Aktarım Tarihi"), blank=True, null=True)
