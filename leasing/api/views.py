@@ -305,6 +305,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_warning_notices__isnull=True) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=0) &
             Q(partner_contracts__contract_leases__overdue_days__lte=30) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).annotate(
@@ -746,7 +747,18 @@ class OutRiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    #pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+
+    def get_pagination_class(self):
+        # Eğer query param'da 'paginate' false ise pagination devre dışı
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [AllowAny]
     

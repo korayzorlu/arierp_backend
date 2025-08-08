@@ -326,7 +326,16 @@ class RiskPartnersExcelView(LoginRequiredMixin,View):
     
 class ExportKDVRiskPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="KDVRiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-kdv-farkı-uygulananlar.xlsx", export_url="/leasing/kdv_risk_partners_excel")
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="KDVRiskPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-kdv-farkı-uygulananlar.xlsx",
+            export_url="/leasing/kdv_risk_partners_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
@@ -350,7 +359,16 @@ class KDVRiskPartnersExcelView(LoginRequiredMixin,View):
     
 class ExportToWarnedRiskPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="ToWarnedRiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilecekler.xlsx", export_url="/leasing/to_warned_risk_partners_excel")
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="ToWarnedRiskPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilecekler.xlsx",
+            export_url="/leasing/to_warned_risk_partners_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
@@ -374,7 +392,16 @@ class ToWarnedRiskPartnersExcelView(LoginRequiredMixin,View):
 
 class ExportWarnedRiskPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="WarnedRiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler.xlsx", export_url="/leasing/warned_risk_partners_excel")
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="WarnedRiskPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler.xlsx",
+            export_url="/leasing/warned_risk_partners_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
@@ -398,7 +425,16 @@ class WarnedRiskPartnersExcelView(LoginRequiredMixin,View):
 
 class ExportToTerminatedRiskPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="ToTerminatedRiskPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-fesih-edilecekler.xlsx", export_url="/leasing/to_terminated_risk_partners_excel")
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="ToTerminatedRiskPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-fesih-edilecekler.xlsx",
+            export_url="/leasing/to_terminated_risk_partners_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
@@ -422,7 +458,16 @@ class ToTerminatedRiskPartnersExcelView(LoginRequiredMixin,View):
     
 class ExportDeliveryConfirmsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="DeliveryConfirm", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-teslim-onay.xlsx", export_url="/leasing/delivery_confirms_excel")
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="DeliveryConfirm",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-teslim-onay.xlsx",
+            export_url="/leasing/delivery_confirms_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             

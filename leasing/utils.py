@@ -457,19 +457,31 @@ def export_bank_activities(self):
     self.process.save()
 
 def export_today_partners(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        
     today = date.today()
 
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
-        )
+        ) &
+        Q(partner_contracts__contract_leases__lease_installments__payment_date=today)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-    ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    ).order_by('-max_overdue_days')
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -522,19 +534,31 @@ def export_today_partners(self):
     self.process.save()
 
 def export_tomorrow_partners(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+
     tomorrow = date.today() + timedelta(days=1)
 
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
-        )
-        ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-        ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
+        ) &
+        Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow)
+    ).annotate(
+        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    ).order_by('-max_overdue_days')
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -603,6 +627,7 @@ def export_risk_partners(self):
         ) &
         Q(partner_contracts__contract_leases__is_kdv_diff=False) &
         Q(partner_contracts__contract_warning_notices__isnull=True) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=0) &
         Q(partner_contracts__contract_leases__overdue_days__lte=30) &
         Q(partner_contracts__contract_leases__overdue_amount__gt=100)
     ).annotate(
@@ -653,9 +678,11 @@ def export_risk_partners(self):
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
 
         leases = Lease.objects.select_related().filter(
+             Q(contract__partner = obj) &
              vendor_filter &
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
+            Q(overdue_days__gt=0) &
             Q(overdue_days__lte=30) &
             Q(contract__contract_warning_notices__isnull=True) &
             (
@@ -673,11 +700,17 @@ def export_risk_partners(self):
         #     leases = leases.filter(contract__vendor__crm_code=str(self.params["project"]))
         
         total_overdue_amount = 0
+        overdue_start_date = None
         if leases:
+            max_overdue_days = 0
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
-        
-            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+                if lease.overdue_days > max_overdue_days:
+                    max_overdue_days = lease.overdue_days
+            if max_overdue_days > 0:
+                overdue_start_date = date.today() - timedelta(days=max_overdue_days)
+
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -717,14 +750,14 @@ def export_kdv_risk_partners(self):
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
 
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=True)
+        Q(partner_contracts__contract_leases__is_kdv_diff=True) &
+        Q(partner_contracts__contract_leases__overdue_amount__gt=100)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -780,16 +813,24 @@ def export_kdv_risk_partners(self):
     self.process.save()
 
 def export_to_warned_risk_partners(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=False)
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -823,32 +864,44 @@ def export_to_warned_risk_partners(self):
             self.process.save()
             previous_progress = current_progress
         
+        vendor_filter = Q()
+        if str(self.params["project"]) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.params["project"]) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
+            
         leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            Q(contract__currency__code="TRY") &
-            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+             Q(contract__partner = obj) &
+             vendor_filter &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__currency__code="TRY") &
+            Q(is_kdv_diff=False) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0).exclude(
-             Q(contract__partner__types__contains=["special"]) |
-             Q(contract__partner__types__contains=["barter"]) |
-             Q(contract__partner__types__contains=["virman"])
+             Q(types__contains=["special"]) |
+             Q(types__contains=["barter"]) |
+             Q(types__contains=["virman"])
         )
 
         total_overdue_amount = Decimal("0")
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
+                if lease.overdue_days > max_overdue_days:
+                    max_overdue_days = lease.overdue_days
+            if max_overdue_days > 0:
+                overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
-            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -879,16 +932,24 @@ def export_to_warned_risk_partners(self):
     self.process.save()
 
 def export_warned_risk_partners(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=False)
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -941,19 +1002,27 @@ def export_warned_risk_partners(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
+
+        vendor_filter = Q()
+        if str(self.params["project"]) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.params["project"]) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            Q(contract__currency__code="TRY") &
-            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__currency__code="TRY") &
+            Q(is_kdv_diff=False) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -986,8 +1055,12 @@ def export_warned_risk_partners(self):
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
+                if lease.overdue_days > max_overdue_days:
+                    max_overdue_days = lease.overdue_days
+            if max_overdue_days > 0:
+                overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
-            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -1018,17 +1091,29 @@ def export_warned_risk_partners(self):
     self.process.save()
 
 def export_to_terminated_risk_partners(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=False) 
+        (
+            Q(partner_contracts__contract_warning_notices__state='Yeni') |
+            Q(partner_contracts__contract_warning_notices__state='Geçerli')
+        ) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -1081,20 +1166,32 @@ def export_to_terminated_risk_partners(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
+
+        vendor_filter = Q()
+        if str(self.params["project"]) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.params["project"]) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
         leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(contract__currency__code="TRY") &
-            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+             Q(contract__partner = obj) &
+            vendor_filter &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__currency__code="TRY") &
+            (
+                Q(contract__contract_warning_notices__state='Yeni') |
+                Q(contract__contract_warning_notices__state='Geçerli')
+            ) &
+            Q(is_kdv_diff=False) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count__gt=0).order_by("contract__code","-activation_date").exclude(
@@ -1107,8 +1204,12 @@ def export_to_terminated_risk_partners(self):
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
+                if lease.overdue_days > max_overdue_days:
+                    max_overdue_days = lease.overdue_days
+            if max_overdue_days > 0:
+                overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
-            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -1139,16 +1240,24 @@ def export_to_terminated_risk_partners(self):
     self.process.save()
 
 def export_delivery_confirms(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+
     objs = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__overdue_amount=0) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-        Q(partner_contracts__contract_leases__paid_rate__gte=30) &
-        Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
-        )
+        ) &
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        Q(partner_contracts__contract_leases__paid_rate__gte=30) &
+        Q(partner_contracts__contract_leases__overdue_amount=0)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -1182,18 +1291,26 @@ def export_delivery_confirms(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
+
+        vendor_filter = Q()
+        if str(self.params["project"]) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.params["project"]) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
         leases = Lease.objects.select_related().filter(
-             Q(contract__partner = obj) &
-             Q(contract__contract_leases__is_kdv_diff=False) &
-             Q(contract__contract_leases__paid_rate__gte=30) &
-             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            Q(contract__partner = obj) &
+            vendor_filter &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(is_kdv_diff=False) &
+            Q(paid_rate__gte=30) &
+            Q(overdue_amount=0)
         ).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -1208,6 +1325,7 @@ def export_delivery_confirms(self):
                 data["Sözleşme No"].append(lease.contract.code)
                 data["Tahsilat Oranı"].append(lease.paid_rate)
                 data["Gecikmiş Bakiye"].append(lease.overdue_amount)
+                data["Para Birimi"].append(lease.currency.code)
                 data["Blok"].append(lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj and lease.contract.quotation_obj.quick_quotation else "")
                 data["Bağımsız Bölüm"].append(lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj and lease.contract.quotation_obj.quick_quotation else "")
                 data["Müşteri İsmi"].append(lease.contract.partner.name)
