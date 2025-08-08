@@ -286,19 +286,27 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["country","billing_country"]
 
         contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
-        
+
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
-            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
-            Q(partner_contracts__contract_warning_notices__isnull=True) &
-            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_warning_notices__isnull=True) &
+            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -332,16 +340,24 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["country","billing_country"]
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
-            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=True)
+            Q(partner_contracts__contract_leases__is_kdv_diff=True) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -376,17 +392,25 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["country","billing_country"]
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-           # Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -421,17 +445,25 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["country","billing_country"]
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False)
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -490,23 +522,33 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
         #after_60_days = datetime.today() + timedelta(days=60)
         #after_30_days = datetime.today() + timedelta(days=30)
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            (
-                Q(partner_contracts__contract_warning_notices__state='Yeni') |
-                Q(partner_contracts__contract_warning_notices__state='Geçerli')
-            ) &
-            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
+            (
+                Q(partner_contracts__contract_warning_notices__state='Yeni') |
+                Q(partner_contracts__contract_warning_notices__state='Geçerli')
+            ) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+            
             #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) 
+            
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -561,17 +603,25 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["country","billing_country"]
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__overdue_amount=0) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__paid_rate__gte=30) &
-           # Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            )
+            ) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__paid_rate__gte=30) &
+            Q(partner_contracts__contract_leases__overdue_amount=0)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -605,15 +655,23 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
 
         tomorrow = date.today() + timedelta(days=1)
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
-            #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            )
+            ) &
+            Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
         ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
@@ -646,15 +704,23 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
 
         today = date.today()
 
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
-           # Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            )
+            ) &
+            Q(partner_contracts__contract_leases__lease_installments__payment_date=today)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
         ).exclude(types__contains=["special"]).order_by('-max_overdue_days')

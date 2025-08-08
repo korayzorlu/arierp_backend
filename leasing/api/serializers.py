@@ -357,7 +357,17 @@ class RiskPartnerListSerializer(serializers.Serializer):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter &
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__lte=30) &
@@ -370,8 +380,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff = False)
         )
-
-      
 
         overdue_days = 0
         for lease in leases:
@@ -383,7 +391,17 @@ class RiskPartnerListSerializer(serializers.Serializer):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter &
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__lte=30) &
@@ -397,8 +415,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         )
 
-       
-
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
@@ -407,8 +423,18 @@ class RiskPartnerListSerializer(serializers.Serializer):
     def get_leases(self, obj):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
         
         leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter &
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__lte=30) &
@@ -500,17 +526,29 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
         return True if "virman" in obj.types else False
     
     def get_max_overdue_days(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = True)
-        ).exclude(contract__partner__types__contains=["special"])
+            Q(contract__contract_leases__is_kdv_diff=True) &
+            Q(contract__contract_leases__overdue_amount__gt=100)
+        )
+
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -518,33 +556,58 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
         return overdue_days
     
     def get_total_overdue_amount(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = True)
-        ).exclude(contract__partner__types__contains=["special"])
+            Q(contract__contract_leases__is_kdv_diff=True) &
+            Q(contract__contract_leases__overdue_amount__gt=100)
+        )
+
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
         return overdue_amount
     
     def get_leases(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = True)
-        ).exclude(contract__partner__types__contains=["special"]).order_by("contract__code","-activation_date").distinct("contract__code")
+            Q(contract__contract_leases__is_kdv_diff=True) &
+            Q(contract__contract_leases__overdue_amount__gt=100)
+        ).order_by("-overdue_days")
+
         lease_list = []
         if leases:
             for lease in leases:
@@ -638,20 +701,32 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             return ""
     
     def get_max_overdue_days(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count=0)
+
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -659,40 +734,63 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         return overdue_days
     
     def get_total_overdue_amount(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count=0)
+        
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
         return overdue_amount
     
     def get_leases(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count=0)
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')
@@ -705,21 +803,6 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         lease_list = []
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
-                total_overdue_amount = Decimal("0")
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
-
-                overdue_days = -1
-                for installment in installments:
-                    if installment.overdue_amount > 0:
-                        today = date.today()
-                        diff = (today - installment.payment_date).days
-                        if diff > overdue_days:
-                            overdue_days = diff
-
                 if lease.contract.contract_warning_notices.all():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
@@ -795,17 +878,28 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             return ""
     
     def get_max_overdue_days(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -828,7 +922,8 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count__gt=0,overdue_check=True)
+
         overdue_days = 0
         for lease in leases:
             if lease.overdue_days > overdue_days:
@@ -836,17 +931,28 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
         return overdue_days
     
     def get_total_overdue_amount(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -869,24 +975,36 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count__gt=0,overdue_check=True)
+
         overdue_amount = 0
         for lease in leases:
             overdue_amount += lease.overdue_amount
         return overdue_amount
     
     def get_leases(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(contract__contract_leases__lease_status='aktiflestirildi') |
+                Q(contract__contract_leases__lease_status='planlandi') |
+                Q(contract__contract_leases__lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(contract__contract_leases__overdue_days__gt=30) &
+            Q(contract__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -909,7 +1027,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(contract__partner__types__contains=["special"])
+        ).filter(warning_notice_count__gt=0,overdue_check=True)
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')
@@ -1013,22 +1131,33 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             return ""
     
     def get_max_overdue_days(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        vendor_filter = Q()
+        if str(filter_params.get('project')) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(filter_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=1000) &
-            Q(overdue_days__gt=30) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            vendor_filter &
             (
-                Q(contract__contract_warning_notices__state='Yeni') |
-                Q(contract__contract_warning_notices__state='Geçerli')
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(partner_contracts__contract_warning_notices__state='Yeni') |
+                Q(partner_contracts__contract_warning_notices__state='Geçerli')
             ) &
-            Q(is_kdv_diff = False)
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(

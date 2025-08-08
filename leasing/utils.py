@@ -586,17 +586,25 @@ def export_tomorrow_partners(self):
     self.process.save()
 
 def export_risk_partners(self):
-    objss = Partner.objects.select_related().filter(
-        Q(partner_contracts__contract_leases__overdue_days__lte=30) &
-        Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
-        Q(partner_contracts__contract_warning_notices__isnull=True) &
-        #Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+
+    objs = Partner.objects.select_related().filter(
+        vendor_filter &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=False)
+        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        Q(partner_contracts__contract_warning_notices__isnull=True) &
+        Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+        Q(partner_contracts__contract_leases__overdue_amount__gt=100)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -606,12 +614,12 @@ def export_risk_partners(self):
         Q(types__contains=["virman"])
     )
 
-    if str(self.params["project"]) == "diger":
-        objs = objss.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
-        objs = objss.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-    else:
-        objs = objss.filter(partner_contracts__vendor__crm_code=str(self.params["project"]))
+    # if str(self.params["project"]) == "diger":
+    #     objs = objss.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    # elif str(self.params["project"]) == "kizilbuk":
+    #     objs = objss.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    # else:
+    #     objs = objss.filter(partner_contracts__vendor__crm_code=str(self.params["project"]))
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -636,7 +644,16 @@ def export_risk_partners(self):
             self.process.save()
             previous_progress = current_progress
 
+        vendor_filter = Q()
+        if str(self.params["project"]) == "diger":
+            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.params["project"]) == "kizilbuk":
+            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        else:
+            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
+
         leases = Lease.objects.select_related().filter(
+             vendor_filter &
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__lte=30) &
@@ -648,12 +665,12 @@ def export_risk_partners(self):
             )
         ).order_by("-overdue_amount")
 
-        if str(self.params["project"]) == "diger":
-            leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(self.params["project"]) == "kizilbuk":
-            leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
-        else:
-            leases = leases.filter(contract__vendor__crm_code=str(self.params["project"]))
+        # if str(self.params["project"]) == "diger":
+        #     leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        # elif str(self.params["project"]) == "kizilbuk":
+        #     leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
+        # else:
+        #     leases = leases.filter(contract__vendor__crm_code=str(self.params["project"]))
         
         total_overdue_amount = 0
         if leases:
@@ -691,6 +708,14 @@ def export_risk_partners(self):
     self.process.save()
 
 def export_kdv_risk_partners(self):
+    vendor_filter = Q()
+    if str(self.params["project"]) == "diger":
+        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    elif str(self.params["project"]) == "kizilbuk":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    else:
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+
     objs = Partner.objects.select_related().filter(
         Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
         Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
