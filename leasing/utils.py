@@ -586,7 +586,7 @@ def export_tomorrow_partners(self):
     self.process.save()
 
 def export_risk_partners(self):
-    objs = Partner.objects.select_related().filter(
+    objss = Partner.objects.select_related().filter(
         Q(partner_contracts__contract_leases__overdue_days__lte=30) &
         Q(partner_contracts__contract_leases__overdue_amount__gt=100) &
         Q(partner_contracts__contract_warning_notices__isnull=True) &
@@ -605,13 +605,13 @@ def export_risk_partners(self):
         Q(types__contains=["barter"]) |
         Q(types__contains=["virman"])
     )
-    
+
     if str(self.params["project"]) == "diger":
-        objs = objs.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        objs = objss.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
     elif str(self.params["project"]) == "kizilbuk":
-        objs = objs.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        objs = objss.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
     else:
-        objs = objs.filter(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        objs = objss.filter(partner_contracts__vendor__crm_code=str(self.params["project"]))
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
