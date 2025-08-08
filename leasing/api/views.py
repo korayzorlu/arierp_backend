@@ -109,7 +109,16 @@ class LeaseList(ModelViewSet, QueryListAPIView):
     filterset_class = LeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -178,7 +187,16 @@ class InstallmentList(ModelViewSet, QueryListAPIView):
     filterset_class = InstallmentFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -206,7 +224,16 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
     filterset_class = BankActivityFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    #pagination_class = DatatablesPagination
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -234,7 +261,16 @@ class BankActivityLeaseList(ModelViewSet, QueryListAPIView):
     filterset_class = BankActivityLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    #pagination_class = DatatablesPagination
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -270,13 +306,22 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
         user = self.request.user
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         if user.is_authenticated:
             active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         else:
@@ -330,12 +375,21 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
@@ -382,12 +436,21 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
@@ -442,12 +505,21 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
@@ -516,12 +588,21 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
@@ -600,12 +681,21 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
@@ -651,12 +741,21 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
     filterset_class = TomorrowPartnerFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         custom_related_fields = ["country","billing_country"]
@@ -700,12 +799,21 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
     filterset_class = TodayPartnerFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         custom_related_fields = ["country","billing_country"]
@@ -754,10 +862,17 @@ class OutRiskPartnerList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
     ordering = ['-max_overdue_days']
-    # pagination_class = DatatablesPagination
-
+    # # pagination_class = DatatablesPagination
     def get_pagination_class(self):
-        # Eğer query param'da 'paginate' false ise pagination devre dışı
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
         if paginate == 'false':
             return None
