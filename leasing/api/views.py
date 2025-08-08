@@ -317,7 +317,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         user = self.request.user
@@ -392,7 +392,7 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
@@ -459,7 +459,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
@@ -534,7 +534,7 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
@@ -623,7 +623,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
@@ -722,7 +722,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
@@ -788,7 +788,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
@@ -852,7 +852,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         active_company_uuid = self.request.query_params.get('ac')
