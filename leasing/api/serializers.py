@@ -371,12 +371,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         )
 
-        if str(filter_params.get('project')) == "diger":
-            leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(filter_params.get('project')) == "kizilbuk":
-            leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
-        else:
-            leases = leases.filter(contract__vendor__crm_code=str(filter_params.get('project')))
+      
 
         overdue_days = 0
         for lease in leases:
@@ -402,12 +397,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         )
 
-        if str(filter_params.get('project')) == "diger":
-            leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(filter_params.get('project')) == "kizilbuk":
-            leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
-        else:
-            leases = leases.filter(contract__vendor__crm_code=str(filter_params.get('project')))
+       
 
         overdue_amount = 0
         for lease in leases:
@@ -432,12 +422,12 @@ class RiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff = False)
         ).order_by("-overdue_days")
 
-        if str(filter_params.get('project')) == "diger":
-            leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(filter_params.get('project')) == "kizilbuk":
-            leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
-        else:
-            leases = leases.filter(contract__vendor__crm_code=str(filter_params.get('project')))
+        # if str(filter_params.get('project')) == "diger":
+        #     leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        # elif str(filter_params.get('project')) == "kizilbuk":
+        #     leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
+        # else:
+        #     leases = leases.filter(contract__vendor__crm_code=str(filter_params.get('project')))
 
         lease_list = []
         if leases:
