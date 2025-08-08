@@ -219,6 +219,10 @@ class RiskPartnerFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
         
@@ -275,6 +279,10 @@ class RiskPartnerKDVFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
 
@@ -331,6 +339,10 @@ class ToWarnedRiskPartnerFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
 
@@ -387,6 +399,10 @@ class WarnedRiskPartnerFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
 
@@ -451,6 +467,10 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
 
@@ -495,6 +515,10 @@ class TomorrowPartnerFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
         
@@ -539,6 +563,10 @@ class TodayPartnerFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)
         
@@ -595,5 +623,9 @@ class DeliveryConfirmFilter(FilterSet):
             return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(value) == "kizilbuk":
             return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(value) == "sinpas":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(value) == "servet":
+            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
         else:
             return queryset.filter(partner_contracts__vendor__crm_code=value)

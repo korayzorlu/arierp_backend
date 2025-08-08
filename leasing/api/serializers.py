@@ -362,6 +362,12 @@ class RiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -397,6 +403,12 @@ class RiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -431,6 +443,12 @@ class RiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
         
@@ -537,6 +555,12 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -567,6 +591,12 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -596,6 +626,12 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -712,6 +748,12 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -745,6 +787,12 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -777,6 +825,12 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -889,6 +943,12 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -942,6 +1002,12 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -994,6 +1060,12 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1142,6 +1214,12 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1200,6 +1278,12 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1257,6 +1341,12 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1410,6 +1500,12 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1441,6 +1537,12 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1489,6 +1591,12 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1585,6 +1693,12 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
             
@@ -1615,6 +1729,12 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
             
@@ -1692,6 +1812,12 @@ class TodayPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1722,6 +1848,12 @@ class TodayPartnerListSerializer(serializers.Serializer):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(filter_params.get('project')) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(filter_params.get('project')) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(filter_params.get('project')) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 

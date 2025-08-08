@@ -458,12 +458,19 @@ def export_bank_activities(self):
 
 def export_today_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
         
     today = date.today()
 
@@ -535,12 +542,19 @@ def export_today_partners(self):
 
 def export_tomorrow_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
     tomorrow = date.today() + timedelta(days=1)
 
@@ -611,12 +625,19 @@ def export_tomorrow_partners(self):
 
 def export_risk_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
     objs = Partner.objects.select_related().filter(
         vendor_filter &
@@ -674,8 +695,16 @@ def export_risk_partners(self):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.params["project"]) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(self.params["project"]) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(self.params["project"]) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(self.params["project"]) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
+
+        
 
         leases = Lease.objects.select_related().filter(
              Q(contract__partner = obj) &
@@ -742,12 +771,19 @@ def export_risk_partners(self):
 
 def export_kdv_risk_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
     objs = Partner.objects.select_related().filter(
         vendor_filter &
@@ -814,12 +850,19 @@ def export_kdv_risk_partners(self):
 
 def export_to_warned_risk_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
     objs = Partner.objects.select_related().filter(
         vendor_filter &
@@ -869,6 +912,12 @@ def export_to_warned_risk_partners(self):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.params["project"]) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(self.params["project"]) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(self.params["project"]) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(self.params["project"]) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
             
@@ -933,12 +982,19 @@ def export_to_warned_risk_partners(self):
 
 def export_warned_risk_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
     objs = Partner.objects.select_related().filter(
         vendor_filter &
@@ -1008,6 +1064,12 @@ def export_warned_risk_partners(self):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.params["project"]) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(self.params["project"]) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(self.params["project"]) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(self.params["project"]) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
@@ -1092,12 +1154,19 @@ def export_warned_risk_partners(self):
 
 def export_to_terminated_risk_partners(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
         
     objs = Partner.objects.select_related().filter(
         vendor_filter &
@@ -1172,6 +1241,12 @@ def export_to_terminated_risk_partners(self):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.params["project"]) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(self.params["project"]) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(self.params["project"]) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(self.params["project"]) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
@@ -1241,12 +1316,20 @@ def export_to_terminated_risk_partners(self):
 
 def export_delivery_confirms(self):
     vendor_filter = Q()
-    if str(self.params["project"]) == "diger":
+    
+    if str(self.request.query_params.get('project')) == "diger":
         vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-    elif str(self.params["project"]) == "kizilbuk":
+    elif str(self.request.query_params.get('project')) == "kizilbuk":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    elif str(self.request.query_params.get('project')) == "sinpas":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+    elif str(self.request.query_params.get('project')) == "kasaba":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+    elif str(self.request.query_params.get('project')) == "servet":
+        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
     else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params["project"]))
+        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
 
     objs = Partner.objects.select_related().filter(
         vendor_filter &
@@ -1298,6 +1381,12 @@ def export_delivery_confirms(self):
             vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.params["project"]) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
+        elif str(self.params["project"]) == "sinpas":
+            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+        elif str(self.params["project"]) == "kasaba":
+            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+        elif str(self.params["project"]) == "servet":
+            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         

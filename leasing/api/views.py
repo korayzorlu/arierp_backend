@@ -337,6 +337,12 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -400,6 +406,12 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -461,6 +473,12 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -530,6 +548,12 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -616,6 +640,12 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -706,6 +736,12 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -767,6 +803,12 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
@@ -825,6 +867,12 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
         elif str(self.request.query_params.get('project')) == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
