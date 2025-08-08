@@ -411,7 +411,14 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+            (
+                Q(partner_contracts__contract_leases__overdue_31_60__gt=1000) |
+                Q(partner_contracts__contract_leases__overdue_61_90__gt=1000) |
+                Q(partner_contracts__contract_leases__overdue_91_120__gt=1000) |
+                Q(partner_contracts__contract_leases__overdue_121_150__gt=1000) |
+                Q(partner_contracts__contract_leases__overdue_151_180__gt=1000) |
+                Q(partner_contracts__contract_leases__overdue_181_gte__gt=1000)
+            )
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),

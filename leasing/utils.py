@@ -1275,6 +1275,7 @@ def export_delivery_confirms(self):
         "Sözleşme No": [],
         "Tahsilat Oranı": [],
         "Gecikmiş Bakiye": [],
+        "Para Birimi": [],
         "Blok": [],
         "Bağımsız Bölüm": [],
         "Müşteri İsmi": [],
