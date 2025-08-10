@@ -45,10 +45,11 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
                 {"type" : "item", "class" : "free", "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
+                {"type" : "item", "class" : "free", "label" : "Kaporalar", "icon" : "policy", "route" : "/deposit-partners"},
                 #{"type" : "item", "class" : "free", "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},
                 {"type" : "item", "class" : "free", "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
                 {"type" : "item", "class" : "free", "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
-                {"type" : "item", "class" : "free", "label" : "Yönetici Özeti", "icon" : "policy", "route" : "/summary"},
+                #{"type" : "item", "class" : "free", "label" : "Yönetici Özeti", "icon" : "policy", "route" : "/summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},

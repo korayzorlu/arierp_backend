@@ -17,6 +17,7 @@ router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
 router.register(r'delivery_confirms',DeliveryConfirmList, "delivery_confirms_api")
+router.register(r'deposit_partners',DepositPartnerList, "deposit_partners_api")
 
 ####out api
 router.register(r'kizilbuk_risk_partners',OutRiskPartnerList, "kizilbuk_risk_partners_api")

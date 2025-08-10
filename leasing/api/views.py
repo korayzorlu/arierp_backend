@@ -900,7 +900,75 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
     
+class DepositPartnerList(ModelViewSet, QueryListAPIView):
+    serializer_class = DepositPartnerListSerializer
+    filterset_class = DepositPartnerFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['name','tc_vkn_no','crm_code']
+    ordering = ['name']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
 
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        user = self.request.user
+        active_company_uuid = self.request.query_params.get('ac')
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+        is_kdv = self.request.query_params.get('kdv')
+
+        custom_related_fields = ["country","billing_country"]
+
+        contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
+
+        vendor_filter = Q()
+        if str(self.request.query_params.get('project')) == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif str(self.request.query_params.get('project')) == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif str(self.request.query_params.get('project')) == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif str(self.request.query_params.get('project')) == "kasaba":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        elif str(self.request.query_params.get('project')) == "servet":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__paid__lte=10000) &
+            Q(partner_contracts__contract_leases__paid__gte=1000)
+        ).exclude(types__contains=["special"]).distinct()
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["country__name","billing__country"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+  
 
 
 ####out api
