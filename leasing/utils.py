@@ -719,7 +719,11 @@ def export_risk_partners(self):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             )
-        ).order_by("-overdue_amount")
+        ).order_by("-overdue_amount").exclude(
+             Q(contract__partner__types__contains=["special"]) |
+             Q(contract__partner__types__contains=["barter"]) |
+             Q(contract__partner__types__contains=["virman"])
+        )
 
         # if str(self.params["project"]) == "diger":
         #     leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
@@ -936,9 +940,9 @@ def export_to_warned_risk_partners(self):
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0).exclude(
-             Q(types__contains=["special"]) |
-             Q(types__contains=["barter"]) |
-             Q(types__contains=["virman"])
+             Q(contract__partner__types__contains=["special"]) |
+             Q(contract__partner__types__contains=["barter"]) |
+             Q(contract__partner__types__contains=["virman"])
         )
 
         total_overdue_amount = Decimal("0")
