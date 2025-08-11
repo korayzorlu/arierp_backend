@@ -28,6 +28,7 @@ def fetch_purchase_payments(company):
 
     purchase_payments = PurchasePayment.objects.select_related().all()
     purchase_payments.delete()
+    company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
     purchase_payment_by_code = {l.lease.code: l for l in purchase_payments if l.lease.code}
 
@@ -62,7 +63,7 @@ def fetch_purchase_payments(company):
         else:
             new_obj_count += 1
             PurchasePayment.objects.create(
-                company=Company.objects.get(id=company),
+                company=company_obj,
                 lease=Lease.objects.select_related().filter(code=str(row['Kira Planı Kodu'])).first(),
                 total_contract_amount=Decimal(str(row['Toplam Sözleşme Bedeli (İlk Sözleşme)'])) if not pd.isna(row['Toplam Sözleşme Bedeli (İlk Sözleşme)']) else Decimal("0.00"),
                 total_vendor_payment=Decimal(str(row['Satıcı Ödemeleri Toplam Tutarı'])) if not pd.isna(row['Satıcı Ödemeleri Toplam Tutarı']) else Decimal("0.00"),
