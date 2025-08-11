@@ -513,7 +513,7 @@ def export_today_partners(self):
             previous_progress = current_progress
         
         #metin = f"Bilgilendirme: Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-        metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, online ödeme sistemimizden veya EFT/Havale yoluyla gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. İyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        metin = f":  Değerli müşterimiz,Sinpaş Kızılbük projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: rig@arileasing.com.tr)Mernis No: 0147005285500018"
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
@@ -596,8 +596,8 @@ def export_tomorrow_partners(self):
             self.process.save()
             previous_progress = current_progress
         
-        metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne  ait {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemeniz yaklaşmaktadır. Ödeme gününü hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-
+        #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne  ait {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemeniz yaklaşmaktadır. Ödeme gününü hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+        metin = f"Değerli müşterimiz Sinpaş Kızılbük projesinde bulunan sözleşmelerinizin {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatmak isteriz.Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: rig@arileasing.com.tr)Mernis No: 0147005285500018"
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
         data["Crm Kodu"].append(obj.crm_code)
@@ -744,7 +744,8 @@ def export_risk_partners(self):
             if max_overdue_days > 0:
                 overdue_start_date = date.today() - timedelta(days=max_overdue_days)
 
-            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+           #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz Sinpaş Kızılbük projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: rig@arileasing.com.tr)Mernis No: 0147005285500018"
         else:
              metin = ""
 
@@ -956,7 +957,8 @@ def export_to_warned_risk_partners(self):
             if max_overdue_days > 0:
                 overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
-            metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz Sinpaş Kızılbük projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün itibari ile ihtarname süreci başlatılmış olup, ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz .ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: rig@arileasing.com.tr)Mernis No: 0147005285500018"
         else:
              metin = ""
 
