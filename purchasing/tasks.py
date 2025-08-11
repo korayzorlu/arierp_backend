@@ -27,11 +27,13 @@ def fetch_purchase_payments(company):
     df = pd.DataFrame(file_data)
 
     purchase_payments = PurchasePayment.objects.select_related().all()
+    purchase_payments.delete()
 
     purchase_payment_by_code = {l.lease.code: l for l in purchase_payments if l.lease.code}
 
     previous_progress = 0
     old_obj_count = 0
+    new_obj_count = 0
     for index,row in df.iterrows():
         current_progress = ((index + 1)/len(df))*100
 
@@ -58,6 +60,7 @@ def fetch_purchase_payments(company):
             obj.purchasing = int(row['satinalma']) if not pd.isna(row['satinalma']) else 0
             obj.save()
         else:
+            new_obj_count += 1
             PurchasePayment.objects.create(
                 company=Company.objects.get(id=company),
                 lease=Lease.objects.select_related().filter(code=str(row['Kira Planı Kodu'])).first(),
@@ -67,4 +70,4 @@ def fetch_purchase_payments(company):
                 purchasing=int(row['satinalma']) if not pd.isna(row['satinalma']) else 0
             )
 
-    print(f"{old_obj_count} objects updated for leases.")
+    print(f"{new_obj_count} objects created and {old_obj_count} objects updated for leases.")
