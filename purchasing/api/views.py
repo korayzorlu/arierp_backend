@@ -122,7 +122,7 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
         
         custom_related_fields = ["company"]
 
-        queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-lease__code")
+        queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("lease__contract__code")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
