@@ -328,31 +328,32 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
             active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
-
-        contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
+        # Use prefetch_related for partner_contracts to reduce DB hits
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__contract_warning_notices", "partner_contracts__vendor"]
 
         vendor_filter = Q()
-        if str(self.request.query_params.get('project')) == "diger":
+        project_param = str(self.request.query_params.get('project'))
+        if project_param == "diger":
             vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(self.request.query_params.get('project')) == "kizilbuk":
+        elif project_param == "kizilbuk":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(self.request.query_params.get('project')) == "sinpas":
+        elif project_param == "sinpas":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(self.request.query_params.get('project')) == "kasaba":
+        elif project_param == "kasaba":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
-        elif str(self.request.query_params.get('project')) == "servet":
+        elif project_param == "servet":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
         else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
+            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None) &
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
             vendor_filter &
             (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_warning_notices__isnull=True) &
@@ -362,7 +363,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-        ).exclude(types__contains=["special"])
+        ).exclude(types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
         if query:

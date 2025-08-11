@@ -10,9 +10,9 @@ class MenuItemListSerializer(serializers.Serializer):
     def get_menu_items(self, obj):
         menu_items = [
             {"type" : "item", "class" : "free", "label" : "Kontrol Paneli", "icon" : "dashboard", "route" : "/dashboard"},
-            {"type" : "sub_menu", "class" : "free", "label" : "Organizasyon", "icon" : "organization", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Firmalar", "icon" : "badge", "route" : "/companies"},
-                {"type" : "item", "class" : "free", "label" : "Davetiyeler", "icon" : "mail", "route" : "/invitations"}
+            {"type" : "sub_menu", "class" : "enterprise", "label" : "Organizasyon", "icon" : "organization", "items" : [
+                {"type" : "item", "class" : "enterprise", "label" : "Firmalar", "icon" : "badge", "route" : "/companies"},
+                {"type" : "item", "class" : "enterprise", "label" : "Davetiyeler", "icon" : "mail", "route" : "/invitations"}
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Partner", "icon" : "handshake", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
@@ -27,6 +27,9 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : "free", "label" : "Kira Planı", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
+            ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "paid", "items" : [
+                {"type" : "item", "class" : "free", "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},

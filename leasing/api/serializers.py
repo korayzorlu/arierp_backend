@@ -326,8 +326,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
-    max_overdue_days = serializers.SerializerMethodField()
-    total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
@@ -353,87 +351,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
         else:
             return ""
     
-    def get_max_overdue_days(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        vendor_filter = Q()
-        if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(filter_params.get('project')) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-        elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter &
-            Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
-            Q(overdue_days__gt=0) &
-            Q(overdue_days__lte=30) &
-            Q(contract__contract_warning_notices__isnull=True) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff = False)
-        )
-
-        overdue_days = 0
-        for lease in leases:
-            if lease.overdue_days > overdue_days:
-                overdue_days = lease.overdue_days
-        return overdue_days
-    
-    def get_total_overdue_amount(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        vendor_filter = Q()
-        if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(filter_params.get('project')) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-        elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter &
-            Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
-            Q(overdue_days__gt=0) &
-            Q(overdue_days__lte=30) &
-            Q(contract__contract_warning_notices__isnull=True) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff = False)
-        )
-
-        overdue_amount = 0
-        for lease in leases:
-            overdue_amount += lease.overdue_amount
-        return overdue_amount
-    
     def get_leases(self, obj):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
@@ -452,7 +369,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
         
-        leases = Lease.objects.select_related().filter(
+        leases = Lease.objects.select_related("contract","contract__partner").filter(
             Q(contract__partner = obj) &
             vendor_filter &
             Q(contract__partner = obj) &
@@ -476,7 +393,16 @@ class RiskPartnerListSerializer(serializers.Serializer):
         # else:
         #     leases = leases.filter(contract__vendor__crm_code=str(filter_params.get('project')))
 
-        lease_list = []
+        max_overdue_days = 0
+        for lease in leases:
+            if lease.overdue_days > max_overdue_days:
+                max_overdue_days = lease.overdue_days
+
+        total_overdue_amount = 0
+        for lease in leases:
+            total_overdue_amount += lease.overdue_amount
+
+        lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount, "max_overdue_days": max_overdue_days }
         if leases:
             for lease in leases:
 
@@ -489,7 +415,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 else:
                     status = "SMS"
 
-                lease_list.append({
+                lease_dict["leases"].append({
                     "id" : lease.uuid,
                     "code" : lease.code,
                     "contract" : lease.contract.code if lease.contract else "",
@@ -520,7 +446,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
                         }
                     ]
                 })
-        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
+        return lease_dict
 
 class RiskPartnerKDVListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
