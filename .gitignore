@@ -6,6 +6,9 @@
 # Ignore Toolkit File
 # toolkit.md
 
+# Ignore word
+word/
+
 # Ignore Log File
 debug.log
 
