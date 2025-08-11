@@ -733,6 +733,7 @@ def export_risk_partners(self):
         #     leases = leases.filter(contract__vendor__crm_code=str(self.params["project"]))
         
         total_overdue_amount = 0
+        max_overdue_days = 0
         overdue_start_date = None
         if leases:
             max_overdue_days = 0
@@ -946,6 +947,7 @@ def export_to_warned_risk_partners(self):
         )
 
         total_overdue_amount = Decimal("0")
+        max_overdue_days = 0
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
@@ -1118,6 +1120,7 @@ def export_warned_risk_partners(self):
         )
 
         total_overdue_amount = Decimal("0")
+        max_overdue_days = 0
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
@@ -1283,10 +1286,6 @@ def export_to_terminated_risk_partners(self):
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
-                if lease.overdue_days > max_overdue_days:
-                    max_overdue_days = lease.overdue_days
-            if max_overdue_days > 0:
-                overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
             metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:

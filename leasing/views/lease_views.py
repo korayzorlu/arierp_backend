@@ -245,7 +245,15 @@ class OverdueInformationView(LoginRequiredMixin,View):
     
 class ExportTodayPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="TodayPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-bugün-ödemesi-olanlar.xlsx", export_url="/leasing/today_partners_excel")
+        data = json.loads(request.body)
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="TodayPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-bugün-ödemesi-olanlar.xlsx",
+            export_url="/leasing/today_partners_excel",
+            params={"project": data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
@@ -269,7 +277,15 @@ class TodayPartnersExcelView(LoginRequiredMixin,View):
     
 class ExportTomorrowPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="TomorrowPartner", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-yarın-ödemesi-olanlar.xlsx", export_url="/leasing/tomorrow_partners_excel")
+        data = json.loads(request.body)
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="TomorrowPartner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-yarın-ödemesi-olanlar.xlsx",
+            export_url="/leasing/tomorrow_partners_excel",
+            params={"project":data.get('project')}
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
