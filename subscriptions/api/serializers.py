@@ -28,12 +28,10 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
             ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Tahsilat", "icon" : "paid", "items" : [
+            {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/collectionss"},
-            ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Satın Alma", "icon" : "real_estate_agent", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
