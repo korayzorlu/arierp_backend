@@ -81,7 +81,7 @@ INSTALLED_APPS = [
     "ledger",
     "trade",
     "projects",
-    
+    "purchasing",
 ]
 
 MIDDLEWARE = [

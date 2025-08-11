@@ -33,8 +33,8 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/collectionss"},
             ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Satın Alma", "icon" : "unknown", "items" : [
-                {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/vendor-payments"},
+            {"type" : "sub_menu", "class" : "free", "label" : "Satın Alma", "icon" : "real_estate_agent", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
