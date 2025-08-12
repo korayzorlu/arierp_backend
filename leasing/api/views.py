@@ -984,6 +984,87 @@ class DepositPartnerList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
   
+class AgreedTerminatedPartnerList(ModelViewSet, QueryListAPIView):
+    serializer_class = AgreedTerminatedPartnerListSerializer
+    filterset_class = AgreedTerminatedPartnerFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        user = self.request.user
+        active_company_uuid = self.request.query_params.get('ac')
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+        is_kdv = self.request.query_params.get('kdv')
+
+        # Use prefetch_related for partner_contracts to reduce DB hits
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__contract_warning_notices", "partner_contracts__vendor"]
+
+        vendor_filter = Q()
+        project_param = str(self.request.query_params.get('project'))
+        if project_param == "diger":
+            vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        elif project_param == "kizilbuk":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
+        elif project_param == "sinpas":
+            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
+        elif project_param == "kasaba":
+            vendor_filter = (
+                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
+        elif project_param == "servet":
+            vendor_filter = (
+                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+            )
+        else:
+            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
+
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            vendor_filter &
+            (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_warning_notices__isnull=True) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=0) &
+            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(types__contains=["special"]).distinct()
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["country__name","billing__country"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
 
 
 ####out api
