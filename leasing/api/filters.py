@@ -173,7 +173,7 @@ class RiskPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
+    #project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -214,17 +214,17 @@ class RiskPartnerFilter(FilterSet):
         else:
             return queryset.exclude(types__contains=["virman"])
         
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
+    # def filter_project(self, queryset, project, value):
+    #     if str(value) == "diger":
+    #         return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+    #     elif str(value) == "kizilbuk":
+    #         return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
+    #     elif str(value) == "sinpas":
+    #         return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
+    #     elif str(value) == "servet":
+    #         return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
+    #     else:
+    #         return queryset.filter(partner_contracts__vendor__crm_code=value)
         
 class RiskPartnerKDVFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -233,7 +233,6 @@ class RiskPartnerKDVFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -274,17 +273,7 @@ class RiskPartnerKDVFilter(FilterSet):
         else:
             return queryset.exclude(types__contains=["virman"])
         
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
+    
 
 class ToWarnedRiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -293,7 +282,6 @@ class ToWarnedRiskPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -334,17 +322,7 @@ class ToWarnedRiskPartnerFilter(FilterSet):
         else:
             return queryset.exclude(types__contains=["virman"])
         
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
+    
 
 class WarnedRiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -353,7 +331,6 @@ class WarnedRiskPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -393,18 +370,6 @@ class WarnedRiskPartnerFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
 
 class ToTerminatedRiskPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -414,7 +379,6 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     overdue_terminated = CharFilter(method = 'filter_overdue_terminated')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -462,17 +426,7 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
         else:
             return queryset.filter() 
         
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
+   
 
 class TomorrowPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -481,7 +435,6 @@ class TomorrowPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     tomorrow = CharFilter(method = 'filter_tomorrow')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -509,18 +462,6 @@ class TomorrowPartnerFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
         
 class TodayPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -529,7 +470,6 @@ class TodayPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     today = CharFilter(method = 'filter_today')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -557,18 +497,6 @@ class TodayPartnerFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
         
 class DeliveryConfirmFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -577,7 +505,6 @@ class DeliveryConfirmFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -617,18 +544,6 @@ class DeliveryConfirmFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
         
 class DepositPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -637,7 +552,6 @@ class DepositPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -677,18 +591,6 @@ class DepositPartnerFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
 
 class AgreedTerminatedPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
@@ -697,7 +599,6 @@ class AgreedTerminatedPartnerFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
-    project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -737,16 +638,4 @@ class AgreedTerminatedPartnerFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
-    def filter_project(self, queryset, project, value):
-        if str(value) == "diger":
-            return queryset.exclude(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(value) == "kizilbuk":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif str(value) == "sinpas":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["1202"])
-        elif str(value) == "servet":
-            return queryset.filter(partner_contracts__vendor__crm_code__in=["6548"])
-        else:
-            return queryset.filter(partner_contracts__vendor__crm_code=value)
   

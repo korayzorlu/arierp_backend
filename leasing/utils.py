@@ -466,9 +466,15 @@ def export_today_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
         
@@ -550,9 +556,15 @@ def export_tomorrow_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
 
@@ -633,9 +645,15 @@ def export_risk_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
 
@@ -697,10 +715,16 @@ def export_risk_partners(self):
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(self.params["project"]) == "sinpas":
             vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params["project"]) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(self.params["project"]) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+        elif str(self.params['project']) == "kasaba":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
+        elif str(self.params['project']) == "servet":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
 
@@ -785,9 +809,15 @@ def export_kdv_risk_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
 
@@ -864,9 +894,15 @@ def export_to_warned_risk_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
 
@@ -920,10 +956,16 @@ def export_to_warned_risk_partners(self):
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(self.params["project"]) == "sinpas":
             vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params["project"]) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(self.params["project"]) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+        elif str(self.params['project']) == "kasaba":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
+        elif str(self.params['project']) == "servet":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
             
@@ -998,9 +1040,15 @@ def export_warned_risk_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
 
@@ -1074,10 +1122,16 @@ def export_warned_risk_partners(self):
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(self.params["project"]) == "sinpas":
             vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params["project"]) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(self.params["project"]) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+        elif str(self.params['project']) == "kasaba":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
+        elif str(self.params['project']) == "servet":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
@@ -1171,9 +1225,15 @@ def export_to_terminated_risk_partners(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
         
@@ -1252,10 +1312,16 @@ def export_to_terminated_risk_partners(self):
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(self.params["project"]) == "sinpas":
             vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params["project"]) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(self.params["project"]) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+        elif str(self.params['project']) == "kasaba":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
+        elif str(self.params['project']) == "servet":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
@@ -1329,9 +1395,15 @@ def export_delivery_confirms(self):
     elif str(self.params['project']) == "sinpas":
         vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
     elif str(self.params['project']) == "kasaba":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+        )
     elif str(self.params['project']) == "servet":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+        vendor_filter = (
+            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+        )
     else:
         vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
 
@@ -1388,10 +1460,16 @@ def export_delivery_confirms(self):
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(self.params["project"]) == "sinpas":
             vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params["project"]) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
-        elif str(self.params["project"]) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+        elif str(self.params['project']) == "kasaba":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
+        elif str(self.params['project']) == "servet":
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         

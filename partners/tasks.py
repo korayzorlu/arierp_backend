@@ -330,7 +330,7 @@ def fetch_partners(company):
                 obj.sector = sectors_dict.get(data["MainSectorId"])
                 obj.vat_office = data["TaxDepartmentName"] or ""
                 obj.vat_no = str(data["CommercialTaxNo"]) or ""
-                obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
+                #obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
                 obj.address = data["Address"] or ""
                 obj.city = cities_dict.get(normalize(data["CityName"]))
                 obj.country = countries_dict.get(data["CountryCode"])
@@ -568,23 +568,24 @@ def fetch_phone_numbers(company):
     file_data = pd.read_excel("files/musteri-tel-no.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
+    leases = Lease.objects.select_related("contract__partner").all()
+
+    lease_by_code = {l.code: l for l in leases if l.code}
+
     previous_progress = 0
     for index,row in df.iterrows():
-        current_progress = ((index + 1)/30000)*100
+        current_progress = ((index + 1)/len(df))*100
 
         if current_progress - previous_progress >= 1:
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
 
-        objs = Lease.objects.select_related().filter(
-            Q(code = str(row['OperationProjectCode']))
-        )
-        if objs:
-            for obj in objs:
-                partner = obj.contract.partner
-                if partner and not pd.isna(row['CommunicationValue']):
-                    partner.phone_number = str(row['CommunicationValue'])
-                    partner.save()
+        obj = (lease_by_code.get(str(row["OperationProjectCode"])))
+
+        partner = obj.contract.partner
+        if partner and not pd.isna(row['CommunicationValue']):
+            partner.phone_number = str(row['CommunicationValue'])
+            partner.save()
 
     excel_file = pd.ExcelFile("files/musteri-tel-no.xlsx")
     sheet_name = excel_file.sheet_names[1]
@@ -592,22 +593,23 @@ def fetch_phone_numbers(company):
     file_data = pd.read_excel("files/musteri-tel-no.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
+    partners = Partner.objects.select_related().all()
+
+    partner_by_code = {l.crm_code: l for l in partners if l.crm_code}
+
     previous_progress = 0
     for index,row in df.iterrows():
-        current_progress = ((index + 1)/3000)*100
+        current_progress = ((index + 1)/len(df))*100
 
         if current_progress - previous_progress >= 1:
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
 
-        objs = Partner.objects.select_related().filter(
-            Q(crm_code = str(row['CustomerId']))
-        )
-        if objs:
-            for obj in objs:
-                if not pd.isna(row['Phone']):
-                    obj.phone_number = str(row['Phone']) if not pd.isna(row['Phone']) else ""
-                    obj.save()
-                if not pd.isna(row['Email']):
-                    obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
-                    obj.save()
+        obj = (partner_by_code.get(str(row["CustomerId"])))
+
+        if not pd.isna(row['Phone']):
+            obj.phone_number = str(row['Phone']) if not pd.isna(row['Phone']) else ""
+            obj.save()
+        if not pd.isna(row['Email']):
+            obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
+            obj.save()
