@@ -341,9 +341,15 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         elif project_param == "sinpas":
             vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
         elif project_param == "kasaba":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
+                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif project_param == "servet":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
 
@@ -400,7 +406,8 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         vendor_filter = Q()
         if str(self.request.query_params.get('project')) == "diger":
@@ -416,7 +423,7 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -467,7 +474,8 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         vendor_filter = Q()
         if str(self.request.query_params.get('project')) == "diger":
@@ -483,7 +491,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -542,7 +550,8 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         vendor_filter = Q()
         if str(self.request.query_params.get('project')) == "diger":
@@ -558,7 +567,7 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -631,7 +640,8 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         #after_60_days = datetime.today() + timedelta(days=60)
         #after_30_days = datetime.today() + timedelta(days=30)
@@ -650,7 +660,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -730,7 +740,8 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         vendor_filter = Q()
         if str(self.request.query_params.get('project')) == "diger":
@@ -746,7 +757,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -795,7 +806,8 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         tomorrow = date.today() + timedelta(days=1)
 
@@ -813,7 +825,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -859,7 +871,8 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         today = date.today()
 
@@ -877,7 +890,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (
@@ -929,7 +942,8 @@ class DepositPartnerList(ModelViewSet, QueryListAPIView):
             active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
-        custom_related_fields = ["country","billing_country"]
+        custom_related_fields = []
+        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
         contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
 
@@ -947,7 +961,7 @@ class DepositPartnerList(ModelViewSet, QueryListAPIView):
         else:
             vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.request.query_params.get('project')))
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter &
             (

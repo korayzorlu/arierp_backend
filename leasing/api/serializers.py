@@ -363,13 +363,19 @@ class RiskPartnerListSerializer(serializers.Serializer):
         elif str(filter_params.get('project')) == "sinpas":
             vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
         
-        leases = Lease.objects.select_related("contract","contract__partner").filter(
+        leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
             Q(contract__partner = obj) &
             vendor_filter &
             Q(contract__partner = obj) &
@@ -562,7 +568,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
-        leases = Lease.objects.select_related().filter(
+        leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
             Q(contract__partner = obj) &
             vendor_filter &
             (
@@ -574,7 +580,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             Q(contract__contract_leases__overdue_amount__gt=100)
         ).order_by("-overdue_days")
 
-        lease_list = []
+        lease_list = {"leases": [], "total_overdue_amount": Decimal("0"), "max_overdue_days": 0}
         if leases:
             for lease in leases:
                 installments = lease.lease_installments.all()
