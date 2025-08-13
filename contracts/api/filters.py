@@ -10,6 +10,7 @@ from .serializers import *
 class ContractFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     code = CharFilter(method = 'filter_code')
+    name = CharFilter(method = 'filter_name')
 
     class Meta:
         model = Contract
@@ -20,6 +21,8 @@ class ContractFilter(FilterSet):
     
     def filter_code(self, queryset, code, value):
         return queryset.filter(code = value)
+    
+    
 
 class ContractPaymentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
@@ -43,6 +46,8 @@ class ContractPaymentFilter(FilterSet):
     
     def filter_currency(self, queryset, currency, value):
         return queryset.annotate(lowercase=Lower('currency__code'),uppercase=Upper('currency__code')).filter(Q(lowercase = value) | Q(uppercase = value))
+    
+    
     
     def filter_ledger_account_name(self, queryset, ledger_account_name, value):
         return queryset.annotate(lowercase=Lower('ledger_account_name'),uppercase=Upper('ledger_account_name')).filter(
@@ -86,7 +91,7 @@ class WarningNoticeFilter(FilterSet):
     state = CharFilter(method = 'filter_state')
     approval_state = CharFilter(method = 'filter_approval_state')
     currency = CharFilter(method = 'filter_currency')
-    partner = CharFilter(method = 'filter_partner')
+    partner_name = CharFilter(method = 'filter_partner_name')
     partner_crm_code = CharFilter(method = 'filter_partner_crm_code')
 
     class Meta:
@@ -102,7 +107,7 @@ class WarningNoticeFilter(FilterSet):
     def filter_currency(self, queryset, currency, value):
         return queryset.annotate(lowercase=Lower('contract__currency__code'),uppercase=Upper('contract__currency__code')).filter(Q(lowercase = value) | Q(uppercase = value))
     
-    def filter_partner(self, queryset, partner, value):
+    def filter_partner_name(self, queryset, partner, value):
         return queryset.annotate(lowercase=Lower('contract__partner__name'),uppercase=Upper('contract__partner__name')).filter(
             Q(lowercase__icontains = value) |
             Q(uppercase__icontains = value)

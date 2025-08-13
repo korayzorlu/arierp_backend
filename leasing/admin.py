@@ -7,7 +7,7 @@ from .models import Lease,Installment,BankActivity,BankActivityLease
 
 @admin.register(Lease)
 class LeaseAdmin(admin.ModelAdmin):
-    list_display = ["company","lease_id","code","partner","activation_date"]
+    list_display = ["company","lease_id","code","partner","activation_date","lease_status"]
     list_display_links = ["code"]
     search_fields = ["company__name","lease_id","code","contract__partner__name","activation_date"]
     list_filter = []

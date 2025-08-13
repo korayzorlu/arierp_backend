@@ -889,13 +889,14 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
-            Q(contract__contract_leases__overdue_days__gt=30) &
-            Q(contract__contract_leases__overdue_amount__gt=1000)
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -948,13 +949,14 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
-            Q(contract__contract_leases__overdue_days__gt=30) &
-            Q(contract__contract_leases__overdue_amount__gt=1000)
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -1010,6 +1012,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
