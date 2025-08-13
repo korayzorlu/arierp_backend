@@ -357,11 +357,12 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(company=active_company.company if active_company else None) &
             vendor_filter &
             (
-            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-            Q(partner_contracts__contract_leases__lease_status='planlandi') |
-            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_warning_notices__isnull=True) &
             Q(partner_contracts__contract_leases__overdue_days__gt=0) &
             Q(partner_contracts__contract_leases__overdue_days__lte=30) &
@@ -500,6 +501,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
             (
                 Q(partner_contracts__contract_leases__overdue_31_60__gt=1000) |
@@ -577,6 +579,7 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ) &
             Q(partner_contracts__contract_leases__is_last_project=True) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
@@ -674,6 +677,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_warning_notices__state='Geçerli')
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
@@ -834,6 +838,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
@@ -899,6 +904,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=today)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')

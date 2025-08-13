@@ -7,7 +7,7 @@ from .models import Lease,Installment,BankActivity,BankActivityLease
 
 @admin.register(Lease)
 class LeaseAdmin(admin.ModelAdmin):
-    list_display = ["company","lease_id","code","partner","activation_date","lease_status"]
+    list_display = ["company","partner","lease_id","code","project","activation_date","lease_status"]
     list_display_links = ["code"]
     search_fields = ["company__name","lease_id","code","contract__partner__name","activation_date"]
     list_filter = []
@@ -20,6 +20,9 @@ class LeaseAdmin(admin.ModelAdmin):
     
     def partner(self,obj):
         return obj.contract.partner.name if obj.contract.partner else ""
+    
+    def project(self,obj):
+        return obj.contract.project if obj.contract else ""
     
     class Meta:
         model = Lease

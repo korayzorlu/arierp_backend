@@ -389,7 +389,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
+            Q(is_kdv_diff = False) &
+            Q(is_credit=False)
         ).order_by("-overdue_days")
 
         # if str(filter_params.get('project')) == "diger":
@@ -699,6 +700,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -738,6 +740,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -776,6 +779,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -895,6 +899,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -955,6 +960,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -1014,6 +1020,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -1172,6 +1179,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
@@ -1236,6 +1244,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
@@ -1299,6 +1308,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
             Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
@@ -1647,6 +1657,7 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_credit=False) &
             Q(lease_installments__payment_date=tomorrow)
         )
 
@@ -1683,6 +1694,7 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_credit=False) &
             Q(lease_installments__payment_date=tomorrow)
         ).order_by("-overdue_days")
 
@@ -1766,6 +1778,7 @@ class TodayPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_credit=False) &
             Q(lease_installments__payment_date=today)
         )
 
@@ -1802,6 +1815,7 @@ class TodayPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_credit=False) &
             Q(lease_installments__payment_date=today)
         ).order_by("-overdue_days")
 
