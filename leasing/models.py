@@ -169,6 +169,7 @@ class Lease(models.Model):
     is_processed = models.BooleanField(default=False)
 
     is_kdv_diff = models.BooleanField(default=False)
+    is_agreed_terminated = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

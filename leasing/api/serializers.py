@@ -501,12 +501,12 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=True) &
-            Q(contract__contract_leases__overdue_amount__gt=100)
+            Q(is_kdv_diff=True) &
+            Q(overdue_amount__gt=100)
         )
 
         overdue_days = 0
@@ -537,12 +537,12 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=True) &
-            Q(contract__contract_leases__overdue_amount__gt=100)
+            Q(is_kdv_diff=True) &
+            Q(overdue_amount__gt=100)
         )
 
         overdue_amount = 0
@@ -572,15 +572,15 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=True) &
-            Q(contract__contract_leases__overdue_amount__gt=100)
+            Q(is_kdv_diff=True) &
+            Q(overdue_amount__gt=100)
         ).order_by("-overdue_days")
 
-        lease_list = {"leases": [], "total_overdue_amount": Decimal("0"), "max_overdue_days": 0}
+        lease_list = []
         if leases:
             for lease in leases:
                 installments = lease.lease_installments.all()
@@ -1006,13 +1006,13 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
-            Q(contract__contract_leases__overdue_days__gt=30) &
-            Q(contract__contract_leases__overdue_amount__gt=1000)
+            Q(is_kdv_diff=False) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -1160,18 +1160,18 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
             (
                 Q(contract__contract_warning_notices__state='Yeni') |
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(is_kdv_diff=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            Q(contract__contract_leases__overdue_days__gt=30) &
-            Q(contract__contract_leases__overdue_amount__gt=1000)
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -1224,18 +1224,18 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
             (
                 Q(contract__contract_warning_notices__state='Yeni') |
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(is_kdv_diff=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            Q(contract__contract_leases__overdue_days__gt=30) &
-            Q(contract__contract_leases__overdue_amount__gt=1000)
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -1287,18 +1287,18 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
             (
                 Q(contract__contract_warning_notices__state='Yeni') |
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
+            Q(is_kdv_diff=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            Q(contract__contract_leases__overdue_days__gt=30) &
-            Q(contract__contract_leases__overdue_amount__gt=1000)
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             overdue_check=Case(
@@ -1446,13 +1446,13 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
-            Q(contract__contract_leases__paid_rate__gte=30) &
-            Q(contract__contract_leases__overdue_amount=0)
+            Q(is_kdv_diff=False) &
+            Q(paid_rate__gte=30) &
+            Q(overdue_amount=0)
         )
 
         overdue_days = 0
@@ -1483,13 +1483,13 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
-            Q(contract__contract_leases__paid_rate__gte=30) &
-            Q(contract__contract_leases__overdue_amount=0)
+            Q(is_kdv_diff=False) &
+            Q(paid_rate__gte=30) &
+            Q(overdue_amount=0)
         )
 
         overdue_amount = 0
@@ -1537,13 +1537,13 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__is_kdv_diff=False) &
-            Q(contract__contract_leases__paid_rate__gte=30) &
-            Q(contract__contract_leases__overdue_amount=0)
+            Q(is_kdv_diff=False) &
+            Q(paid_rate__gte=30) &
+            Q(overdue_amount=0)
         )
 
         lease_list = []
@@ -1640,11 +1640,11 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__lease_installments__payment_date=tomorrow)
+            Q(lease_installments__payment_date=tomorrow)
         )
 
         overdue_days = 0
@@ -1676,11 +1676,11 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__lease_installments__payment_date=tomorrow)
+            Q(lease_installments__payment_date=tomorrow)
         ).order_by("-overdue_days")
 
         lease_list = []
@@ -1759,11 +1759,11 @@ class TodayPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__lease_installments__payment_date=today)
+            Q(lease_installments__payment_date=today)
         )
 
         overdue_days = 0
@@ -1795,11 +1795,11 @@ class TodayPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             (
-                Q(contract__contract_leases__lease_status='aktiflestirildi') |
-                Q(contract__contract_leases__lease_status='planlandi') |
-                Q(contract__contract_leases__lease_status='durduruldu')
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
             ) &
-            Q(contract__contract_leases__lease_installments__payment_date=today)
+            Q(lease_installments__payment_date=today)
         ).order_by("-overdue_days")
 
         lease_list = []
@@ -2121,7 +2121,7 @@ class AgreedTerminatedPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             Q(contract__partner = obj) &
-            Q(status__name='Anlaşmalı Fesih')
+            Q(is_agreed_terminated=True)
         ).order_by("-overdue_days")
 
         # if str(filter_params.get('project')) == "diger":

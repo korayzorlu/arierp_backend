@@ -988,8 +988,8 @@ class AgreedTerminatedPartnerList(ModelViewSet, QueryListAPIView):
     serializer_class = AgreedTerminatedPartnerListSerializer
     filterset_class = AgreedTerminatedPartnerFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['name','tc_vkn_no','crm_code']
-    ordering = ['name']
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -1045,7 +1045,10 @@ class AgreedTerminatedPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
             vendor_filter &
-            Q(partner_contracts__contract_leases__status__name='Anlaşmalı Fesih')
+            Q(partner_contracts__contract_leases__is_agreed_terminated=True)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
         ).exclude(types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
