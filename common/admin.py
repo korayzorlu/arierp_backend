@@ -94,13 +94,10 @@ class MainStatusAdmin(admin.ModelAdmin):
 class StatusAdmin(admin.ModelAdmin):
     list_display = ["model","main_status","name","created_date"]
     list_display_links = ["name"]
-    search_fields = ["model__name","main_status","name","created_date"]
+    search_fields = ["model","main_status__name","name","created_date"]
     list_filter = []
     inlines = []
     ordering = ["id"]
-
-    def model(self,obj):
-        return obj.model.name if obj.model else ""
     
     class Meta:
         model = Status

@@ -2098,7 +2098,12 @@ class AgreedTerminatedPartnerListSerializer(serializers.Serializer):
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLIFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
             vendor_filter = (
                 Q(contract__vendor__crm_code__in=["28974"]) |
@@ -2116,17 +2121,7 @@ class AgreedTerminatedPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter &
             Q(contract__partner = obj) &
-            Q(overdue_amount__gt=100) &
-            Q(overdue_days__gt=0) &
-            Q(overdue_days__lte=30) &
-            Q(contract__contract_warning_notices__isnull=True) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff = False)
+            Q(status__name='Anlaşmalı Fesih')
         ).order_by("-overdue_days")
 
         # if str(filter_params.get('project')) == "diger":
