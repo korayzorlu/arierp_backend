@@ -14,7 +14,12 @@ RUN apt-get update && apt-get install -y \
     gnupg2 \
     apt-transport-https \
     ca-certificates
-RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+#RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN apt-get update && apt-get install -y gnupg curl
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc \
+    | gpg --dearmor \
+    | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+    
 RUN curl -sSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
     -o /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update && \
