@@ -534,6 +534,13 @@ def export_today_partners(self):
         data["Email"].append(obj.email if obj.email else "")
         data["Metin"].append(metin)
 
+    data["Müşteri İsmi"].append("")
+    data["TC/VKN No"].append("")
+    data["Crm Kodu"].append("")
+    data["Tel"].append("")
+    data["Email"].append("0212-310-27-21")
+    data["Metin"].append(metin)
+    
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
     
