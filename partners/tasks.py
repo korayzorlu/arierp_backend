@@ -582,10 +582,11 @@ def fetch_phone_numbers(company):
 
         obj = (lease_by_code.get(str(row["OperationProjectCode"])))
 
-        partner = obj.contract.partner
-        if partner and not pd.isna(row['CommunicationValue']):
-            partner.phone_number = str(row['CommunicationValue'])
-            partner.save()
+        if obj:
+            partner = obj.contract.partner
+            if partner and not pd.isna(row['CommunicationValue']):
+                partner.phone_number = str(row['CommunicationValue'])
+                partner.save()
 
     excel_file = pd.ExcelFile("files/musteri-tel-no.xlsx")
     sheet_name = excel_file.sheet_names[1]
@@ -607,9 +608,10 @@ def fetch_phone_numbers(company):
 
         obj = (partner_by_code.get(str(row["CustomerId"])))
 
-        if not pd.isna(row['Phone']):
-            obj.phone_number = str(row['Phone']) if not pd.isna(row['Phone']) else ""
-            obj.save()
-        if not pd.isna(row['Email']):
-            obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
-            obj.save()
+        if obj:
+            if not pd.isna(row['Phone']):
+                obj.phone_number = str(row['Phone']) if not pd.isna(row['Phone']) else ""
+                obj.save()
+            if not pd.isna(row['Email']):
+                obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
+                obj.save()
