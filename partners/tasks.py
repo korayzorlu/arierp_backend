@@ -330,7 +330,7 @@ def fetch_partners(company):
                 obj.sector = sectors_dict.get(data["MainSectorId"])
                 obj.vat_office = data["TaxDepartmentName"] or ""
                 obj.vat_no = str(data["CommercialTaxNo"]) or ""
-                #obj.phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else ""
+                obj.phone_number = str(data["Phone"]) if data["Phone"] else ""
                 obj.address = data["Address"] or ""
                 obj.city = cities_dict.get(normalize(data["CityName"]))
                 obj.country = countries_dict.get(data["CountryCode"])
@@ -364,7 +364,7 @@ def fetch_partners(company):
                     country = countries_dict.get(data["CountryCode"]),
                     city = cities_dict.get(normalize(data["CityName"])),
                     address = data["Address"] or "",
-                    phone_number = str(data["Phone"]).replace("/","") if data["Phone"] else "",
+                    phone_number = str(data["Phone"]) if data["Phone"] else "",
                     email = data["Email"] or "",
                     types = ["customer"]
                 )
