@@ -357,11 +357,26 @@ class RiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
             vendor_filter = (
                 Q(contract__vendor__crm_code__in=["28974"]) |
@@ -486,15 +501,36 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -522,15 +558,36 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -557,15 +614,36 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -679,15 +757,36 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -719,15 +818,36 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -758,15 +878,36 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -877,15 +1018,36 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -904,27 +1066,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    contract__partner__customer_type='individual',
-                    then=Case(
-                        When(overdue_days__lte=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    contract__partner__customer_type='institutional',
-                    then=Case(
-                        When(overdue_days__lte=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
+        ).filter(warning_notice_count__gt=0)
 
         overdue_days = 0
         for lease in leases:
@@ -938,15 +1080,36 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -964,28 +1127,8 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    contract__partner__customer_type='individual',
-                    then=Case(
-                        When(overdue_days__lte=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    contract__partner__customer_type='institutional',
-                    then=Case(
-                        When(overdue_days__lte=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count__gt=0)
 
         overdue_amount = 0
         for lease in leases:
@@ -998,15 +1141,36 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1024,28 +1188,8 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    contract__partner__customer_type='individual',
-                    then=Case(
-                        When(overdue_days__lte=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    contract__partner__customer_type='institutional',
-                    then=Case(
-                        When(overdue_days__lte=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count__gt=0)
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')
@@ -1154,15 +1298,36 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1219,15 +1384,36 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1283,15 +1469,36 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1443,15 +1650,36 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1480,15 +1708,36 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1534,15 +1783,36 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1636,15 +1906,36 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
             
@@ -1673,15 +1964,36 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
             
@@ -1757,15 +2069,36 @@ class TodayPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1794,15 +2127,36 @@ class TodayPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1887,15 +2241,36 @@ class DepositPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1924,15 +2299,36 @@ class DepositPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1960,15 +2356,36 @@ class DepositPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
 
@@ -1996,15 +2413,36 @@ class DepositPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["1202"]) |
+                Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
+                Q(contract__project="METROLİFE PREMİUM") |
+                Q(contract__project="METROLİFE")
+            )
         elif str(filter_params.get('project')) == "kasaba":
-            vendor_filter = Q(contract__vendor__crm_code__in=["28974"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["28974"]) |
+                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            )
         elif str(filter_params.get('project')) == "servet":
-            vendor_filter = Q(contract__vendor__crm_code__in=["6548","6546"])
+            vendor_filter = (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         else:
             vendor_filter = Q(contract__vendor__crm_code=str(filter_params.get('project')))
         
@@ -2111,15 +2549,25 @@ class AgreedTerminatedPartnerListSerializer(serializers.Serializer):
 
         vendor_filter = Q()
         if str(filter_params.get('project')) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+            vendor_filter = (
+                ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
+                ~Q(contract__vendor__crm_code__in=["1202"]) &
+                ~Q(contract__project="SAKLI KORU KONAKLARI") &
+                ~Q(contract__project="SİNPAŞ KORU AURA") &
+                ~Q(contract__project="METROLİFE PREMİUM") &
+                ~Q(contract__project="METROLİFE") &
+                ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+                ~Q(contract__project="BOULEVARD SEFAKÖY")
+            )
         elif str(filter_params.get('project')) == "kizilbuk":
             vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
         elif str(filter_params.get('project')) == "sinpas":
             vendor_filter = (
                 Q(contract__vendor__crm_code__in=["1202"]) |
                 Q(contract__project="SAKLI KORU KONAKLARI") |
+                Q(contract__project="SİNPAŞ KORU AURA") |
                 Q(contract__project="METROLİFE PREMİUM") |
-                Q(contract__project="METROLIFE")
+                Q(contract__project="METROLİFE")
             )
         elif str(filter_params.get('project')) == "kasaba":
             vendor_filter = (
