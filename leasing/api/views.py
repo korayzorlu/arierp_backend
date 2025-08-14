@@ -24,6 +24,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from leasing.utils import vendor_filter_for_views
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -332,45 +333,9 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__contract_warning_notices", "partner_contracts__vendor"]
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -425,45 +390,9 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -515,45 +444,9 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -614,45 +507,9 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -731,45 +588,9 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
         #after_60_days = datetime.today() + timedelta(days=60)
         #after_30_days = datetime.today() + timedelta(days=30)
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -851,45 +672,9 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -941,45 +726,9 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
 
         tomorrow = date.today() + timedelta(days=1)
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1029,45 +778,9 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
 
         today = date.today()
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1123,45 +836,9 @@ class DepositPartnerList(ModelViewSet, QueryListAPIView):
 
         contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="SİNPAŞ KORU AURA") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1214,43 +891,9 @@ class AgreedTerminatedPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__contract_warning_notices", "partner_contracts__vendor"]
 
-        vendor_filter = Q()
-        project_param = str(self.request.query_params.get('project'))
-        if project_param == "diger":
-            vendor_filter = (
-                ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
-                ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
-                ~Q(partner_contracts__project="SAKLI KORU KONAKLARI") &
-                ~Q(partner_contracts__project="METROLİFE PREMİUM") &
-                ~Q(partner_contracts__project="METROLİFE") &
-                ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
-                ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        elif project_param == "kizilbuk":
-            vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        elif project_param == "sinpas":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["1202"]) |
-                Q(partner_contracts__project="SAKLI KORU KONAKLARI") |
-                Q(partner_contracts__project="METROLİFE PREMİUM") |
-                Q(partner_contracts__project="METROLİFE")
-            )
-        elif project_param == "kasaba":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-                Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif project_param == "servet":
-            vendor_filter = (
-                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(partner_contracts__vendor__crm_code=project_param)
-
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
-            vendor_filter &
+            vendor_filter_for_views(self.request.query_params) &
             Q(partner_contracts__contract_leases__is_agreed_terminated=True)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
