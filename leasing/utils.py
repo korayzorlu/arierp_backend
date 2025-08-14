@@ -164,7 +164,21 @@ def vendor_filter_for_serializers(filter_params):
         )
     else:
         return Q(contract__vendor__crm_code=filter_params.get('project'))
-    
+
+def project_text(filter_params):
+    if filter_params.get('project') == "diger":
+        return "Sinpaş"
+    elif filter_params.get('project') == "kizilbuk":
+        return "Sinpaş Kızılbük"
+    elif filter_params.get('project') == "sinpas":
+        return "Sinpaş"
+    elif filter_params.get('project') == "kasaba":
+        return "Sinpaş Kasaba"
+    elif filter_params.get('project') == "servet":
+        return "Sinpaş"
+    else:
+        return "Sinpaş"
+
 def max_overdue_days(leases):
     max_overdue_days = 0
     for lease in leases:
@@ -560,37 +574,9 @@ def export_bank_activities(self):
     self.process.save()
 
 def export_today_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-        
     today = date.today()
-
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -629,7 +615,7 @@ def export_today_partners(self):
             previous_progress = current_progress
         
         #metin = f"Bilgilendirme: Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-        metin = f":  Değerli müşterimiz, {project_text} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
+        metin = f":  Değerli müşterimiz, {project_text(self.params)} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
@@ -699,37 +685,10 @@ def export_today_partners(self):
     self.process.save()
 
 def export_tomorrow_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-
     tomorrow = date.today() + timedelta(days=1)
 
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -768,7 +727,7 @@ def export_tomorrow_partners(self):
             previous_progress = current_progress
         
         #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne  ait {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemeniz yaklaşmaktadır. Ödeme gününü hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-        metin = f"Değerli müşterimiz, {project_text} projesinde bulunan sözleşmelerinizin {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatmak isteriz.Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
+        metin = f"Değerli müşterimiz, {project_text(self.params)} projesinde bulunan sözleşmelerinizin {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatmak isteriz.Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
         data["Crm Kodu"].append(obj.crm_code)
@@ -837,35 +796,8 @@ def export_tomorrow_partners(self):
     self.process.save()
 
 def export_risk_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -916,37 +848,9 @@ def export_risk_partners(self):
             self.process.save()
             previous_progress = current_progress
 
-        vendor_filter = Q()
-        if str(self.params["project"]) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-            project_text = "Sinpaş"
-        elif str(self.params["project"]) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-            project_text = "Sinpaş Kızılbük"
-        elif str(self.params["project"]) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-            project_text = "Sinpaş"
-        elif str(self.params['project']) == "kasaba":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["28974"]) |
-                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-            project_text = "Sinpaş Kasaba"
-        elif str(self.params['project']) == "servet":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["6548","6546"]) |
-                Q(contract__project="BOULEVARD SEFAKÖY")
-            )
-            project_text = "Sinpaş"
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
-            project_text = "Sinpaş"
-
-        
-
         leases = Lease.objects.select_related().filter(
-             Q(contract__partner = obj) &
-             vendor_filter &
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(self.params) &
             Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
@@ -983,7 +887,7 @@ def export_risk_partners(self):
                 overdue_start_date = date.today() - timedelta(days=max_overdue_days)
 
            #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-            metin = f"Değerli müşterimiz, {project_text} projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
+            metin = f"Değerli müşterimiz, {project_text(self.params)} projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
         else:
             metin = ""
 
@@ -1062,35 +966,8 @@ def export_risk_partners(self):
     self.process.save()
 
 def export_kdv_risk_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1154,35 +1031,8 @@ def export_kdv_risk_partners(self):
     self.process.save()
 
 def export_to_warned_risk_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1231,30 +1081,10 @@ def export_to_warned_risk_partners(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
-        
-        vendor_filter = Q()
-        if str(self.params["project"]) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(self.params["project"]) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-        elif str(self.params["project"]) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params['project']) == "kasaba":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["28974"]) |
-                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif str(self.params['project']) == "servet":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["6548","6546"]) |
-                Q(contract__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
             
         leases = Lease.objects.select_related().filter(
-             Q(contract__partner = obj) &
-             vendor_filter &
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(self.params) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -1290,7 +1120,7 @@ def export_to_warned_risk_partners(self):
                 overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
             #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-            metin = f"Değerli müşterimiz, {project_text} projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün itibari ile ihtarname süreci başlatılmış olup, ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz .ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
+            metin = f"Değerli müşterimiz, {project_text(self.params)} projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün itibari ile ihtarname süreci başlatılmış olup, ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz .ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
         else:
              metin = ""
 
@@ -1370,35 +1200,8 @@ def export_to_warned_risk_partners(self):
     self.process.save()
 
 def export_warned_risk_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1460,30 +1263,10 @@ def export_warned_risk_partners(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
-
-        vendor_filter = Q()
-        if str(self.params["project"]) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(self.params["project"]) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-        elif str(self.params["project"]) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params['project']) == "kasaba":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["28974"]) |
-                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif str(self.params['project']) == "servet":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["6548","6546"]) |
-                Q(contract__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            vendor_filter &
+            vendor_filter_for_serializers(self.params) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -1531,7 +1314,7 @@ def export_warned_risk_partners(self):
             if max_overdue_days > 0:
                 overdue_start_date = date.today() - timedelta(days=max_overdue_days)
         
-            metin = f"Değerli müşterimiz, {project_text} projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, {project_text(self.params)} projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -1610,35 +1393,8 @@ def export_warned_risk_partners(self):
     self.process.save()
 
 def export_to_terminated_risk_partners(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-        
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1705,30 +1461,10 @@ def export_to_terminated_risk_partners(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
-
-        vendor_filter = Q()
-        if str(self.params["project"]) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(self.params["project"]) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-        elif str(self.params["project"]) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params['project']) == "kasaba":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["28974"]) |
-                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif str(self.params['project']) == "servet":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["6548","6546"]) |
-                Q(contract__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
         leases = Lease.objects.select_related().filter(
-             Q(contract__partner = obj) &
-            vendor_filter &
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(self.params) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -1756,7 +1492,7 @@ def export_to_terminated_risk_partners(self):
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
         
-            metin = f"Değerli müşterimiz, {project_text} projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
+            metin = f"Değerli müşterimiz, {project_text(self.params)} projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
         else:
              metin = ""
 
@@ -1836,36 +1572,8 @@ def export_to_terminated_risk_partners(self):
     self.process.save()
 
 def export_delivery_confirms(self):
-    vendor_filter = Q()
-    
-    if str(self.params['project']) == "diger":
-        vendor_filter = ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kizilbuk":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["11802","20559"])
-        project_text = "Sinpaş Kızılbük"
-    elif str(self.params['project']) == "sinpas":
-        vendor_filter = Q(partner_contracts__vendor__crm_code__in=["1202"])
-        project_text = "Sinpaş"
-    elif str(self.params['project']) == "kasaba":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-        )
-        project_text = "Sinpaş Kasaba"
-    elif str(self.params['project']) == "servet":
-        vendor_filter = (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
-        )
-        project_text = "Sinpaş"
-    else:
-        vendor_filter = Q(partner_contracts__vendor__crm_code=str(self.params['project']))
-        project_text = "Sinpaş"
-
-
     objs = Partner.objects.select_related().filter(
-        vendor_filter &
+        vendor_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1909,30 +1617,10 @@ def export_delivery_confirms(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
-
-        vendor_filter = Q()
-        if str(self.params["project"]) == "diger":
-            vendor_filter = ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
-        elif str(self.params["project"]) == "kizilbuk":
-            vendor_filter = Q(contract__vendor__crm_code__in=["11802","20559"])
-        elif str(self.params["project"]) == "sinpas":
-            vendor_filter = Q(contract__vendor__crm_code__in=["1202"])
-        elif str(self.params['project']) == "kasaba":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["28974"]) |
-                Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
-            )
-        elif str(self.params['project']) == "servet":
-            vendor_filter = (
-                Q(contract__vendor__crm_code__in=["6548","6546"]) |
-                Q(contract__project="BOULEVARD SEFAKÖY")
-            )
-        else:
-            vendor_filter = Q(contract__vendor__crm_code=str(self.params["project"]))
         
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            vendor_filter &
+            vendor_filter_for_serializers(self.params) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
