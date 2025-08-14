@@ -76,7 +76,9 @@ def extract_contract_numbers(description):
     return contract_numbers
 
 def vendor_filter_for_views(filter_params):
-    if filter_params.get('project') == "diger":
+    if filter_params.get('project') == "all":
+        return Q()
+    elif filter_params.get('project') == "diger":
         return (
             ~Q(partner_contracts__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
             ~Q(partner_contracts__vendor__crm_code__in=["1202"]) &
@@ -88,6 +90,7 @@ def vendor_filter_for_views(filter_params):
             ~Q(partner_contracts__project="METROLIFE PREMİUM") &
             ~Q(partner_contracts__project="METROLIFE") &
             ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+            ~Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT-") &
             ~Q(partner_contracts__project="BOULEVARD SEFAKÖY")
         )
     elif filter_params.get('project') == "kizilbuk":
@@ -106,7 +109,8 @@ def vendor_filter_for_views(filter_params):
     elif filter_params.get('project') == "kasaba":
         return (
             Q(partner_contracts__vendor__crm_code__in=["28974"]) |
-            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") |
+            Q(partner_contracts__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT-")
         )
     elif filter_params.get('project') == "servet":
         return (
@@ -117,7 +121,9 @@ def vendor_filter_for_views(filter_params):
         return Q(partner_contracts__vendor__crm_code=filter_params.get('project'))
 
 def vendor_filter_for_serializers(filter_params):
-    if filter_params.get('project') == "diger":
+    if filter_params.get('project') == "all":
+        return Q()
+    elif filter_params.get('project') == "diger":
         return (
             ~Q(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"]) &
             ~Q(contract__vendor__crm_code__in=["1202"]) &
@@ -129,6 +135,7 @@ def vendor_filter_for_serializers(filter_params):
             ~Q(contract__project="METROLIFE PREMİUM") &
             ~Q(contract__project="METROLIFE") &
             ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+            ~Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT-") &
             ~Q(contract__project="BOULEVARD SEFAKÖY")
         )
     elif filter_params.get('project') == "kizilbuk":
@@ -147,7 +154,8 @@ def vendor_filter_for_serializers(filter_params):
     elif filter_params.get('project') == "kasaba":
         return (
             Q(contract__vendor__crm_code__in=["28974"]) |
-            Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT")
+            Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") |
+            Q(contract__project="SİNPAŞ KASABA THERMAL WELLNESS RESORT-")
         )
     elif filter_params.get('project') == "servet":
         return (
