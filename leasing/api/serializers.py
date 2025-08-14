@@ -618,7 +618,14 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(overdue_days__gt=30) &
-            Q(overdue_amount__gt=1000)
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            )
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0)
@@ -644,7 +651,14 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(overdue_days__gt=30) &
-            Q(overdue_amount__gt=1000)
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            )
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0)
@@ -669,7 +683,14 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(overdue_days__gt=30) &
-            Q(overdue_amount__gt=1000)
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            )
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0)
