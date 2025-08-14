@@ -619,6 +619,7 @@ def export_today_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -635,49 +636,49 @@ def export_today_partners(self):
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
-        data["Metin"].append(metin or "")
+        data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05357750255")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05332260858")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05456227095")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05548919220")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05413831801")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05534565457")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -757,6 +758,7 @@ def export_tomorrow_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -772,49 +774,49 @@ def export_tomorrow_partners(self):
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
-        data["Metin"].append(metin or "")
+        data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05357750255")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05332260858")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05456227095")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05548919220")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05413831801")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05534565457")
     data["Email"].append("")
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -905,6 +907,7 @@ def export_risk_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -990,7 +993,7 @@ def export_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin or "")
+        data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -998,7 +1001,7 @@ def export_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1006,7 +1009,7 @@ def export_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1014,7 +1017,7 @@ def export_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1022,7 +1025,7 @@ def export_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1030,7 +1033,7 @@ def export_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1038,7 +1041,7 @@ def export_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -1117,6 +1120,7 @@ def export_kdv_risk_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -1219,6 +1223,7 @@ def export_to_warned_risk_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -1295,7 +1300,7 @@ def export_to_warned_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin or "")
+        data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1303,7 +1308,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1311,7 +1316,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1319,7 +1324,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1327,7 +1332,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1335,7 +1340,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1343,7 +1348,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
 
     df = pd.DataFrame(data)
@@ -1447,6 +1452,7 @@ def export_warned_risk_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -1535,7 +1541,7 @@ def export_warned_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin or "")
+        data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1543,7 +1549,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1551,7 +1557,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1559,7 +1565,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1567,7 +1573,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1575,7 +1581,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1583,7 +1589,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -1691,6 +1697,7 @@ def export_to_terminated_risk_partners(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -1759,7 +1766,7 @@ def export_to_terminated_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin or "")
+        data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1767,7 +1774,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1775,7 +1782,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1783,7 +1790,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1791,7 +1798,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1799,7 +1806,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1807,7 +1814,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin or "")
+    data["Metin"].append(metin)
     
     
     df = pd.DataFrame(data)
@@ -1894,6 +1901,7 @@ def export_delivery_confirms(self):
     }
 
     previous_progress = 0
+    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
