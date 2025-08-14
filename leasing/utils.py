@@ -635,49 +635,49 @@ def export_today_partners(self):
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
-        data["Metin"].append(metin)
+        data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05357750255")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05332260858")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05456227095")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05548919220")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05413831801")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05534565457")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -772,49 +772,49 @@ def export_tomorrow_partners(self):
         data["Crm Kodu"].append(obj.crm_code)
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
-        data["Metin"].append(metin)
+        data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05357750255")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05332260858")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05456227095")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05548919220")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05413831801")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
     data["Crm Kodu"].append("")
     data["Tel"].append("05534565457")
     data["Email"].append("")
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -982,7 +982,7 @@ def export_risk_partners(self):
            #metin = f"Değerli müşterimiz, Sinpaş Kızılbük projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
             metin = f"Değerli müşterimiz, {project_text} projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz.ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. https://odeme.arileasing.com.tr/online-islemler//login.aspx  Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
         else:
-             metin = ""
+            metin = ""
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
@@ -990,7 +990,7 @@ def export_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin)
+        data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -998,7 +998,7 @@ def export_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1006,7 +1006,7 @@ def export_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1014,7 +1014,7 @@ def export_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1022,7 +1022,7 @@ def export_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1030,7 +1030,7 @@ def export_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1038,7 +1038,7 @@ def export_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -1295,7 +1295,7 @@ def export_to_warned_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin)
+        data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1303,7 +1303,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1311,7 +1311,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1319,7 +1319,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1327,7 +1327,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1335,7 +1335,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1343,7 +1343,7 @@ def export_to_warned_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
 
     df = pd.DataFrame(data)
@@ -1535,7 +1535,7 @@ def export_warned_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin)
+        data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1543,7 +1543,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1551,7 +1551,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1559,7 +1559,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1567,7 +1567,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1575,7 +1575,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1583,7 +1583,7 @@ def export_warned_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -1759,7 +1759,7 @@ def export_to_terminated_risk_partners(self):
         data["Tel"].append(obj.phone_number if obj.phone_number else "")
         data["Email"].append(obj.email if obj.email else "")
         data["Tutar"].append(total_overdue_amount)
-        data["Metin"].append(metin)
+        data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1767,7 +1767,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05357750255")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1775,7 +1775,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05332260858")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1783,7 +1783,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05456227095")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1791,7 +1791,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05548919220")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1799,7 +1799,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05413831801")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
 
     data["Müşteri İsmi"].append("")
     data["TC/VKN No"].append("")
@@ -1807,7 +1807,7 @@ def export_to_terminated_risk_partners(self):
     data["Tel"].append("05534565457")
     data["Email"].append("")
     data["Tutar"].append(total_overdue_amount)
-    data["Metin"].append(metin)
+    data["Metin"].append(metin or "")
     
     
     df = pd.DataFrame(data)
