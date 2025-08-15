@@ -517,9 +517,15 @@ class ManagerSummaryView(LoginRequiredMixin,View):
         
         manager_summary = [
             {   
-                'id': obj.uuid,
+                'id': 1,
+                'key': 'Normal Gecikme',
+                'value': 104626632.46
+            },
+            {   
+                'id': 2,
+                'key': 'İhtar Çekilenler',
+                'value': 35948758.94
             }
-            for obj in objs
         ]
 
-        return JsonResponse({'installment':manager_summary}, status=200)
+        return JsonResponse({'data':manager_summary}, status=200)

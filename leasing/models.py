@@ -9,6 +9,7 @@ import uuid
 from decimal import Decimal
 import re
 from itertools import chain
+from datetime import datetime,timedelta
 
 from companies.models import Company
 from common.models import Currency, Status
@@ -264,11 +265,8 @@ class BankActivity(models.Model):
                 contracts = Contract.objects.select_related().filter(
                     Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
                 )
-
-                for contract in contracts:
-                    print(f"{contract.partner.name} - {contract.code}")
                 
-                leases = Lease.objects.filter(
+                leases = Lease.objects.select_related("contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation").filter(
                     (
                         Q(contract__partner__tc_vkn_no = self.tc_vkn_no) |
                         Q(contract__quotation_obj__partner__tc_vkn_no = self.tc_vkn_no) |
@@ -354,9 +352,6 @@ class BankActivity(models.Model):
                                 bank_activity_lease.processed_amount = self.amount
                                 bank_activity_lease.leaseflex_automation = True
                                 bank_activity_lease.save()
-
-
-            
 
                 if len(contracts) > 1:
                     total_contract_ba_leases_amount = Decimal("0.00")
@@ -468,6 +463,8 @@ class BankActivity(models.Model):
                 #                 last_bank_activity_lease.processed_amount += diff_amount
                 #                 last_bank_activity_lease.save()
 
+            # self.created_date = datetime.now() - timedelta(days=1)
+            # super().save(update_fields=['created_date'])
 
             ba_leases = self.bank_activity_bank_acitivity_leases.filter(leaseflex_automation = True)
             if ba_leases:

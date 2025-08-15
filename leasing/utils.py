@@ -360,20 +360,15 @@ def import_bank_activities(self, df_json):
         self.process.items_count = len(df)
         self.process.save()
         
-        current_bank_activities = BankActivity.objects.select_related().filter()
+        current_bank_activities = BankActivity.objects.select_related().filter(created_date__date = date.today())
         if current_bank_activities:
-            for current_bank_activity in current_bank_activities:
-                current_bank_activity.delete()
+            current_bank_activities.delete()
 
         current_leases = Lease.objects.select_related().filter(leaseflex_automation = True)
         for current_lease in current_leases:
             current_lease.leaseflex_automation = False
             current_lease.processed_amount = Decimal("0")
             current_lease.save()
-
-        bank_activity_leases = BankActivity.objects.select_related().filter()
-        for bank_activity_lease in bank_activity_leases:
-            bank_activity_lease.delete()
         
         previous_progress = 0
         for index,row in df.iterrows():
@@ -411,7 +406,7 @@ def import_bank_activities(self, df_json):
                 currency = Currency.objects.select_related().filter(code = "TRY" if row["Döviz Kodu"] == "YTL" else row["Döviz Cinsi"]).first() or None,
                 name = str(row['Gönderen Ünvanı']) if not pd.isna(row['Gönderen Ünvanı']) else "",
                 description = str(row['Açıklama']) if not pd.isna(row['Açıklama']) else "",
-                tc_vkn_no = tc_vkn_no,
+                tc_vkn_no = tc_vkn_no
             )
 
             # if leases:
@@ -441,7 +436,7 @@ def import_bank_activities(self, df_json):
         self.process.save()
 
 def export_bank_activities(self):
-    bank_activities = BankActivity.objects.select_related().filter().order_by("id")
+    bank_activities = BankActivity.objects.select_related().filter(created_date__date = date.today()).order_by("id")
     objs = BankActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("bank_activity__bank_code","bank_activity__tc_vkn_no")
 
     self.process.status = "in_progress"

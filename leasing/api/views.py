@@ -244,7 +244,12 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["currency"]
 
-        queryset = BankActivity.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("tc_vkn_no")
+        today = date.today()
+
+        queryset = BankActivity.objects.select_related(*custom_related_fields).filter(
+            company = active_company.company if active_company else None,
+            created_date__date = today
+        ).order_by("tc_vkn_no")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
