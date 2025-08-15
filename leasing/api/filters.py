@@ -3,7 +3,7 @@ from django.db.models import Q,Sum
 from django.db.models.functions import Lower,Upper
 
 from django_filters.rest_framework import FilterSet
-from django_filters import CharFilter
+from django_filters import CharFilter,DateFromToRangeFilter
 from django.utils.timezone import make_aware
 from django.utils import timezone
 
@@ -149,9 +149,10 @@ class InstallmentFilter(FilterSet):
             return queryset.filter(overdue_amount__gte = 0)
         
 class BankActivityFilter(FilterSet):
+    created_date = DateFromToRangeFilter(field_name = 'created_date')
     class Meta:
         model = BankActivity
-        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description']
+        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date']
 
 class BankActivityLeaseFilter(FilterSet):
     bank_activity = CharFilter(method = 'filter_bank_activity')

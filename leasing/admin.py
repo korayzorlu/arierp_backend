@@ -53,6 +53,7 @@ class BankActivityAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["bank","bank_account_no","-process_date"]
+    autocomplete_fields = ["currency"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""

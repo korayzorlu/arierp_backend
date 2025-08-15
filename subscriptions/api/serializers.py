@@ -36,6 +36,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/collectionss"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
+                #{"type" : "item", "class" : "free", "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "report", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
@@ -51,7 +52,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
                 {"type" : "item", "class" : "free", "label" : "Anlaşmalı Fesihler", "icon" : "policy", "route" : "/agreed-terminated-partners"},
                 {"type" : "item", "class" : "free", "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
-                {"type" : "item", "class" : "free", "label" : "Yönetici Özeti", "icon" : "policy", "route" : "/manager-summary"},
+                #{"type" : "item", "class" : "free", "label" : "Yönetici Özeti", "icon" : "policy", "route" : "/manager-summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
