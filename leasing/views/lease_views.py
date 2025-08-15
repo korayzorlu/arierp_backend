@@ -22,6 +22,7 @@ from partners.models import Partner
 from contracts.models import Contract
 from companies.models import UserCompany
 from common.models import ExportProcess
+from projects.models import Project
 
 import os
 import json
@@ -504,3 +505,21 @@ class DeliveryConfirmsExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+    
+class ManagerSummaryView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        
+        objs = Project.objects.filter()
+    
+        if not objs:
+            return JsonResponse({'installment':[]}, status=200)
+        
+        manager_summary = [
+            {   
+                'id': obj.uuid,
+            }
+            for obj in objs
+        ]
+
+        return JsonResponse({'installment':manager_summary}, status=200)

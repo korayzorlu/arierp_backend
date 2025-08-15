@@ -28,7 +28,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
             ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "paid", "items" : [
+            {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
@@ -37,7 +37,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/collectionss"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
             ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "policy", "items" : [
+            {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "report", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
                 {"type" : "item", "class" : "free", "label" : "Vadesi Geçmişler", "icon" : "policy", "route" : "/risk-partners"},
                 {"type" : "item", "class" : "free", "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
@@ -51,7 +51,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
                 {"type" : "item", "class" : "free", "label" : "Anlaşmalı Fesihler", "icon" : "policy", "route" : "/agreed-terminated-partners"},
                 {"type" : "item", "class" : "free", "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
-                #{"type" : "item", "class" : "free", "label" : "Yönetici Özeti", "icon" : "policy", "route" : "/summary"},
+                {"type" : "item", "class" : "free", "label" : "Yönetici Özeti", "icon" : "policy", "route" : "/manager-summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
