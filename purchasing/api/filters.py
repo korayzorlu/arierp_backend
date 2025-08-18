@@ -14,8 +14,17 @@ from .serializers import *
 
 class PurchasePaymentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
+    lease_code = CharFilter(field_name='lease__code', lookup_expr='icontains')
+    contract = CharFilter(field_name='lease__contract__code', lookup_expr='icontains')
+    partner = CharFilter(field_name='lease__contract__partner__name', lookup_expr='icontains')
+    vendor = CharFilter(field_name='lease__contract__vendor__name', lookup_expr='icontains')
+    currency = CharFilter(field_name='lease__currency__code', lookup_expr='icontains')
+    project = CharFilter(field_name='lease__contract__project__name', lookup_expr='icontains')
+    status = CharFilter(field_name='lease__status__name', lookup_expr='icontains')
+    lease_status = CharFilter(field_name='lease__lease_status', lookup_expr='icontains')  
 
     class Meta:
         model = PurchasePayment
         fields = ['uuid']
     
+  
