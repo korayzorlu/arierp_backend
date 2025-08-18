@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum,Count,Case,When,Value,BooleanField
+from django.db.models import Sum,Count,Case,When,Value,BooleanField,Max
 from django.views import View
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.core.files.storage import default_storage
@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from leasing.models import *
-from leasing.utils import is_valid_lease_data,vendor_filter_for_serializers
+from leasing.utils import is_valid_lease_data,vendor_filter_for_serializers,vendor_filter_for_views
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
@@ -514,7 +514,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
         active_company_uuid = data.get('params').get('activeCompany').get('id')
         active_company = request.user.user_companies.filter(uuid = active_company_uuid).first()
         
-        overdue_leases = Lease.objects.select_related("contract").prefetch_related("contract__contract_warning_notices").filter(
+        overdue_leases = Lease.objects.select_related("contract","contract__partner").prefetch_related("contract__contract_warning_notices").filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_serializers(data.get('params')) &
             Q(overdue_amount__gt=100) &
@@ -528,9 +528,14 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             ) &
             Q(is_kdv_diff = False) &
             Q(is_credit=False)
+        ).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
         ).aggregate(
             total_overdue_amount=Sum('overdue_amount'),
-            count_overdue_leases=Count('id')
+            count_overdue_leases=Count('id'),
+            count_distinct_partners=Count('contract__partner', distinct=True)
         )
 
         to_warned_leases = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
@@ -554,9 +559,14 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             )
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).aggregate(
+        ).filter(warning_notice_count=0).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        ).aggregate(
             total_overdue_amount=Sum('overdue_amount'),
-            count_overdue_leases=Count('id')
+            count_overdue_leases=Count('id'),
+            count_distinct_partners=Count('contract__partner', distinct=True)
         )
 
         warned_leases = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
@@ -574,9 +584,14 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-        ).filter(warning_notice_count__gt=0).aggregate(
+        ).filter(warning_notice_count__gt=0).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        ).aggregate(
             total_overdue_amount=Sum('overdue_amount'),
-            count_overdue_leases=Count('id')
+            count_overdue_leases=Count('id'),
+            count_distinct_partners=Count('contract__partner', distinct=True)
         )
 
         to_terminated_leases = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
@@ -618,37 +633,44 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).aggregate(
+        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        ).aggregate(
             total_overdue_amount=Sum('overdue_amount'),
-            count_overdue_leases=Count('id')
+            count_overdue_leases=Count('id'),
+            count_distinct_partners=Count('contract__partner', distinct=True)
         )
-
-        
 
         manager_summary = [
             {   
                 'id': 1,
                 'title': 'Vadesi Geçmişler',
                 'amount': float(overdue_leases['total_overdue_amount']) if overdue_leases['total_overdue_amount'] else 0.00,
-                'quantity': overdue_leases['count_overdue_leases'] or 0
+                'quantity': overdue_leases['count_overdue_leases'] or 0,
+                'partner': overdue_leases['count_distinct_partners'] or 0
             },
             {   
                 'id': 2,
                 'title': 'İhtar Çekilecekler',
                 'amount': float(to_warned_leases['total_overdue_amount']) if to_warned_leases['total_overdue_amount'] else 0.00,
-                'quantity': to_warned_leases['count_overdue_leases'] or 0
+                'quantity': to_warned_leases['count_overdue_leases'] or 0,
+                'partner': to_warned_leases['count_distinct_partners'] or 0
             },
             {   
                 'id': 3,
                 'title': 'İhtar Çekilenler',
                 'amount': float(warned_leases['total_overdue_amount']) if warned_leases['total_overdue_amount'] else 0.00,
-                'quantity': warned_leases['count_overdue_leases'] or 0
+                'quantity': warned_leases['count_overdue_leases'] or 0,
+                'partner': warned_leases['count_distinct_partners'] or 0
             },
             {   
                 'id': 4,
                 'title': 'Fesih Edilecekler',
                 'amount': float(to_terminated_leases['total_overdue_amount']) if to_terminated_leases['total_overdue_amount'] else 0.00,
-                'quantity': to_terminated_leases['count_overdue_leases'] or 0
+                'quantity': to_terminated_leases['count_overdue_leases'] or 0,
+                'partner': to_terminated_leases['count_distinct_partners'] or 0
             }
         ]
 

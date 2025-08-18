@@ -857,9 +857,9 @@ def export_risk_partners(self):
                 Q(lease_status='durduruldu')
             )
         ).order_by("-overdue_amount").exclude(
-             Q(contract__partner__types__contains=["special"]) |
-             Q(contract__partner__types__contains=["barter"]) |
-             Q(contract__partner__types__contains=["virman"])
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
         )
 
         # if str(self.params["project"]) == "diger":
