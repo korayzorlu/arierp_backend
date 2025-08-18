@@ -466,12 +466,12 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            )
+            ) &
+            Q(partner_contracts__contract_warning_notices__isnull=True)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).exclude(types__contains=["special"])
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:

@@ -18,6 +18,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     lease = serializers.SerializerMethodField()
     partner = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
+    project = serializers.SerializerMethodField()
     total_contract_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     total_vendor_payment = serializers.DecimalField(max_digits=14,decimal_places=2)
     before_total_payment = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -26,16 +27,23 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
     
-    def get_contract(self, obj):
-        return obj.lease.contract.code if obj.lease else ''
-    
     def get_lease(self, obj):
+        if obj.lease:
+            return {
+                "code" : obj.lease.code,
+                "contract" : obj.lease.contract.code if obj.lease.contract else "",
+                "partner" : obj.lease.contract.partner.name if obj.lease.contract.partner else "",
+                "currency" : obj.lease.currency.code if obj.lease.currency else "",
+                "vendor" : obj.lease.contract.vendor.name if obj.lease.contract.vendor else "",
+                "project" : obj.lease.contract.project if obj.lease.contract else "",
+                "activation_date" : obj.lease.activation_date,
+                "contract_date" : "",
+                "lease_status" : obj.lease_status,
+                "status" : obj.status.name if obj.status else "",
+                "vat" : obj.vat,
+                "bbsn" : obj.bbsn,
+                "is_tufe" : obj.is_tufe
+            }
         return obj.lease.code if obj.lease else ''
-    
-    def get_partner(self, obj):
-        return obj.lease.contract.partner.name if obj.lease else ''
-    
-    def get_vendor(self, obj):
-        return obj.lease.contract.vendor.name if obj.lease else ''
     
     

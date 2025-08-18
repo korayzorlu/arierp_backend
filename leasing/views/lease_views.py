@@ -556,7 +556,8 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_121_150__gt=0) |
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
-            )
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
         ).filter(warning_notice_count=0).exclude(

@@ -1042,16 +1042,16 @@ def export_to_warned_risk_partners(self):
             Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
             Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
             Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-        )
+        ) &
+        Q(partner_contracts__contract_warning_notices__isnull=True)
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-        warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True)
+        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
     ).exclude(
         Q(types__contains=["special"]) |
         Q(types__contains=["barter"]) |
         Q(types__contains=["virman"])
-    ).filter(warning_notice_count=0)
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -1095,10 +1095,9 @@ def export_to_warned_risk_partners(self):
                 Q(overdue_121_150__gt=0) |
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
-            )
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0).exclude(
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        ).exclude(
              Q(contract__partner__types__contains=["special"]) |
              Q(contract__partner__types__contains=["barter"]) |
              Q(contract__partner__types__contains=["virman"])

@@ -628,10 +628,9 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(overdue_121_150__gt=0) |
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
-            )
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        )
 
         overdue_days = 0
         for lease in leases:
@@ -661,10 +660,9 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(overdue_121_150__gt=0) |
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
-            )
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        )
         
         overdue_amount = 0
         for lease in leases:
@@ -693,10 +691,9 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(overdue_121_150__gt=0) |
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
-            )
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count=0)
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        )
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')

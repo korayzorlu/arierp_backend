@@ -18,6 +18,11 @@ class PurchasePayment(models.Model):
     total_contract_amount = models.DecimalField(_("Total contract Amount"), default = 0.00, max_digits=14, decimal_places=2)
     total_vendor_payment = models.DecimalField(_("Total Vendor Payment"), default = 0.00, max_digits=14, decimal_places=2)
     before_total_payment = models.DecimalField(_("Before Total Payment"), default = 0.00, max_digits=14, decimal_places=2)
+    after_total_payment = models.DecimalField(_("After Total Payment"), default = 0.00, max_digits=14, decimal_places=2)
+    managing_expense = models.DecimalField(_("After Total Payment"), default = 0.00, max_digits=14, decimal_places=2)
+    lease_payment_amount = models.DecimalField(_("Lease Payment Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    vendor_payment_with_report_date = models.DecimalField(_("Vendor Payment With Report Date"), default = 0.00, max_digits=14, decimal_places=2)
+    next_payment = models.DecimalField(_("Next Payment"), default = 0.00, max_digits=14, decimal_places=2)
     purchasing = models.IntegerField(_("Purchasing"), default=0)
 
 
