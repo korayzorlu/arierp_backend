@@ -58,17 +58,27 @@ def fetch_purchase_payments(company):
             obj.total_contract_amount = Decimal(str(row['Toplam Sözleşme Bedeli (İlk Sözleşme)'])) if not pd.isna(row['Toplam Sözleşme Bedeli (İlk Sözleşme)']) else Decimal("0.00")
             obj.total_vendor_payment = Decimal(str(row['Satıcı Ödemeleri Toplam Tutarı'])) if not pd.isna(row['Satıcı Ödemeleri Toplam Tutarı']) else Decimal("0.00")
             obj.before_total_payment = Decimal(str(row['Ödeme Toplam Öncesi'])) if not pd.isna(row['Ödeme Toplam Öncesi']) else Decimal("0.00")
+            obj.after_total_payment = Decimal(str(row['Toplam Ödeme Sonrası'])) if not pd.isna(row['Toplam Ödeme Sonrası']) else Decimal("0.00")
+            obj.managing_expense = Decimal(str(row['Yönetim Gideri (Kdv Dahil)'])) if not pd.isna(row['Yönetim Gideri (Kdv Dahil)']) else Decimal("0.00")
+            obj.lease_payment_amount =Decimal(str(row['Kira Tahsilat Tutarı'])) if not pd.isna(row['Kira Tahsilat Tutarı']) else Decimal("0.00")
+            obj.vendor_payment_with_report_date = Decimal(str(row['Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı'])) if not pd.isna(row['Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı']) else Decimal("0.00")
+            obj.next_payment = Decimal(str(row['Sonraki Ödeme'])) if not pd.isna(row['Sonraki Ödeme']) else Decimal("0.00")
             obj.purchasing = int(row['satinalma']) if not pd.isna(row['satinalma']) else 0
             obj.save()
         else:
             new_obj_count += 1
             PurchasePayment.objects.create(
                 company=company_obj,
-                lease=Lease.objects.select_related().filter(code=str(row['Kira Planı Kodu'])).first(),
-                total_contract_amount=Decimal(str(row['Toplam Sözleşme Bedeli (İlk Sözleşme)'])) if not pd.isna(row['Toplam Sözleşme Bedeli (İlk Sözleşme)']) else Decimal("0.00"),
-                total_vendor_payment=Decimal(str(row['Satıcı Ödemeleri Toplam Tutarı'])) if not pd.isna(row['Satıcı Ödemeleri Toplam Tutarı']) else Decimal("0.00"),
-                before_total_payment=Decimal(str(row['Ödeme Toplam Öncesi'])) if not pd.isna(row['Ödeme Toplam Öncesi']) else Decimal("0.00"),
-                purchasing=int(row['satinalma']) if not pd.isna(row['satinalma']) else 0
+                lease = Lease.objects.select_related().filter(code=str(row['Kira Planı Kodu'])).first(),
+                total_contract_amount = Decimal(str(row['Toplam Sözleşme Bedeli (İlk Sözleşme)'])) if not pd.isna(row['Toplam Sözleşme Bedeli (İlk Sözleşme)']) else Decimal("0.00"),
+                total_vendor_payment = Decimal(str(row['Satıcı Ödemeleri Toplam Tutarı'])) if not pd.isna(row['Satıcı Ödemeleri Toplam Tutarı']) else Decimal("0.00"),
+                before_total_payment = Decimal(str(row['Ödeme Toplam Öncesi'])) if not pd.isna(row['Ödeme Toplam Öncesi']) else Decimal("0.00"),
+                after_total_payment = Decimal(str(row['Toplam Ödeme Sonrası'])) if not pd.isna(row['Toplam Ödeme Sonrası']) else Decimal("0.00"),
+                managing_expense = Decimal(str(row['Yönetim Gideri (Kdv Dahil)'])) if not pd.isna(row['Yönetim Gideri (Kdv Dahil)']) else Decimal("0.00"),
+                lease_payment_amount =Decimal(str(row['Kira Tahsilat Tutarı'])) if not pd.isna(row['Kira Tahsilat Tutarı']) else Decimal("0.00"),
+                vendor_payment_with_report_date = Decimal(str(row['Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı'])) if not pd.isna(row['Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı']) else Decimal("0.00"),
+                next_payment = Decimal(str(row['Sonraki Ödeme'])) if not pd.isna(row['Sonraki Ödeme']) else Decimal("0.00"),
+                purchasing = int(row['satinalma']) if not pd.isna(row['satinalma']) else 0
             )
 
     print(f"{new_obj_count} objects created and {old_obj_count} objects updated for leases.")

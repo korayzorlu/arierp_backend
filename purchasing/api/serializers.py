@@ -14,15 +14,19 @@ from contracts.models import WarningNotice
 class PurchasePaymentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
-    contract = serializers.SerializerMethodField()
     lease = serializers.SerializerMethodField()
-    partner = serializers.SerializerMethodField()
-    vendor = serializers.SerializerMethodField()
-    project = serializers.SerializerMethodField()
     total_contract_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     total_vendor_payment = serializers.DecimalField(max_digits=14,decimal_places=2)
     before_total_payment = serializers.DecimalField(max_digits=14,decimal_places=2)
+    after_total_payment = serializers.DecimalField(max_digits=14,decimal_places=2)
+    managing_expense = serializers.DecimalField(max_digits=14,decimal_places=2)
+    lease_payment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    vendor_payment_with_report_date = serializers.DecimalField(max_digits=14,decimal_places=2)
+    next_payment = serializers.DecimalField(max_digits=14,decimal_places=2)
     purchasing = serializers.IntegerField()
+    diff = serializers.SerializerMethodField()
+    temerrut = serializers.SerializerMethodField()
+    talimat = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -38,12 +42,24 @@ class PurchasePaymentListSerializer(serializers.Serializer):
                 "project" : obj.lease.contract.project if obj.lease.contract else "",
                 "activation_date" : obj.lease.activation_date,
                 "contract_date" : "",
-                "lease_status" : obj.lease_status,
-                "status" : obj.status.name if obj.status else "",
-                "vat" : obj.vat,
-                "bbsn" : obj.bbsn,
-                "is_tufe" : obj.is_tufe
+                "lease_status" : obj.lease.get_lease_status_display(),
+                "status" : obj.lease.status.name if obj.lease.status else "",
+                "vat" : obj.lease.vat,
+                "bbsn" : obj.lease.bbsn,
+                "is_tufe" : obj.lease.is_tufe
             }
         return obj.lease.code if obj.lease else ''
+    
+    def get_diff(self, obj):
+        return obj.lease_payment_amount - obj.before_total_payment
+    
+    def get_temerrut(self, obj):
+        return obj.lease_payment_amount - obj.before_total_payment
+    
+    def get_talimat(self, obj):
+        if (obj.lease_payment_amount - obj.before_total_payment) <= 0:
+            return obj.vendor_payment_with_report_date
+        else:
+            return obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
     
     
