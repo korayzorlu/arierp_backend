@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum,Count,Case,When,Value,BooleanField
 from django.views import View
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.core.files.storage import default_storage
@@ -12,7 +13,7 @@ from asgiref.sync import async_to_sync
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from leasing.models import *
-from leasing.utils import is_valid_lease_data
+from leasing.utils import is_valid_lease_data,vendor_filter_for_serializers
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
@@ -509,22 +510,145 @@ class DeliveryConfirmsExcelView(LoginRequiredMixin,View):
 class ManagerSummaryView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
+
+        active_company_uuid = data.get('params').get('activeCompany').get('id')
+        active_company = request.user.user_companies.filter(uuid = active_company_uuid).first()
         
-        objs = Project.objects.filter()
-    
-        if not objs:
-            return JsonResponse({'installment':[]}, status=200)
+        overdue_leases = Lease.objects.select_related("contract").prefetch_related("contract__contract_warning_notices").filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter_for_serializers(data.get('params')) &
+            Q(overdue_amount__gt=100) &
+            Q(overdue_days__gt=0) &
+            Q(overdue_days__lte=30) &
+            Q(contract__contract_warning_notices__isnull=True) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff = False) &
+            Q(is_credit=False)
+        ).aggregate(
+            total_overdue_amount=Sum('overdue_amount'),
+            count_overdue_leases=Count('id')
+        )
+
+        to_warned_leases = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter_for_serializers(data.get('params')) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(overdue_days__gt=30) &
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            )
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+        ).filter(warning_notice_count=0).aggregate(
+            total_overdue_amount=Sum('overdue_amount'),
+            count_overdue_leases=Count('id')
+        )
+
+        warned_leases = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter_for_serializers(data.get('params')) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+        ).filter(warning_notice_count__gt=0).aggregate(
+            total_overdue_amount=Sum('overdue_amount'),
+            count_overdue_leases=Count('id')
+        )
+
+        to_terminated_leases = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter_for_serializers(data.get('params')) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            (
+                Q(contract__contract_warning_notices__state='Yeni') |
+                Q(contract__contract_warning_notices__state='Geçerli')
+            ) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(overdue_days__gt=30) &
+            Q(overdue_amount__gt=1000)
+        ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            overdue_check=Case(
+                When(
+                    contract__partner__customer_type='individual',
+                    then=Case(
+                        When(overdue_days__gt=65, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                When(
+                    contract__partner__customer_type='institutional',
+                    then=Case(
+                        When(overdue_days__gt=95, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                ),
+                default=Value(False),
+                output_field=BooleanField()
+            )
+        ).filter(warning_notice_count__gt=0,overdue_check=True).aggregate(
+            total_overdue_amount=Sum('overdue_amount'),
+            count_overdue_leases=Count('id')
+        )
+
         
+
         manager_summary = [
             {   
                 'id': 1,
-                'key': 'Normal Gecikme',
-                'value': 104626632.46
+                'title': 'Vadesi Geçmişler',
+                'amount': float(overdue_leases['total_overdue_amount']) if overdue_leases['total_overdue_amount'] else 0.00,
+                'quantity': overdue_leases['count_overdue_leases'] or 0
             },
             {   
                 'id': 2,
-                'key': 'İhtar Çekilenler',
-                'value': 35948758.94
+                'title': 'İhtar Çekilecekler',
+                'amount': float(to_warned_leases['total_overdue_amount']) if to_warned_leases['total_overdue_amount'] else 0.00,
+                'quantity': to_warned_leases['count_overdue_leases'] or 0
+            },
+            {   
+                'id': 3,
+                'title': 'İhtar Çekilenler',
+                'amount': float(warned_leases['total_overdue_amount']) if warned_leases['total_overdue_amount'] else 0.00,
+                'quantity': warned_leases['count_overdue_leases'] or 0
+            },
+            {   
+                'id': 4,
+                'title': 'Fesih Edilecekler',
+                'amount': float(to_terminated_leases['total_overdue_amount']) if to_terminated_leases['total_overdue_amount'] else 0.00,
+                'quantity': to_terminated_leases['count_overdue_leases'] or 0
             }
         ]
 

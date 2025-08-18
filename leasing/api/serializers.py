@@ -187,6 +187,7 @@ class BankActivityListSerializer(serializers.Serializer):
     leases = serializers.SerializerMethodField()
     processed_amount = serializers.SerializerMethodField()
     is_processed = serializers.BooleanField()
+    created_date = serializers.SerializerMethodField()
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
@@ -266,6 +267,9 @@ class BankActivityListSerializer(serializers.Serializer):
                     ]
                 })
         return sorted(bank_activity_lease_list, key=lambda x: x["overdue_days"], reverse=True)
+    
+    def get_created_date(self, obj):
+        return obj.created_date.date()
     
 class BankActivityLeaseListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
@@ -359,7 +363,6 @@ class RiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            Q(contract__partner = obj) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
             Q(overdue_days__lte=30) &

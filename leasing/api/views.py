@@ -248,7 +248,7 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
 
         queryset = BankActivity.objects.select_related(*custom_related_fields).filter(
             company = active_company.company if active_company else None
-        ).order_by("tc_vkn_no")
+        ).order_by("created_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
