@@ -30,6 +30,7 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
+                {"type" : "item", "class" : "free", "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},

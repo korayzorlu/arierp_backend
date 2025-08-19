@@ -43,6 +43,7 @@ class Partner(models.Model):
         ('supplier', ('Supplier')),
         ('shareholder', ('Shareholder')),
         ('special', ('Special')),
+        ('pep', ('PEP')),
         ('barter', ('Barter')),
         ('virman', ('Virman')),
     )
