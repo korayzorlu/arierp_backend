@@ -92,6 +92,23 @@ def export_purchase_payments(self):
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
+
+    numeric_columns = [
+        "KDV (%)",
+        "Toplam Sözleşme Bedeli",
+        "Ödeme Toplam Öncesi",
+        "Toplam Ödeme Sonrası",
+        "Yönetim Gideri (KDV Dahil)",
+        "Kira Tahsilat Tutarı",
+        "Satıcı Ödemeleri Toplam Tutarı",
+        "Talimat",
+        "Fark",
+        "Temerrüt",
+        "Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı",
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
     
     base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "purchasing", "purchase_payments", "documents")
     if not os.path.exists(base_path):
@@ -99,7 +116,18 @@ def export_purchase_payments(self):
 
     excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-satici-odemeleri.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+        # Workbook'u al
+        workbook = writer.book
+        worksheet = writer.sheets['Sayfa']
+
+        # Kolon isimlerine göre format uygula
+        for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+            if col in numeric_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = '#,##0.00'   # İstediğin format
         
     self.process.progress = 100
     #self.process.status = "completed"
