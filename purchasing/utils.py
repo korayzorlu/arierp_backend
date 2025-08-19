@@ -5,11 +5,12 @@ from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
 from datetime import datetime,date,timedelta
 import pandas as pd
 import os
+from decimal import Decimal
 
 from .models import PurchasePayment
 
 def export_purchase_payments(self):
-    objs = PurchasePayment.objects.select_related("lease","contract").all()
+    objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").all()
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -55,38 +56,39 @@ def export_purchase_payments(self):
             self.process.save()
             previous_progress = current_progress
 
-        diff = obj.lease_payment_amount - obj.before_total_payment
-        temerrut = obj.lease_payment_amount - obj.before_total_payment
-        if (obj.lease_payment_amount - obj.before_total_payment) <= 0:
-            talimat = obj.vendor_payment_with_report_date
-        else:
-            talimat = obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
-
-        data["Sözleşme No"].append(obj.lease.contract__code or "")
-        data["Kira Planı"].append(obj.lease.code or "")
-        data["Müşteri"].append(obj.lease.contract.partner.name or "")
-        data["PB"].append(obj.lease.currency.code or "")
-        data["Satıcı"].append(obj.lease.contract.currency.code or "")
-        data["Proje"].append(obj.lease.contract.project or "")
-        data["Akticasyon Tarihi"].append(obj.lease.activation_date or "")
-        data["Sözleşme Tarihi"].append("")
-        data["Ana Statü"].append(obj.lease.lease_status or "")
-        data["Alt Statü"].append(obj.lease.status or "")
-        data["KDV (%)"].append()
-        data["Toplam Sözleşme Bedeli"].append()
-        data["Ödeme Toplam Öncesi"].append()
-        data["Toplam Ödeme Sonrası"].append()
-        data["Yönetim Gideri (KDV Dahil)"].append()
-        data["Kira Tahsilat Tutarı"].append()
-        data["Satıcı Ödemeleri Toplam Tutarı"].append()
-        data["Talimat"].append()
-        data["Fark"].append()
-        data["Temerrüt"].append()
-        data["Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı"].append()
-        data["Sonraki Ödeme"].append()
-        data["Satın Alma"].append()
-        data["BBSN"].append()
-        data["Tüfeli mi?"].append()
+        if obj.lease:
+            diff = obj.lease_payment_amount - obj.before_total_payment
+            temerrut = obj.lease_payment_amount - obj.before_total_payment
+            if (obj.lease_payment_amount - obj.before_total_payment) <= 0:
+                talimat = obj.vendor_payment_with_report_date
+            else:
+                talimat = obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
+            
+            data["Sözleşme No"].append(obj.lease.contract.code or "")
+            data["Kira Planı"].append(obj.lease.code or "")
+            data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease.contract.partner else "")
+            data["PB"].append(obj.lease.currency.code or "")
+            data["Satıcı"].append(obj.lease.contract.vendor.name if obj.lease.contract.vendor else "")
+            data["Proje"].append(obj.lease.contract.project or "")
+            data["Akticasyon Tarihi"].append(obj.lease.activation_date or "")
+            data["Sözleşme Tarihi"].append("")
+            data["Ana Statü"].append(obj.lease.lease_status or "")
+            data["Alt Statü"].append(obj.lease.status or "")
+            data["KDV (%)"].append(obj.lease.vat or Decimal("0.00"))
+            data["Toplam Sözleşme Bedeli"].append(obj.total_contract_amount)
+            data["Ödeme Toplam Öncesi"].append(obj.before_total_payment)
+            data["Toplam Ödeme Sonrası"].append(obj.after_total_payment)
+            data["Yönetim Gideri (KDV Dahil)"].append(obj.managing_expense)
+            data["Kira Tahsilat Tutarı"].append(obj.lease_payment_amount)
+            data["Satıcı Ödemeleri Toplam Tutarı"].append(obj.total_vendor_payment)
+            data["Talimat"].append(talimat)
+            data["Fark"].append(diff)
+            data["Temerrüt"].append(temerrut)
+            data["Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı"].append(obj.vendor_payment_with_report_date)
+            data["Sonraki Ödeme"].append(obj.next_payment)
+            data["Satın Alma"].append(obj.purchasing)
+            data["BBSN"].append(obj.lease.bbsn)
+            data["Tüfeli mi?"].append("Evet" if obj.lease.is_tufe else "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
