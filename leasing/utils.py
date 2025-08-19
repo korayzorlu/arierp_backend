@@ -114,8 +114,11 @@ def vendor_filter_for_views(filter_params):
         )
     elif filter_params.get('project') == "servet":
         return (
-            Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
-            Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+            (
+                Q(partner_contracts__vendor__crm_code__in=["6548","6546"]) |
+                Q(partner_contracts__project="BOULEVARD SEFAKÖY")
+            ) &
+            ~Q(partner_contracts__project="SİNPAŞ KORU AURA")
         )
     else:
         return Q(partner_contracts__vendor__crm_code=filter_params.get('project'))
@@ -159,8 +162,11 @@ def vendor_filter_for_serializers(filter_params):
         )
     elif filter_params.get('project') == "servet":
         return (
-            Q(contract__vendor__crm_code__in=["6548","6546"]) |
-            Q(contract__project="BOULEVARD SEFAKÖY")
+            (
+                Q(contract__vendor__crm_code__in=["6548","6546"]) |
+                Q(contract__project="BOULEVARD SEFAKÖY")
+            ) &
+            ~Q(contract__project="SİNPAŞ KORU AURA")
         )
     else:
         return Q(contract__vendor__crm_code=filter_params.get('project'))
