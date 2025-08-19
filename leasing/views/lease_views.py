@@ -644,6 +644,26 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             count_distinct_partners=Count('contract__partner', distinct=True)
         )
 
+        deposit_leases = Lease.objects.select_related("contract","contract__partner").prefetch_related().filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter_for_serializers(data.get('params')) &
+            Q(paid__lte=10000) &
+            Q(paid__gte=1000) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        ).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        ).aggregate(
+            total_overdue_amount=Sum('overdue_amount'),
+            count_overdue_leases=Count('id'),
+            count_distinct_partners=Count('contract__partner', distinct=True)
+        )
+
         manager_summary = [
             {   
                 'id': 1,
@@ -672,6 +692,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 'amount': float(to_terminated_leases['total_overdue_amount']) if to_terminated_leases['total_overdue_amount'] else 0.00,
                 'quantity': to_terminated_leases['count_overdue_leases'] or 0,
                 'partner': to_terminated_leases['count_distinct_partners'] or 0
+            },
+            {   
+                'id': 5,
+                'title': 'Kaporalar',
+                'amount': float(deposit_leases['total_overdue_amount']) if deposit_leases['total_overdue_amount'] else 0.00,
+                'quantity': deposit_leases['count_overdue_leases'] or 0,
+                'partner': deposit_leases['count_distinct_partners'] or 0
             }
         ]
 
