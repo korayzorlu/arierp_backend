@@ -31,3 +31,31 @@ class PurchasePayment(models.Model):
 
     def __str__(self):
         return str(self.lease.code)
+    
+
+class PurchaseDocument(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="purchase_documents")
+
+    document_id = models.CharField(_("Document ID"), max_length=25, null=True, blank=True)
+    code = models.CharField(_("Code"), max_length=25)
+    document_number = models.CharField(_("Document Number"), max_length=140, null=True, blank=True)
+    document_date = models.DateField(_("Document Date"), blank=True, null=True)
+
+    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_purchase_documents",null=True, blank=True)
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_purchase_documents", null=True, blank=True)
+    vendor = models.ForeignKey(Partner, on_delete=models.SET_NULL, related_name="vendor_purchase_documents", null=True, blank=True)
+    amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    vat_amount = models.DecimalField(_("Vat Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    total_amount = models.DecimalField(_("Total Amount"), default = 0.00, max_digits=14, decimal_places=2)
+
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_purchase_documents")
+    exchange_rate = models.DecimalField(_("Exchange Rate"), default = 0.00, max_digits=14, decimal_places=2)
+
+    document_status = models.CharField(_("Document Status"), max_length=140, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.lease.code)

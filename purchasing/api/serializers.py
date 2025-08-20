@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
@@ -27,6 +27,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     diff = serializers.SerializerMethodField()
     temerrut = serializers.SerializerMethodField()
     talimat = serializers.SerializerMethodField()
+    total_purchase_document_amount = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -48,7 +49,8 @@ class PurchasePaymentListSerializer(serializers.Serializer):
                 "bbsn" : obj.lease.bbsn,
                 "is_tufe" : obj.lease.is_tufe
             }
-        return obj.lease.code if obj.lease else ''
+        else:
+            return ""
     
     def get_diff(self, obj):
         return obj.lease_payment_amount - obj.before_total_payment
@@ -61,5 +63,49 @@ class PurchasePaymentListSerializer(serializers.Serializer):
             return obj.vendor_payment_with_report_date
         else:
             return obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
+        
+    def get_total_purchase_document_amount(self, obj):
+        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+
+        return purchase_documents['total_total_amount']
+        
+class PurchaseDocumentListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    document_id = serializers.CharField()
+    code = serializers.CharField()
+    document_number = serializers.CharField()
+    document_date = serializers.DateField()
+    lease = serializers.SerializerMethodField()
+    partner = serializers.SerializerMethodField()
+    vendor = serializers.SerializerMethodField()
+    amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    vat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    currency = serializers.SerializerMethodField()
+    exchange_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    document_status = serializers.CharField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_lease(self, obj):
+        if obj.lease:
+            return {
+                "code" : obj.lease.code,
+                "contract" : obj.lease.contract.code if obj.lease.contract else "",
+            }
+        else:
+            return ""
+    
+    def get_partner(self, obj):
+        return obj.partner.name if obj.partner else ""
+    
+    def get_vendor(self, obj):
+        return obj.vendor.name if obj.vendor else ""
+    
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ""
+    
     
     

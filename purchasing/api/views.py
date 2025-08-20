@@ -124,8 +124,40 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
 
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)
-        ).annotate(
+        ).order_by("lease__contract__code")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = []
             
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
+    serializer_class = PurchaseDocumentListSerializer
+    filterset_class = PurchaseDocumentFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = PurchaseDocument.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
         ).order_by("lease__contract__code")
 
         query = self.request.query_params.get('search[value]', None)

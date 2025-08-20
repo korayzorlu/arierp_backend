@@ -27,4 +27,15 @@ class PurchasePaymentFilter(FilterSet):
         model = PurchasePayment
         fields = ['uuid']
     
-  
+class PurchaseDocumentFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    lease_code = CharFilter(field_name='lease__code', lookup_expr='icontains')
+    lease = CharFilter(field_name='lease__code', lookup_expr='exact')
+    contract = CharFilter(field_name='lease__contract__code', lookup_expr='icontains')
+    partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
+    document_number = CharFilter(field_name='document_number', lookup_expr='icontains')
+
+    class Meta:
+        model = PurchaseDocument
+        fields = ['uuid']

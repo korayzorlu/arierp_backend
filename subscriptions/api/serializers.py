@@ -37,6 +37,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/collectionss"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
+                {"type" : "item", "class" : "free", "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
                 #{"type" : "item", "class" : "free", "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "report", "items" : [

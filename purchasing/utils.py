@@ -7,7 +7,7 @@ import pandas as pd
 import os
 from decimal import Decimal
 
-from .models import PurchasePayment
+from .models import PurchasePayment,PurchaseDocument
 
 def export_purchase_payments(self):
     objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").all()
@@ -43,6 +43,7 @@ def export_purchase_payments(self):
         "Sonraki Ödeme": [],
         "Satın Alma": [],
         "BBSN": [],
+        "Toplam Fatura Tutarı": [],
         "Tüfeli mi?": []
     }
 
@@ -64,6 +65,8 @@ def export_purchase_payments(self):
             else:
                 talimat = obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
             
+            purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+
             data["Sözleşme No"].append(obj.lease.contract.code or "")
             data["Kira Planı"].append(obj.lease.code or "")
             data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease.contract.partner else "")
@@ -88,6 +91,7 @@ def export_purchase_payments(self):
             data["Sonraki Ödeme"].append(obj.next_payment)
             data["Satın Alma"].append(obj.purchasing)
             data["BBSN"].append(obj.lease.bbsn)
+            data["Toplam Fatura Tutarı"].append(purchase_documents['total_total_amount'])
             data["Tüfeli mi?"].append("Evet" if obj.lease.is_tufe else "")
 
     df = pd.DataFrame(data)
@@ -105,6 +109,7 @@ def export_purchase_payments(self):
         "Fark",
         "Temerrüt",
         "Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı",
+        "Toplam Fatura Tutarı"
     ]
 
     for col in numeric_columns:
