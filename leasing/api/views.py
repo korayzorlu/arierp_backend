@@ -337,24 +337,46 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__contract_warning_notices", "partner_contracts__vendor"]
 
-        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company=active_company.company if active_company else None) &
-            vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_warning_notices__isnull=True) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
-        ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-        ).exclude(types__contains=["special"]).distinct()
+        supplier = self.request.query_params.get('supplier')
+
+        if supplier:
+            queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+                Q(company=active_company.company if active_company else None) &
+                vendor_filter_for_views(self.request.query_params) &
+                (
+                    Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                    Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                    Q(partner_contracts__contract_leases__lease_status='durduruldu')
+                ) &
+                Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+                Q(partner_contracts__contract_leases__is_credit=False) &
+                Q(partner_contracts__contract_warning_notices__isnull=True) &
+                Q(partner_contracts__contract_leases__overdue_days__gt=0) &
+                Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+                Q(partner_contracts__contract_leases__overdue_amount__gt=100)
+            ).annotate(
+                max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+                total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+            ).exclude(types__contains=["special"]).distinct()
+        else:
+            queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+                Q(company=active_company.company if active_company else None) &
+                vendor_filter_for_views(self.request.query_params) &
+                (
+                    Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                    Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                    Q(partner_contracts__contract_leases__lease_status='durduruldu')
+                ) &
+                Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+                Q(partner_contracts__contract_leases__is_credit=False) &
+                Q(partner_contracts__contract_warning_notices__isnull=True) &
+                Q(partner_contracts__contract_leases__overdue_days__gt=0) &
+                Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+                Q(partner_contracts__contract_leases__overdue_amount__gt=100)
+            ).annotate(
+                max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+                total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+            ).exclude(types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
         if query:
