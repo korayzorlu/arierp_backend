@@ -476,8 +476,10 @@ class BankActivity(models.Model):
                                 .first()
                             )
                             if first_future_payment:
+                                if abs(self.amount - first_future_payment) <= 2:
+                                    pass
                                 total_customer_leases_amount += first_future_payment
-                        print(abs(self.amount - total_customer_leases_amount))
+                        
                         if abs(self.amount - total_customer_leases_amount) <= 2:
                             for customer_lease in customer_leases:
                                 bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = customer_lease).first()
@@ -504,12 +506,14 @@ class BankActivity(models.Model):
                                     bank_activity_lease.leaseflex_automation = True
                                     bank_activity_lease.save()
                         
-                            if self.amount != total_customer_leases_amount and abs(self.amount - total_customer_leases_amount) <= 2 and bank_activity_leases:
+                            if self.amount != total_customer_leases_amount and bank_activity_leases:
                                 diff_amount = self.amount - total_customer_leases_amount
 
                                 last_bank_activity_lease = bank_activity_leases.last()
                                 last_bank_activity_lease.processed_amount += diff_amount
                                 last_bank_activity_lease.save()
+                                    
+
 
             # self.created_date = datetime.now() - timedelta(days=1)
             # super().save(update_fields=['created_date'])
