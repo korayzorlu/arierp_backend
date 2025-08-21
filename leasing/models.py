@@ -261,37 +261,70 @@ class BankActivity(models.Model):
             super().save(*args, **kwargs)
 
             if is_new:
-                current_sender_bank_activites = BankActivity.objects.select_related().filter(bank_account_no = self.bank_account_no)
+                current_sender_bank_activites = BankActivity.objects.select_related().filter(cross_bank_account_no = self.cross_bank_account_no)
                 if current_sender_bank_activites:
                     current_sender_bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__in = current_sender_bank_activites)
                     distinct_partners = current_sender_bank_activity_leases.values_list("lease__contract__partner_id", flat=True).distinct()
 
-                    print(distinct_partners)
                     if distinct_partners.count() == 1:
                         sender_partner_id = distinct_partners.first()
                         sender_partner = Partner.objects.get(id=sender_partner_id)
 
-                        print(sender_partner)
+                        contract_numbers = extract_contract_numbers(self.description)
+                        contracts = Contract.objects.select_related().filter(
+                            Q(partner__tc_vkn_no=sender_partner.tc_vkn_no) & Q(code__in=contract_numbers)
+                        )
+                        
+                        leases = Lease.objects.select_related("contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation").filter(
+                            (
+                                Q(contract__partner__tc_vkn_no = sender_partner.tc_vkn_no) |
+                                Q(contract__quotation_obj__partner__tc_vkn_no = sender_partner.tc_vkn_no) |
+                                Q(contract__quotation_obj__quick_quotation__partner__tc_vkn_no = sender_partner.tc_vkn_no)
+                            ) &
+                            (
+                                Q(lease_status = "aktiflestirildi") |
+                                Q(lease_status = "planlandi") |
+                                Q(lease_status = "durduruldu")
+                            ) 
+                        ).order_by('contract_id', '-activation_date').distinct('contract_id')
                     else:
-                        print("yokk")
+                        contract_numbers = extract_contract_numbers(self.description)
+                        contracts = Contract.objects.select_related().filter(
+                            Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
+                        )
+                        
+                        leases = Lease.objects.select_related("contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation").filter(
+                            (
+                                Q(contract__partner__tc_vkn_no = self.tc_vkn_no) |
+                                Q(contract__quotation_obj__partner__tc_vkn_no = self.tc_vkn_no) |
+                                Q(contract__quotation_obj__quick_quotation__partner__tc_vkn_no = self.tc_vkn_no)
+                            ) &
+                            (
+                                Q(lease_status = "aktiflestirildi") |
+                                Q(lease_status = "planlandi") |
+                                Q(lease_status = "durduruldu")
+                            ) 
+                        ).order_by('contract_id', '-activation_date').distinct('contract_id')
+                else:
+                    contract_numbers = extract_contract_numbers(self.description)
+                    contracts = Contract.objects.select_related().filter(
+                        Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
+                    )
+                    
+                    leases = Lease.objects.select_related("contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation").filter(
+                        (
+                            Q(contract__partner__tc_vkn_no = self.tc_vkn_no) |
+                            Q(contract__quotation_obj__partner__tc_vkn_no = self.tc_vkn_no) |
+                            Q(contract__quotation_obj__quick_quotation__partner__tc_vkn_no = self.tc_vkn_no)
+                        ) &
+                        (
+                            Q(lease_status = "aktiflestirildi") |
+                            Q(lease_status = "planlandi") |
+                            Q(lease_status = "durduruldu")
+                        ) 
+                    ).order_by('contract_id', '-activation_date').distinct('contract_id')
 
-                contract_numbers = extract_contract_numbers(self.description)
-                contracts = Contract.objects.select_related().filter(
-                    Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
-                )
                 
-                leases = Lease.objects.select_related("contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation").filter(
-                    (
-                        Q(contract__partner__tc_vkn_no = self.tc_vkn_no) |
-                        Q(contract__quotation_obj__partner__tc_vkn_no = self.tc_vkn_no) |
-                        Q(contract__quotation_obj__quick_quotation__partner__tc_vkn_no = self.tc_vkn_no)
-                    ) &
-                    (
-                        Q(lease_status = "aktiflestirildi") |
-                        Q(lease_status = "planlandi") |
-                        Q(lease_status = "durduruldu")
-                    ) 
-                ).order_by('contract_id', '-activation_date').distinct('contract_id')
 
                 if leases:
                     total_processed_amount = Decimal("0.00")
@@ -362,10 +395,11 @@ class BankActivity(models.Model):
                                 .first()
                             )
 
-                            if abs(self.amount == first_future_payment) <= 2:
-                                bank_activity_lease.processed_amount = self.amount
-                                bank_activity_lease.leaseflex_automation = True
-                                bank_activity_lease.save()
+                            if first_future_payment:
+                                if abs(self.amount - first_future_payment) <= 2:
+                                    bank_activity_lease.processed_amount = self.amount
+                                    bank_activity_lease.leaseflex_automation = True
+                                    bank_activity_lease.save()
 
                 if len(contracts) > 1:
                     total_contract_ba_leases_amount = Decimal("0.00")
@@ -405,7 +439,7 @@ class BankActivity(models.Model):
                             contract_ba_lease_queryset.append(bank_activity_lease)
                             total_contract_ba_leases_amount += bank_activity_lease.processed_amount
 
-                    if abs(self.amount == total_contract_ba_leases_amount) <= 2:
+                    if abs(self.amount - total_contract_ba_leases_amount) <= 2:
                         for contract_ba_lease in contract_ba_lease_queryset:
                             first_future_payment = (
                                 contract_ba_lease.lease.lease_installments
@@ -419,63 +453,63 @@ class BankActivity(models.Model):
                                 contract_ba_lease.leaseflex_automation = True
                                 contract_ba_lease.save()
 
-                # if len(contracts) == 0 and self.tc_vkn_no:
-                #     partner = Partner.objects.select_related().filter(tc_vkn_no = self.tc_vkn_no).first()
+                if len(contracts) == 0 and self.tc_vkn_no:
+                    partner = Partner.objects.select_related().filter(tc_vkn_no = self.tc_vkn_no).first()
 
-                #     if partner:
-                #         total_customer_leases_amount = Decimal("0.00")
-                #         customer_leases = Lease.objects.select_related().filter(
-                #             Q(contract__partner=partner) &
-                #             (
-                #                 Q(lease_status='aktiflestirildi') |
-                #                 Q(lease_status='planlandi') |
-                #                 Q(lease_status='durduruldu')
-                #             )
-                #         ).annotate(lease_id_as_int=Cast('lease_id', IntegerField())).order_by("-lease_id_as_int")
+                    if partner:
+                        total_customer_leases_amount = Decimal("0.00")
+                        customer_leases = Lease.objects.select_related().filter(
+                            Q(contract__partner=partner) &
+                            (
+                                Q(lease_status='aktiflestirildi') |
+                                Q(lease_status='planlandi') |
+                                Q(lease_status='durduruldu')
+                            )
+                        ).annotate(lease_id_as_int=Cast('lease_id', IntegerField())).order_by("-lease_id_as_int")
 
-                #         for customer_lease in customer_leases:
-                #             first_future_payment = (
-                #                 customer_lease.lease_installments
-                #                 .filter(payment_date__gte=timezone.now().date())
-                #                 .order_by('payment_date')
-                #                 .values_list('amount', flat=True)
-                #                 .first()
-                #             )
-                #             if first_future_payment:
-                #                 total_customer_leases_amount += first_future_payment
+                        for customer_lease in customer_leases:
+                            first_future_payment = (
+                                customer_lease.lease_installments
+                                .filter(payment_date__gte=timezone.now().date())
+                                .order_by('payment_date')
+                                .values_list('amount', flat=True)
+                                .first()
+                            )
+                            if first_future_payment:
+                                total_customer_leases_amount += first_future_payment
+                        print(abs(self.amount - total_customer_leases_amount))
+                        if abs(self.amount - total_customer_leases_amount) <= 2:
+                            for customer_lease in customer_leases:
+                                bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = customer_lease).first()
 
-                #         if abs(self.amount == total_customer_leases_amount) <= 2:
-                #             for customer_lease in customer_leases:
-                #                 bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = customer_lease).first()
+                                if not bank_activity_lease and customer_lease:
+                                    bank_activity_lease = BankActivityLease.objects.create(
+                                        company = self.company,
+                                        bank_activity = self,
+                                        lease = customer_lease
+                                    )
 
-                #                 if not bank_activity_lease and customer_lease:
-                #                     bank_activity_lease = BankActivityLease.objects.create(
-                #                         company = self.company,
-                #                         bank_activity = self,
-                #                         lease = customer_lease
-                #                     )
+                            bank_activity_leases = self.bank_activity_bank_acitivity_leases.all()
 
-                #             bank_activity_leases = self.bank_activity_bank_acitivity_leases.all()
-
-                #             for bank_activity_lease in bank_activity_leases:
-                #                 first_future_payment = (
-                #                     bank_activity_lease.lease.lease_installments
-                #                     .filter(payment_date__gte=timezone.now().date())
-                #                     .order_by('payment_date')
-                #                     .values_list('amount', flat=True)
-                #                     .first()
-                #                 )
-                #                 if first_future_payment:
-                #                     bank_activity_lease.processed_amount = first_future_payment
-                #                     bank_activity_lease.leaseflex_automation = True
-                #                     bank_activity_lease.save()
+                            for bank_activity_lease in bank_activity_leases:
+                                first_future_payment = (
+                                    bank_activity_lease.lease.lease_installments
+                                    .filter(payment_date__gte=timezone.now().date())
+                                    .order_by('payment_date')
+                                    .values_list('amount', flat=True)
+                                    .first()
+                                )
+                                if first_future_payment:
+                                    bank_activity_lease.processed_amount = first_future_payment
+                                    bank_activity_lease.leaseflex_automation = True
+                                    bank_activity_lease.save()
                         
-                #             if self.amount != total_customer_leases_amount and bank_activity_leases:
-                #                 diff_amount = self.amount - total_customer_leases_amount
+                            if self.amount != total_customer_leases_amount and abs(self.amount - total_customer_leases_amount) <= 2 and bank_activity_leases:
+                                diff_amount = self.amount - total_customer_leases_amount
 
-                #                 last_bank_activity_lease = bank_activity_leases.last()
-                #                 last_bank_activity_lease.processed_amount += diff_amount
-                #                 last_bank_activity_lease.save()
+                                last_bank_activity_lease = bank_activity_leases.last()
+                                last_bank_activity_lease.processed_amount += diff_amount
+                                last_bank_activity_lease.save()
 
             # self.created_date = datetime.now() - timedelta(days=1)
             # super().save(update_fields=['created_date'])
