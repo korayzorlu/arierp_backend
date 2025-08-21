@@ -261,6 +261,20 @@ class BankActivity(models.Model):
             super().save(*args, **kwargs)
 
             if is_new:
+                current_sender_bank_activites = BankActivity.objects.select_related().filter(bank_account_no = self.bank_account_no)
+                if current_sender_bank_activites:
+                    current_sender_bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__in = current_sender_bank_activites)
+                    distinct_partners = current_sender_bank_activity_leases.values_list("lease__contract__partner_id", flat=True).distinct()
+
+                    print(distinct_partners)
+                    if distinct_partners.count() == 1:
+                        sender_partner_id = distinct_partners.first()
+                        sender_partner = Partner.objects.get(id=sender_partner_id)
+
+                        print(sender_partner)
+                    else:
+                        print("yokk")
+
                 contract_numbers = extract_contract_numbers(self.description)
                 contracts = Contract.objects.select_related().filter(
                     Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
