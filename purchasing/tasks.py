@@ -29,7 +29,7 @@ def fetch_purchase_payments(company):
 
     purchase_payments = PurchasePayment.objects.select_related().all()
     purchase_payments.delete()
-    leases = Lease.objects.select_related().all()
+    leases = Lease.objects.select_related().exclude(lease_status = 'iptal_edildi')
 
     purchase_payment_by_code = {l.lease.code: l for l in purchase_payments if l.lease.code}
     leases_dict = {l.code: l for l in leases if l.code}
