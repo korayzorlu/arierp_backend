@@ -187,6 +187,8 @@ class BankActivityListSerializer(serializers.Serializer):
     leases = serializers.SerializerMethodField()
     processed_amount = serializers.SerializerMethodField()
     is_processed = serializers.BooleanField()
+    is_third_person = serializers.BooleanField()
+    is_reliable_person = serializers.BooleanField()
     created_date = serializers.SerializerMethodField()
 
     def get_currency(self, obj):

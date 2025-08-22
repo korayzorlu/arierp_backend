@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
         # Aranacak isim ve isteğe bağlı parametreler
         params = {
-            "name": "Özgür Özel",     # en az 3 karakter
+            "name": "HUBEL ULLOA ESPITIA",     # en az 3 karakter
             "searchType": 1,            # 0: Any, 1: Individual (varsayılan)
             "start": 0,                 # sayfalama başlangıcı
             "limit": 20,                # maksimum 50
