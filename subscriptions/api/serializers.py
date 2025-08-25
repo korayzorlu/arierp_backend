@@ -28,6 +28,9 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : "free", "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
             ]},
+            # {"type" : "sub_menu", "class" : "free", "label" : "Gayrimenkul", "icon" : "in_home_mode", "items" : [
+            #     {"type" : "item", "class" : "free", "label" : "Tapu Gayrimenkulleri", "icon" : "paid", "route" : "/krs-notifications"},
+            # ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
                 {"type" : "item", "class" : "free", "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
