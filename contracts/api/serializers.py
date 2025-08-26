@@ -19,6 +19,7 @@ class ContractListSerializer(serializers.Serializer):
     credit_type = serializers.CharField()
     customer_representative = serializers.CharField()
     supplier = serializers.CharField()
+    vendor = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     mkk_tesciline_gonderilecek_mi = serializers.BooleanField()
     kof_tan_sozlesmeye_aktarim_tarihi = serializers.DateTimeField()
@@ -35,6 +36,9 @@ class ContractListSerializer(serializers.Serializer):
     
     def get_partner_tc(self, obj):
         return obj.partner.tc_vkn_no if obj.partner else ""
+    
+    def get_vendor(self, obj):
+        return obj.vendor.name if obj.vendor else ""
     
     def get_status(self, obj):
         return obj.status.name if obj.status else ""

@@ -8,19 +8,14 @@ from django_filters import CharFilter
 from .serializers import *
 
 class ContractFilter(FilterSet):
-    uuid = CharFilter(method = 'filter_uuid')
-    code = CharFilter(method = 'filter_code')
-    name = CharFilter(method = 'filter_name')
+    partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    partner_tc = CharFilter(field_name='partner__tc_vkn_no', lookup_expr='icontains')
+    quotation = CharFilter(field_name='quotation_obj__code', lookup_expr='exact')
+    vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
 
     class Meta:
         model = Contract
-        fields = ['uuid','code']
-
-    def filter_uuid(self, queryset, uuid, value):
-        return queryset.filter(uuid = value)
-    
-    def filter_code(self, queryset, code, value):
-        return queryset.filter(code = value)
+        fields = ['uuid','code','contract_id','project','customer_representative']
     
     
 
