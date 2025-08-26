@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     "trade",
     "projects",
     "purchasing",
+    "risk",
 ]
 
 MIDDLEWARE = [
