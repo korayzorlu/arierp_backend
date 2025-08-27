@@ -225,6 +225,9 @@ def fetch_installments(company):
         installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency is not None}
         leases_dict = {l.lease_id: l for l in leases}
 
+        installments_zeros = Installment.objects.select_related().filter(sequency = 0)
+        installments_zeros.delete()
+
         previous_progress = 0
         old_obj_count = 0
         new_obj_count = 0
