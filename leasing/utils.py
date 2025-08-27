@@ -1600,6 +1600,88 @@ def export_to_terminated_risk_partners(self):
     #self.process.status = "completed"
     self.process.save()
 
+def export_deposite_partners(self):
+    objs = Partner.objects.select_related().filter(
+        vendor_filter_for_views(self.params) &
+        (
+            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        ) &
+        Q(partner_contracts__contract_leases__paid__lte=10000) &
+        Q(partner_contracts__contract_leases__paid__gte=1000)
+    ).exclude(
+        Q(types__contains=["special"]) |
+        Q(types__contains=["barter"]) |
+        Q(types__contains=["virman"])
+    )
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Sözleşme No": [],
+        "Müşteri İsmi": [],
+        "Müşteri TC": [],
+        "Müşteri CRM Kodu": []
+    }
+
+    previous_progress = 0
+    metin = ""
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+        
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(self.params) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(contract__partner = obj) &
+            Q(paid__lte=10000) &
+            Q(paid__gte=1000)
+        ).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        ).order_by("-id")
+
+        total_overdue_amount = Decimal("0")
+        if leases:
+            for lease in leases:
+                total_overdue_amount += lease.overdue_amount
+
+                data["Sözleşme No"].append(lease.contract.code)
+                data["Müşteri İsmi"].append(lease.contract.partner.name)
+                data["Müşteri TC"].append(lease.contract.partner.tc_vkn_no)
+                data["Müşteri CRM Kodu"].append(lease.contract.partner.crm_code)
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "deposite_partners", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-kaporalar.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
 def export_delivery_confirms(self):
     objs = Partner.objects.select_related().filter(
         vendor_filter_for_views(self.params) &
