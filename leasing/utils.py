@@ -1622,6 +1622,7 @@ def export_deposite_partners(self):
     
     data = {
         "Sözleşme No": [],
+        "Kira Planı": [],
         "Müşteri İsmi": [],
         "Müşteri TC": [],
         "Müşteri CRM Kodu": []
@@ -1660,6 +1661,7 @@ def export_deposite_partners(self):
                 total_overdue_amount += lease.overdue_amount
 
                 data["Sözleşme No"].append(lease.contract.code)
+                data["Kira Planı"].append(lease.code)
                 data["Müşteri İsmi"].append(lease.contract.partner.name)
                 data["Müşteri TC"].append(lease.contract.partner.tc_vkn_no)
                 data["Müşteri CRM Kodu"].append(lease.contract.partner.crm_code)
