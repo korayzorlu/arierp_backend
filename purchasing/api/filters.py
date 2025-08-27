@@ -21,11 +21,24 @@ class PurchasePaymentFilter(FilterSet):
     currency = CharFilter(field_name='lease__currency__code', lookup_expr='icontains')
     project = CharFilter(field_name='lease__contract__project', lookup_expr='icontains')
     status = CharFilter(field_name='lease__status__name', lookup_expr='icontains')
-    lease_status = CharFilter(field_name='lease__lease_status', lookup_expr='icontains')  
+    lease_status = CharFilter(field_name='lease__lease_status', lookup_expr='icontains')
+    status_control = CharFilter(method = 'filter_status_control') 
 
     class Meta:
         model = PurchasePayment
         fields = ['uuid']
+
+    def filter_status_control(self, queryset, status_control, value):
+        if value == "true":
+            print( "evet var")
+            return queryset.filter(
+                lease__lease_status = "planlandi"
+            ).annotate(
+                total_purchase_document=Sum('lease__lease_purchase_documents__total_amount')
+            ).filter(total_purchase_document__gt=0)
+        else:
+            print("hayır yok")
+            return queryset.filter()
     
 class PurchaseDocumentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')

@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,F,ExpressionWrapper,DecimalField
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -108,7 +108,9 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
     serializer_class = PurchasePaymentListSerializer
     filterset_class = PurchasePaymentFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    ordering_fields = ['total_purchase_document','diff','total_contract_amount','total_vendor_payment','before_total_payment','after_total_payment',
+                       'managing_expense','lease_payment_amount','vendor_payment_with_report_date','next_payment','purchasing']
+    ordering = ['-diff']
     pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
@@ -124,7 +126,13 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
 
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)
-        ).order_by("lease__contract__code")
+        ).annotate(
+            total_purchase_document=Sum('lease__lease_purchase_documents__total_amount'),
+            diff=ExpressionWrapper(
+                F('lease_payment_amount') - F('before_total_payment'),
+                output_field=DecimalField(max_digits=14, decimal_places=2)
+            )
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:

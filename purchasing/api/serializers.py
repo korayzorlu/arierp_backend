@@ -67,7 +67,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     def get_total_purchase_document_amount(self, obj):
         purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
 
-        return purchase_documents['total_total_amount']
+        return purchase_documents['total_total_amount'] or Decimal("0.00")
         
 class PurchaseDocumentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
