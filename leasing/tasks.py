@@ -1200,3 +1200,6 @@ def fetch_overdue_leases(company):
 
     print(f"{old_obj_count} objects updated for leases.")
 
+@shared_task()
+def test_scheduler_task():
+    print(print(f"[{datetime.datetime.now()}] Zamanlanmış görev çalıştı!"))

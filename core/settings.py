@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 from decouple import config, Csv
+from celery.schedules import crontab
 
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
@@ -310,6 +311,13 @@ CELERY_CACHE_BACKEND = 'django-cache'
 
 CELERY_BROKER_CONNECTION_HEARTBEAT = 60  # saniye
 CELERY_BROKER_CONNECTION_RETRY = True
+
+CELERY_BEAT_SCHEDULE = {
+    "my-daily-task": {
+        "task": "leasing.tasks.test_scheduler_task",
+        "schedule": crontab(hour=17, minute=52),
+    },
+}
 
 # Proxy
 
