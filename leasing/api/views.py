@@ -871,7 +871,9 @@ class DepositPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             Q(partner_contracts__contract_leases__paid__lte=10000) &
-            Q(partner_contracts__contract_leases__paid__gte=1000)
+            Q(partner_contracts__contract_leases__paid__gte=1000) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=0) &
+            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).exclude(types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)

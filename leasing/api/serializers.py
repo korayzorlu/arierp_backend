@@ -1583,6 +1583,9 @@ class DepositPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             Q(paid__lte=10000) &
             Q(paid__gte=1000) &
+            Q(overdue_amount__gt=100) &
+            Q(overdue_days__gt=0) &
+            Q(overdue_days__lte=30) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |

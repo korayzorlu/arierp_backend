@@ -1609,7 +1609,9 @@ def export_deposite_partners(self):
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
         Q(partner_contracts__contract_leases__paid__lte=10000) &
-        Q(partner_contracts__contract_leases__paid__gte=1000)
+        Q(partner_contracts__contract_leases__paid__gte=1000) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=0) &
+        Q(partner_contracts__contract_leases__overdue_amount__gt=100)
     ).exclude(
         Q(types__contains=["special"]) |
         Q(types__contains=["barter"]) |
@@ -1648,7 +1650,9 @@ def export_deposite_partners(self):
             ) &
             Q(contract__partner = obj) &
             Q(paid__lte=10000) &
-            Q(paid__gte=1000)
+            Q(paid__gte=1000) &
+            Q(overdue_amount__gt=100) &
+            Q(overdue_days__gt=0)
         ).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
