@@ -44,6 +44,7 @@ urlpatterns = [
     path('api/projects/', include("projects.urls")),
     path('api/purchasing/', include("purchasing.urls")),
     path('api/quotations/', include("quotations.urls")),
+    path('api/risk/', include("risk.urls")),
     path("select2/", include("django_select2.urls")),
     path('api/subscriptions/', include("subscriptions.urls")),
     path('api/trade/', include("trade.urls")),

@@ -57,6 +57,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 #{"type" : "item", "class" : "free", "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},
                 {"type" : "item", "class" : "free", "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
                 {"type" : "item", "class" : "free", "label" : "Anlaşmalı Fesihler", "icon" : "policy", "route" : "/agreed-terminated-partners"},
+                {"type" : "item", "class" : "free", "label" : "Bakiye Temerrüt Raporu", "icon" : "policy", "route" : "/amount-debit-transaction"},
                 {"type" : "item", "class" : "free", "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
                 {"type" : "item", "class" : "free", "label" : "Özet", "icon" : "policy", "route" : "/manager-summary"},
             ]},
