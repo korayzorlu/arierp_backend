@@ -42,6 +42,7 @@ class AmountDebitTransaction(models.Model):
 
     trn_id = models.CharField(_("Trn Id"), max_length=25, null=True, blank=True)
     lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_amount_debits")
+    process_group_id = models.CharField(_("Process Group ID"), max_length=25, null=True, blank=True)
     process_group = models.CharField(_("Process Group"), max_length=50, null=True, blank=True)
     due_date = models.DateField(_("Due Date"), blank=True, null=True)
     process_type = models.CharField(_("Process Type"), max_length=50, null=True, blank=True)
@@ -53,7 +54,7 @@ class AmountDebitTransaction(models.Model):
     adat_amount = models.DecimalField(_("adat Amount"), default = 0.00, max_digits=14, decimal_places=2)
     default_amount = models.DecimalField(_("Default Amount"), default = 0.00, max_digits=14, decimal_places=2)
     interest_rate = models.DecimalField(_("Interest Rate"), default = 0.00, max_digits=5, decimal_places=2)
-    overdue_interest_rate = models.DecimalField(_("Interest Rate"), default = 0.00, max_digits=5, decimal_places=2)
+    overdue_interest_rate = models.DecimalField(_("Interest Rate"), default = 0.00, max_digits=14, decimal_places=2)
 
     day = models.IntegerField(_("Day"), default=0)
 

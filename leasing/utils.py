@@ -422,7 +422,7 @@ def import_bank_activities(self, df_json):
             # matches_tc_vkn_no = re.findall(r'\d+', str(row['Açıklama']))
             # tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
 
-            tc_vkn_no = str(row['Gönderen TCKN / VKN']) if not pd.isna(row['Gönderen TCKN / VKN']) else ""
+            tc_vkn_no = str(int(row['Gönderen TCKN / VKN'])) if not pd.isna(row['Gönderen TCKN / VKN']) else ""
 
             obj = BankActivity.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,

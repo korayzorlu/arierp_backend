@@ -27,7 +27,7 @@ class AmountDebitTransactionListSerializer(serializers.Serializer):
     adat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     default_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     interest_rate = serializers.DecimalField(max_digits=5,decimal_places=2)
-    overdue_interest_rate = serializers.DecimalField(max_digits=5,decimal_places=2)
+    overdue_interest_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     day = serializers.IntegerField()
     
     def get_companyId(self, obj):

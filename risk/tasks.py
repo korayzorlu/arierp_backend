@@ -1,18 +1,27 @@
 from celery import shared_task
 from core.celery import app
 from django.http import JsonResponse
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware,now
 
 import pandas as pd
 import io
 import pyodbc
 from decimal import Decimal
+from datetime import datetime
 
 from .models import *
 from users.models import User
 from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
+
+
+def to_date(dt):
+    if dt is None:
+        return None
+    if isinstance(dt, datetime):
+        return dt.date()
+    return dt  # zaten date
 
 @shared_task()
 def fetch_amounts_and_debits(company):
@@ -40,9 +49,12 @@ def fetch_amounts_and_debits(company):
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         amount_debit_transaction_by_code = {a.trn_id: a for a in amount_debit_transactions if a.trn_id}
+        adt_by_lease_and_process = {(a.lease.lease_id, a.process_group_id, a.pk): a for a in amount_debit_transactions if a.lease.lease_id and a.process_group_id and a.pk}
         leases_dict = {l.lease_id: l for l in leases}
 
         previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
         conn = pyodbc.connect(connectionString)
         for index,obj in enumerate(leases):
             current_progress = ((index + 1)/len(leases))*100
@@ -76,6 +88,9 @@ def fetch_amounts_and_debits(company):
             interest_rate = Decimal(str(external_data[0]["InterestRate"])) if len(external_data) > 0 else  Decimal("0.00")
             
             ####temerrüt hesapla
+            today = datetime.now().date().strftime("%Y%m%d")
+            formatted_today = datetime.now().date()
+            formatted_today = f"{formatted_today.year}-{formatted_today.month}-{formatted_today.day}"
             SQL_QUERY = f"""
             SELECT
                 TrnId,
@@ -102,7 +117,7 @@ def fetch_amounts_and_debits(company):
                             (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                             OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                         )
-                        AND TrnDueDate <= '20250825'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                     THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -118,7 +133,7 @@ def fetch_amounts_and_debits(company):
                                 (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                                 OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                             )
-                            AND TrnDueDate <= '20250825'
+                            AND TrnDueDate <= '{today}'
                             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                         )
                         THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -227,7 +242,7 @@ def fetch_amounts_and_debits(company):
                             (TrnPostingType >= 110 AND TrnPostingType <= 120)
                             OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                         )
-                        AND TrnDueDate <= '20250825'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                 )
@@ -245,13 +260,13 @@ def fetch_amounts_and_debits(company):
                         AND TrnLedgerStatu = 10
                         AND TrnPostingType >= 110
                         AND TrnPostingType <= 120
-                        AND TrnDueDate <= '20250825'
+                        AND TrnDueDate <= '{today}'
                         AND ISNULL(xx.OperationProjectId_Count, 0) = 0
                     )
                 )
                 AND TrnAccountType = 11
                 AND TrnAccountId <> 0
-                AND TrnDueDate <= CONVERT(DATETIME, '2025-08-25', 102)
+                AND TrnDueDate <= CONVERT(DATETIME, '{formatted_today}', 102)
 
                 -- FARK BURADA
                 AND TrnOprLeasingOperationPrjId IN ({obj.lease_id})
@@ -287,6 +302,8 @@ def fetch_amounts_and_debits(company):
             external_data=[
                 {
                     "TrnId" : r.TrnId,
+                    "TrnOprLeasingOperationPrjId" : r.TrnOprLeasingOperationPrjId,
+                    "TrnPostingGroupId" : r.TrnPostingGroupId,
                     "JrnStpPstGrpName" : r.JrnStpPstGrpName,
                     "TrnCurrencyCode" : r.TrnCurrencyCode,
                     "TrnDueDate" : r.TrnDueDate,
@@ -306,38 +323,79 @@ def fetch_amounts_and_debits(company):
 
                 if obj:
                     old_obj_count += 1
-                    trn_id = str(data["TrnId"]) or ""
-                    lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"]))
-                    process_group = str(data["JrnStpPstGrpName"]) or ""
-                    due_date = make_aware(data["TrnDueDate"]) if data["TrnDueDate"] else None
-                    process_type = str(data["viewTrnPostingType"]) or ""
+                    obj.trn_id = str(data["TrnId"]) or ""
+                    obj.lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"]))
+                    obj.process_group_id = str(data["TrnPostingGroupId"]) or ""
+                    obj.process_group = str(data["JrnStpPstGrpName"]) or ""
+                    obj.due_date = make_aware(data["TrnDueDate"]) if data["TrnDueDate"] else None
+                    obj.process_type = str(data["viewTrnPostingType"]) or ""
 
-                    debit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00")
-                    credit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00")
-                    real_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00")
-                    for_default_amount = safe_decimal(data["VatRate"])
-                    adat_amount = safe_decimal(data["VatRate"])
-                    default_amount = safe_decimal(data["VatRate"])
-                    interest_rate = safe_decimal(data["VatRate"])
-                    overdue_interest_rate = safe_decimal(data["VatRate"])
+                    obj.debit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00")
+                    obj.credit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00")
 
-                    day = int(data["TrnId"]) or 0
+                    obj.interest_rate = safe_decimal(interest_rate)
 
-                    # obj.contract_id = str(data["ContractHeaderId"]) or ""
-                    # obj.code = str(data["ContractHeaderCode"]) or ""
-                    # obj.partner = partners_dict.get(str(data["CustomerId"]))
-                    # obj.quotation_obj = quotations_dict.get(str(data["QuotationHeaderId"]))
-                    # obj.committe = str(data["CommitteeName"]) or ""
-                    # obj.credit_type = str(data["CreditTypeName"]) or ""
-                    # obj.customer_representative = str(data["CustomerRepresentative"]) or ""
-                    # obj.supplier = data["Vendor"] or ""
-                    # obj.project = data["Project"] or ""
-                    # obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
-                    # obj.lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None
-                    # obj.currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
-                    # obj.save()
+                    #real amount
+                    prev_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk-1)))
+                    if prev_obj:
+                        obj.real_amount = (obj.debit_amount - obj.credit_amount) + prev_obj.real_amount
+                    else:
+                        obj.real_amount = obj.debit_amount - obj.credit_amount
+                    obj.for_default_amount = obj.real_amount
+
+                    #day
+                    next_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk+1)))
+                    if next_obj and obj.real_amount > 0.4:
+                        diff_date = to_date(next_obj.due_date) - to_date(obj.due_date)
+                        obj.day = diff_date.days
+                    elif not next_obj and obj.real_amount > 0.4:
+                        diff_date = datetime.today().date() - obj.due_date.date()
+                        obj.day = diff_date.days
+                    else:
+                        obj.day = 0
+
+                    obj.adat_amount = obj.real_amount * obj.day
+                    obj.default_amount = (obj.real_amount * (interest_rate/100) * obj.day) / Decimal("360")
+                    obj.overdue_interest_rate = obj.default_amount + (obj.default_amount * Decimal("0.01"))
+                    obj.save()
                 else:
-                    pass
-        
+                    new_obj_count += 1
+                    obj = AmountDebitTransaction(
+                        company = company_obj,
+                        trn_id = str(data["TrnId"]) or "",
+                        lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"])),
+                        process_group_id = str(data["TrnPostingGroupId"]) or "",
+                        process_group = str(data["JrnStpPstGrpName"]) or "",
+                        due_date = make_aware(data["TrnDueDate"]) if data["TrnDueDate"] else None,
+                        process_type = str(data["viewTrnPostingType"]) or "",
+
+                        debit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00"),
+                        credit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00"),
+                        interest_rate = safe_decimal(interest_rate)
+                    )
+                    #real amount
+                    prev_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk-1)))
+                    if prev_obj:
+                        obj.real_amount = (obj.debit_amount - obj.credit_amount) + prev_obj.real_amount
+                    else:
+                        obj.real_amount = obj.debit_amount - obj.credit_amount
+                    obj.for_default_amount = obj.real_amount
+
+                    #day
+                    next_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk+1)))
+                    if next_obj and obj.real_amount > 0.4:
+                        diff_date = to_date(next_obj.due_date) - to_date(obj.due_date)
+                        obj.day = diff_date.days
+                    elif not next_obj and obj.real_amount > 0.4:
+                        diff_date = datetime.today().date() - obj.due_date.date()
+                        obj.day = diff_date.days
+                    else:
+                        obj.day = 0
+
+                    obj.adat_amount = obj.real_amount * obj.day
+                    obj.default_amount = (obj.real_amount * (interest_rate/100) * obj.day) / Decimal("360")
+                    obj.overdue_interest_rate = obj.default_amount + (obj.default_amount * Decimal("0.01"))
+                    obj.save()
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
     except Exception as e:
         print(e)

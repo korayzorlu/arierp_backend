@@ -133,7 +133,7 @@ class AmountDebitTransactionList(ModelViewSet, QueryListAPIView):
         
         custom_related_fields = ["company","lease"]
 
-        queryset = AmountDebitTransaction.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-lease__code")
+        queryset = AmountDebitTransaction.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-lease__code","id")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
