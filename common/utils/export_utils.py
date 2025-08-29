@@ -20,6 +20,7 @@ from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from leasing.utils import export_bank_activities,export_today_partners,export_tomorrow_partners,export_risk_partners,export_kdv_risk_partners,export_to_warned_risk_partners,export_to_terminated_risk_partners,export_warned_risk_partners,export_deposite_partners,export_delivery_confirms
 from purchasing.utils import export_purchase_payments
+from risk.utils import export_amount_debit_transactions
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -110,5 +111,8 @@ class BaseExporter():
 
     def export_purchasepayment(self):
         export_purchase_payments(self)
+
+    def export_amountdebittransaction(self):
+        export_amount_debit_transactions(self)
 
  
