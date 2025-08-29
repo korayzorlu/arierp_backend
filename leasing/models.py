@@ -386,19 +386,19 @@ class BankActivity(models.Model):
                         "isDeepSearch": True
                     }
 
-                    response = requests.get(
-                        "https://sandbox-api.sanctionscanner.com/api/Search/SearchByIdentity",
-                        params=params,
-                        auth=HTTPBasicAuth(USERNAME, PASSWORD)
-                    ).json()
+                    # response = requests.get(
+                    #     "https://sandbox-api.sanctionscanner.com/api/Search/SearchByIdentity",
+                    #     params=params,
+                    #     auth=HTTPBasicAuth(USERNAME, PASSWORD)
+                    # ).json()
 
-                    self.is_third_person = True
-                    if len(response["Result"]["Result"]) == 0:
-                        self.is_reliable_person = True
-                        super().save(update_fields=['is_reliable_person','is_third_person'])
-                    else:
-                        self.is_reliable_person = False
-                        super().save(update_fields=['is_reliable_person','is_third_person'])
+                    # self.is_third_person = True
+                    # if len(response["Result"]["Result"]) == 0:
+                    #     self.is_reliable_person = True
+                    #     super().save(update_fields=['is_reliable_person','is_third_person'])
+                    # else:
+                    #     self.is_reliable_person = False
+                    #     super().save(update_fields=['is_reliable_person','is_third_person'])
 
                 if len(contracts) == 1:
                     for contract in contracts:
