@@ -44,7 +44,7 @@ def fetch_amounts_and_debits(company):
     '''
 
     try:
-        amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").all()
+        amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").filter()
         leases = Lease.objects.select_related().filter(contract__project__icontains="KIZILBÜK")
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
