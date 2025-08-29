@@ -44,7 +44,7 @@ def fetch_amounts_and_debits(company):
     '''
 
     try:
-        amount_debit_transactions = AmountDebitTransaction.objects.select_related().all()
+        amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").all()
         leases = Lease.objects.select_related().filter(contract__project__icontains="KIZILBÜK")
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
@@ -373,7 +373,6 @@ def fetch_amounts_and_debits(company):
                         credit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00"),
                         interest_rate = safe_decimal(interest_rate)
                     )
-                    obj.save()
                     #real amount
                     prev_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk-1)))
                     if prev_obj:
