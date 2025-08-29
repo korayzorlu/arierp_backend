@@ -360,7 +360,7 @@ def fetch_amounts_and_debits(company):
                     obj.save()
                 else:
                     new_obj_count += 1
-                    obj = AmountDebitTransaction(
+                    obj = AmountDebitTransaction.objects.create(
                         company = company_obj,
                         trn_id = str(data["TrnId"]) or "",
                         lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"])),
