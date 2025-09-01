@@ -27,7 +27,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from finance.utils import finmaks_bank_accounts
+from finance.utils import finmaks_bank_accounts,finmaks_bank_account_transactions
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -134,6 +134,51 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
         try:
             bank_accounts = finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
             data = [item for item in bank_accounts if item.get("Status")]
+        except:
+            data = []
+
+        data_format = request.query_params.get('format', None)
+
+        if data_format == 'datatables':
+            filter_backends = (DatatablesFilterBackend)
+            data = {
+                "draw": int(self.request.GET.get('draw', 1)),  # Müşteri tarafından gönderilen çizim sayısı
+                "recordsTotal": len(data),  # Toplam kayıt sayısı
+                "recordsFiltered": len(data),  # Filtre sonrası kayıt sayısı
+                "data": data  # Gösterilecek veri
+            }
+            
+            return Response(data)
+        
+        serializer = self.get_serializer(data, many=True)
+        return Response(serializer.data)
+    
+class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
+    serializer_class = BankAccountTransactionListSerializer
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def list(self, request, *args, **kwargs):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+     
+        USERNAME = settings.FINMAKS_USERNAME
+        PASSWORD = settings.FINMAKS_PASSWORD
+        INSTITUTION_CODE = "0001"
+        INSTITUTION_ID = 1
+        BANK_INTEGRATION_INFO_ID = ""
+        BANK_CODE = "0046"
+        START_DATE = "2025-08-01"
+        END_DATE = "2025-08-31"
+
+        BASE_URL = "http://finmaks.arileasing.com.tr:92"
+        ENCRYPT_PASS_ENDPOINT = "/EncryptPass"
+        VIEW_ENDPOINT = "/Transactions"
+
+        logger = logging.getLogger("django")
+        try:
+            bank_account_transactions = finmaks_bank_account_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+            data = bank_account_transactions
         except:
             data = []
 
