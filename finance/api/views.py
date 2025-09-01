@@ -133,7 +133,7 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
         logger = logging.getLogger("django")
         try:
             bank_accounts = finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
-            data = bank_accounts
+            data = [item for item in bank_accounts if item.get("Status")]
         except:
             data = []
 
