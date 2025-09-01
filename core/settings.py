@@ -513,5 +513,5 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
 # Finmaks
-FINMAKS_USERNAME = config("FINMAKS_USERNAME")
-FINMAKS_PASSWORD = config("FINMAKS_PASSWORD")
+FINMAKS_USERNAME = str(os.getenv('FINMAKS_USERNAME'))
+FINMAKS_PASSWORD = str(os.getenv('FINMAKS_PASSWORD'))
