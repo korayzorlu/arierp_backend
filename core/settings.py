@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     "projects",
     "purchasing",
     "risk",
+    "finance",
 ]
 
 MIDDLEWARE = [
@@ -510,3 +511,7 @@ import logging
 logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
+
+# Finmaks
+FINMAKS_USERNAME = config("FINMAKS_USERNAME")
+FINMAKS_PASSWORD = config("FINMAKS_PASSWORD")

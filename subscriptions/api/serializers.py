@@ -42,6 +42,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
                 {"type" : "item", "class" : "free", "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},
                 {"type" : "item", "class" : "free", "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
+                {"type" : "item", "class" : "premium", "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
                 #{"type" : "item", "class" : "free", "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "report", "items" : [
