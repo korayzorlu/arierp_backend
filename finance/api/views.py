@@ -187,6 +187,9 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
         try:
             bank_account_transactions = finmaks_bank_account_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
             data = bank_account_transactions
+            for item in data:
+                item["TransactionDate"] = datetime.fromisoformat(item["TransactionDate"]).strftime("%d.%m.%Y %H:%M")
+            data = sorted(data, key=lambda x: x["TransactionDate"])
         except:
             data = []
 
