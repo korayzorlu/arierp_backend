@@ -134,6 +134,11 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
         try:
             bank_accounts = finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
             data = [item for item in bank_accounts if item.get("Status")]
+            data = sorted(data, key=lambda x: x["BankName"])
+            for item in data:
+                item["Balance"] = Decimal(item["Balance"].replace(",", ""))
+                item["AvailableBalance"] = Decimal(item["AvailableBalance"].replace(",", ""))
+                item["BlockedBalance"] = Decimal(item["BlockedBalance"].replace(",", ""))
         except:
             data = []
 
