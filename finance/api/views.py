@@ -6,6 +6,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
 from django.utils.timezone import now
 from django.conf import settings
+from django.utils.dateparse import parse_datetime
 
 
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
@@ -23,12 +24,13 @@ import traceback
 from datetime import datetime,timedelta
 import logging
 import locale
+import traceback
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
 from .filters import *
-from finance.utils import fetch_finmaks_bank_accounts,finmaks_bank_account_transactions
+from finance.utils import fetch_finmaks_bank_accounts,fetch_finmaks_transactions
 from common.utils.common_utils import normalize,safe_decimal
 
 
@@ -223,23 +225,105 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
         PASSWORD = settings.FINMAKS_PASSWORD
         INSTITUTION_CODE = "0001"
         INSTITUTION_ID = 1
-        BANK_INTEGRATION_INFO_ID = ""
-        BANK_CODE = "0046"
-        START_DATE = "2025-08-01"
-        END_DATE = "2025-08-31"
-
-        BASE_URL = "http://finmaks.arileasing.com.tr:92"
-        ENCRYPT_PASS_ENDPOINT = "/EncryptPass"
-        VIEW_ENDPOINT = "/Transactions"
 
         logger = logging.getLogger("django")
         try:
-            bank_account_transactions = finmaks_bank_account_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
-            data = bank_account_transactions
+            transactions = fetch_finmaks_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+
+            finmaks_transactions = FinmaksTransaction.objects.select_related().all()
+            finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
+            currencies = Currency.objects.select_related().all()
+            company_obj = active_company.company
+
+            finmaks_transaction_by_code = {t.transaction_id: t for t in finmaks_transactions if t.transaction_id}
+            finmaks_bank_accounts_dict = {b.bank_account_id: b for b in finmaks_bank_accounts}
+
+            for transaction in transactions:
+                obj = (finmaks_transaction_by_code.get(str(transaction["TransactionId"])))
+                if obj:
+                    obj.bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"]))
+                    obj.transaction_id =str(transaction["TransactionId"]) or ""
+                    obj.transaction_date = datetime.fromisoformat(transaction["TransactionDate"])
+                    obj.explanation_field = str(transaction["ExplanationField"]) or ""
+                    obj.description = str(transaction["Description"]) or ""
+                    obj.amount = safe_decimal(transaction["Amount"].replace(",", ""))
+                    obj.sender_vkn = str(transaction["SenderVKN"]) or ""
+                    obj.sender_iban = str(transaction["SenderIBAN"]) or ""
+                    obj.sender_account_name = str(transaction["SenderAccountName"]) or ""
+                    obj.receiver_vkn = str(transaction["ReceiverVKN"]) or ""
+                    obj.receiver_iban = str(transaction["ReceiverIBAN"]) or ""
+                    obj.receipt_number = str(transaction["ReceiptNumber"]) or ""
+                    obj.value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None
+                    obj.transaction_type = str(transaction["TransactionType"]) or ""
+                    obj.bank_code = str(transaction["BankCode"]) or ""
+                    obj.balance = safe_decimal(transaction["Balance"].replace(",", ""))
+                    obj.firm_id = str(transaction["FirmId"]) or ""
+                    obj.firm_name =str(transaction["FirmName"]) or ""
+                    obj.firm_merchantId = str(transaction["FirmMerchantId"]) or ""
+                    obj.firm_externalCode = str(transaction["FirmExternalCode"]) or ""
+                    obj.firm_externalId = str(transaction["FirmExternalId"]) or ""
+                    obj.transaction_branch_code = str(transaction["TransactionBranchCode"]) or ""
+                    obj.transaction_branch_name = str(transaction["TransactionBranchName"]) or ""
+                    obj.firm_code = str(transaction["FirmCode"]) or ""
+                    obj.currency_type = str(transaction["CurrencyType"]) or ""
+                    obj.debit = str(transaction["Debit"]) or ""
+                    obj.branch_code = str(transaction["BranchCode"]) or ""
+                    obj.transaction_external_id = str(transaction["TransactionExternalId"]) or ""
+                    obj.external_id_used = transaction["ExternalIdUsed"]
+                    obj.external_bank_id = str(transaction["ExternalBankId"]) or ""
+                    obj.reference_no = str(transaction["ReferenceNo"]) or ""
+                    obj.finmaks_process_type = str(transaction["FinmaksProcessType"]) or ""
+                    obj.category_name = str(transaction["CategoryName"]) or ""
+                    obj.integration_field_value = str(transaction["IntegrationFieldValue"]) or ""
+                    obj.transaction_status = str(transaction["TransactionStatus"]) or ""
+                    obj.save()
+                else:
+                    FinmaksTransaction.objects.create(
+                        company = company_obj,
+                        bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"])),
+                        transaction_id =str(transaction["TransactionId"]) or "",
+                        transaction_date = datetime.fromisoformat(transaction["TransactionDate"]),
+                        explanation_field = str(transaction["ExplanationField"]) or "",
+                        description = str(transaction["Description"]) or "",
+                        amount = safe_decimal(transaction["Amount"].replace(",", "")),
+                        sender_vkn = str(transaction["SenderVKN"]) or "",
+                        sender_iban = str(transaction["SenderIBAN"]) or "",
+                        sender_account_name = str(transaction["SenderAccountName"]) or "",
+                        receiver_vkn = str(transaction["ReceiverVKN"]) or "",
+                        receiver_iban = str(transaction["ReceiverIBAN"]) or "",
+                        receipt_number = str(transaction["ReceiptNumber"]) or "",
+                        value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None,
+                        transaction_type = str(transaction["TransactionType"]) or "",
+                        bank_code = str(transaction["BankCode"]) or "",
+                        balance = safe_decimal(transaction["Balance"].replace(",", "")),
+                        firm_id = str(transaction["FirmId"]) or "",
+                        firm_name =str(transaction["FirmName"]) or "",
+                        firm_merchantId = str(transaction["FirmMerchantId"]) or "",
+                        firm_externalCode = str(transaction["FirmExternalCode"]) or "",
+                        firm_externalId = str(transaction["FirmExternalId"]) or "",
+                        transaction_branch_code = str(transaction["TransactionBranchCode"]) or "",
+                        transaction_branch_name = str(transaction["TransactionBranchName"]) or "",
+                        firm_code = str(transaction["FirmCode"]) or "",
+                        currency_type = str(transaction["CurrencyType"]) or "",
+                        debit = str(transaction["Debit"]) or "",
+                        branch_code = str(transaction["BranchCode"]) or "",
+                        transaction_external_id = str(transaction["TransactionExternalId"]) or "",
+                        external_id_used = transaction["ExternalIdUsed"],
+                        external_bank_id = str(transaction["ExternalBankId"]) or "",
+                        reference_no = str(transaction["ReferenceNo"]) or "",
+                        finmaks_process_type = str(transaction["FinmaksProcessType"]) or "",
+                        category_name = str(transaction["CategoryName"]) or "",
+                        integration_field_value = str(transaction["IntegrationFieldValue"]) or "",
+                        transaction_status = str(transaction["TransactionStatus"]) or ""
+                    )
+                    
+            data = transactions
             for item in data:
                 item["TransactionDate"] = datetime.fromisoformat(item["TransactionDate"]).strftime("%d.%m.%Y %H:%M")
             data = sorted(data, key=lambda x: x["TransactionDate"])
-        except:
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
             data = []
 
         data_format = request.query_params.get('format', None)
@@ -257,3 +341,4 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
         
         serializer = self.get_serializer(data, many=True)
         return Response(serializer.data)
+    
