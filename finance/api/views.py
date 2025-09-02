@@ -22,12 +22,15 @@ from rest_framework.permissions import AllowAny
 import traceback
 from datetime import datetime,timedelta
 import logging
+import locale
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
 from .filters import *
 from finance.utils import finmaks_bank_accounts,finmaks_bank_account_transactions
+
+
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
