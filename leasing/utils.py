@@ -645,7 +645,7 @@ def export_today_partners(self):
             previous_progress = current_progress
         
         #metin = f"Bilgilendirme: Sinpaş Kızılbük projesi’ne ait {today.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatır, iyi günler dileriz. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-        metin = f":  Değerli müşterimiz, {project_text(self.params)} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.{"Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz." if self.params.get('project') != 'sinpas' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. {"https://odeme.arileasing.com.tr/online-islemler//login.aspx  " if self.params.get('project') != 'sinpas' else ""}Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
+        metin = f"Değerli müşterimiz, {project_text(self.params)} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.{"Ödemelerinizi aşağıda linki bulunan online sistemden kontrol edip ödeme yapabilirsiniz." if self.params.get('project') != 'sinpas' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. {"https://odeme.arileasing.com.tr/online-islemler//login.aspx  " if self.params.get('project') != 'sinpas' else ""}Arı Finansal Kiralama(İletişim: 02123102721 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
 
         data["Müşteri İsmi"].append(obj.name)
         data["TC/VKN No"].append(obj.tc_vkn_no)
