@@ -28,7 +28,8 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from finance.utils import finmaks_bank_accounts,finmaks_bank_account_transactions
+from finance.utils import fetch_finmaks_bank_accounts,finmaks_bank_account_transactions
+from common.utils.common_utils import normalize,safe_decimal
 
 
 
@@ -124,25 +125,73 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
         PASSWORD = settings.FINMAKS_PASSWORD
         INSTITUTION_CODE = "0001"
         INSTITUTION_ID = 1
-        BANK_INTEGRATION_INTI_ID = ""
-        BANK_CODE = "0046"
-        START_DATE = "2025-08-01"
-        END_DATE = "2025-08-31"
-
-        BASE_URL = "http://finmaks.arileasing.com.tr:92"
-        ENCRYPT_PASS_ENDPOINT = "/EncryptPass"
-        VIEW_ENDPOINT = "/BankAccounts"
 
         logger = logging.getLogger("django")
         try:
-            bank_accounts = finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+            bank_accounts = fetch_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+
+            finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
+            currencies = Currency.objects.select_related().all()
+            company_obj = active_company.company
+
+            finmaks_bank_account_by_code = {b.bank_account_id: b for b in finmaks_bank_accounts if b.bank_account_id}
+            currencies_dict = {c.code: c for c in currencies}
+
+            for bank_account in bank_accounts:
+                obj = (finmaks_bank_account_by_code.get(str(bank_account["BankAccountId"])))
+                if obj:
+                    obj.bank_account_id = str(bank_account["BankAccountId"]) or ""
+                    obj.iban = str(bank_account["IBAN"]) or ""
+                    obj.account_no = str(bank_account["AccountNo"]) or ""
+                    obj.branch_code = str(bank_account["BranchCode"]) or ""
+                    obj.branch_name = str(bank_account["BranchName"]) or ""
+                    obj.finmaks_account_type = str(bank_account["FinmaksAccountType"]) or ""
+                    obj.balance = safe_decimal(bank_account["Balance"].replace(",", ""))
+                    obj.available_balance = safe_decimal(bank_account["AvailableBalance"].replace(",", ""))
+                    obj.over_draft = safe_decimal(bank_account["OverDraft"].replace(",", ""))
+                    obj.credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", ""))
+                    obj.blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", ""))
+                    obj.credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", ""))
+                    obj.currency = currencies_dict.get("TRY" if bank_account["Currency"] == "TL" else bank_account["Currency"])
+                    obj.currency_type = str(bank_account["CurrencyType"]) or ""
+                    obj.bank_name = str(bank_account["BankName"]) or ""
+                    obj.bank_code = str(bank_account["BankCode"]) or ""
+                    obj.bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or ""
+                    obj.last_read_time = datetime.fromisoformat(bank_account["LastReadTime"])
+                    obj.status = bank_account["Status"]
+                    obj.save()
+                else:
+                    FinmaksBankAccount.objects.create(
+                        company = company_obj,
+                        bank_account_id = str(bank_account["BankAccountId"]) or "",
+                        iban = str(bank_account["IBAN"]) or "",
+                        account_no = str(bank_account["AccountNo"]) or "",
+                        branch_code = str(bank_account["BranchCode"]) or "",
+                        branch_name = str(bank_account["BranchName"]) or "",
+                        finmaks_account_type = str(bank_account["FinmaksAccountType"]) or "",
+                        balance = safe_decimal(bank_account["Balance"].replace(",", "")),
+                        available_balance = safe_decimal(bank_account["AvailableBalance"].replace(",", "")),
+                        over_draft = safe_decimal(bank_account["OverDraft"].replace(",", "")),
+                        credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", "")),
+                        blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", "")),
+                        credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", "")),
+                        currency = currencies_dict.get("TRY" if bank_account["Currency"] == "TL" else bank_account["Currency"]),
+                        currency_type = str(bank_account["CurrencyType"]) or "",
+                        bank_name = str(bank_account["BankName"]) or "",
+                        bank_code = str(bank_account["BankCode"]) or "",
+                        bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or "",
+                        last_read_time = datetime.fromisoformat(bank_account["LastReadTime"]),
+                        status = bank_account["Status"],
+                    )
+
             data = [item for item in bank_accounts if item.get("Status")]
             data = sorted(data, key=lambda x: x["BankName"])
             for item in data:
                 item["Balance"] = Decimal(item["Balance"].replace(",", ""))
                 item["AvailableBalance"] = Decimal(item["AvailableBalance"].replace(",", ""))
                 item["BlockedBalance"] = Decimal(item["BlockedBalance"].replace(",", ""))
-        except:
+        except Exception as e:
+            print(e)
             data = []
 
         data_format = request.query_params.get('format', None)
