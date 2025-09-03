@@ -498,6 +498,7 @@ def fetch_warning_notices(company):
             SELECT RiskDocumentId,
                 RiskHeaderId,
                 CustomerId,
+                ContractHeaderId,
                 OrgContractHeaderId,
                 Debit,
                 ProcessStartDate,
@@ -528,6 +529,7 @@ def fetch_warning_notices(company):
                 "RiskDocumentId" : r.RiskDocumentId,
                 "RiskHeaderId" : r.RiskHeaderId,
                 "CustomerId" : r.CustomerId,
+                "ContractHeaderId" : r.ContractHeaderId,
                 "OrgContractHeaderId" : r.OrgContractHeaderId,
                 "Debit" : r.Debit,
                 "ProcessStartDate" : r.ProcessStartDate,
@@ -548,7 +550,7 @@ def fetch_warning_notices(company):
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         warning_notice_by_code = {c.document_id: c for c in warning_notices if c.document_id}
-        contracts_dict = {c.contract_id: c for c in contracts}
+        contracts_dict = {c.code: c for c in contracts}
 
         previous_progress = 0
         old_obj_count = 0
@@ -567,7 +569,7 @@ def fetch_warning_notices(company):
 
             if obj:
                 old_obj_count += 1
-                obj.contract = contracts_dict.get(str(data["OrgContractHeaderId"]))
+                obj.contract = contracts_dict.get(str(data["ContractHeaderId"]))
                 obj.document_id = str(data["RiskDocumentId"]) or ""
                 obj.risk_id = str(data["RiskHeaderId"]) or ""
                 obj.customer_id = str(data["CustomerId"]) or ""
@@ -582,11 +584,11 @@ def fetch_warning_notices(company):
                 obj.approval_state = str(data["ApprovalState"]) or ""
                 obj.save()
             else:
-                if data["OrgContractHeaderId"] and contracts_dict.get(str(data["OrgContractHeaderId"])):
+                if data["ContractHeaderId"] and contracts_dict.get(str(data["ContractHeaderId"])):
                     new_obj_count += 1
                     WarningNotice.objects.create(
                         company = company_obj,
-                        contract = contracts_dict.get(str(data["OrgContractHeaderId"])),
+                        contract = contracts_dict.get(str(data["ContractHeaderId"])),
                         document_id = str(data["RiskDocumentId"]) or "",
                         risk_id = str(data["RiskHeaderId"]) or "",
                         customer_id = str(data["CustomerId"]) or "",
