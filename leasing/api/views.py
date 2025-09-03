@@ -126,16 +126,22 @@ class LeaseList(ModelViewSet, QueryListAPIView):
     def get_queryset(self):
         if hasattr(self, '_cached_queryset'):
             return self._cached_queryset
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         ordering = self.request.query_params.get('ordering')
         
         custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
 
         if ordering:
-            queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by(str(ordering))
+            queryset = Lease.objects.select_related(*custom_related_fields).filter(
+                Q(company = active_company.company if active_company else None) &
+                vendor_filter_for_serializers(self.request.query_params)
+            ).order_by(str(ordering))
         else:
-            queryset = Lease.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-activation_date")
+            queryset = Lease.objects.select_related(*custom_related_fields).filter(
+                Q(company = active_company.company if active_company else None) &
+                vendor_filter_for_serializers(self.request.query_params)
+            ).order_by("-activation_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

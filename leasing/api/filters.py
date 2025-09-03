@@ -21,7 +21,7 @@ class LeaseFilter(FilterSet):
     activation_date = CharFilter(method = 'filter_activation_date')
     quotation = CharFilter(method = 'filter_quotation')
     kof = CharFilter(method = 'filter_kof')
-    project = CharFilter(method = 'filter_project')
+    project_name = CharFilter(method = 'filter_project_name')
     block = CharFilter(method = 'filter_block')
     unit = CharFilter(method = 'filter_unit')
     vade = CharFilter(method = 'filter_vade')
@@ -61,7 +61,7 @@ class LeaseFilter(FilterSet):
     def filter_kof(self, queryset, kof, value):
         return queryset.filter(contract__kof = value)
     
-    def filter_project(self, queryset, project, value):
+    def filter_project_name(self, queryset, project, value):
         return queryset.annotate(lowercase=Lower('contract__quotation_obj__quick_quotation__project'),uppercase=Upper('contract__quotation_obj__quick_quotation__project')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
     
     def filter_block(self, queryset, block, value):

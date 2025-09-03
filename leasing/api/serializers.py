@@ -28,7 +28,7 @@ class LeaseListSerializer(serializers.Serializer):
     leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
-    project = serializers.SerializerMethodField()
+    project_name = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     leasing_type = serializers.CharField()
     application_no = serializers.CharField()
@@ -83,7 +83,7 @@ class LeaseListSerializer(serializers.Serializer):
     def get_kof(self, obj):
         return obj.contract.kof if obj.contract else ""
     
-    def get_project(self, obj):
+    def get_project_name(self, obj):
         return obj.contract.project if obj.contract else ""
     
     def get_block(self, obj):
