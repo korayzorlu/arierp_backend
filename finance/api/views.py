@@ -216,11 +216,18 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
     serializer_class = BankAccountTransactionListSerializer
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
-    
-    def list(self, request, *args, **kwargs):
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-     
+
+        ####fetch
+
         USERNAME = settings.FINMAKS_USERNAME
         PASSWORD = settings.FINMAKS_PASSWORD
         INSTITUTION_CODE = "0001"
@@ -317,29 +324,25 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
                         integration_field_value = str(transaction["IntegrationFieldValue"]) or "",
                         transaction_status = str(transaction["TransactionStatus"]) or ""
                     )
-                    
-            data = transactions
-            for item in data:
-                item["TransactionDate"] = datetime.fromisoformat(item["TransactionDate"]).strftime("%d.%m.%Y %H:%M")
-            data = sorted(data, key=lambda x: x["TransactionDate"])
         except Exception as e:
             print(e)
             traceback.print_exc()
-            data = []
 
-        data_format = request.query_params.get('format', None)
-
-        if data_format == 'datatables':
-            filter_backends = (DatatablesFilterBackend)
-            data = {
-                "draw": int(self.request.GET.get('draw', 1)),  # Müşteri tarafından gönderilen çizim sayısı
-                "recordsTotal": len(data),  # Toplam kayıt sayısı
-                "recordsFiltered": len(data),  # Filtre sonrası kayıt sayısı
-                "data": data  # Gösterilecek veri
-            }
-            
-            return Response(data)
+        ####fetch-end
         
-        serializer = self.get_serializer(data, many=True)
-        return Response(serializer.data)
+        custom_related_fields = ["company"]
+
+        queryset = FinmaksTransaction.objects.select_related(*custom_related_fields).filter()
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = []
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
     

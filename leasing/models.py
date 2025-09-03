@@ -17,6 +17,7 @@ from companies.models import Company
 from common.models import Currency, Status
 from contracts.models import Contract
 from partners.models import Partner
+from finance.models import FinmaksTransaction
 
 # Create your models here.
 
@@ -218,6 +219,7 @@ class BankActivity(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="bank_activities")
 
+    finmaks_transaction = models.ForeignKey(FinmaksTransaction, on_delete=models.CASCADE, null=True, blank=True, related_name="finmaks_transaction_bank_activities")
     bank = models.CharField(_("Bank"), max_length=140, blank=True, null=True)
     bank_code = models.CharField(_("Bank Code"), max_length=140, blank=True, null=True)
     bank_branch_code = models.CharField(_("Bank Branch Code"), max_length=25, blank=True, null=True)

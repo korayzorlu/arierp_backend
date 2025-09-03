@@ -56,7 +56,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
         return obj.lease_payment_amount - obj.before_total_payment
     
     def get_temerrut(self, obj):
-        return obj.lease_payment_amount - obj.before_total_payment
+        return obj.before_total_payment - obj.lease_payment_amount
     
     def get_talimat(self, obj):
         if (obj.lease_payment_amount - obj.before_total_payment) <= 0:

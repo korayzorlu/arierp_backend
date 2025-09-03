@@ -52,7 +52,7 @@ class BankActivityAdmin(admin.ModelAdmin):
     search_fields = ["company__name","bank","bank_account_no","process_date","process_type","amount","currency__code","receipt_no","description","tc_vkn_no","cross_bank_account_no"]
     list_filter = []
     inlines = []
-    ordering = ["bank","bank_account_no","-process_date"]
+    ordering = ["-updated_date"]
     autocomplete_fields = ["currency"]
     
     def company(self,obj):
