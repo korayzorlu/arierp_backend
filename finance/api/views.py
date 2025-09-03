@@ -241,42 +241,43 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
             for transaction in transactions:
                 obj = (finmaks_transaction_by_code.get(str(transaction["TransactionId"])))
                 if obj:
-                    obj.bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"]))
-                    obj.transaction_id =str(transaction["TransactionId"]) or ""
-                    obj.transaction_date = datetime.fromisoformat(transaction["TransactionDate"])
-                    obj.explanation_field = str(transaction["ExplanationField"]) or ""
-                    obj.description = str(transaction["Description"]) or ""
-                    obj.amount = safe_decimal(transaction["Amount"].replace(",", ""))
-                    obj.sender_vkn = str(transaction["SenderVKN"]) or ""
-                    obj.sender_iban = str(transaction["SenderIBAN"]) or ""
-                    obj.sender_account_name = str(transaction["SenderAccountName"]) or ""
-                    obj.receiver_vkn = str(transaction["ReceiverVKN"]) or ""
-                    obj.receiver_iban = str(transaction["ReceiverIBAN"]) or ""
-                    obj.receipt_number = str(transaction["ReceiptNumber"]) or ""
-                    obj.value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None
-                    obj.transaction_type = str(transaction["TransactionType"]) or ""
-                    obj.bank_code = str(transaction["BankCode"]) or ""
-                    obj.balance = safe_decimal(transaction["Balance"].replace(",", ""))
-                    obj.firm_id = str(transaction["FirmId"]) or ""
-                    obj.firm_name =str(transaction["FirmName"]) or ""
-                    obj.firm_merchantId = str(transaction["FirmMerchantId"]) or ""
-                    obj.firm_externalCode = str(transaction["FirmExternalCode"]) or ""
-                    obj.firm_externalId = str(transaction["FirmExternalId"]) or ""
-                    obj.transaction_branch_code = str(transaction["TransactionBranchCode"]) or ""
-                    obj.transaction_branch_name = str(transaction["TransactionBranchName"]) or ""
-                    obj.firm_code = str(transaction["FirmCode"]) or ""
-                    obj.currency_type = str(transaction["CurrencyType"]) or ""
-                    obj.debit = str(transaction["Debit"]) or ""
-                    obj.branch_code = str(transaction["BranchCode"]) or ""
-                    obj.transaction_external_id = str(transaction["TransactionExternalId"]) or ""
-                    obj.external_id_used = transaction["ExternalIdUsed"]
-                    obj.external_bank_id = str(transaction["ExternalBankId"]) or ""
-                    obj.reference_no = str(transaction["ReferenceNo"]) or ""
-                    obj.finmaks_process_type = str(transaction["FinmaksProcessType"]) or ""
-                    obj.category_name = str(transaction["CategoryName"]) or ""
-                    obj.integration_field_value = str(transaction["IntegrationFieldValue"]) or ""
-                    obj.transaction_status = str(transaction["TransactionStatus"]) or ""
-                    obj.save()
+                    # obj.bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"]))
+                    # obj.transaction_id =str(transaction["TransactionId"]) or ""
+                    # obj.transaction_date = datetime.fromisoformat(transaction["TransactionDate"])
+                    # obj.explanation_field = str(transaction["ExplanationField"]) or ""
+                    # obj.description = str(transaction["Description"]) or ""
+                    # obj.amount = safe_decimal(transaction["Amount"].replace(",", ""))
+                    # obj.sender_vkn = str(transaction["SenderVKN"]) or ""
+                    # obj.sender_iban = str(transaction["SenderIBAN"]) or ""
+                    # obj.sender_account_name = str(transaction["SenderAccountName"]) or ""
+                    # obj.receiver_vkn = str(transaction["ReceiverVKN"]) or ""
+                    # obj.receiver_iban = str(transaction["ReceiverIBAN"]) or ""
+                    # obj.receipt_number = str(transaction["ReceiptNumber"]) or ""
+                    # obj.value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None
+                    # obj.transaction_type = str(transaction["TransactionType"]) or ""
+                    # obj.bank_code = str(transaction["BankCode"]) or ""
+                    # obj.balance = safe_decimal(transaction["Balance"].replace(",", ""))
+                    # obj.firm_id = str(transaction["FirmId"]) or ""
+                    # obj.firm_name =str(transaction["FirmName"]) or ""
+                    # obj.firm_merchantId = str(transaction["FirmMerchantId"]) or ""
+                    # obj.firm_externalCode = str(transaction["FirmExternalCode"]) or ""
+                    # obj.firm_externalId = str(transaction["FirmExternalId"]) or ""
+                    # obj.transaction_branch_code = str(transaction["TransactionBranchCode"]) or ""
+                    # obj.transaction_branch_name = str(transaction["TransactionBranchName"]) or ""
+                    # obj.firm_code = str(transaction["FirmCode"]) or ""
+                    # obj.currency_type = str(transaction["CurrencyType"]) or ""
+                    # obj.debit = str(transaction["Debit"]) or ""
+                    # obj.branch_code = str(transaction["BranchCode"]) or ""
+                    # obj.transaction_external_id = str(transaction["TransactionExternalId"]) or ""
+                    # obj.external_id_used = transaction["ExternalIdUsed"]
+                    # obj.external_bank_id = str(transaction["ExternalBankId"]) or ""
+                    # obj.reference_no = str(transaction["ReferenceNo"]) or ""
+                    # obj.finmaks_process_type = str(transaction["FinmaksProcessType"]) or ""
+                    # obj.category_name = str(transaction["CategoryName"]) or ""
+                    # obj.integration_field_value = str(transaction["IntegrationFieldValue"]) or ""
+                    # obj.transaction_status = str(transaction["TransactionStatus"]) or ""
+                    # obj.save()
+                    pass
                 else:
                     FinmaksTransaction.objects.create(
                         company = company_obj,
