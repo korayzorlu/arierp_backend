@@ -152,8 +152,8 @@ class FinanceSummaryView(LoginRequiredMixin,View):
                 'id': 7,
                 'title': 'Toplam Temerrüt Tutarı',
                 'amount_try': float(vendors_try['total_before_total_payment'] - vendors_try['total_lease_payment_amount']) if vendors_try['total_total_vendor_payment'] else 0.00,
-                'amount_usd': float(vendors_try['total_before_total_payment'] - vendors_try['total_lease_payment_amount']) if vendors_usd['total_total_vendor_payment'] else 0.00,
-                'amount_eur': float(vendors_try['total_before_total_payment'] - vendors_try['total_lease_payment_amount']) if vendors_eur['total_total_vendor_payment'] else 0.00
+                'amount_usd': float(vendors_usd['total_before_total_payment'] - vendors_usd['total_lease_payment_amount']) if vendors_usd['total_total_vendor_payment'] else 0.00,
+                'amount_eur': float(vendors_eur['total_before_total_payment'] - vendors_eur['total_lease_payment_amount']) if vendors_eur['total_total_vendor_payment'] else 0.00
             },
         ]
 
