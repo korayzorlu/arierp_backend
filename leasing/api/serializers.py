@@ -1250,17 +1250,21 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         return overdue_amount
     
     def get_main_paid_rate(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+        
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            Q(overdue_amount=0) &
-            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            vendor_filter_for_serializers(filter_params) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False)
-        ).exclude(contract__partner__types__contains=["special"])
+            Q(is_kdv_diff=False) &
+            Q(paid_rate__gte=30) &
+            Q(overdue_amount=0)
+        )
         paid_rate = 0
         for lease in leases:
             if lease.paid_rate > paid_rate:
