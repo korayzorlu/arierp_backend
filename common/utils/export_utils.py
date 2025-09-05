@@ -18,9 +18,13 @@ from users.models import User
 from common.models import ImportProcess,Country,City,ExportProcess
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
-from leasing.utils import export_bank_activities,export_today_partners,export_tomorrow_partners,export_risk_partners,export_kdv_risk_partners,export_to_warned_risk_partners,export_to_terminated_risk_partners,export_warned_risk_partners,export_deposite_partners,export_delivery_confirms
+from leasing.utils import export_bank_activities,export_today_partners,export_tomorrow_partners,export_kdv_risk_partners,export_deposite_partners,export_delivery_confirms
 from purchasing.utils import export_purchase_payments
-from risk.utils import export_amount_debit_transactions
+from risk.utils.risk_partners_utils import *
+from risk.utils.to_warned_risk_partners_utils import *
+from risk.utils.warned_risk_partners_utils import *
+from risk.utils.to_terminated_risk_partners_utils import *
+from risk.utils.risk_utils import export_amount_debit_transactions
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -85,20 +89,32 @@ class BaseExporter():
     def export_todaypartner(self):
         export_today_partners(self)
 
+    def export_riskpartner(self):
+        export_risk_partners(self)
+
     def export_tomorrowpartner(self):
         export_tomorrow_partners(self)
 
-    def export_riskpartner(self):
-        export_risk_partners(self)
+    def export_riskpartnerforsms(self):
+        export_risk_partners_for_sms(self)
 
     def export_kdvriskpartner(self):
         export_kdv_risk_partners(self)
 
+    def export_towarnedriskpartnerforsms(self):
+        export_to_warned_risk_partners_for_sms(self)
+
     def export_towarnedriskpartner(self):
         export_to_warned_risk_partners(self)
 
+    def export_warnedriskpartnerforsms(self):
+        export_warned_risk_partners_for_sms(self)
+
     def export_warnedriskpartner(self):
         export_warned_risk_partners(self)
+
+    def export_toterminatedriskpartnerforsms(self):
+        export_to_terminated_risk_partners_for_sms(self)
 
     def export_toterminatedriskpartner(self):
         export_to_terminated_risk_partners(self)

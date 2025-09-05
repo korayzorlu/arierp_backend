@@ -45,8 +45,8 @@ urlpatterns = [
     path('export_tomorrow_partners/', ExportTomorrowPartnersView.as_view(), name="export_tomorrow_partners"),
     path('tomorrow_partners_excel/', TomorrowPartnersExcelView.as_view(), name="tomorrow_partners_excel"),
 
-    path('export_risk_partners/', ExportRiskPartnersView.as_view(), name="export_risk_partners"),
-    path('risk_partners_excel/', RiskPartnersExcelView.as_view(), name="risk_partners_excel"),
+    path('export_risk_partners_for_sms/', ExportRiskPartnersForSMSView.as_view(), name="export_risk_partners_for_sms"),
+    path('risk_partners_excel_for_sms/', RiskPartnersExcelForSMSView.as_view(), name="risk_partners_excel_for_sms"),
 
     path('export_kdv_risk_partners/', ExportKDVRiskPartnersView.as_view(), name="export_kdv_risk_partners"),
     path('risk_kdv_partners_excel/', KDVRiskPartnersExcelView.as_view(), name="kdv_risk_partners_excel"),

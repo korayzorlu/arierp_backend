@@ -309,16 +309,16 @@ class TomorrowPartnersExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
     
-class ExportRiskPartnersView(LoginRequiredMixin,View):
+class ExportRiskPartnersForSMSView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         
         exporter = BaseExporter(
             user_id=request.user.id,
             app="leasing",
-            model_name="RiskPartner",
-            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar.xlsx",
-            export_url="/leasing/risk_partners_excel",
+            model_name="RiskPartnerForSMS",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar-sms.xlsx",
+            export_url="/leasing/risk_partners_excel_for_sms",
             params={"project":data.get('project')}
         )
 
@@ -328,9 +328,9 @@ class ExportRiskPartnersView(LoginRequiredMixin,View):
 
         return HttpResponse(status=200)
 
-class RiskPartnersExcelView(LoginRequiredMixin,View):
+class RiskPartnersExcelForSMSView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
-        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "risk_partners", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar.xlsx")
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "risk_partners", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-risk-durumunda-olanlar-sms.xlsx")
       
         if not os.path.exists(file_path):
             return JsonResponse({'message': 'File not found!','status':'error'}, status=404)

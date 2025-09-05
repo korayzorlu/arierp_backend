@@ -4,7 +4,8 @@ import string
 import random
 from datetime import datetime
 
-from .models import AmountDebitTransaction
+from risk.models import AmountDebitTransaction
+from leasing.models import Lease
 
 def update_risk_summary():
     pass
