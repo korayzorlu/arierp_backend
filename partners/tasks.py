@@ -615,3 +615,170 @@ def fetch_phone_numbers(company):
             if not pd.isna(row['Email']):
                 obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
                 obj.save()
+
+@shared_task()
+def fetch_phone_numbers_bireysel(company):
+    SERVER = "192.168.82.31,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+            SELECT 
+                cw.CustomerId,
+                cw.CustomerName,
+                com.CommunicationValue
+            FROM dbo.CrmCustomerWithTypesLight cw
+            LEFT JOIN dbo.CrmContact cc 
+                ON cw.CONTACTID = cc.ContactId
+            LEFT JOIN dbo.CrmAddress ad 
+                ON ad.ObjectId = cc.ContactId
+            LEFT JOIN dbo.CrmAddressCommunicationInformation com 
+                ON com.AddressId = ad.AddressId
+            LEFT JOIN dbo.LeasingOperationProject lop 
+                ON cw.CustomerId = lop.CustomerId
+            WHERE ad.AddressTypeId = 4
+            AND com.CommunicationType IN (5,6)
+            AND lop.RiskIncludingTypeId NOT IN (3,8,9,4)
+            GROUP BY 
+                cw.CustomerId,
+                cw.CustomerName,
+                com.CommunicationValue
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {
+                "CustomerId" : r.CustomerId,
+                "CommunicationValue" : r.CommunicationValue,
+            }
+            for r in records
+        ]
+
+        partners = Partner.objects.select_related().all()
+
+        partner_by_crm = {p.crm_code: p for p in partners if p.crm_code}
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        previous_progress = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            if str(data["CustomerId"]):
+                obj = (partner_by_crm.get(str(data["CustomerId"])))
+            else:
+                obj = None
+
+            if obj:
+                obj.phone_number = str(data["CommunicationValue"]) or ""
+                obj.save()
+
+    except Exception as e:
+        print(e)
+
+@shared_task()
+def fetch_phone_numbers_tuzel(company):
+    SERVER = "192.168.82.31,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+            SELECT 
+                cw.CustomerId,
+                cw.CustomerName,
+                com.CommunicationValue
+            FROM dbo.CrmCustomerWithTypesLight cw
+            LEFT JOIN dbo.CrmAddress ad 
+                ON ad.ObjectId = cw.CustomerId
+            LEFT JOIN dbo.CrmAddressCommunicationInformation com 
+                ON com.AddressId = ad.AddressId
+            LEFT JOIN dbo.LeasingOperationProject lop 
+                ON cw.CustomerId = lop.CustomerId
+            WHERE ad.AddressTypeId = 2
+            AND com.CommunicationType IN (5,6)
+            AND lop.RiskIncludingTypeId NOT IN (3,8,9,4)
+            GROUP BY 
+                cw.CustomerId,
+                cw.CustomerName,
+                com.CommunicationValue
+
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {
+                "CustomerId" : r.CustomerId,
+                "CommunicationValue" : r.CommunicationValue,
+            }
+            for r in records
+        ]
+
+        partners = Partner.objects.select_related().all()
+
+        partner_by_crm = {p.crm_code: p for p in partners if p.crm_code}
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        previous_progress = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            if str(data["CustomerId"]):
+                obj = (partner_by_crm.get(str(data["CustomerId"])))
+            else:
+                obj = None
+
+            if obj:
+                obj.phone_number = str(data["CommunicationValue"]) or ""
+                obj.save()
+
+    except Exception as e:
+        print(e)
