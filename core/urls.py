@@ -49,6 +49,7 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     path('api/subscriptions/', include("subscriptions.urls")),
     path('api/trade/', include("trade.urls")),
+    path('api/underwriting/', include("underwriting.urls")),
     path('api/users/', include("users.urls")),
     
     path('password-reset/', PasswordResetView.as_view(), name='password_reset'),

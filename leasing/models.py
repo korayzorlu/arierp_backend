@@ -13,6 +13,7 @@ from datetime import datetime,timedelta
 import requests
 from requests.auth import HTTPBasicAuth
 
+from underwriting.utils import check_third_person_status
 from companies.models import Company
 from common.models import Currency, Status
 from contracts.models import Contract
@@ -374,33 +375,8 @@ class BankActivity(models.Model):
                     #     self.is_processed = True
                     #     self.save()
                 else:
-                    USERNAME = "960ed49f-7588-467e-9c3c-58a4f32acc2b"
-                    PASSWORD = "hZu8zUJfwF"
-
-                    # Aranacak isim ve isteğe bağlı parametreler
-                    params = {
-                        "id": str(self.tc_vkn_no),     # en az 3 karakter
-                        "searchType": 1,            # 0: Any, 1: Individual (varsayılan)
-                        "start": 0,                 # sayfalama başlangıcı
-                        "limit": 20,                # maksimum 50
-                        #"birthYear": "1980",
-                        "minMatchRate": 95,
-                        "isDeepSearch": True
-                    }
-
-                    # response = requests.get(
-                    #     "https://sandbox-api.sanctionscanner.com/api/Search/SearchByIdentity",
-                    #     params=params,
-                    #     auth=HTTPBasicAuth(USERNAME, PASSWORD)
-                    # ).json()
-
-                    # self.is_third_person = True
-                    # if len(response["Result"]["Result"]) == 0:
-                    #     self.is_reliable_person = True
-                    #     super().save(update_fields=['is_reliable_person','is_third_person'])
-                    # else:
-                    #     self.is_reliable_person = False
-                    #     super().save(update_fields=['is_reliable_person','is_third_person'])
+                    check_third_person_status(self)
+                    super().save(update_fields=['is_reliable_person','is_third_person'])
 
                 if len(contracts) == 1:
                     for contract in contracts:

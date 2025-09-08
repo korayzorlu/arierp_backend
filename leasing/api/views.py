@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,F
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -760,10 +760,8 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
 
         # Get the latest sequency for each lease
         latest_sequency_subquery = Installment.objects.filter(
-            lease=OuterRef('partner_contracts__contract_leases__pk')
-        ).values('lease').annotate(
-            max_sequency=Max('sequency')
-        ).values('max_sequency')
+            lease=OuterRef('pk')
+        ).order_by('-sequency').values('sequency')[:1]
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
@@ -820,10 +818,8 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
 
         # Get the latest sequency for each lease
         latest_sequency_subquery = Installment.objects.filter(
-            lease=OuterRef('partner_contracts__contract_leases__pk')
-        ).values('lease').annotate(
-            max_sequency=Max('sequency')
-        ).values('max_sequency')
+            lease=OuterRef('pk')
+        ).order_by('-sequency').values('sequency')[:1]
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &

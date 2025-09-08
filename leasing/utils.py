@@ -418,7 +418,7 @@ def import_bank_activities(self, df_json):
             # tc_vkn_no = matches_tc_vkn_no[-1] if matches_tc_vkn_no else None
 
             tc_vkn_no = str(int(row['Gönderen TCKN / VKN'])) if not pd.isna(row['Gönderen TCKN / VKN']) else ""
-
+            
             obj = BankActivity.objects.create(
                 company = self.user.user_companies.filter(is_active=True).first().company,
                 bank_code = str(row['Banka Kodu']) if not pd.isna(row['Banka Kodu']) else "",
@@ -603,7 +603,7 @@ def export_today_partners(self):
 
     # Get the latest sequency for each lease
     latest_sequency_subquery = Installment.objects.filter(
-        lease=OuterRef('partner_contracts__contract_leases__pk')
+        lease=OuterRef('pk')
     ).values('lease').annotate(
         max_sequency=Max('sequency')
     ).values('max_sequency')
@@ -723,7 +723,7 @@ def export_tomorrow_partners(self):
 
     # Get the latest sequency for each lease
     latest_sequency_subquery = Installment.objects.filter(
-        lease=OuterRef('partner_contracts__contract_leases__pk')
+        lease=OuterRef('pk')
     ).values('lease').annotate(
         max_sequency=Max('sequency')
     ).values('max_sequency')
