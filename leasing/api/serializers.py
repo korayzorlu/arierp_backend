@@ -1457,6 +1457,14 @@ class TodayPartnerListSerializer(serializers.Serializer):
         filter_params = request.GET if request else {}
 
         today = date.today()
+
+        # Get the latest sequency for each lease
+        latest_sequency_subquery = Installment.objects.filter(
+            lease=OuterRef('pk')
+        ).values('lease').annotate(
+            max_sequency=Max('sequency')
+        ).values('max_sequency')
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
@@ -1466,7 +1474,8 @@ class TodayPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_credit=False) &
-            Q(lease_installments__payment_date=today)
+            Q(lease_installments__payment_date=today) &
+            ~Q(lease_installments__sequency=Subquery(latest_sequency_subquery))
         )
 
         overdue_days = 0
@@ -1480,6 +1489,14 @@ class TodayPartnerListSerializer(serializers.Serializer):
         filter_params = request.GET if request else {}
 
         today = date.today()
+
+        # Get the latest sequency for each lease
+        latest_sequency_subquery = Installment.objects.filter(
+            lease=OuterRef('pk')
+        ).values('lease').annotate(
+            max_sequency=Max('sequency')
+        ).values('max_sequency')
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
@@ -1489,7 +1506,8 @@ class TodayPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_credit=False) &
-            Q(lease_installments__payment_date=today)
+            Q(lease_installments__payment_date=today) &
+            ~Q(lease_installments__sequency=Subquery(latest_sequency_subquery))
         ).order_by("-overdue_days")
 
         lease_list = []

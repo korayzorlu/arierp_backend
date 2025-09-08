@@ -758,6 +758,13 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
 
         tomorrow = date.today() + timedelta(days=1)
 
+        # Get the latest sequency for each lease
+        latest_sequency_subquery = Installment.objects.filter(
+            lease=OuterRef('partner_contracts__contract_leases__pk')
+        ).values('lease').annotate(
+            max_sequency=Max('sequency')
+        ).values('max_sequency')
+
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
@@ -767,7 +774,8 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow)
+            Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
+            ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
         ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
@@ -810,8 +818,15 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
 
         today = date.today()
 
+        # Get the latest sequency for each lease
+        latest_sequency_subquery = Installment.objects.filter(
+            lease=OuterRef('partner_contracts__contract_leases__pk')
+        ).values('lease').annotate(
+            max_sequency=Max('sequency')
+        ).values('max_sequency')
+
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company = active_company.company if active_company else None) &
+            Q(company=active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
@@ -819,7 +834,8 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
             Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__lease_installments__payment_date=today)
+            Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
+            ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
         ).exclude(types__contains=["special"]).order_by('-max_overdue_days')

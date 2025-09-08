@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.utils.timezone import make_aware, localtime
-from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
+from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value,OuterRef,Subquery
 
 from datetime import datetime,date,timedelta
 import pandas as pd
@@ -600,6 +600,14 @@ def export_bank_activities(self):
 
 def export_today_partners(self):
     today = date.today()
+
+    # Get the latest sequency for each lease
+    latest_sequency_subquery = Installment.objects.filter(
+        lease=OuterRef('partner_contracts__contract_leases__pk')
+    ).values('lease').annotate(
+        max_sequency=Max('sequency')
+    ).values('max_sequency')
+        
     objs = Partner.objects.select_related().filter(
         vendor_filter_for_views(self.params) &
         (
@@ -607,7 +615,8 @@ def export_today_partners(self):
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        Q(partner_contracts__contract_leases__lease_installments__payment_date=today)
+        Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
+        ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
     ).exclude(
@@ -712,6 +721,13 @@ def export_today_partners(self):
 def export_tomorrow_partners(self):
     tomorrow = date.today() + timedelta(days=1)
 
+    # Get the latest sequency for each lease
+    latest_sequency_subquery = Installment.objects.filter(
+        lease=OuterRef('partner_contracts__contract_leases__pk')
+    ).values('lease').annotate(
+        max_sequency=Max('sequency')
+    ).values('max_sequency')
+
     objs = Partner.objects.select_related().filter(
         vendor_filter_for_views(self.params) &
         (
@@ -719,7 +735,8 @@ def export_tomorrow_partners(self):
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
-        Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow)
+        Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
+        ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
     ).exclude(
