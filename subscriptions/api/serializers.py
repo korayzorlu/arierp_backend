@@ -36,6 +36,8 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
+                {"type" : "item", "class" : "premium", "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
+                {"type" : "item", "class" : "premium", "label" : "Banka Hesap Hareketleri", "icon" : "description", "route" : "/bank-account-transactions"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
@@ -43,8 +45,6 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
                 {"type" : "item", "class" : "free", "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},
                 {"type" : "item", "class" : "free", "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
-                {"type" : "item", "class" : "premium", "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
-                {"type" : "item", "class" : "premium", "label" : "Banka Hesap Hareketleri", "icon" : "description", "route" : "/bank-account-transactions"},
                 #{"type" : "item", "class" : "free", "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Risk", "icon" : "report", "items" : [

@@ -86,6 +86,7 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "5433:5432"
+    shm_size: 2g
     restart: always
     env_file:
       - .env
