@@ -1,0 +1,1 @@
+SELECT TOP 100 * FROM TradeAccount (NOLOCK) WHERE AccId = 490

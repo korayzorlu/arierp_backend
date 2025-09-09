@@ -16,6 +16,7 @@ class PurchasePaymentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     lease_code = CharFilter(field_name='lease__code', lookup_expr='icontains')
     contract = CharFilter(field_name='lease__contract__code', lookup_expr='icontains')
+    contract_id = CharFilter(field_name='lease__contract__contract_id', lookup_expr='icontains')
     partner = CharFilter(field_name='lease__contract__partner__name', lookup_expr='icontains')
     vendor = CharFilter(field_name='lease__contract__vendor__name', lookup_expr='icontains')
     currency = CharFilter(field_name='lease__currency__code', lookup_expr='icontains')

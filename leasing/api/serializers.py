@@ -18,6 +18,7 @@ class LeaseListSerializer(serializers.Serializer):
     companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
     contract = serializers.SerializerMethodField()
+    contract_id = serializers.SerializerMethodField()
     type = serializers.CharField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
     activation_date = serializers.DateField()
@@ -55,6 +56,9 @@ class LeaseListSerializer(serializers.Serializer):
     
     def get_contract(self, obj):
         return obj.contract.code if obj.contract else ""
+    
+    def get_contract_id(self, obj):
+        return obj.contract.contract_id if obj.contract else ""
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""

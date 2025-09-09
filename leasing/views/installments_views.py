@@ -153,9 +153,11 @@ class ImportInstallmentsView(LoginRequiredMixin,View):
 class InstallmentInformationView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        lease_code = data.get('lease_code')
         
-        objs = Installment.objects.filter(lease__code = str(lease_code)).order_by("sequency")
+        if data.get('lease_code'):
+            objs = Installment.objects.filter(lease__code = str(data.get('lease_code'))).order_by("sequency")
+        else:
+            objs = Installment.objects.filter(lease__uuid = str(data.get('lease_id'))).order_by("sequency")
     
         if not objs:
             return JsonResponse({'installment':[]}, status=200)
