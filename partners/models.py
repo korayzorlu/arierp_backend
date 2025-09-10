@@ -90,6 +90,8 @@ class Partner(models.Model):
     web = models.CharField(_("Web"), max_length=250, blank=True, null=True)
 
     about = models.TextField(_("About"), blank = True, null = True)
+
+    advance_amount = models.DecimalField(_("Advance Amount"), default = 0.00, max_digits=14, decimal_places=2)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
