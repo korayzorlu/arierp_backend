@@ -18,6 +18,7 @@ from celery.schedules import crontab
 
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+import ollama
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -516,3 +517,6 @@ logger.setLevel(logging.DEBUG)
 # Finmaks
 FINMAKS_USERNAME = os.getenv('FINMAKS_USERNAME','')
 FINMAKS_PASSWORD = os.getenv('FINMAKS_PASSWORD','')
+
+# AI
+AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")

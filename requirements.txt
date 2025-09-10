@@ -95,3 +95,4 @@ beautifulsoup4==4.13.4
 unidecode==1.4.0
 tqdm==4.67.1
 xlrd==2.0.2
+ollama==0.5.3

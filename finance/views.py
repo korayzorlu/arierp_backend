@@ -31,8 +31,6 @@ class AddBankActivityView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        print(data)
-
         finmaks_transaction = FinmaksTransaction.objects.select_related().filter(transaction_id = data['transaction_id']).first()
 
         BankActivity.objects.create(

@@ -3,6 +3,7 @@ from django.db.models import Q,IntegerField
 from django.db.models.functions import Cast
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
+from django.conf import settings
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -12,10 +13,12 @@ from itertools import chain
 from datetime import datetime,timedelta
 import requests
 from requests.auth import HTTPBasicAuth
+import ollama
 
 from underwriting.utils import check_third_person_status
 from companies.models import Company
 from common.models import Currency, Status
+from common.utils.ai_utils import EXAMPLE_DEF
 from contracts.models import Contract
 from partners.models import Partner
 from finance.models import FinmaksTransaction
@@ -268,6 +271,16 @@ class BankActivity(models.Model):
             super().save(*args, **kwargs)
 
             if is_new:
+                ####AI TEST####
+
+                # response = settings.AI_CLIENT.generate(
+                #     model="llama3.2",
+                #     prompt=f"{EXAMPLE_DEF} Bu benim daha önce banka hareketi açıklamasından sözleşme numarasını yakalamak için oluşturduğum fonksiyon. Bu fonksiyonu referans alarak; '{self.description}' Bu açıklamaya göre bu işlemle ilgili sözleşme numarası var mı kontrol et ve varsa sadece sözleşme numarasını liste olarak ver. Eğer sözleşme numarası yoksa boş liste ver. Açıklama yapma, sadece liste ver.",
+                # )
+
+                # print(response["response"])
+
+                ####AI TEST END####
                 current_sender_bank_activites = BankActivity.objects.select_related().filter(cross_bank_account_no = self.cross_bank_account_no)
                 if current_sender_bank_activites:
                     current_sender_bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__in = current_sender_bank_activites)
