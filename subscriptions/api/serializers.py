@@ -41,6 +41,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
+                {"type" : "item", "class" : "free", "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
                 {"type" : "item", "class" : "free", "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},

@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from finance.models import *
 from companies.models import Company,UserCompany
+from partners.models import Partner
     
 class BankAccountListSerializer(serializers.Serializer):
     BankAccountId = serializers.CharField()
@@ -84,4 +85,16 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
             return True
         else:
             return False
+        
 
+class PartnerAdvanceListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.CharField()
+    crm_code = serializers.CharField()
+    advance_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
