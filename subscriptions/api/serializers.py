@@ -31,9 +31,15 @@ class MenuItemListSerializer(serializers.Serializer):
             # {"type" : "sub_menu", "class" : "free", "label" : "Gayrimenkul", "icon" : "in_home_mode", "items" : [
             #     {"type" : "item", "class" : "free", "label" : "Tapu Gayrimenkulleri", "icon" : "paid", "route" : "/krs-notifications"},
             # ]},
-            {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "policy", "items" : [
-                {"type" : "item", "class" : "free", "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
-                {"type" : "item", "class" : "free", "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
+            # {"type" : "sub_menu", "class" : "free", "label" : "Tahsis", "icon" : "policy", "items" : [
+            #     {"type" : "item", "class" : "free", "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
+            #     {"type" : "item", "class" : "free", "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
+            # ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Uyum", "icon" : "policy", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Yasaklı Listesi", "icon" : "paid", "route" : "/black-list-persons"},
+            ]},
+            {"type" : "sub_menu", "class" : "free", "label" : "Operasyon", "icon" : "hub", "items" : [
+                {"type" : "item", "class" : "free", "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : "premium", "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
@@ -41,7 +47,6 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : "free", "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
                 {"type" : "item", "class" : "free", "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
                 {"type" : "item", "class" : "free", "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
-                {"type" : "item", "class" : "free", "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
                 {"type" : "item", "class" : "free", "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
                 {"type" : "item", "class" : "free", "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},

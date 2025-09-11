@@ -86,7 +86,8 @@ INSTALLED_APPS = [
     "purchasing",
     "risk",
     "finance",
-    "underwriting"
+    "underwriting",
+    "compliance"
 ]
 
 MIDDLEWARE = [
