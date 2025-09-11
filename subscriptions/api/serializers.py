@@ -37,6 +37,7 @@ class MenuItemListSerializer(serializers.Serializer):
             # ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Uyum", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Yasaklı Listesi", "icon" : "paid", "route" : "/black-list-persons"},
+                {"type" : "item", "class" : "free", "label" : "Kişi Sorgulama", "icon" : "paid", "route" : "/scan-partners"},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Operasyon", "icon" : "hub", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
