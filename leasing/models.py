@@ -18,7 +18,7 @@ import ollama
 from underwriting.utils import check_third_person_status
 from companies.models import Company
 from common.models import Currency, Status
-from common.utils.ai_utils import EXAMPLE_DEF
+from common.utils.ai_utils import EXAMPLE_DEF,EXAMPLE_LIST
 from contracts.models import Contract
 from partners.models import Partner
 from finance.models import FinmaksTransaction
@@ -274,8 +274,21 @@ class BankActivity(models.Model):
                 ####AI TEST####
 
                 # response = settings.AI_CLIENT.generate(
-                #     model="llama3.2",
-                #     prompt=f"{EXAMPLE_DEF} Bu benim daha önce banka hareketi açıklamasından sözleşme numarasını yakalamak için oluşturduğum fonksiyon. Bu fonksiyonu referans alarak; '{self.description}' Bu açıklamaya göre bu işlemle ilgili sözleşme numarası var mı kontrol et ve varsa sadece sözleşme numarasını liste olarak ver. Eğer sözleşme numarası yoksa boş liste ver. Açıklama yapma, sadece liste ver.",
+                #     model="gpt-oss:20b",
+                #     prompt=f"""
+                #         {EXAMPLE_LIST}
+                        
+                #         These are example bank transaction descriptions.
+                        
+                #         Using this list as reference, try to find only the contract number(s) from the description below.
+                #         Sometimes customers write contract numbers with dots (for example, 48.152). Contract numbers are usually 4-7 digit numbers and do not contain punctuation marks in between. Exceptionally, for revised contracts, if the contract number is 65789, after revision it may appear as 65789/1. Only this format change is allowed.
+                #         Also, some descriptions may contain more than one contract number. Try to find all contract numbers.
+                #         If you find contract numbers, provide them only as a list. Write the contract numbers as strings. If you cannot find any, return an empty list. Do not write anything else.
+                        
+                #         Description:
+
+                #         '{self.description}'
+                #     """,
                 # )
 
                 # print(response["response"])
