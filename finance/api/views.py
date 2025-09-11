@@ -235,8 +235,8 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
 
         logger = logging.getLogger("django")
         try:
-            # transactions = fetch_finmaks_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
-            transactions = []
+            transactions = fetch_finmaks_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+            #transactions = []
 
             finmaks_transactions = FinmaksTransaction.objects.select_related().all()
             finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
