@@ -1222,7 +1222,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=0)
+            Q(overdue_amount__lte=100)
         )
 
         overdue_days = 0
@@ -1245,7 +1245,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=0)
+            Q(overdue_amount__lte=100)
         )
 
         overdue_amount = 0
@@ -1267,7 +1267,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=0)
+            Q(overdue_amount__lte=100)
         )
         paid_rate = 0
         for lease in leases:
@@ -1289,7 +1289,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=0)
+            Q(overdue_amount__lte=100)
         )
 
         lease_list = []

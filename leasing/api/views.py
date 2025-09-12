@@ -714,7 +714,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__paid_rate__gte=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__lte=0)
+            Q(partner_contracts__contract_leases__overdue_amount__lte=100)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
