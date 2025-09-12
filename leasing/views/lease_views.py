@@ -351,7 +351,7 @@ class ExportKDVRiskPartnersView(LoginRequiredMixin,View):
             app="leasing",
             model_name="KDVRiskPartner",
             file_name=f"{datetime.today().strftime('%d-%m-%Y')}-kdv-farkı-uygulananlar.xlsx",
-            export_url="/leasing/kdv_risk_partners_excel",
+            export_url="/leasing/risk_kdv_partners_excel",
             params={"project":data.get('project')}
         )
 
@@ -363,7 +363,7 @@ class ExportKDVRiskPartnersView(LoginRequiredMixin,View):
 
 class KDVRiskPartnersExcelView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
-        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "risk_partners", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-kdv-farkı-uygulananlar.xlsx")
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "kdv_risk_partners", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-kdv-farkı-uygulananlar.xlsx")
       
         if not os.path.exists(file_path):
             return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
