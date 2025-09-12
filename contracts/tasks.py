@@ -114,7 +114,8 @@ def fetch_contracts(company):
                 obj.customer_representative = str(data["CustomerRepresentative"]) or ""
                 obj.supplier = data["Vendor"] or ""
                 obj.project = data["Project"] or ""
-                obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
+                # obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
+                obj.status = statuses_dict.get(str(data["SubStatuteName"]))
                 obj.lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None
                 obj.currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
                 obj.save()
@@ -131,7 +132,7 @@ def fetch_contracts(company):
                     customer_representative = str(data["CustomerRepresentative"]) or "",
                     supplier = data["Vendor"] or "",
                     project = data["Project"] or "",
-                    status = statuses_dict.get(normalize(data["SubStatuteName"])),
+                    status = statuses_dict.get(str(data["SubStatuteName"])),
                     lop_open_date = make_aware(data["LopOpenDate"]) if data["LopOpenDate"] else None,
                     currency = currencies_dict.get("TRY" if data["CurrencyCode"] == "TL" else data["CurrencyCode"])
                 )

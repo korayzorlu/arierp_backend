@@ -7,9 +7,9 @@ from .models import Contract
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ["company","contract_id","code","partner","project","project_obj","vendor","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+    list_display = ["company","contract_id","code","partner","project","project_obj","vendor","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date","status"]
     list_display_links = ["code"]
-    search_fields = ["company__name","contract_id","code","partner__name","project","project_obj__name","vendor__name","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+    search_fields = ["company__name","contract_id","code","partner__name","project","project_obj__name","vendor__name","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date","status"]
     list_filter = []
     inlines = []
     ordering = ["kof_tan_sozlesmeye_aktarim_tarihi"]
