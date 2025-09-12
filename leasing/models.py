@@ -25,7 +25,7 @@ from finance.models import FinmaksTransaction
 
 # Create your models here.
 
-def extract_contract_numbers(description):
+def extract_contract_numberss(description):
     # Parantez içindeki tüm numaraları yakalar
     # matches = re.findall(r'sözleşme.*?\(?(\d{4,})[-–]?(\d{0,})\)?', description.lower())
     # contract_numbers = []
@@ -116,6 +116,74 @@ def extract_contract_numbers(description):
             unique_matches.add(m)
 
     return list(unique_matches)
+
+def extract_contract_numbers(description):
+    """
+    Extract contract numbers from a description string according to the following rules:
+    - Contract numbers are usually 4-7 digit numbers.
+    - They do not contain punctuation marks in between, except for revised contracts (e.g., 65789/1).
+    - Sometimes written with dots (e.g., 48.152), but should be returned without punctuation.
+    - There may be more than one contract number in the description.
+    - Ignore the last number if it is an 11-digit identity number (TC kimlik).
+    - Return only contract numbers as a list of strings. If none found, return an empty list.
+    """
+    if not isinstance(description, str):
+        return []
+
+    text = description.lower()
+
+    # Find all numbers in the text
+    all_numbers = re.findall(r'\b\d{4,}\b', text)
+
+    # If last number is 11 digits, ignore it
+    if all_numbers and len(all_numbers[-1]) == 11:
+        text = text[:text.rfind(all_numbers[-1])]
+
+    # 1. Find numbers with 'sözleşme', 'kontrat', 'no', 'nolu' etc.
+    pattern = r"""
+        (?:
+            sözleşme\s*no[:\s]* | 
+            sözleşme\s*[:\s]* | 
+            söz\.?\s*no[:\s]* | 
+            kontrat\s*no[:\s]* | 
+            no[:\s]+ | 
+            nolu\s+sözleşme | 
+            sözleşme\s*numaralı
+        )
+        [^\d]*(\d{4,7}(?:/\d{1,2})?)
+    """
+    matches = re.findall(pattern, text, re.VERBOSE)
+
+    # 2. Find numbers followed or preceded by 'sözleşme' (e.g., '65175 VE 65174 SÖZLEŞME NUMARALI')
+    pattern_proximity = r'(\d{4,7}(?:/\d{1,2})?)\s*(?:ve\s*)?sözleşme'
+    matches += re.findall(pattern_proximity, text)
+
+    # 3. Find numbers written with dots (e.g., '48.152 sözleşme')
+    pattern_dot = r'(\d{1,3}\.\d{3,5})\s*sözleşme'
+    dot_matches = re.findall(pattern_dot, text)
+    for m in dot_matches:
+        matches.append(m.replace('.', ''))
+
+    # 4. Find revised contract numbers (e.g., '65789/1')
+    pattern_revised = r'(\d{4,7}/\d{1,2})'
+    matches += re.findall(pattern_revised, text)
+
+    # 5. Find standalone 4-7 digit numbers (not TC, not IBAN, not date)
+    pattern_standalone = r'\b(\d{4,7})\b'
+    raw_standalone = re.findall(pattern_standalone, text)
+    for num in raw_standalone:
+        if num not in matches and num not in ['2024', '2025', '2023']:
+            matches.append(num)
+
+    # Clean up: remove duplicates, strip spaces, filter only 4-7 digit numbers or revised format
+    result = set()
+    for m in matches:
+        m = m.strip()
+        if re.fullmatch(r'\d{4,7}', m) or re.fullmatch(r'\d{4,7}/\d{1,2}', m):
+            result.add(m)
+
+    return list(result)
+
 class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
@@ -278,24 +346,32 @@ class BankActivity(models.Model):
                 #     prompt=f"""
                 #         {EXAMPLE_LIST}
                         
-                #         These are example bank transaction descriptions.
-                        
                 #         Using this list as reference, try to find only the contract number(s) from the description below.
                 #         Sometimes customers write contract numbers with dots (for example, 48.152). Contract numbers are usually 4-7 digit numbers and do not contain punctuation marks in between. Exceptionally, for revised contracts, if the contract number is 65789, after revision it may appear as 65789/1. Only this format change is allowed.
+                #         Also, do not consider the last number if it is an identity number.
                 #         Also, some descriptions may contain more than one contract number. Try to find all contract numbers.
                 #         If you find contract numbers, provide them only as a list. Write the contract numbers as strings. If you cannot find any, return an empty list. Do not write anything else.
-                        
+                            
                 #         Description:
 
                 #         '{self.description}'
                 #     """,
+                #     options={
+                #         "num_thread": 4
+                #     }
                 # )
 
                 # print(response["response"])
+                # print(type(response["response"]))
+
+                response = extract_contract_numbers(self.description)
+
+                print(response)
 
                 ####AI TEST END####
-                current_sender_bank_activites = BankActivity.objects.select_related().filter(cross_bank_account_no = self.cross_bank_account_no)
+                current_sender_bank_activites = BankActivity.objects.select_related().filter(cross_bank_account_no = self.cross_bank_account_no).exclude(pk=self.pk)
                 if current_sender_bank_activites:
+                    print(current_sender_bank_activites)
                     current_sender_bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__in = current_sender_bank_activites)
                     distinct_partners = current_sender_bank_activity_leases.values_list("lease__contract__partner_id", flat=True).distinct()
 
@@ -357,7 +433,7 @@ class BankActivity(models.Model):
                         ) 
                     ).order_by('contract_id', '-activation_date').distinct('contract_id')
 
-                
+                    print(leases)
 
                 if leases:
                     total_processed_amount = Decimal("0.00")
