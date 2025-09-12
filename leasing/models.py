@@ -366,12 +366,12 @@ class BankActivity(models.Model):
 
                 response = extract_contract_numbers(self.description)
 
-                print(response)
+                #print(f"Extracted contract numbers: {response}")
 
                 ####AI TEST END####
                 current_sender_bank_activites = BankActivity.objects.select_related().filter(cross_bank_account_no = self.cross_bank_account_no).exclude(pk=self.pk)
                 if current_sender_bank_activites:
-                    print(current_sender_bank_activites)
+                    print(f"current_sender_bank_activites: {current_sender_bank_activites}")
                     current_sender_bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__in = current_sender_bank_activites)
                     distinct_partners = current_sender_bank_activity_leases.values_list("lease__contract__partner_id", flat=True).distinct()
 
@@ -416,9 +416,13 @@ class BankActivity(models.Model):
                         ).order_by('contract_id', '-activation_date').distinct('contract_id')
                 else:
                     contract_numbers = extract_contract_numbers(self.description)
+                    print(f"contract_numbers: {contract_numbers}")
+                    print(f"type of contract_numbers: {type(contract_numbers)}")
+                    
                     contracts = Contract.objects.select_related().filter(
                         Q(partner__tc_vkn_no=self.tc_vkn_no) & Q(code__in=contract_numbers)
                     )
+                    print(f"contracts: {contracts}")
                     
                     leases = Lease.objects.select_related("contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation").filter(
                         (
@@ -433,7 +437,7 @@ class BankActivity(models.Model):
                         ) 
                     ).order_by('contract_id', '-activation_date').distinct('contract_id')
 
-                    print(leases)
+                    print(f"leases: {leases}")
 
                 if leases:
                     total_processed_amount = Decimal("0.00")
@@ -445,12 +449,8 @@ class BankActivity(models.Model):
                         )
 
                         processed_amount = self.amount
-                        
-                        installments = lease.lease_installments.all()
-                        total_overdue_amount = Decimal("0.00")
-                        for installment in installments:
-                            total_overdue_amount += installment.overdue_amount
-                        total_overdue_amount = total_overdue_amount - lease.processed_amount #test
+
+                        total_overdue_amount = lease.overdue_amount - lease.processed_amount #test
                         if total_overdue_amount > 0:
                             #bank_activity_lease.leaseflex_automation = True
                             if processed_amount > 0:
@@ -490,8 +490,10 @@ class BankActivity(models.Model):
                                 Q(lease_status='durduruldu')
                             )
                         ).annotate(lease_id_as_int=Cast('lease_id', IntegerField())).order_by("-lease_id_as_int").first()
+                        print(f"contract_lease: {contract_lease}")
 
                         bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = contract_lease).first()
+                        print(f"bank_activity_lease: {bank_activity_lease}")
 
                         if not bank_activity_lease and contract_lease:
                             bank_activity_lease = BankActivityLease.objects.create(
@@ -501,22 +503,27 @@ class BankActivity(models.Model):
                             )
 
                         if bank_activity_lease:
-                            first_future_payment = (
-                                bank_activity_lease.lease.lease_installments
-                                .filter(payment_date__gte=timezone.now().date())
-                                .order_by('payment_date')
-                                .values_list('amount', flat=True)
-                                .first()
-                            )
+                            bank_activity_lease.processed_amount = self.amount
+                            bank_activity_lease.leaseflex_automation = True
+                            bank_activity_lease.save()
+                            # first_future_payment = (
+                            #     bank_activity_lease.lease.lease_installments
+                            #     .filter(payment_date__gte=timezone.now().date())
+                            #     .order_by('payment_date')
+                            #     .values_list('amount', flat=True)
+                            #     .first()
+                            # )
 
-                            if first_future_payment:
-                                if abs(self.amount - first_future_payment) <= 2:
-                                    bank_activity_lease.processed_amount = self.amount
-                                    bank_activity_lease.leaseflex_automation = True
-                                    bank_activity_lease.save()
+                            # if first_future_payment:
+                            #     if abs(self.amount - first_future_payment) <= 2:
+                            #         bank_activity_lease.processed_amount = self.amount
+                            #         bank_activity_lease.leaseflex_automation = True
+                            #         bank_activity_lease.save()
 
                 if len(contracts) > 1:
-                    total_contract_ba_leases_amount = Decimal("0.00")
+                    total_contract_ba_leases_ffp_amount = Decimal("0.00")
+                    total_contract_ba_leases_overdue_amount = Decimal("0.00")
+                    total_contract_ba_leases_mix_amount = Decimal("0.00")
                     contract_ba_lease_queryset = []
                     for contract in contracts:
                         contract_lease = Lease.objects.select_related().filter(
@@ -527,7 +534,9 @@ class BankActivity(models.Model):
                                 Q(lease_status='durduruldu')
                             )
                         ).annotate(lease_id_as_int=Cast('lease_id', IntegerField())).order_by("-lease_id_as_int").first()
+
                         bank_activity_lease = BankActivityLease.objects.select_related().filter(bank_activity = self, lease = contract_lease).first()
+
                         if not bank_activity_lease and contract_lease:
                             bank_activity_lease = BankActivityLease.objects.create(
                                 company = self.company,
@@ -550,10 +559,22 @@ class BankActivity(models.Model):
                         #         bank_activity_lease.save()
 
                         if bank_activity_lease:
+                            first_future_payment = (
+                                bank_activity_lease.lease.lease_installments
+                                .filter(payment_date__gte=timezone.now().date())
+                                .order_by('payment_date')
+                                .values_list('amount', flat=True)
+                                .first()
+                            )
                             contract_ba_lease_queryset.append(bank_activity_lease)
-                            total_contract_ba_leases_amount += bank_activity_lease.processed_amount
+                            total_contract_ba_leases_ffp_amount += first_future_payment
+                            total_contract_ba_leases_overdue_amount += bank_activity_lease.lease.overdue_amount
+                            if total_contract_ba_leases_overdue_amount:
+                                total_contract_ba_leases_mix_amount += total_contract_ba_leases_overdue_amount
+                            else:
+                                total_contract_ba_leases_mix_amount += first_future_payment
 
-                    if abs(self.amount - total_contract_ba_leases_amount) <= 2:
+                    if abs(self.amount - total_contract_ba_leases_ffp_amount) <= 2:
                         for contract_ba_lease in contract_ba_lease_queryset:
                             first_future_payment = (
                                 contract_ba_lease.lease.lease_installments
@@ -566,6 +587,28 @@ class BankActivity(models.Model):
                                 contract_ba_lease.processed_amount = first_future_payment
                                 contract_ba_lease.leaseflex_automation = True
                                 contract_ba_lease.save()
+                    elif abs(self.amount - total_contract_ba_leases_overdue_amount) <= 2:
+                        for contract_ba_lease in contract_ba_lease_queryset:
+                            lease_overdue_amount = contract_ba_lease.lease.overdue_amount
+                            contract_ba_lease.processed_amount = lease_overdue_amount
+                            contract_ba_lease.leaseflex_automation = True
+                            contract_ba_lease.save()
+                    elif abs(self.amount - total_contract_ba_leases_mix_amount) <= 2:
+                        for contract_ba_lease in contract_ba_lease_queryset:
+                            lease_overdue_amount = contract_ba_lease.lease.overdue_amount
+                            if lease_overdue_amount > 0:
+                                contract_ba_lease.processed_amount = lease_overdue_amount
+                            else:
+                                first_future_payment = (
+                                    contract_ba_lease.lease.lease_installments
+                                    .filter(payment_date__gte=timezone.now().date())
+                                    .order_by('payment_date')
+                                    .values_list('amount', flat=True)
+                                    .first()
+                                )
+                                contract_ba_lease.processed_amount = first_future_payment
+                            contract_ba_lease.leaseflex_automation = True
+                            contract_ba_lease.save()
 
                 if len(contracts) == 0 and self.tc_vkn_no:
                     partner = Partner.objects.select_related().filter(tc_vkn_no = self.tc_vkn_no).first()
