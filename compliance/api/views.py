@@ -24,6 +24,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from companies.models import UserCompany
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -145,4 +146,51 @@ class BlackListPersonList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
+        return queryset
+    
+class ScanPartnerList(ModelViewSet, QueryListAPIView):
+    serializer_class = ScanPartnerListSerializer
+    filterset_class = ScanPartnerFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['name','tc_vkn_no','crm_code']
+    ordering = ['crm_code']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        user = self.request.user
+        active_company_uuid = self.request.query_params.get('ac')
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+        is_kdv = self.request.query_params.get('kdv')
+
+        # Use prefetch_related for partner_contracts to reduce DB hits
+        custom_related_fields = []
+        prefetch_related_fields = []
+
+        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+            Q(company=active_company.company if active_company else None)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["name","tc_vkn_no","crm_code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
         return queryset

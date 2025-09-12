@@ -22,3 +22,17 @@ class BlackListPersonListSerializer(serializers.Serializer):
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
+    
+class ScanPartnerListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    crm_code = serializers.CharField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.SerializerMethodField()
+    is_scan = serializers.BooleanField()
+    last_scan_date = serializers.DateTimeField()
+    next_scan_date = serializers.DateTimeField()
+    is_reliable_person = serializers.BooleanField()
+
+    def get_tc_vkn_no(self, obj):
+        return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
+    

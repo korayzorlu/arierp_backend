@@ -11,6 +11,7 @@ from datetime import datetime,timedelta
 from decimal import Decimal
 
 from .serializers import *
+from partners.models import Partner
 
 class BlackListPersonFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
@@ -24,4 +25,14 @@ class BlackListPersonFilter(FilterSet):
 
     class Meta:
         model = BlackListPerson
+        fields = ['uuid']
+
+class ScanPartnerFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    tc_vkn_no = CharFilter(field_name='tc_vkn_no', lookup_expr='icontains')
+    crm_code = CharFilter(field_name='crm_code', lookup_expr='exact')
+
+    class Meta:
+        model = Partner
         fields = ['uuid']
