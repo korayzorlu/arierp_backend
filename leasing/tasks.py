@@ -1185,7 +1185,7 @@ def fetch_overdue_leases(company):
         # ).first()
         if obj:
             old_obj_count += 1
-            if not pd.isna(row['Oran']) and float(row['Oran'].replace("% ","")) >= 96.73:
+            if not pd.isna(row['Oran']) and float(row['Oran'].replace("% ","")) >= 96.73 and float(row['Oran'].replace("% ","")) < 100:
                 obj.is_kdv_diff = True
             obj.paid_rate = Decimal(str(row['Oran'].replace("% ",""))) if not pd.isna(row['Oran']) else Decimal("0.00")
             obj.total_payment = Decimal(str(row['Kdv Dahil Kira Toplamı'])) if not pd.isna(row['Kdv Dahil Kira Toplamı']) else Decimal("0.00")
