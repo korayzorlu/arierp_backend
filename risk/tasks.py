@@ -48,7 +48,7 @@ def fetch_amounts_and_debits(company):
         # Tüm objeleri RAM'e almadan toplu silme işlemi
         AmountDebitTransaction.objects.all().delete()
         print("All AmountDebitTransaction objects deleted.")
-        amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").filter()
+        amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").filter().order_by('pk')
         leases = Lease.objects.select_related().filter(contract__project__icontains="KIZILBÜK")
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
