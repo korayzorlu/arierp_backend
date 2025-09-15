@@ -322,13 +322,14 @@ def fetch_amounts_and_debits(company):
             ]
 
             new_objs = []
+            stop_limit = 0
             for index,data in enumerate(external_data):
                 if str(data["TrnId"]):
-                    obj = (amount_debit_transaction_by_code.get(str(data["TrnId"])))
+                    ad_obj = (amount_debit_transaction_by_code.get(str(data["TrnId"])))
                 else:
-                    obj = None
+                    ad_obj = None
 
-                if obj:
+                if ad_obj:
                     pass
                     # old_obj_count += 1
                     # obj.trn_id = str(data["TrnId"]) or ""
@@ -368,7 +369,7 @@ def fetch_amounts_and_debits(company):
                     # obj.save()
                 else:
                     new_obj_count += 1
-                    obj = AmountDebitTransaction.objects.select_related("lease").create(
+                    ad_obj = AmountDebitTransaction.objects.select_related("lease").create(
                         company = company_obj,
                         trn_id = str(data["TrnId"]) or "",
                         lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"])),
@@ -393,30 +394,69 @@ def fetch_amounts_and_debits(company):
                     #     credit_amount=safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00"),
                     #     interest_rate=safe_decimal(interest_rate)
                     # )
-                    #real amount
-                    prev_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk-1)))
-                    if prev_obj:
-                        obj.real_amount = (obj.debit_amount - obj.credit_amount) + prev_obj.real_amount
-                    else:
-                        obj.real_amount = obj.debit_amount - obj.credit_amount
-                    obj.for_default_amount = obj.real_amount
 
-                    #day
-                    next_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk+1)))
-                    if next_obj and obj.real_amount > 0.4:
-                        diff_date = to_date(next_obj.due_date) - to_date(obj.due_date)
-                        obj.day = diff_date.days
-                    elif not next_obj and obj.real_amount > 0.4:
-                        diff_date = datetime.today().date() - obj.due_date.date()
-                        obj.day = diff_date.days
-                    else:
-                        obj.day = 0
+                    # #real amount
+                    # prev_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk-1)))
+                    # if prev_obj:
+                    #     ad_obj.real_amount = (ad_obj.debit_amount - ad_obj.credit_amount) + prev_obj.real_amount
+                    # else:
+                    #     ad_obj.real_amount = ad_obj.debit_amount - ad_obj.credit_amount
+                    # ad_obj.for_default_amount = ad_obj.real_amount
 
-                    obj.adat_amount = obj.real_amount * obj.day
-                    obj.default_amount = (obj.real_amount * (interest_rate/100) * obj.day) / Decimal("360")
-                    obj.overdue_interest_rate = obj.default_amount + (obj.default_amount * Decimal("0.01"))
-                    obj.save()
+                    # #day
+                    # next_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk+1)))
+                    # print(ad_obj.lease.code)
+                    # print(ad_obj.due_date)
+                    # print(next_obj.due_date)
+                    # if next_obj and ad_obj.real_amount > 0.4:
+                    #     diff_date = to_date(next_obj.due_date) - to_date(ad_obj.due_date)
+                    #     ad_obj.day = diff_date.days
+                    # elif not next_obj and ad_obj.real_amount > 0.4:
+                    #     diff_date = datetime.today().date() - ad_obj.due_date.date()
+                    #     ad_obj.day = diff_date.days
+                    # else:
+                    #     ad_obj.day = 0
+
+                    # ad_obj.adat_amount = ad_obj.real_amount * ad_obj.day
+                    # ad_obj.default_amount = (ad_obj.real_amount * (interest_rate/100) * ad_obj.day) / Decimal("360")
+                    # ad_obj.overdue_interest_rate = ad_obj.default_amount + (ad_obj.default_amount * Decimal("0.01"))
+                    # ad_obj.save()
+
+                    
                     #new_objs.append(obj)
+            
+            ####temerrüt hesapla
+            ad_objs = obj.lease_amount_debits.order_by("pk")
+
+            for index,ad_obj in enumerate(ad_objs):
+                #real amount
+                prev_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk-1)))
+                if prev_obj:
+                    ad_obj.real_amount = (ad_obj.debit_amount - ad_obj.credit_amount) + prev_obj.real_amount
+                else:
+                    ad_obj.real_amount = ad_obj.debit_amount - ad_obj.credit_amount
+                ad_obj.for_default_amount = ad_obj.real_amount
+
+                #day
+                next_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk+1)))
+                if next_obj and ad_obj.real_amount > 0.4:
+                    diff_date = to_date(next_obj.due_date) - to_date(ad_obj.due_date)
+                    ad_obj.day = diff_date.days
+                elif not next_obj and ad_obj.real_amount > 0.4:
+                    diff_date = datetime.today().date() - ad_obj.due_date.date()
+                    ad_obj.day = diff_date.days
+                else:
+                    ad_obj.day = 0
+
+                ad_obj.adat_amount = ad_obj.real_amount * ad_obj.day
+                ad_obj.default_amount = (ad_obj.real_amount * (interest_rate/100) * ad_obj.day) / Decimal("360")
+                ad_obj.overdue_interest_rate = ad_obj.default_amount + (ad_obj.default_amount * Decimal("0.01"))
+                ad_obj.save()
+
+            stop_limit += 1
+            if stop_limit == 1:
+                break
+
             #AmountDebitTransaction.objects.bulk_create(new_objs, batch_size=1000)
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
     except Exception as e:
