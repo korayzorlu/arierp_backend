@@ -1182,6 +1182,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
     tc_vkn_no = serializers.SerializerMethodField()
     max_overdue_days = serializers.SerializerMethodField()
     total_overdue_amount = serializers.SerializerMethodField()
+    total_temerrut_amount = serializers.SerializerMethodField()
     main_paid_rate = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
@@ -1253,6 +1254,30 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             overdue_amount += lease.overdue_amount
         return overdue_amount
     
+    def get_total_temerrut_amount(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(filter_params) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff=False) &
+            Q(paid_rate__gte=30) &
+            Q(overdue_amount__lte=100)
+        )
+        
+        total_temerrut_amount = Decimal("0")
+        for lease in leases:
+            amount_debits = lease.lease_amount_debits.all()
+            for amount_debit in amount_debits:
+                    total_temerrut_amount += amount_debit.overdue_interest_rate
+        return total_temerrut_amount
+    
     def get_main_paid_rate(self, obj):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
@@ -1296,11 +1321,16 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         if leases:
             for lease in leases:
                 installments = lease.lease_installments.all()
+                amount_debits = lease.lease_amount_debits.all()
                 total_overdue_amount = Decimal("0")
                 for installment in installments:
                     total_overdue_amount += installment.overdue_amount
                 if total_overdue_amount < 100:
                     total_overdue_amount = Decimal("0")
+
+                total_temerrut_amount = Decimal("0")
+                for amount_debit in amount_debits:
+                    total_temerrut_amount += amount_debit.overdue_interest_rate
 
                 overdue_days = -1
                 for installment in installments:
@@ -1331,6 +1361,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                     "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
                     "overdue_amount" : lease.overdue_amount,
                     "overdue_days" : lease.overdue_days,
+                    "temerrut_amount" : total_temerrut_amount,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
