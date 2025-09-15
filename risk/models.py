@@ -62,4 +62,4 @@ class AmountDebitTransaction(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.company.name + " Amount Debit Transaction")
+        return str(f"{self.company.name} Amount Debit Transaction - {self.trn_id}")

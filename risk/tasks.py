@@ -48,12 +48,12 @@ def fetch_amounts_and_debits(company):
         # Tüm objeleri RAM'e almadan toplu silme işlemi
         AmountDebitTransaction.objects.all().delete()
         print("All AmountDebitTransaction objects deleted.")
-        amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").filter().order_by('pk')
+        #amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").filter().order_by('pk')
         leases = Lease.objects.select_related().filter(contract__project__icontains="KIZILBÜK")
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        amount_debit_transaction_by_code = {a.trn_id: a for a in amount_debit_transactions if a.trn_id}
-        adt_by_lease_and_process = {(a.lease.lease_id, a.process_group_id, a.pk): a for a in amount_debit_transactions if a.lease.lease_id and a.process_group_id and a.pk}
+        #amount_debit_transaction_by_code = {a.trn_id: a for a in amount_debit_transactions if a.trn_id}
+        #adt_by_lease_and_process = {(a.lease.lease_id, a.process_group_id, a.pk): a for a in amount_debit_transactions if a.lease.lease_id and a.process_group_id and a.pk}
         leases_dict = {l.lease_id: l for l in leases}
 
         previous_progress = 0
@@ -324,10 +324,12 @@ def fetch_amounts_and_debits(company):
             new_objs = []
             stop_limit = 0
             for index,data in enumerate(external_data):
-                if str(data["TrnId"]):
-                    ad_obj = (amount_debit_transaction_by_code.get(str(data["TrnId"])))
-                else:
-                    ad_obj = None
+                # if str(data["TrnId"]):
+                #     ad_obj = (amount_debit_transaction_by_code.get(str(data["TrnId"])))
+                # else:
+                #     ad_obj = None
+
+                ad_obj = None
 
                 if ad_obj:
                     pass
@@ -426,11 +428,11 @@ def fetch_amounts_and_debits(company):
                     #new_objs.append(obj)
             
             ####temerrüt hesapla
-            ad_objs = obj.lease_amount_debits.order_by("pk")
+            ad_objs = obj.lease_amount_debits.all().order_by("pk")
 
             for index,ad_obj in enumerate(ad_objs):
                 #real amount
-                prev_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk-1)))
+                prev_obj = ad_objs[index - 1] if index > 0 else None
                 if prev_obj:
                     ad_obj.real_amount = (ad_obj.debit_amount - ad_obj.credit_amount) + prev_obj.real_amount
                 else:
@@ -438,12 +440,12 @@ def fetch_amounts_and_debits(company):
                 ad_obj.for_default_amount = ad_obj.real_amount
 
                 #day
-                next_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk+1)))
+                next_obj = ad_objs[index + 1] if index + 1 < len(ad_objs) else None
                 if next_obj and ad_obj.real_amount > 0.4:
                     diff_date = to_date(next_obj.due_date) - to_date(ad_obj.due_date)
                     ad_obj.day = diff_date.days
                 elif not next_obj and ad_obj.real_amount > 0.4:
-                    diff_date = datetime.today().date() - ad_obj.due_date.date()
+                    diff_date = datetime.today().date() - ad_obj.due_date
                     ad_obj.day = diff_date.days
                 else:
                     ad_obj.day = 0
@@ -452,10 +454,6 @@ def fetch_amounts_and_debits(company):
                 ad_obj.default_amount = (ad_obj.real_amount * (interest_rate/100) * ad_obj.day) / Decimal("360")
                 ad_obj.overdue_interest_rate = ad_obj.default_amount + (ad_obj.default_amount * Decimal("0.01"))
                 ad_obj.save()
-
-            stop_limit += 1
-            if stop_limit == 1:
-                break
 
             #AmountDebitTransaction.objects.bulk_create(new_objs, batch_size=1000)
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
