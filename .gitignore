@@ -6,6 +6,9 @@
 # Ignore Toolkit File
 # toolkit.md
 
+# Ignore special files
+user_ldap.json
+
 # Ignore word
 word/
 

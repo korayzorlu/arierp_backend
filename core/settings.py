@@ -510,6 +510,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 import logging
+import pprint
 
 logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())

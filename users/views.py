@@ -26,11 +26,14 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from dotenv import load_dotenv
+
+from django.conf import settings
 load_dotenv()
 
 import json
 import logging
 from twilio.rest import Client
+import ldap
 
 from .models import *
 from .utils import get_client_ip,get_client_country
@@ -49,6 +52,41 @@ class CSRFTokenGetView(View):
 
 class UserSessionView(View):
     def get(self, request, *args, **kwargs):
+        # def print_ldap_user_info(username):
+        #     try:
+        #         ldap_server = settings.AUTH_LDAP_SERVER_URI
+        #         bind_dn = settings.AUTH_LDAP_BIND_DN
+        #         bind_password = settings.AUTH_LDAP_BIND_PASSWORD
+
+        #         conn = ldap.initialize(ldap_server)
+        #         conn.simple_bind_s(bind_dn, bind_password)
+        #         search_base = "OU=ARI,DC=arileasing,DC=local"
+        #         search_filter = f"(sAMAccountName={username})"
+        #         result = conn.search_s(search_base, ldap.SCOPE_SUBTREE, search_filter)
+        #         # result okunabilir şekilde yazdırılır
+
+        #         for dn, attrs in result:
+        #             print(f"Distinguished Name: {dn}")
+        #             for key, value in attrs.items():
+        #                 # bytes tipini decode et, liste ise virgülle ayır
+        #                 decoded = []
+        #                 for v in value:
+        #                     if isinstance(v, bytes):
+        #                         try:
+        #                             decoded.append(v.decode("utf-8"))
+        #                         except Exception:
+        #                             decoded.append(str(v))
+        #                     else:
+        #                         decoded.append(str(v))
+        #                 print(f"  {key}: {', '.join(decoded)}")
+        #                 print("-" * 60)
+        #         conn.unbind_s()
+        #     except Exception as e:
+        #         logging.error(f"LDAP user info error: {e}")
+
+        # # Örnek kullanım:
+        # print_ldap_user_info("koray.zorlu")
+        
         if request.user.is_authenticated:
 
             return JsonResponse({"authenticated": True},status=200)

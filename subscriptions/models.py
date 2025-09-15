@@ -23,3 +23,21 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.type} | {self.user} | {self.user.get_full_name()}"
+
+class Authorization(models.Model):
+    DEPARTMENT_CHOICES = [
+        ('admin', 'Admin'),
+        ('bilgi_islem', 'Bilgi İşlem'),
+        ('default', 'Default'),
+        ('finans', 'Finans'),
+        ('genel_mudurluk', 'Genel Müdürlük'),
+        ('muhasebe', 'Muhasebe'),
+        ('operasyon', 'Operasyon'),
+        ('risk', 'Risk'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, blank=True, related_name="authorization")
+    department = models.CharField(_("Department"), max_length=25, default='default', choices=DEPARTMENT_CHOICES)
+
+    def __str__(self):
+        return f"{self.user} | {self.department}"
