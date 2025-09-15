@@ -25,7 +25,7 @@ def to_date(dt):
     return dt  # zaten date
 
 @shared_task()
-def fetch_amounts_and_debitss(company):
+def fetch_amounts_and_debits(company):
     SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
@@ -215,7 +215,7 @@ def fetch_amounts_and_debitss(company):
 
 
 @shared_task()
-def fetch_amounts_and_debits(company):
+def fetch_amounts_and_debitss(company):
     SERVER = "192.168.82.31,1433"
     DATABASE = "ARI_LEASING"
     USERNAME = "lflex"
