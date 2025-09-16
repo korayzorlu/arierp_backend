@@ -98,7 +98,7 @@ class UserLoginView(View):
         email = data.get('email')
         password = data.get('password')
         remember = data.get('remember')
-        print(data)
+        
         user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)

@@ -41,6 +41,11 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Operasyon", "icon" : "hub", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
+                {"type" : "sub_menu", "class" : "free", "label" : "Sözleşme İzleme", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : "free", "label" : "Tedarikçide", "icon" : "paid", "route" : "/testt"},
+                    {"type" : "item", "class" : "free", "label" : "İşlemde", "icon" : "paid", "route" : "/testt"},
+                    {"type" : "item", "class" : "free", "label" : "Arşivde", "icon" : "paid", "route" : "/testt"},
+                ]},
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : "premium", "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},

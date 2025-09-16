@@ -16,6 +16,7 @@ class ContractFilter(FilterSet):
     class Meta:
         model = Contract
         fields = ['uuid','code','contract_id','project','customer_representative']
+
     
     
 

@@ -87,7 +87,8 @@ INSTALLED_APPS = [
     "risk",
     "finance",
     "underwriting",
-    "compliance"
+    "compliance",
+    "operation",
 ]
 
 MIDDLEWARE = [
