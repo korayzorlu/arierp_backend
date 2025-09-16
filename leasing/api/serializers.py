@@ -979,7 +979,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -1030,7 +1030,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -1080,7 +1080,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
