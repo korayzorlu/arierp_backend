@@ -112,9 +112,73 @@ class ContractInSupplierList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["company","partner","status"]
+        custom_related_fields = ["company"]
 
-        queryset = Contract.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-kof_tan_sozlesmeye_aktarim_tarihi")
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lop_open_date__gte="2025-01-01")
+        ).order_by("partner__name")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["code","partner__name","kof","quotation","committe","credit_type","customer_representative","supplier","project","status__name","mkk_tesciline_gonderilecek_mi","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class ContractInProcessList(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractInProcessListSerializer
+    filterset_class = ContractInProcessFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company"]
+
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None)
+        ).order_by("partner__name")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["code","partner__name","kof","quotation","committe","credit_type","customer_representative","supplier","project","status__name","mkk_tesciline_gonderilecek_mi","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class ContractInArchiveList(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractInArchiveListSerializer
+    filterset_class = ContractInArchiveFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company"]
+
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lop_open_date__lt="2025-01-01")
+        ).order_by("partner__name")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

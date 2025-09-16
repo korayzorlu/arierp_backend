@@ -16,3 +16,23 @@ class ContractInSupplierFilter(FilterSet):
     class Meta:
         model = Contract
         fields = ['uuid','code','contract_id','project','customer_representative']
+
+class ContractInProcessFilter(FilterSet):
+    partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    partner_tc = CharFilter(field_name='partner__tc_vkn_no', lookup_expr='icontains')
+    quotation = CharFilter(field_name='quotation_obj__code', lookup_expr='exact')
+    vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
+
+    class Meta:
+        model = Contract
+        fields = ['uuid','code','contract_id','project','customer_representative']
+
+class ContractInArchiveFilter(FilterSet):
+    partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    partner_tc = CharFilter(field_name='partner__tc_vkn_no', lookup_expr='icontains')
+    quotation = CharFilter(field_name='quotation_obj__code', lookup_expr='exact')
+    vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
+
+    class Meta:
+        model = Contract
+        fields = ['uuid','code','contract_id','project','customer_representative']
