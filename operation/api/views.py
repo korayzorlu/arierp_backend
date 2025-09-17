@@ -190,3 +190,89 @@ class ContractInArchiveList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class PartnerAdvanceActivityList(ModelViewSet, QueryListAPIView):
+    serializer_class = PartnerAdvanceActivityListSerializer
+    filterset_class = PartnerAdvanceActivityFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["currency"]
+
+        today = date.today()
+
+        queryset = PartnerAdvanceActivity.objects.select_related(*custom_related_fields).filter(
+            company = active_company.company if active_company else None
+        ).order_by("created_date")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["currency__code","bank","bank_account_no","process_date","process_type","receipt_no","description"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class PartnerAdvanceActivityLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = PartnerAdvanceActivityLeaseListSerializer
+    filterset_class = PartnerAdvanceActivityLeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('active_company')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["bank_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
+
+        queryset = PartnerAdvanceActivityLease.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            (
+                Q(lease__lease_status='aktiflestirildi') |
+                Q(lease__lease_status='planlandi') |
+                Q(lease__lease_status='durduruldu')
+            )
+        ).order_by("-bank_activity__process_date")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["bank_activity__uuid","lease__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+   

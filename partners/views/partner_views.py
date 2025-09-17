@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.core.mail import EmailMessage, send_mail
 
 from utils.mixins import CompanyOwnershipRequiredMixin
 
@@ -21,6 +22,7 @@ from common.utils.websocket_utils import send_alert
 import os
 import json
 import pandas as pd
+from datetime import datetime
 
 # Create your views here.
 
@@ -92,6 +94,32 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         # phone_country = Country.objects.filter(iso2 = data.get('phoneCountry') if data.get('phoneCountry') else 0).first()
 
         obj = Partner.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj.is_reliable_person:
+            # today = datetime.today().date().strftime("%d.%m.%Y")
+                
+            # def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+            #     email = EmailMessage(
+            #         subject,
+            #         message,
+            #         from_email,
+            #         recipient_list,
+            #     )
+            #     if attachments:
+            #         for attachment in attachments:
+            #             email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+            #     email.send(fail_silently=False)
+            #     #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                    
+            # subject = 'Test'
+            # message = f'Test mail içeriği. Bugün tarih: {today}'
+            # from_email = 'Arınet <koray.zorlu@arileasing.com.tr>'
+            # recipient_list = ['koray.zorlu@arileasing.com.tr']
+
+            # send_outlook_email(subject, message, from_email, recipient_list)
+
+            return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
+
         # obj.types = get_partner_types(data)
         obj.name = data.get('name')
         obj.formal_name = data.get('formalName')
@@ -114,7 +142,7 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         obj.types = get_partner_types(data)
         obj.save()
 
-        return JsonResponse({'message': 'Saved successfully!','status':'success'}, status=200)
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
     
 class DeletePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Partner

@@ -3,7 +3,8 @@ from django.db.models import Q
 from django.db.models.functions import Lower,Upper
 
 from django_filters.rest_framework import FilterSet
-from django_filters import CharFilter
+from django_filters import CharFilter,DateFromToRangeFilter
+
 
 from .serializers import *
 
@@ -36,3 +37,22 @@ class ContractInArchiveFilter(FilterSet):
     class Meta:
         model = Contract
         fields = ['uuid','code','contract_id','project','customer_representative']
+
+class PartnerAdvanceActivityFilter(FilterSet):
+    created_date = DateFromToRangeFilter(field_name = 'created_date')
+    class Meta:
+        model = PartnerAdvanceActivity
+        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date']
+
+class PartnerAdvanceActivityLeaseFilter(FilterSet):
+    bank_activity = CharFilter(method = 'filter_bank_activity')
+    lease = CharFilter(method = 'filter_lease')
+    class Meta:
+        model = PartnerAdvanceActivityLease
+        fields = ['uuid','bank_activity','lease']
+
+    def filter_bank_activity(self, queryset, bank_activity, value):
+        return queryset.filter(bank_activity__uuid = value)
+    
+    def filter_lease(self, queryset, lease, value):
+        return queryset.filter(lease__lease = value)
