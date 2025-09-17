@@ -31,7 +31,7 @@ def export_to_terminated_risk_partners_for_sms(self):
             Q(partner_contracts__contract_warning_notices__state='Geçerli')
         ) &
         Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-        Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+        Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
         Q(partner_contracts__contract_leases__overdue_days__gt=30) &
         Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
     ).annotate(

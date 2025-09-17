@@ -15,7 +15,7 @@ from leasing.models import Lease
 class PartnerAdvanceActivity(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_advance_activities")
-
+    
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, null=True, blank=True, related_name="partner_partner_advance_activities")
     bank = models.CharField(_("Bank"), max_length=140, blank=True, null=True)
     bank_code = models.CharField(_("Bank Code"), max_length=140, blank=True, null=True)
