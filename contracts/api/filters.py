@@ -30,6 +30,7 @@ class ContractPaymentFilter(FilterSet):
     account_name = CharFilter(method = 'filter_account_name')
     user_name = CharFilter(method = 'filter_user_name')
     description = CharFilter(method = 'filter_description')
+    project = CharFilter(field_name='contract__project', lookup_expr='icontains')
 
     class Meta:
         model = ContractPayment

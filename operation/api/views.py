@@ -210,7 +210,7 @@ class PartnerAdvanceActivityList(ModelViewSet, QueryListAPIView):
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         custom_related_fields = ["currency"]
@@ -251,7 +251,7 @@ class PartnerAdvanceActivityLeaseList(ModelViewSet, QueryListAPIView):
     permission_classes = [SubscriptionPermission]
     
     def get_queryset(self):
-        active_company_uuid = self.request.query_params.get('active_company')
+        active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         custom_related_fields = ["partner_advance_activity_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]

@@ -66,6 +66,7 @@ class ContractPaymentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     contract = serializers.SerializerMethodField()
+    project = serializers.SerializerMethodField()
     trn_id = serializers.CharField()
     trn_from_id = serializers.CharField()
     ledger_account_id = serializers.CharField()
@@ -95,6 +96,9 @@ class ContractPaymentListSerializer(serializers.Serializer):
     
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
+    
+    def get_project(self, obj):
+        return obj.contract.project if obj.contract else ""
     
 class WarningNoticeListSerializer(serializers.Serializer):
     id = serializers.CharField(source='uuid')

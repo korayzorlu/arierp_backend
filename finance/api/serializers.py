@@ -94,7 +94,15 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
     tc_vkn_no = serializers.CharField()
     crm_code = serializers.CharField()
     advance_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    partner_advance_activity = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
+    
+    def get_partner_advance_activity(self, obj):
+        partner_advance_activity = obj.partner_partner_advance_activities.all()
+        if partner_advance_activity:
+            return True
+        else:
+            return False
     

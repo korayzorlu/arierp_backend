@@ -109,13 +109,6 @@ class PartnerListSerializer(serializers.Serializer):
     
     def get_phoneCountry(self, obj):
         return obj.phone_country.iso2 if obj.phone_country else ''
-    
-    def get_partner_advance_activity(self, obj):
-        partner_advance_activity = obj.partner_partner_advance_activities.all()
-        if partner_advance_activity:
-            return True
-        else:
-            return False
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)

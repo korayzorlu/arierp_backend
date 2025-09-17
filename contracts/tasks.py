@@ -262,7 +262,7 @@ def fetch_contract_payments(company):
                 AND TrnAccountType IN (21, 11, 1)
                 --AND TrnDate >= CONVERT(DATETIME, '2015-7-4', 102)
                 --AND TrnDate <= CONVERT(DATETIME, '2025-7-28', 102)
-                --AND TrnOprContractId = 41727
+                AND TrnOprContractId = 41727
                 AND TrnLayer = 1
                 AND TrnLedgerStatu = 50
                 AND ISNULL(TrnFromToType, 0) <> 0

@@ -142,7 +142,9 @@ class ContractPaymentList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["company","contract","currency"]
 
-        queryset = ContractPayment.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("date","contract__code")
+        queryset = ContractPayment.objects.select_related(*custom_related_fields).filter(
+            company = active_company.company if active_company else None
+        ).order_by("-date","contract__project")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

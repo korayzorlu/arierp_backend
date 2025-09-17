@@ -152,7 +152,7 @@ class PartnerAdvanceActivityListSerializer(serializers.Serializer):
         return obj.currency.code if obj.currency else ""
     
     def get_processed_amount(self, obj):
-        ba_leases = obj.bank_activity_bank_acitivity_leases.all()
+        ba_leases = obj.partner_advance_activity_partner_advance_activity_leases.all()
         total_ba_leases_amount = 0
         for ba_lease in ba_leases:
             total_ba_leases_amount += ba_lease.processed_amount
