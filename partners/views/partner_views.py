@@ -96,27 +96,27 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         obj = Partner.objects.filter(uuid = data.get('uuid')).first()
 
         if not obj.is_reliable_person:
-            # today = datetime.today().date().strftime("%d.%m.%Y")
+            today = datetime.today().date().strftime("%d.%m.%Y")
                 
-            # def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
-            #     email = EmailMessage(
-            #         subject,
-            #         message,
-            #         from_email,
-            #         recipient_list,
-            #     )
-            #     if attachments:
-            #         for attachment in attachments:
-            #             email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
-            #     email.send(fail_silently=False)
-            #     #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+                email = EmailMessage(
+                    subject,
+                    message,
+                    from_email,
+                    recipient_list,
+                )
+                if attachments:
+                    for attachment in attachments:
+                        email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+                email.send(fail_silently=False)
+                #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
                     
-            # subject = 'Test'
-            # message = f'Test mail içeriği. Bugün tarih: {today}'
-            # from_email = 'Arınet <koray.zorlu@arileasing.com.tr>'
-            # recipient_list = ['koray.zorlu@arileasing.com.tr']
+            subject = 'Test'
+            message = f'Test mail içeriği. Bugün tarih: {today}'
+            from_email = 'Arınet <noreply@arileasing.com.tr>'
+            recipient_list = ['koray.zorlu@arileasing.com.tr','tolga.dumantepe@arileasing.com.tr']
 
-            # send_outlook_email(subject, message, from_email, recipient_list)
+            send_outlook_email(subject, message, from_email, recipient_list)
 
             return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
 

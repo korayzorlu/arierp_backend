@@ -466,11 +466,11 @@ os.environ['IP'] = str(os.getenv('IP'))
 # Email
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mail.arileasing.com.tr'
+EMAIL_HOST = 'mail.arileasing.com.tr'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'noreply@arileasing.com.tr'
-EMAIL_HOST_PASSWORD = 'dtrjytyjj5ru456ujd'
+EMAIL_HOST_PASSWORD = 'Ghs51dc7ss'
 DEFAULT_FROM_EMAIL = 'Arınet <noreply@arileasing.com.tr>'
 
 # Domain
