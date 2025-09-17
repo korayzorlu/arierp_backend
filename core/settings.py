@@ -466,7 +466,7 @@ os.environ['IP'] = str(os.getenv('IP'))
 # Email
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.arileasing.com.tr'
+EMAIL_HOST = '192.168.82.44'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'noreply@arileasing.com.tr'
