@@ -6,7 +6,6 @@ from rest_framework.utils import html, model_meta, representation
 
 from datetime import date, timedelta, timezone
 
-from arierp_backend.operation.models import PartnerAdvanceActivityLease
 from contracts.models import *
 from companies.models import Company,UserCompany
 from operation.models import *
