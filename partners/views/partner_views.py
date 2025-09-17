@@ -96,27 +96,41 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         obj = Partner.objects.filter(uuid = data.get('uuid')).first()
 
         if not obj.is_reliable_person:
-            today = datetime.today().date().strftime("%d.%m.%Y")
+            # today = datetime.today().date().strftime("%d.%m.%Y")
                 
-            def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
-                email = EmailMessage(
-                    subject,
-                    message,
-                    from_email,
-                    recipient_list,
-                )
-                if attachments:
-                    for attachment in attachments:
-                        email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
-                email.send(fail_silently=False)
-                #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            # def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+            #     email = EmailMessage(
+            #         subject,
+            #         message,
+            #         from_email,
+            #         recipient_list,
+            #     )
+            #     if attachments:
+            #         for attachment in attachments:
+            #             email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+            #     email.send(fail_silently=False)
+            #     #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
                     
-            subject = 'Test'
-            message = f'Test mail içeriği. Bugün tarih: {today}'
-            from_email = 'Arınet <noreply@arileasing.com.tr>'
-            recipient_list = ['koray.zorlu@arileasing.com.tr','tolga.dumantepe@arileasing.com.tr']
+            # subject = 'YASAKLI MÜŞTERİ İÇİN İŞLEM BİLDİRİMİ'
+            # message = f'''
+            # Aşağıdaki kişi/kurum için sistem üzerinde işlem yapılmak istendi ancak bu kişi/kurum yasaklı listesinde bulunduğu için işlemleri kısıtlanmıştır.
 
-            send_outlook_email(subject, message, from_email, recipient_list)
+            # Kişi/Kurum Bilgileri:
+            #     Tarih: {today}
+            #     İsim: {obj.name}
+            #     TC/VKN No: {obj.tc_vkn_no}
+            #     CRM Kodu: {obj.crm_code}
+
+            # İşlemi yapan kullanıcı:
+            #     İsim: {request.user.get_full_name()}
+            #     Email: {request.user.email}
+
+            # Bu e-posta test amaçlıdır, lütfen cevap vermeyiniz.
+            # '''
+            # from_email = 'Arınet <noreply@arileasing.com.tr>'
+            # recipient_list = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
+
+            # send_outlook_email(subject, message, from_email, recipient_list)
 
             return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
 
