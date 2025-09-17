@@ -988,7 +988,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 When(
                     contract__partner__customer_type='individual',
                     then=Case(
-                        When(overdue_days__gt=65, then=Value(True)),
+                        When(overdue_days__gt=60, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -996,7 +996,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 When(
                     contract__partner__customer_type='institutional',
                     then=Case(
-                        When(overdue_days__gt=95, then=Value(True)),
+                        When(overdue_days__gt=90, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -1039,7 +1039,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 When(
                     contract__partner__customer_type='individual',
                     then=Case(
-                        When(overdue_days__gt=65, then=Value(True)),
+                        When(overdue_days__gt=60, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -1047,7 +1047,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 When(
                     contract__partner__customer_type='institutional',
                     then=Case(
-                        When(overdue_days__gt=95, then=Value(True)),
+                        When(overdue_days__gt=90, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -1089,7 +1089,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 When(
                     contract__partner__customer_type='individual',
                     then=Case(
-                        When(overdue_days__gt=65, then=Value(True)),
+                        When(overdue_days__gt=60, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -1097,7 +1097,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 When(
                     contract__partner__customer_type='institutional',
                     then=Case(
-                        When(overdue_days__gt=95, then=Value(True)),
+                        When(overdue_days__gt=90, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )

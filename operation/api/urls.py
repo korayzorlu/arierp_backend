@@ -7,6 +7,8 @@ router = routers.DefaultRouter()
 router.register(r'contract_in_suppliers',ContractInSupplierList, "contract_in_suppliers_api")
 router.register(r'contract_in_processs',ContractInProcessList, "contract_in_processs_api")
 router.register(r'contract_in_archives',ContractInArchiveList, "contract_in_archives_api")
+router.register(r'partner_advance_activities',PartnerAdvanceActivityList, "partner_advance_activities_api")
+router.register(r'partner_advance_activity_leases',PartnerAdvanceActivityLeaseList, "partner_advance_activity_leases_api")
 
 urlpatterns = [
     path('',include(router.urls)),

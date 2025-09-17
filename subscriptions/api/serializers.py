@@ -41,7 +41,7 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Operasyon", "icon" : "hub", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
-                {"type" : "item", "class" : "free", "label" : "Müşteri Avansı İşleme", "icon" : "description", "route" : "/partner-advance-collections"},
+                {"type" : "item", "class" : "free", "label" : "Müşteri Avansı İşleme", "icon" : "description", "route" : "/partner-advance-activities"},
                 {"type" : "sub_menu", "class" : "free", "label" : "Sözleşme İzleme", "icon" : "description", "items" : [
                     {"type" : "item", "class" : "free", "label" : "Tedarikçide", "icon" : "paid", "route" : "/contract-in-suppliers"},
                     {"type" : "item", "class" : "free", "label" : "İşlemde", "icon" : "paid", "route" : "/contract-in-processs"},

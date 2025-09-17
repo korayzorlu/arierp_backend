@@ -649,7 +649,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 When(
                     customer_type='individual',
                     then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=65, then=Value(True)),
+                        When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )
@@ -657,7 +657,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 When(
                     customer_type='institutional',
                     then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=95, then=Value(True)),
+                        When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
                         default=Value(False),
                         output_field=BooleanField()
                     )

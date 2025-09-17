@@ -102,7 +102,7 @@ def export_to_terminated_risk_partners_for_sms(self):
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
             Q(is_kdv_diff=False) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -211,7 +211,7 @@ def export_to_terminated_risk_partners(self):
         ) &
         Q(is_kdv_diff=False) &
         Q(is_credit=False) &
-        Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
+        Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
         Q(overdue_days__gt=30) &
         Q(overdue_amount__gt=1000)
     ).annotate(
@@ -220,7 +220,7 @@ def export_to_terminated_risk_partners(self):
             When(
                 contract__partner__customer_type='individual',
                 then=Case(
-                    When(overdue_days__gt=65, then=Value(True)),
+                    When(overdue_days__gt=60, then=Value(True)),
                     default=Value(False),
                     output_field=BooleanField()
                 )
@@ -228,7 +228,7 @@ def export_to_terminated_risk_partners(self):
             When(
                 contract__partner__customer_type='institutional',
                 then=Case(
-                    When(overdue_days__gt=95, then=Value(True)),
+                    When(overdue_days__gt=90, then=Value(True)),
                     default=Value(False),
                     output_field=BooleanField()
                 )

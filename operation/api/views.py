@@ -254,7 +254,7 @@ class PartnerAdvanceActivityLeaseList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["bank_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
+        custom_related_fields = ["partner_advance_activity_activity","lease","lease__contract","lease__contract__quotation_obj","lease__contract__quotation_obj__quick_quotation"]
 
         queryset = PartnerAdvanceActivityLease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
@@ -263,11 +263,11 @@ class PartnerAdvanceActivityLeaseList(ModelViewSet, QueryListAPIView):
                 Q(lease__lease_status='planlandi') |
                 Q(lease__lease_status='durduruldu')
             )
-        ).order_by("-bank_activity__process_date")
+        ).order_by("-partner_advance_activity_activity__process_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["bank_activity__uuid","lease__code"]
+            search_fields = ["partner_advance_activity_activity__uuid","lease__code"]
             
             q_objects = Q()
             for field in search_fields:
