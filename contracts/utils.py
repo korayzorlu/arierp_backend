@@ -79,7 +79,7 @@ def import_contracts(self, df_json):
         self.process.save()
 
 def export_contract_payments(self):
-    objs = ContractPayment.objects.select_related("contract","contract__partner").filter(contract__project = "SİNPAŞ KASABA THERMAL WELLNESS RESORT").order_by("-contract__code")
+    objs = ContractPayment.objects.select_related("contract","contract__partner").filter(contract__project = "SİNPAŞ KASABA THERMAL WELLNESS RESORT").order_by("-contract__code","-date")
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
