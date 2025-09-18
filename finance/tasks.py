@@ -87,3 +87,28 @@ def fetch_partner_advances(company):
 
     except Exception as e:
         traceback.print_exc()
+
+@shared_task()
+def post_finmaks_bank_accounts(company):
+    try:
+        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        finmaks_bank_account_by_code = {f.bank_account_id: f for f in finmaks_bank_accounts if f.bank_account_id}
+        
+        previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
+        for index,obj in enumerate(finmaks_bank_accounts):
+            current_progress = ((index + 1)/len(finmaks_bank_accounts))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            print(f"banka: {obj.bank_name} - banka kodu: {obj.bank_code}")
+
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
+
+    except Exception as e:
+        traceback.print_exc()

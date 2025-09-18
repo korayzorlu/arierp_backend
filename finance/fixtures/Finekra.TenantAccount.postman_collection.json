@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "7356483d-15ca-4e02-b710-c09f8a3441ed",
+		"name": "Finekra.TenantAccount",
+		"description": "Finekra Banka Hesabı Ekleme, Silme, Düzenleme methodlarının olduğu collection'dır.\n\nLogin methoduyla başarılı şekilde accessToken alındıktan sonra, Collection'da variables'a eklenir.\n\nSonrasında diğer methodlar kullanılabilir.\n\nİsteklerde 401 hatası alınırsa, tekrardan login methoduyla yeni token alınıp işlemlere devam edilebilir.\n\nMethod'larda kullanılacak olan BankId bilgisini Bankalar isteğinden dönen liste'de banka bilgilerinde Id değeri kullanılacaktır.\n\nAynı Durum CurrencyId içinde geçerli olup, currencyId için Para Birimleri isteğini kullanabilirsiniz.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31063131"
+	},
+	"item": [
+		{
+			"name": "Banka Hesabı Ekleme",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"iban\": \"TR090006262423238952687395\",//nullable\r\n    \"balance\": 1000.0, // Bakiye\r\n    \"branchCode\": \"1021\",// hesap şube bilgisi nullable \r\n    \"branchName\": \"Merkez Şube\",// hesap şube bilgisi nullable \r\n    \"accountNumber\": \"52687395\",//nullable \r\n    \"accountSuffix\": \"\",//hesap ek no - nullable \r\n    \"currencyId\": 1, // Para Birimi id'si ,Para Birimleri servisinden alabilirsiniz. not null\r\n    \"description\": \"Deneme hesap açıklaması\", //nullable \r\n    \"name\": \"Vadesiz TL Hesabı\",//nullable \r\n    \"type\": 0, // 0: Vadesiz, 1: Kredi, 2: Vadeli //nullable \r\n    \"dueDate\": \"2025-09-11T00:00:00Z\", // Vade Bitiş Tarihi - nullable\r\n    \"interestRate\": \"15%\", // Vade Faiz Oranı- nullable\r\n    \"isCalculated\": true, // Hesaplamalara dahil edilsin mi? -not null\r\n    \"bankId\": 10, //Bankalar Servisinden alabilirsiniz. -not null\r\n    \"creditLimit\": 10000.0,//Kredili Hesap ise Total Kredi Limiti - nullable\r\n    \"lastQueryDate\": \"2025-09-16T10:04:00Z\",//İlgili Bakiye bilgisinin hangi tarih saatte bankadan alındığıdır. - nullable\r\n    \"availableCreditLimit\": 8000.0,//Kredili hesap ise kullanılabilir kredi limitidir\r\n    \"availableCreditBalance\": 7500.0, // bakiyeden, bloke tutar düşülmüş, müşterinin esas kullanabildiği meblag - nullable\r\n    \"availableBalance\": 5000.0,//kullanılabilir bakiye + kmh kullanımı varsa kmhda kullanabilir olduğu meblag - nullable\r\n    \"openDate\": \"2020-01-01T00:00:00Z\",//hesap açılış tarihi - nullable\r\n    \"creditBalance\": 2000.0,//Kredi Bakiyesidir --nullable\r\n    \"blockedAmount\": 0.0//Blokedeki tutardır. - nullable\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/TenantAccount/TenantAccountRegister",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"TenantAccount",
+						"TenantAccountRegister"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Hesabı Güncelleme",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"00c3479f-ed8e-f011-bf2c-0050569d9406\",\r\n    // \"iban\": \"TR000000000000000000000000\",\r\n    \"balance\": 0.0,\r\n    \"branchCode\": \"1234\",\r\n    \"branchName\": \"Merkez Şube\",\r\n    \"accountNumber\": \"12345678\",\r\n    \"accountSuffix\": \"01\",\r\n    \"currencyId\": 1,\r\n    \"description\": \"Deneme hesap açıklaması\",\r\n    \"name\": \"Vadesiz TL Hesabı\",\r\n    \"type\": 0,\r\n    \"dueDate\": \"2025-09-11T00:00:00Z\",\r\n    \"interestRate\": \"15%\",\r\n    \"isCalculated\": true,\r\n    \"bankId\": 10,\r\n    \"creditLimit\": 10000.0,\r\n    \"lastQueryDate\": \"2025-09-11T00:00:00Z\",\r\n    \"availableCreditLimit\": 8000.0,\r\n    \"availableCreditBalance\": 7500.0,\r\n    \"availableBalance\": 5000.0,\r\n    \"openDate\": \"2020-01-01T00:00:00Z\",\r\n    \"creditBalance\": 2000.0,\r\n    \"blockedAmount\": 0.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/TenantAccount/UpdateTenantAccount",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"TenantAccount",
+						"UpdateTenantAccount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Hesabı Silme",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/TenantAccount/id",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"TenantAccount",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Hesabı Durum Güncelleme (aktif/pasif)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/TenantAccount/ChangeSatus/id",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"TenantAccount",
+						"ChangeSatus",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Hesapları Listeleme",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/TenantAccount?$count=true&$skip=0&$top=100",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"TenantAccount"
+					],
+					"query": [
+						{
+							"key": "$count",
+							"value": "true"
+						},
+						{
+							"key": "$skip",
+							"value": "0"
+						},
+						{
+							"key": "$top",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"testapi@sinpas.com\",\r\n    \"password\": \"J2Abap8SOw7fBPzS\",\r\n    \"tenantCode\":\"1918619137\",\r\n    \"screenOption\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/Auth/DealerLogin",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"Auth",
+						"DealerLogin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bankalar",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIyYjMwOGNjYy05ODdkLWViMTEtOTEwOC0wMDE1NWQyMjk1YWEiLCJ1c2VyZW1haWwiOiJhcGlfdGVzdEBwb2x5bm9tdGVjaC5jb20iLCJ1c2VybmFtZSI6IkFwaSBLdWxsYW7EsWPEsXPEsSIsInRlbmFudGlkIjoiYjcxOWY0ZGEtZTg2Ni1lYjExLTkxMDgtMDA1MDU2OGY1OTBmIiwidGVuYW50dXNlcmlkIjoiMmMzMDhjY2MtOTg3ZC1lYjExLTkxMDgtMDAxNTVkMjI5NWFhIiwidGVuYW50bmFtZSI6IkRlbW8xIiwibmJmIjoxNjQ5MTU2NzA3LCJleHAiOjE2NDkyNDMxMDcsImlzcyI6Ind3dy5wYXJhdGljLmNvbS50ciIsImF1ZCI6Ind3dy5wYXJhdGljLmNvbS50ciJ9.OAUINF5exCKumFxCeD7F7a096Vb0mowtW1Gr7Y_TANU"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/Bank",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"Bank"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'https://test-api.finekra.com/api/Bank' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIyYjMwOGNjYy05ODdkLWViMTEtOTEwOC0wMDE1NWQyMjk1YWEiLCJ1c2VyZW1haWwiOiJhcGlfdGVzdEBwb2x5bm9tdGVjaC5jb20iLCJ1c2VybmFtZSI6IkFwaSBLdWxsYW7EsWPEsXPEsSIsInRlbmFudGlkIjoiYjcxOWY0ZGEtZTg2Ni1lYjExLTkxMDgtMDA1MDU2OGY1OTBmIiwidGVuYW50dXNlcmlkIjoiMmMzMDhjY2MtOTg3ZC1lYjExLTkxMDgtMDAxNTVkMjI5NWFhIiwidGVuYW50bmFtZSI6IkRlbW8xIiwibmJmIjoxNjQ5MTU2NzA3LCJleHAiOjE2NDkyNDMxMDcsImlzcyI6Ind3dy5wYXJhdGljLmNvbS50ciIsImF1ZCI6Ind3dy5wYXJhdGljLmNvbS50ciJ9.OAUINF5exCKumFxCeD7F7a096Vb0mowtW1Gr7Y_TANU'"
+			},
+			"response": []
+		},
+		{
+			"name": "Para Birimleri",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIyYjMwOGNjYy05ODdkLWViMTEtOTEwOC0wMDE1NWQyMjk1YWEiLCJ1c2VyZW1haWwiOiJhcGlfdGVzdEBwb2x5bm9tdGVjaC5jb20iLCJ1c2VybmFtZSI6IkFwaSBLdWxsYW7EsWPEsXPEsSIsInRlbmFudGlkIjoiYjcxOWY0ZGEtZTg2Ni1lYjExLTkxMDgtMDA1MDU2OGY1OTBmIiwidGVuYW50dXNlcmlkIjoiMmMzMDhjY2MtOTg3ZC1lYjExLTkxMDgtMDAxNTVkMjI5NWFhIiwidGVuYW50bmFtZSI6IkRlbW8xIiwibmJmIjoxNjQ5Mjc5NDcyLCJleHAiOjE2NDkzNjU4NzIsImlzcyI6Ind3dy5wYXJhdGljLmNvbS50ciIsImF1ZCI6Ind3dy5wYXJhdGljLmNvbS50ciJ9.tOQQkLgZBDQ8XEAMQ6wyIxzrtiFkXUnynDfxWYuNW7A"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/Currency",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"Currency"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'https://testapi.paratic.com.tr/api/Currency' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIyYjMwOGNjYy05ODdkLWViMTEtOTEwOC0wMDE1NWQyMjk1YWEiLCJ1c2VyZW1haWwiOiJhcGlfdGVzdEBwb2x5bm9tdGVjaC5jb20iLCJ1c2VybmFtZSI6IkFwaSBLdWxsYW7EsWPEsXPEsSIsInRlbmFudGlkIjoiYjcxOWY0ZGEtZTg2Ni1lYjExLTkxMDgtMDA1MDU2OGY1OTBmIiwidGVuYW50dXNlcmlkIjoiMmMzMDhjY2MtOTg3ZC1lYjExLTkxMDgtMDAxNTVkMjI5NWFhIiwidGVuYW50bmFtZSI6IkRlbW8xIiwibmJmIjoxNjQ5Mjc5NDcyLCJleHAiOjE2NDkzNjU4NzIsImlzcyI6Ind3dy5wYXJhdGljLmNvbS50ciIsImF1ZCI6Ind3dy5wYXJhdGljLmNvbS50ciJ9.tOQQkLgZBDQ8XEAMQ6wyIxzrtiFkXUnynDfxWYuNW7A'"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJiOGZhMmRkMi1jYTkyLWYwMTEtYmY1Yy0wMDBjMjkxNGU5OTkiLCJ1c2VyZW1haWwiOiJ0ZXN0YXBpQHNpbnBhcy5jb20iLCJ1c2VybmFtZSI6IlRlc3QgQXBpIiwidGVuYW50aWQiOiJkMjI0ZDQyMi1iZDNmLWYwMTEtYmY1Yi0wMDBjMjkxNGU5OTkiLCJ0ZW5hbnR1c2VyaWQiOiJiOWZhMmRkMi1jYTkyLWYwMTEtYmY1Yy0wMDBjMjkxNGU5OTkiLCJ0ZW5hbnRuYW1lIjoiVGVrbmlrIFRlc3QgRmlybWFzxLEiLCJuYmYiOjE3NTgwMDYxMzIsImV4cCI6MTc1ODM1MTczMiwiaXNzIjoiZmluZWtyYS5jb20iLCJhdWQiOiJmaW5la3JhLmNvbSJ9.HHY3hbLrOYh80ej9XTPh_o1OPisBAL2BSqyk-9-SYYM",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseUrl",
+			"value": ""
+		},
+		{
+			"key": "Token",
+			"value": ""
+		}
+	]
+}

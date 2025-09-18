@@ -140,11 +140,21 @@ class ContractPaymentList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["company","contract","currency"]
+        start_date = self.request.query_params.get('startDate')
+        end_date = self.request.query_params.get('endDate')
 
-        queryset = ContractPayment.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None)
-        ).order_by("-date","contract__project")
+        custom_related_fields = ["company","contract","currency"]
+        
+        if start_date and end_date:
+            queryset = ContractPayment.objects.select_related(*custom_related_fields).filter(
+                Q(company=active_company.company if active_company else None) &
+                Q(date__gte=start_date) &
+                Q(date__lte=end_date)
+            ).order_by("-date", "contract__project")
+        else:
+            queryset = ContractPayment.objects.select_related(*custom_related_fields).filter(
+                Q(company = active_company.company if active_company else None)
+            ).order_by("-date","contract__project")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
