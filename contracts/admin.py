@@ -9,7 +9,7 @@ from .models import Contract
 class ContractAdmin(admin.ModelAdmin):
     list_display = ["company","contract_id","code","partner","project","project_obj","vendor","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date","status"]
     list_display_links = ["code"]
-    search_fields = ["company__name","contract_id","code","partner__name","project","project_obj__name","vendor__name","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date","status"]
+    search_fields = ["company__name","contract_id","code","partner__name","project","project_obj__name","vendor__name","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date","status__name"]
     list_filter = []
     inlines = []
     ordering = ["kof_tan_sozlesmeye_aktarim_tarihi"]
@@ -25,6 +25,9 @@ class ContractAdmin(admin.ModelAdmin):
     
     def vendor(self,obj):
         return obj.vendor.name if obj.vendor else ""
+    
+    def status(self,obj):
+        return obj.status.name if obj.status else ""
     
     class Meta:
         model = Contract

@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.utils.timezone import make_aware
+from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
 
 from datetime import datetime
 import pandas as pd
@@ -79,7 +80,10 @@ def import_contracts(self, df_json):
         self.process.save()
 
 def export_contract_payments(self):
-    objs = ContractPayment.objects.select_related("contract","contract__partner").filter(contract__project = "SİNPAŞ KASABA THERMAL WELLNESS RESORT").order_by("-contract__code","-date")
+    objs = ContractPayment.objects.select_related("contract","contract__partner").filter(
+        Q(contract__project = "SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+        Q(contract__vendor__crm_code = "20559")
+    ).order_by("-contract__code","-date")
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
