@@ -82,7 +82,7 @@ def import_contracts(self, df_json):
 def export_contract_payments(self):
     objs = ContractPayment.objects.select_related("contract","contract__partner").filter(
         Q(contract__project = "SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-        Q(contract__vendor__crm_code = "20559")
+        Q(contract__vendor__crm_code = "11802")
     ).order_by("-contract__code","-date")
 
     self.process.status = "in_progress"
