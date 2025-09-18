@@ -13,8 +13,9 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 
 from .models import *
 from .utils import is_valid_contract_data
-from common.models import ImportProcess
+from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
+from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from partners.models import Partner
 from companies.models import UserCompany
@@ -22,6 +23,7 @@ from companies.models import UserCompany
 import os
 import json
 import pandas as pd
+from datetime import datetime
 
 # Create your views here.
 
@@ -194,3 +196,35 @@ class WarningNoticeInformationView(LoginRequiredMixin,View):
         }
 
         return JsonResponse({'warning_notice':warning_notice_data}, status=200)
+    
+class ExportContractPaymentsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="contracts",
+            model_name="ContractPayment",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-tahsilatlar.xlsx",
+            export_url="/contracts/contract_payments_excel",
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class ContractPaymentsExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "contracts", "contract_payments", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-tahsilatlar.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
