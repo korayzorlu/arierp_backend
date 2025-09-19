@@ -709,9 +709,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
             (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+                Q(partner_contracts__contract_leases__lease_status='planlandi')
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__paid_rate__gte=30) &

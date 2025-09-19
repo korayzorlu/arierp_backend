@@ -222,6 +222,21 @@ def total_overdue_amount(leases):
         total_overdue_amount += lease.overdue_amount
     return total_overdue_amount
 
+def total_temerrut_amount(leases):
+    total_temerrut_amount = 0
+    for lease in leases:
+        amount_debits = lease.lease_amount_debits.all()
+        for amount_debit in amount_debits:
+                total_temerrut_amount += amount_debit.overdue_interest_rate
+    return total_temerrut_amount
+
+def paid_rate(leases):
+    paid_rate = 0
+    for lease in leases:
+        if lease.paid_rate > paid_rate:
+            paid_rate = lease.paid_rate
+    return paid_rate
+
 
 def import_leases(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')

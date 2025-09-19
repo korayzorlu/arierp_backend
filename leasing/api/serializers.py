@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
 from django.utils import timezone
 
 from leasing.models import *
-from leasing.utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount
+from leasing.utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate
 from companies.models import Company,UserCompany
 from partners.models import Partner
 from contracts.models import WarningNotice
@@ -1180,10 +1180,6 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
-    max_overdue_days = serializers.SerializerMethodField()
-    total_overdue_amount = serializers.SerializerMethodField()
-    total_temerrut_amount = serializers.SerializerMethodField()
-    main_paid_rate = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
@@ -1209,136 +1205,46 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         else:
             return ""
     
-    def get_max_overdue_days(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff=False) &
-            Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=100)
-        )
-
-        overdue_days = 0
-        for lease in leases:
-            if lease.overdue_days > overdue_days:
-                overdue_days = lease.overdue_days
-        return overdue_days
-    
-    def get_total_overdue_amount(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff=False) &
-            Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=100)
-        )
-
-        overdue_amount = 0
-        for lease in leases:
-            overdue_amount += lease.overdue_amount
-        return overdue_amount
-    
-    def get_total_temerrut_amount(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff=False) &
-            Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=100)
-        )
-        
-        total_temerrut_amount = Decimal("0")
-        for lease in leases:
-            amount_debits = lease.lease_amount_debits.all()
-            for amount_debit in amount_debits:
-                    total_temerrut_amount += amount_debit.overdue_interest_rate
-        return total_temerrut_amount
-    
-    def get_main_paid_rate(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-        
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_kdv_diff=False) &
-            Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=100)
-        )
-        paid_rate = 0
-        for lease in leases:
-            if lease.paid_rate > paid_rate:
-                paid_rate = lease.paid_rate
-        return paid_rate
-    
     def get_leases(self, obj):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
-        leases = Lease.objects.select_related().filter(
+        leases = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation","currency").filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(lease_status='planlandi')
             ) &
             Q(is_kdv_diff=False) &
             Q(paid_rate__gte=30) &
             Q(overdue_amount__lte=100)
         )
 
-        lease_list = []
+        excluded_leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(filter_params) &
+            (
+                Q(lease_status='planlandi')
+            ) &
+            Q(is_kdv_diff=False) &
+            Q(overdue_amount__gt=100)
+        ).aggregate(total_overdue_amount=Sum('overdue_amount'))
+
+        lease_dict = {
+            "leases": [],
+            "total_overdue_amount": total_overdue_amount(leases),
+            "total_excluded_overdue_amount": excluded_leases['total_overdue_amount'] if excluded_leases['total_overdue_amount'] else Decimal("0"),
+            "max_overdue_days": max_overdue_days(leases),
+            "total_temerrut_amount": total_temerrut_amount(leases),
+            "paid_rate": paid_rate(leases)
+        }
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
                 amount_debits = lease.lease_amount_debits.all()
-                total_overdue_amount = Decimal("0")
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
 
-                total_temerrut_amount = Decimal("0")
+                total_lease_temerrut_amount = Decimal("0")
                 for amount_debit in amount_debits:
-                    total_temerrut_amount += amount_debit.overdue_interest_rate
-
-                overdue_days = -1
-                for installment in installments:
-                    if installment.overdue_amount > 0:
-                        today = date.today()
-                        diff = (today - installment.payment_date).days
-                        if diff > overdue_days:
-                            overdue_days = diff
+                    total_lease_temerrut_amount += amount_debit.overdue_interest_rate
                 
                 if lease.contract.contract_warning_notices.all():
                     status = "İhtar Çekildi"
@@ -1349,7 +1255,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                 else:
                     status = "SMS"
 
-                lease_list.append({
+                lease_dict["leases"].append({
                     "id" : lease.uuid,
                     "code" : lease.code,
                     "contract" : lease.contract.code if lease.contract else "",
@@ -1361,14 +1267,14 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                     "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
                     "overdue_amount" : lease.overdue_amount,
                     "overdue_days" : lease.overdue_days,
-                    "temerrut_amount" : total_temerrut_amount,
+                    "temerrut_amount" : total_lease_temerrut_amount,
                     "currency" : lease.currency.code if lease.currency else "",
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
                     "status" : status
                 })
-        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        return lease_dict
 
 
 class TomorrowPartnerListSerializer(serializers.Serializer):
