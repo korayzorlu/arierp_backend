@@ -818,7 +818,7 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
         # Get the latest sequency for each lease
         latest_sequency_subquery = Installment.objects.filter(
             lease=OuterRef('pk')
-        ).order_by('-sequency').values('sequency')[:1]
+        ).order_by('sequency').values('sequency')[:1]
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
