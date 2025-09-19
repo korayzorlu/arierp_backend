@@ -14,9 +14,12 @@ from django.utils.timezone import make_aware
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from .models import *
+from common.utils.websocket_utils import send_alert
+from common.utils.common_utils import parse_amount
 
 
 import json
+from decimal import Decimal
 
 # Create your views here.
 
@@ -48,3 +51,62 @@ class AddPartnerAdvanceActivityView(LoginRequiredMixin,View):
         )
 
         return JsonResponse({'message': 'Başarıyla Gönderildi!','status':'success'}, status=200)
+    
+class UpdateLeaseflexAutomationPartnerAdvanceActivityLeasesView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuids = data.get('uuids')
+
+        for uuid in uuids:
+            obj = PartnerAdvanceActivityLease.objects.filter(uuid = uuid).first()
+
+            obj.leaseflex_automation = data.get('select') or False
+            obj.save()
+
+        return JsonResponse({'message': 'Seçim değiştirildi!','status':'success'}, status=200)
+    
+class UpdatePartnerAdvanceActivityLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = PartnerAdvanceActivityLease
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = PartnerAdvanceActivityLease.objects.filter(uuid = data.get('uuid')).first()
+
+        parsed_amount = parse_amount(data.get('amount'))
+
+        obj.processed_amount = parsed_amount
+        obj.save()
+
+        return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)
+    
+class UpdatePartnerAdvanceActivityLeasesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        partner = Partner.objects.select_related().filter(uuid = data.get('uuid')).first()
+        partner_advance_activity = PartnerAdvanceActivity.objects.select_related().filter(uuid = data.get('partner_advance_activity_uuid')).first()
+   
+        partner_advance_activity_leases = partner_advance_activity.partner_advance_activity_partner_advance_activity_leases.all()
+        partner_advance_activity_leases.delete()
+
+        leases = Lease.objects.filter(
+            Q(contract__partner__uuid = partner.uuid) &
+            (
+                Q(lease_status = "aktiflestirildi") |
+                Q(lease_status = "planlandi") |
+                Q(lease_status = "durduruldu")
+            ) 
+        ).order_by('contract_id', '-activation_date').distinct('contract_id')
+
+        if leases:
+            for lease in leases:
+                partner_advance_activity_lease = PartnerAdvanceActivityLease.objects.create(
+                    company = partner_advance_activity.company,
+                    partner_advance_activity = partner_advance_activity,
+                    lease = lease
+                )
+
+        return JsonResponse({'message': 'Kaydedildi!','status':'success'}, status=200)

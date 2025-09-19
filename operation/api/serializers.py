@@ -4,7 +4,8 @@ from decimal import Decimal
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
 
-from datetime import date, timedelta, timezone
+from datetime import date, timedelta
+from django.utils import timezone
 
 from contracts.models import *
 from companies.models import Company,UserCompany
@@ -196,7 +197,7 @@ class PartnerAdvanceActivityListSerializer(serializers.Serializer):
                     "currency" : partner_advance_activity_lease.lease.currency.code if partner_advance_activity_lease.lease.currency else "",
                     "lease_status" : partner_advance_activity_lease.lease.lease_status,
                     "leaseflex_automation" : partner_advance_activity_lease.leaseflex_automation,
-                    "next_payment" : first_future_payment,
+                    "next_payment" : first_future_payment if first_future_payment else Decimal('0.00'),
                     "overdues" : [
                         {   
                             'id': partner_advance_activity_lease.lease.code,

@@ -1,5 +1,6 @@
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
+from django.db.models import Q,IntegerField
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -54,6 +55,32 @@ class PartnerAdvanceActivity(models.Model):
 
     def __str__(self):
         return str(self.amount)
+    
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            is_new = self._state.adding
+
+            super().save(*args, **kwargs)
+
+            if is_new:
+                leases = Lease.objects.select_related("contract__partner").filter(
+                    (
+                        Q(contract__partner__crm_code = self.partner.crm_code) |
+                        Q(contract__quotation_obj__partner__crm_code = self.partner.crm_code) |
+                        Q(contract__quotation_obj__quick_quotation__partner__crm_code = self.partner.crm_code)
+                    )
+                ).order_by('contract_id', '-activation_date').distinct('contract_id')
+
+                if leases:
+                    for lease in leases:
+                        partner_advance_activity_lease = PartnerAdvanceActivityLease.objects.select_related().filter(partner_advance_activity = self, lease = lease).first()
+
+                        if not partner_advance_activity_lease and lease:
+                            partner_advance_activity_lease = PartnerAdvanceActivityLease.objects.create(
+                                company = self.company,
+                                partner_advance_activity = self,
+                                lease = lease
+                            )
     
 class PartnerAdvanceActivityLease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)

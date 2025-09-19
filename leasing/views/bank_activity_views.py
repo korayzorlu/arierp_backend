@@ -94,7 +94,13 @@ class ImportBankActivitiesView(LoginRequiredMixin,View):
     
 class ExportBankActivitiesView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
-        exporter = BaseExporter(user_id=request.user.id, app="leasing", model_name="BankActivity", file_name=f"{datetime.today().strftime('%d-%m-%Y')}-banka-hareketleri.xlsx", export_url="/leasing/bank_activities_excel")
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="BankActivity",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-banka-hareketleri.xlsx",
+            export_url="/leasing/bank_activities_excel"
+        )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
             
