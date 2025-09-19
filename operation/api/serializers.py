@@ -133,7 +133,7 @@ class PartnerAdvanceActivityListSerializer(serializers.Serializer):
     cross_bank_code = serializers.CharField()
     cross_bank_branch_code = serializers.CharField()
     cross_bank_account_no = serializers.CharField()
-    process_date = serializers.DateTimeField(format = "%d.%m.%Y")
+    process_date = serializers.SerializerMethodField()
     process_date_date = serializers.DateField(format = "%d.%m.%Y")
     process_type = serializers.CharField()
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -151,6 +151,9 @@ class PartnerAdvanceActivityListSerializer(serializers.Serializer):
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
+    
+    def get_process_date(self, obj):
+        return timezone.now().strftime("%d.%m.%Y")
     
     def get_processed_amount(self, obj):
         ba_leases = obj.partner_advance_activity_partner_advance_activity_leases.all()

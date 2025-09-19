@@ -16,10 +16,15 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 from .models import *
 from common.utils.websocket_utils import send_alert
 from common.utils.common_utils import parse_amount
+from common.models import ImportProcess,ExportProcess
+from common.utils.import_utils import BaseImporter
+from common.utils.export_utils import BaseExporter
 
 
 import json
+import os
 from decimal import Decimal
+from datetime import date,datetime
 
 # Create your views here.
 
@@ -110,3 +115,33 @@ class UpdatePartnerAdvanceActivityLeasesView(LoginRequiredMixin,View):
                 )
 
         return JsonResponse({'message': 'Kaydedildi!','status':'success'}, status=200)
+    
+class ExportPartnerAdvanceActivitiesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="operation",
+            model_name="PartnerAdvanceActivity",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-müşteri-avansları.xlsx",
+            export_url="/operation/partner_advance_activities_excel"
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class PartnerAdvanceActivitiesExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "operation", "partner_advance_activities", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-müşteri-avansları.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
