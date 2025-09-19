@@ -10,6 +10,8 @@ urlpatterns = [
     path('update_leaseflex_automation_partner_advance_activity_leases/', UpdateLeaseflexAutomationPartnerAdvanceActivityLeasesView.as_view(), name="update_leaseflex_automation_partner_advance_activity_leases"),
     path('update_partner_advance_activity_lease_processed_amount/', UpdatePartnerAdvanceActivityLeaseProcessedAmountView.as_view(), name="update_partner_advance_activity_lease_processed_amount"),
     path('update_partner_advance_activity_leases/', UpdatePartnerAdvanceActivityLeasesView.as_view(), name="update_partner_advance_activity_leases"),
+    path('export_partner_advance_activities/', ExportPartnerAdvanceActivitiesView.as_view(), name="export_partner_advance_activities"),
+    path('partner_advance_activities_excel/', PartnerAdvanceActivitiesExcelView.as_view(), name="partner_advance_activities_excel"),
 
     path('', include("operation.api.urls")),
 ]
