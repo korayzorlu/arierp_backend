@@ -28,7 +28,7 @@ class Command(BaseCommand):
         print("processing...")
 
         ####
-        BASE_URL = "http://finekra.sinpas.com.tr"  # Gerekirse güncelleyin
+        #BASE_URL = "http://finekra.sinpas.com.tr"  # Gerekirse güncelleyin
         TOKEN = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJiOGZhMmRkMi1jYTkyLWYwMTEtYmY1Yy0wMDBjMjkxNGU5OTkiLCJ1c2VyZW1haWwiOiJ0ZXN0YXBpQHNpbnBhcy5jb20iLCJ1c2VybmFtZSI6IlRlc3QgQXBpIiwidGVuYW50aWQiOiJkMjI0ZDQyMi1iZDNmLWYwMTEtYmY1Yi0wMDBjMjkxNGU5OTkiLCJ0ZW5hbnR1c2VyaWQiOiJiOWZhMmRkMi1jYTkyLWYwMTEtYmY1Yy0wMDBjMjkxNGU5OTkiLCJ0ZW5hbnRuYW1lIjoiVGVrbmlrIFRlc3QgRmlybWFzxLEiLCJuYmYiOjE3NTgwMDYxMzIsImV4cCI6MTc1ODM1MTczMiwiaXNzIjoiZmluZWtyYS5jb20iLCJhdWQiOiJmaW5la3JhLmNvbSJ9.HHY3hbLrOYh80ej9XTPh_o1OPisBAL2BSqyk-9-SYYM"
 
         headers = {
@@ -36,10 +36,11 @@ class Command(BaseCommand):
         }
         ####
 
-        url = "https://finekra.sinpas.com.tr/Auth/DealerLogin"
+        url = "https://finekra.sinpas.com.tr/TenantAccount"
+        token = ""
         headers = {
             "Authorization": f"Bearer {TOKEN}",
-            "Content-Type": "application/json"
+            #"Content-Type": "application/json"
         }
         payload = {
             "email": "testapi@sinpas.com",
@@ -47,8 +48,13 @@ class Command(BaseCommand):
             "tenantCode": "1918619137",
             "screenOption": 0
         }
+        params = {
+			"$count": "true",
+			"$skip": "0",
+			"$top": "100"
+		}
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.get(url, headers=headers, params=params)
 
         print("Status code:", response.status_code)
         print("Response text:", response.text)  # <-- cevabı ekrana bas
