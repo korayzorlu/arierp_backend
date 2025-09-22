@@ -198,29 +198,19 @@ def project_filter_for_views(filter_params):
         return (
             ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") &
             ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") &
-            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-") &
-            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") &
-            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-") &
             ~Q(partner_contracts__project="BOULEVARD SEFAKÖY") &
             ~Q(partner_contracts__project="BOULEVARD SEFAKÖY-") &
             ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
-            ~Q(partner_contracts__project="SİNPAŞ KORU AURA-")
+            ~Q(partner_contracts__project="SİNPAŞ KORU AURA-") &
+            ~Q(partner_contracts__project="METROLIFE") &
+            ~Q(partner_contracts__project="METROLIFE-") &
+            ~Q(partner_contracts__project="METROLİFE PREMİUM") &
+            ~Q(partner_contracts__project="METROLİFE PREMİUM-")
         )
     elif filter_params.get('project') == "kizilbuk":
         return (
             Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") |
             Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-")
-        )
-    elif filter_params.get('project') == "kizilbuk2":
-        return (
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") |
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-")
-        )
-    elif filter_params.get('project') == "kizilbukmavi":
-        return (
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") |
-            Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-")
         )
     elif filter_params.get('project') == "sefakoy":
         return (
@@ -232,6 +222,16 @@ def project_filter_for_views(filter_params):
             Q(partner_contracts__project="SİNPAŞ KORU AURA") |
             Q(partner_contracts__project="SİNPAŞ KORU AURA-")
         )
+    elif filter_params.get('project') == "metrolife":
+        return (
+            Q(partner_contracts__project="METROLIFE") |
+            Q(partner_contracts__project="METROLIFE-")
+        )
+    elif filter_params.get('project') == "metrolifepremium":
+        return (
+            Q(partner_contracts__project="METROLİFE PREMİUM") |
+            Q(partner_contracts__project="METROLİFE PREMİUM-")
+        )
     else:
         return Q(contract__project=filter_params.get('project'))
 
@@ -242,29 +242,19 @@ def project_filter_for_serializers(filter_params):
         return (
             ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") &
             ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-            ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") &
-            ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-") &
-            ~Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") &
-            ~Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-") &
             ~Q(contract__project="BOULEVARD SEFAKÖY") &
             ~Q(contract__project="BOULEVARD SEFAKÖY-") &
             ~Q(contract__project="SİNPAŞ KORU AURA") &
-            ~Q(contract__project="SİNPAŞ KORU AURA-")
+            ~Q(contract__project="SİNPAŞ KORU AURA-") &
+            ~Q(contract__project="METROLIFE") &
+            ~Q(contract__project="METROLIFE-") &
+            ~Q(contract__project="METROLİFE PREMİUM") &
+            ~Q(contract__project="METROLİFE PREMİUM-")
         )
     elif filter_params.get('project') == "kizilbuk":
         return (
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") |
             Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-")
-        )
-    elif filter_params.get('project') == "kizilbuk2":
-        return (
-            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") |
-            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-")
-        )
-    elif filter_params.get('project') == "kizilbukmavi":
-        return (
-            Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") |
-            Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-")
         )
     elif filter_params.get('project') == "sefakoy":
         return (
@@ -275,6 +265,16 @@ def project_filter_for_serializers(filter_params):
         return (
             Q(contract__project="SİNPAŞ KORU AURA") |
             Q(contract__project="SİNPAŞ KORU AURA-")
+        )
+    elif filter_params.get('project') == "metrolife":
+        return (
+            Q(contract__project="METROLIFE") |
+            Q(contract__project="METROLIFE-")
+        )
+    elif filter_params.get('project') == "metrolifepremium":
+        return (
+            Q(contract__project="METROLİFE PREMİUM") |
+            Q(contract__project="METROLİFE PREMİUM-")
         )
     else:
         return Q(contract__project=filter_params.get('project'))

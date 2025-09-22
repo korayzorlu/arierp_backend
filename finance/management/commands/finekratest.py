@@ -36,11 +36,11 @@ class Command(BaseCommand):
         }
         ####
 
-        url = "https://finekra.sinpas.com.tr/TenantAccount"
-        token = ""
+        url = "https://test-api.finekra.com/api/Auth/DealerLogin"
+        token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIyYjMwOGNjYy05ODdkLWViMTEtOTEwOC0wMDE1NWQyMjk1YWEiLCJ1c2VyZW1haWwiOiJhcGlfdGVzdEBwb2x5bm9tdGVjaC5jb20iLCJ1c2VybmFtZSI6IkFwaSBLdWxsYW7EsWPEsXPEsSIsInRlbmFudGlkIjoiYjcxOWY0ZGEtZTg2Ni1lYjExLTkxMDgtMDA1MDU2OGY1OTBmIiwidGVuYW50dXNlcmlkIjoiMmMzMDhjY2MtOTg3ZC1lYjExLTkxMDgtMDAxNTVkMjI5NWFhIiwidGVuYW50bmFtZSI6IkRlbW8xIiwibmJmIjoxNjQ5MTU2NzA3LCJleHAiOjE2NDkyNDMxMDcsImlzcyI6Ind3dy5wYXJhdGljLmNvbS50ciIsImF1ZCI6Ind3dy5wYXJhdGljLmNvbS50ciJ9.OAUINF5exCKumFxCeD7F7a096Vb0mowtW1Gr7Y_TANU"
         headers = {
-            "Authorization": f"Bearer {TOKEN}",
-            #"Content-Type": "application/json"
+            
+            "Content-Type": "application/json"
         }
         payload = {
             "email": "testapi@sinpas.com",
@@ -54,7 +54,7 @@ class Command(BaseCommand):
 			"$top": "100"
 		}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.post(url, json=payload, headers=headers)
 
         print("Status code:", response.status_code)
         print("Response text:", response.text)  # <-- cevabı ekrana bas
