@@ -1291,7 +1291,7 @@ def export_deposite_partners(self):
 
 def export_delivery_confirms(self):
     objs = Partner.objects.select_related().filter(
-        vendor_filter_for_views(self.params) &
+        project_filter_for_views(self.params) &
         (
             Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
@@ -1314,9 +1314,13 @@ def export_delivery_confirms(self):
     self.process.save()
     
     data = {
+        "Proje": [],
+        "Kira Planı": [],
         "Sözleşme No": [],
         "Tahsilat Oranı": [],
         "Gecikmiş Bakiye": [],
+        "Diğer Gecikmiş Bakiye": [],
+        "Temerrüt": [],
         "Para Birimi": [],
         "Blok": [],
         "Bağımsız Bölüm": [],
@@ -1338,7 +1342,7 @@ def export_delivery_confirms(self):
         
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            vendor_filter_for_serializers(self.params) &
+            project_filter_for_serializers(self.params) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -1353,14 +1357,38 @@ def export_delivery_confirms(self):
             Q(contract__partner__types__contains=["virman"])
         ).order_by("contract__code","-activation_date").distinct("contract__code")
 
+        excluded_leases = Lease.objects.select_related("contract__partner").filter(
+            Q(contract__partner = obj) &
+            project_filter_for_serializers(self.params) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        ).exclude(
+            id__in=leases.values_list('id', flat=True)
+        ).aggregate(total_overdue_amount=Sum('overdue_amount'))
+
+        
+
         total_overdue_amount = Decimal("0")
         if leases:
             for lease in leases:
                 total_overdue_amount += lease.overdue_amount
 
+                amount_debits = lease.lease_amount_debits.all()
+
+                total_lease_temerrut_amount = Decimal("0")
+                for amount_debit in amount_debits:
+                    total_lease_temerrut_amount += amount_debit.overdue_interest_rate
+                
+                data["Proje"].append(lease.contract.project)
+                data["Kira Planı"].append(lease.code)
                 data["Sözleşme No"].append(lease.contract.code)
                 data["Tahsilat Oranı"].append(lease.paid_rate)
                 data["Gecikmiş Bakiye"].append(lease.overdue_amount)
+                data["Diğer Gecikmiş Bakiye"].append(excluded_leases["total_overdue_amount"] if excluded_leases["total_overdue_amount"] else 0)
+                data["Temerrüt"].append(total_lease_temerrut_amount)
                 data["Para Birimi"].append(lease.currency.code)
                 data["Blok"].append(lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj and lease.contract.quotation_obj.quick_quotation else "")
                 data["Bağımsız Bölüm"].append(lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj and lease.contract.quotation_obj.quick_quotation else "")
@@ -1371,6 +1399,16 @@ def export_delivery_confirms(self):
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
+
+    numeric_columns = [
+        "Tahsilat Oranı",
+        "Gecikmiş Bakiye",
+        "Diğer Gecikmiş Bakiye",
+        "Temerrüt",
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
     
     base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "delivery_confirms", "documents")
     if not os.path.exists(base_path):
@@ -1382,6 +1420,17 @@ def export_delivery_confirms(self):
     excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-teslim-onay.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+            # Workbook'u al
+            workbook = writer.book
+            worksheet = writer.sheets['Sayfa']
+
+            # Kolon isimlerine göre format uygula
+            for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+                if col in numeric_columns:
+                    for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                        for c in cell:
+                            c.number_format = '#,##0.00'   # İstediğin format
         
     self.process.progress = 100
     #self.process.status = "completed"

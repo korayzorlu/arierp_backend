@@ -1220,15 +1220,28 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
             Q(overdue_amount__lte=100)
         )
 
-        excluded_leases = Lease.objects.select_related().filter(
+        excluded_leases = Lease.objects.select_related("contract__partner").filter(
             Q(contract__partner = obj) &
             project_filter_for_serializers(filter_params) &
             (
-                Q(lease_status='planlandi')
-            ) &
-            Q(is_kdv_diff=False) &
-            Q(overdue_amount__gt=100)
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        ).exclude(
+            id__in=leases.values_list('id', flat=True)
         ).aggregate(total_overdue_amount=Sum('overdue_amount'))
+        
+
+        # excluded_leases = Lease.objects.select_related().filter(
+        #     Q(contract__partner = obj) &
+        #     project_filter_for_serializers(filter_params) &
+        #     (
+        #         Q(lease_status='planlandi')
+        #     ) &
+        #     Q(is_kdv_diff=False) &
+        #     Q(overdue_amount__gt=100)
+        # ).aggregate(total_overdue_amount=Sum('overdue_amount'))
 
         lease_dict = {
             "leases": [],

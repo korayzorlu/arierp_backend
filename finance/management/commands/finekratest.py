@@ -36,7 +36,7 @@ class Command(BaseCommand):
         }
         ####
 
-        url = "http://finekra.sinpas.com.tr/Auth/DealerLogin"
+        url = "https://finekra.sinpas.com.tr/Auth/DealerLogin"
         headers = {
             "Authorization": f"Bearer {TOKEN}",
             "Content-Type": "application/json"
@@ -48,7 +48,7 @@ class Command(BaseCommand):
             "screenOption": 0
         }
 
-        response = requests.post(url, headers=headers, params=payload)
+        response = requests.post(url, headers=headers, json=payload)
 
         print("Status code:", response.status_code)
         print("Response text:", response.text)  # <-- cevabı ekrana bas
