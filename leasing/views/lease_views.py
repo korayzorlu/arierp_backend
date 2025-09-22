@@ -185,6 +185,46 @@ class ImportLeasesView(LoginRequiredMixin,View):
 
         return HttpResponse(status=200)
 
+class LeaseInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        
+        if data.get('partner_uuid'):
+            objs = Lease.objects.filter(contract__partner__uuid = str(data.get('partner_uuid'))).order_by("-overdue_amount")
+
+            
+    
+        if not objs:
+            return JsonResponse({'installment':[]}, status=200)
+        
+        def get_temerrut_amount(lease):
+            amount_debits = lease.lease_amount_debits.all()
+            total_lease_temerrut_amount = Decimal("0")
+            for amount_debit in amount_debits:
+                total_lease_temerrut_amount += amount_debit.overdue_interest_rate
+            return total_lease_temerrut_amount
+
+        lease_data = [
+            {   
+                'id': obj.uuid,
+                'code':obj.code,
+                'contract':obj.contract.code if obj.contract else "",
+                'project': obj.contract.project if obj.contract else "",
+                'block': obj.contract.quotation_obj.quick_quotation.block if obj.contract and obj.contract.quotation_obj.quick_quotation else "",
+                'unit' : obj.contract.quotation_obj.quick_quotation.unit if obj.contract and obj.contract.quotation_obj.quick_quotation else "",
+                'overdue_amount':obj.overdue_amount,
+                'temerrut_amount':get_temerrut_amount(obj),
+                'pb':obj.currency.code if obj.currency else "",
+                'overdue_days':obj.overdue_days,
+                'is_kdv_diff':obj.is_kdv_diff,
+                'lease_status':obj.lease_status
+            }
+            for obj in objs
+        ]
+
+        return JsonResponse({'leases':lease_data}, status=200)
+    
+
 
 
 class UpdateLeaseflexAutomationLeasesView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
