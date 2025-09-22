@@ -506,6 +506,7 @@ class DeliveryConfirmFilter(FilterSet):
     virman = CharFilter(method = 'filter_virman')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
+    the_project = CharFilter(method = 'filter_the_project')
     class Meta:
         model = Partner
         fields = ['uuid','name','tc_vkn_no']
@@ -545,7 +546,10 @@ class DeliveryConfirmFilter(FilterSet):
             return queryset.filter(types__contains=["virman"])
         else:
             return queryset.exclude(types__contains=["virman"])
-        
+
+    def filter_the_project(self, queryset, the_project, value):
+        print("the_project",value)
+        return queryset.filter(partner_contracts__project_obj__uuid=value) 
 class DepositPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')

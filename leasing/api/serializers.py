@@ -7,7 +7,7 @@ from datetime import date,timedelta,datetime
 from django.utils import timezone
 
 from leasing.models import *
-from leasing.utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate
+from leasing.utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers
 from companies.models import Company,UserCompany
 from partners.models import Partner
 from contracts.models import WarningNotice
@@ -1211,7 +1211,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
 
         leases = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation","currency").filter(
             Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
+            project_filter_for_serializers(filter_params) &
             (
                 Q(lease_status='planlandi')
             ) &
@@ -1222,7 +1222,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
 
         excluded_leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
+            project_filter_for_serializers(filter_params) &
             (
                 Q(lease_status='planlandi')
             ) &

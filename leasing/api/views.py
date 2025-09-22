@@ -24,7 +24,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from leasing.utils import vendor_filter_for_views
+from leasing.utils import vendor_filter_for_views,project_filter_for_views
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -707,7 +707,7 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter_for_views(self.request.query_params) &
+            project_filter_for_views(self.request.query_params) &
             (
                 Q(partner_contracts__contract_leases__lease_status='planlandi')
             ) &

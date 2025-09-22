@@ -109,7 +109,7 @@ class ProjectList(ModelViewSet, QueryListAPIView):
     filterset_class = ProjectFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    #pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     

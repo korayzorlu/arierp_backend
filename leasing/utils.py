@@ -191,8 +191,93 @@ def vendor_filter_for_crm(filter_params):
     else:
         return Q(partner_contracts__vendor__crm_code=filter_params.get('supplier'))
 
+def project_filter_for_views(filter_params):
+    if filter_params.get('project') == "all":
+        return Q()
+    elif filter_params.get('project') == "diger":
+        return (
+            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") &
+            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") &
+            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-") &
+            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") &
+            ~Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-") &
+            ~Q(partner_contracts__project="BOULEVARD SEFAKÖY") &
+            ~Q(partner_contracts__project="BOULEVARD SEFAKÖY-") &
+            ~Q(partner_contracts__project="SİNPAŞ KORU AURA") &
+            ~Q(partner_contracts__project="SİNPAŞ KORU AURA-")
+        )
+    elif filter_params.get('project') == "kizilbuk":
+        return (
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") |
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-")
+        )
+    elif filter_params.get('project') == "kizilbuk2":
+        return (
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") |
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-")
+        )
+    elif filter_params.get('project') == "kizilbukmavi":
+        return (
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") |
+            Q(partner_contracts__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-")
+        )
+    elif filter_params.get('project') == "sefakoy":
+        return (
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY") |
+            Q(partner_contracts__project="BOULEVARD SEFAKÖY-")
+        )
+    elif filter_params.get('project') == "koruaura":
+        return (
+            Q(partner_contracts__project="SİNPAŞ KORU AURA") |
+            Q(partner_contracts__project="SİNPAŞ KORU AURA-")
+        )
+    else:
+        return Q(contract__project=filter_params.get('project'))
 
-
+def project_filter_for_serializers(filter_params):
+    if filter_params.get('project') == "all":
+        return Q()
+    elif filter_params.get('project') == "diger":
+        return (
+            ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") &
+            ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") &
+            ~Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-") &
+            ~Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") &
+            ~Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-") &
+            ~Q(contract__project="BOULEVARD SEFAKÖY") &
+            ~Q(contract__project="BOULEVARD SEFAKÖY-") &
+            ~Q(contract__project="SİNPAŞ KORU AURA") &
+            ~Q(contract__project="SİNPAŞ KORU AURA-")
+        )
+    elif filter_params.get('project') == "kizilbuk":
+        return (
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT") |
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-")
+        )
+    elif filter_params.get('project') == "kizilbuk2":
+        return (
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP") |
+            Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT II ETAP-")
+        )
+    elif filter_params.get('project') == "kizilbukmavi":
+        return (
+            Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT") |
+            Q(contract__project="SİNPAŞ KIZILBÜK MAVİ THERMALL WELLNESS RESORT-")
+        )
+    elif filter_params.get('project') == "sefakoy":
+        return (
+            Q(contract__project="BOULEVARD SEFAKÖY") |
+            Q(contract__project="BOULEVARD SEFAKÖY-")
+        )
+    elif filter_params.get('project') == "koruaura":
+        return (
+            Q(contract__project="SİNPAŞ KORU AURA") |
+            Q(contract__project="SİNPAŞ KORU AURA-")
+        )
+    else:
+        return Q(contract__project=filter_params.get('project'))
 
 
 def project_text(filter_params):
