@@ -13,6 +13,8 @@ from decimal import Decimal
 from .serializers import *
 
 class AmountDebitTransactionFilter(FilterSet):
+    lease = CharFilter(field_name='lease_code', lookup_expr='icontains')
+    partner = CharFilter(field_name='lease__contract__partner__name', lookup_expr='icontains')
     class Meta:
         model = AmountDebitTransaction
         fields = ['uuid']

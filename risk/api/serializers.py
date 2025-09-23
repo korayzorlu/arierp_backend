@@ -16,6 +16,7 @@ class AmountDebitTransactionListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     lease = serializers.SerializerMethodField()
+    partner = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
     process_group = serializers.CharField()
     due_date = serializers.DateField()
@@ -35,6 +36,9 @@ class AmountDebitTransactionListSerializer(serializers.Serializer):
     
     def get_lease(self, obj):
         return obj.lease.code if obj.lease else ""
+    
+    def get_partner(self, obj):
+        return obj.lease.contract.partner.name if obj.lease.contract.partner and obj.lease.contract and obj.lease else ""
     
     def get_currency(self, obj):
         return obj.lease.currency.code if obj.lease.currency else ""

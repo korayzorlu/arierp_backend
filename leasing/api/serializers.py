@@ -1253,11 +1253,15 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
         }
         if leases:
             for lease in leases:
-                amount_debits = lease.lease_amount_debits.all()
+                # amount_debits = lease.lease_amount_debits.all()
 
-                total_lease_temerrut_amount = Decimal("0")
-                for amount_debit in amount_debits:
-                    total_lease_temerrut_amount += amount_debit.overdue_interest_rate
+                # total_lease_temerrut_amount = Decimal("0")
+                # for amount_debit in amount_debits:
+                #     total_lease_temerrut_amount += amount_debit.overdue_interest_rate
+
+                total_lease_temerrut_amount = lease.lease_amount_debits.select_related().aggregate(
+                    total=Sum('overdue_interest_rate')
+                )['total'] or Decimal("0")
                 
                 if lease.contract.contract_warning_notices.all():
                     status = "İhtar Çekildi"
