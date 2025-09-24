@@ -49,7 +49,7 @@ def fetch_amounts_and_debits(company):
         AmountDebitTransaction.objects.all().delete()
         print("All AmountDebitTransaction objects deleted.")
         #amount_debit_transactions = AmountDebitTransaction.objects.select_related("lease").filter().order_by('pk')
-        leases = Lease.objects.select_related().filter(contract__project__icontains="KIZILBÜK")
+        leases = Lease.objects.select_related().filter()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         #amount_debit_transaction_by_code = {a.trn_id: a for a in amount_debit_transactions if a.trn_id}
