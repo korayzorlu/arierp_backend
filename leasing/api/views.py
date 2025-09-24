@@ -434,8 +434,8 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=True) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
+            Q(partner_contracts__contract_leases__is_kdv_diff=True)
+            #Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -443,7 +443,7 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["country__name","billing__country"]
+            search_fields = ["name","tc_vkn_no","crm_code"]
             
             q_objects = Q()
             for field in search_fields:

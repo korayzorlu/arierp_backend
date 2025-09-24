@@ -516,8 +516,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff=True) &
-            Q(overdue_amount__gt=100)
+            Q(is_kdv_diff=True)
         ).order_by("-overdue_days")
 
         lease_list = []
