@@ -116,7 +116,7 @@ class ContractInSupplierList(ModelViewSet, QueryListAPIView):
 
         queryset = Contract.objects.select_related(*custom_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
-            Q(lop_open_date__gte="2025-01-01")
+            Q(operation_status="tedarikcide")
         ).order_by("partner__name")
 
         query = self.request.query_params.get('search[value]', None)
@@ -146,7 +146,8 @@ class ContractInProcessList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company"]
 
         queryset = Contract.objects.select_related(*custom_related_fields).filter(
-            Q(company=active_company.company if active_company else None)
+            Q(company=active_company.company if active_company else None) &
+            Q(operation_status="islemde")
         ).order_by("partner__name")
 
         query = self.request.query_params.get('search[value]', None)
@@ -177,7 +178,7 @@ class ContractInArchiveList(ModelViewSet, QueryListAPIView):
 
         queryset = Contract.objects.select_related(*custom_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
-            Q(lop_open_date__lt="2025-01-01")
+            Q(operation_status="arsivde")
         ).order_by("partner__name")
 
         query = self.request.query_params.get('search[value]', None)

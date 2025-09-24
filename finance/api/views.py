@@ -142,6 +142,10 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
             for bank_account in bank_accounts:
                 obj = (finmaks_bank_account_by_code.get(str(bank_account["BankAccountId"])))
                 if obj:
+                    if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
+                        currency = "TRY"
+                    else:
+                        currency = bank_account["Currency"]
                     obj.bank_account_id = str(bank_account["BankAccountId"]) or ""
                     obj.iban = str(bank_account["IBAN"]) or ""
                     obj.account_no = str(bank_account["AccountNo"]) or ""
@@ -154,7 +158,7 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
                     obj.credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", ""))
                     obj.blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", ""))
                     obj.credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", ""))
-                    obj.currency = currencies_dict.get("TRY" if bank_account["Currency"] == "TL" else bank_account["Currency"])
+                    obj.currency = currencies_dict.get(currency)
                     obj.currency_type = str(bank_account["CurrencyType"]) or ""
                     obj.bank_name = str(bank_account["BankName"]) or ""
                     obj.bank_code = str(bank_account["BankCode"]) or ""
@@ -163,6 +167,10 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
                     obj.status = bank_account["Status"]
                     obj.save()
                 else:
+                    if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
+                        currency = "TRY"
+                    else:
+                        currency = bank_account["Currency"]
                     FinmaksBankAccount.objects.create(
                         company = company_obj,
                         bank_account_id = str(bank_account["BankAccountId"]) or "",
@@ -177,7 +185,7 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
                         credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", "")),
                         blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", "")),
                         credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", "")),
-                        currency = currencies_dict.get("TRY" if bank_account["Currency"] == "TL" else bank_account["Currency"]),
+                        currency = currencies_dict.get(currency),
                         currency_type = str(bank_account["CurrencyType"]) or "",
                         bank_name = str(bank_account["BankName"]) or "",
                         bank_code = str(bank_account["BankCode"]) or "",

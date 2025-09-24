@@ -104,6 +104,8 @@ def fetch_leases(company):
         currencies_dict = {c.code: c for c in currencies}
 
         previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
         for index,data in enumerate(external_data):
             current_progress = ((index + 1)/len(external_data))*100
 
@@ -117,6 +119,7 @@ def fetch_leases(company):
                 obj = None
 
             if obj:
+                old_obj_count += 1
                 obj.lease_id = str(data["OperationProjectId"]) or ""
                 obj.code = str(data["OperationProjectCode"]) or ""
                 obj.contract = contracts_dict.get(str(data["ContractHeaderCode"]))
@@ -136,7 +139,7 @@ def fetch_leases(company):
                 obj.current_request = str(data["CurrentRequest"]) or ""
                 obj.save()
             else:
-                print(f"{str(data["OperationProjectCode"])} - {data["ContractHeaderCode"]}: ")
+                new_obj_count += 1
                 Lease.objects.create(
                     company = company_obj,
                     lease_id = str(data["OperationProjectId"]) or "",
@@ -157,8 +160,83 @@ def fetch_leases(company):
                     is_last_project = True if str(data["IS_LAST_PROJECT"]) == "1" else False,
                     current_request = str(data["CurrentRequest"]) or "",
                 )
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for leases.")
     except Exception as e:
         print(e)
+
+@shared_task()
+def fetch_interest_rates(company):
+    SERVER = "192.168.82.31,1433"
+    DATABASE = "ARI_LEASING"
+    USERNAME = "lflex"
+    PASSWORD = "S!gma2014"
+
+    connectionString = f'''
+        DRIVER={{ODBC Driver 18 for SQL Server}};
+        SERVER={SERVER};
+        DATABASE={DATABASE};
+        UID={USERNAME};
+        PWD={PASSWORD};
+        Provider=SQLNCLI11;
+        Integrated Security=SSPI;
+        Persist Security Info=False;
+        Initial Catalog=MASTER;
+        TrustServerCertificate=yes;
+    '''
+
+    try:
+        conn = pyodbc.connect(connectionString)
+        
+        SQL_QUERY = """
+        SELECT LeasingOperationProjectId,
+            InterestRate
+        FROM TradeOverdueInterestRate
+        WHERE 
+            OverdueType=1
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        
+        records = cursor.fetchall()
+
+        external_data=[
+            {   
+                "LeasingOperationProjectId" : r.LeasingOperationProjectId,
+                "InterestRate" : r.InterestRate,
+            }
+            for r in records
+        ]
+
+        leases = Lease.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        lease_by_code = {l.lease_id: l for l in leases if l.lease_id}
+
+        previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
+        for index,data in enumerate(external_data):
+            current_progress = ((index + 1)/len(external_data))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            if str(data["LeasingOperationProjectId"]):
+                obj = (lease_by_code.get(str(data["LeasingOperationProjectId"])))
+            else:
+                obj = None
+
+            if obj:
+                old_obj_count += 1
+                obj.interest_rate = safe_decimal(data["InterestRate"])
+                obj.save()
+        print(f"{old_obj_count} objects updated objects created for leases.")
+    except Exception as e:
+        print(e)
+
+
 
 @shared_task()
 def fetch_installments(company):

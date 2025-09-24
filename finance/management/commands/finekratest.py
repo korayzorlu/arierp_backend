@@ -36,12 +36,11 @@ class Command(BaseCommand):
         }
         ####
 
-        url = "https://test-api.finekra.com/api/Auth/DealerLogin"
-        token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIyYjMwOGNjYy05ODdkLWViMTEtOTEwOC0wMDE1NWQyMjk1YWEiLCJ1c2VyZW1haWwiOiJhcGlfdGVzdEBwb2x5bm9tdGVjaC5jb20iLCJ1c2VybmFtZSI6IkFwaSBLdWxsYW7EsWPEsXPEsSIsInRlbmFudGlkIjoiYjcxOWY0ZGEtZTg2Ni1lYjExLTkxMDgtMDA1MDU2OGY1OTBmIiwidGVuYW50dXNlcmlkIjoiMmMzMDhjY2MtOTg3ZC1lYjExLTkxMDgtMDAxNTVkMjI5NWFhIiwidGVuYW50bmFtZSI6IkRlbW8xIiwibmJmIjoxNjQ5MTU2NzA3LCJleHAiOjE2NDkyNDMxMDcsImlzcyI6Ind3dy5wYXJhdGljLmNvbS50ciIsImF1ZCI6Ind3dy5wYXJhdGljLmNvbS50ciJ9.OAUINF5exCKumFxCeD7F7a096Vb0mowtW1Gr7Y_TANU"
-        headers = {
-            
-            "Content-Type": "application/json"
-        }
+        url = "https://finekra-api.sinpas.com.tr/api/Auth/DealerLogin"
+        token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJiOGZhMmRkMi1jYTkyLWYwMTEtYmY1Yy0wMDBjMjkxNGU5OTkiLCJ1c2VyZW1haWwiOiJ0ZXN0YXBpQHNpbnBhcy5jb20iLCJ1c2VybmFtZSI6IlRlc3QgQXBpIiwidGVuYW50aWQiOiJkMjI0ZDQyMi1iZDNmLWYwMTEtYmY1Yi0wMDBjMjkxNGU5OTkiLCJ0ZW5hbnR1c2VyaWQiOiJiOWZhMmRkMi1jYTkyLWYwMTEtYmY1Yy0wMDBjMjkxNGU5OTkiLCJ0ZW5hbnRuYW1lIjoiVGVrbmlrIFRlc3QgRmlybWFzxLEiLCJuYmYiOjE3NTg2MTg2OTYsImV4cCI6MTc1ODk2NDI5NiwiaXNzIjoiZmluZWtyYS5jb20iLCJhdWQiOiJmaW5la3JhLmNvbSJ9._LQvChO-1SnSzAeECc_niHeCIhHX9_yrRjjpTuZ1GgA"
+        # headers = {
+        #     "Authorization": f"Bearer {token}"
+        # }
         payload = {
             "email": "testapi@sinpas.com",
             "password": "J2Abap8SOw7fBPzS",

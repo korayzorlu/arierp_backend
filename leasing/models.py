@@ -216,6 +216,7 @@ class Lease(models.Model):
     vade = models.IntegerField(_("Vade"), default = 0)
     leasing_rate = models.DecimalField(_("Leasing Rate"), default = 0.00, max_digits=14, decimal_places=2)
     irr = models.DecimalField(_("IRR"), default = 0.00, max_digits=14, decimal_places=2)
+    interest_rate = models.DecimalField(_("Interest Rate"), default = 0.00, max_digits=14, decimal_places=2)
     total_payment = models.DecimalField(_("Total Payment"), default = 0.00, max_digits=14, decimal_places=2)
     paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
     paid_rate = models.DecimalField(_("Paid Rate"), default = 0.00, max_digits=14, decimal_places=2)

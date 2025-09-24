@@ -37,6 +37,13 @@ class Contract(models.Model):
     kof_tan_sozlesmeye_aktarim_tarihi = models.DateTimeField(_("Kof'tan Sözleşmeye Aktarım Tarihi"), blank=True, null=True)
     lop_open_date = models.DateTimeField(_("Lop Open Date"), blank=True, null=True)
 
+    OPERATION_STATUS_CHOICES = (
+        ('tedarikcide', ('Tedarikçide')),
+        ('islemde', ('İşlemde')),
+        ('arsivde', ('Arşivde')),
+    )
+    operation_status = models.CharField(_("Operation Status"), max_length=25, default='tedarikcide', choices=OPERATION_STATUS_CHOICES, blank=True, null=True)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

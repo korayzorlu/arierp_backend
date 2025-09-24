@@ -7,9 +7,9 @@ from .models import FinmaksBankAccount,FinmaksTransaction
 
 @admin.register(FinmaksBankAccount)
 class FinmaksBankAccountAdmin(admin.ModelAdmin):
-    list_display = ["company","bank_name","iban","account_no","currency"]
+    list_display = ["company","bank_name","iban","account_no","finmaks_account_type","currency","currency_type","status"]
     list_display_links = ["bank_name"]
-    search_fields = ["company__name","bank_name","iban","account_no","currency__code"]
+    search_fields = ["company__name","bank_name","iban","account_no","finmaks_account_type","currency__code","currency_type","status"]
     list_filter = []
     inlines = []
     ordering = ["bank_name"]

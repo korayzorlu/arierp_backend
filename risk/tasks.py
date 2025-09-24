@@ -66,33 +66,6 @@ def fetch_amounts_and_debits(company):
             if current_progress - previous_progress >= 1:
                 previous_progress = current_progress
                 print(f"{int(current_progress)} %")
-            
-            ####faiz oranını yakala
-            SQL_QUERY = f"""
-            SELECT *
-                FROM TradeOverdueInterestRate
-                WHERE
-                    LeasingOperationProjectId='{obj.lease_id}'
-                    AND OverdueType=1
-            """
-
-            cursor = conn.cursor()
-            cursor.execute(SQL_QUERY)
-            
-            records = cursor.fetchall()
-
-            external_data=[
-                {
-                    "InterestRate" : r.InterestRate,
-                    "OverdueType" : r.OverdueType,
-                }
-                for r in records
-            ]
-
-            interest_rate = Decimal(str(external_data[0]["InterestRate"])) if len(external_data) > 0 else  Decimal("0.00")
-            
-            ####temerrüt hesapla
-            # records = fetch_amounts_and_debits_sql(cursor,obj)
 
             today = datetime.now().date().strftime("%Y%m%d")
             formatted_today = datetime.now().date()
@@ -333,48 +306,13 @@ def fetch_amounts_and_debits(company):
 
                 if ad_obj:
                     pass
-                    # old_obj_count += 1
-                    # obj.trn_id = str(data["TrnId"]) or ""
-                    # obj.lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"]))
-                    # obj.process_group_id = str(data["TrnPostingGroupId"]) or ""
-                    # obj.process_group = str(data["JrnStpPstGrpName"]) or ""
-                    # obj.due_date = make_aware(data["TrnDueDate"]) if data["TrnDueDate"] else None
-                    # obj.process_type = str(data["viewTrnPostingType"]) or ""
-
-                    # obj.debit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00")
-                    # obj.credit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00")
-
-                    # obj.interest_rate = safe_decimal(interest_rate)
-
-                    # #real amount
-                    # prev_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk-1)))
-                    # if prev_obj:
-                    #     obj.real_amount = (obj.debit_amount - obj.credit_amount) + prev_obj.real_amount
-                    # else:
-                    #     obj.real_amount = obj.debit_amount - obj.credit_amount
-                    # obj.for_default_amount = obj.real_amount
-
-                    # #day
-                    # next_obj = (adt_by_lease_and_process.get((obj.lease.lease_id,obj.process_group_id,obj.pk+1)))
-                    # if next_obj and obj.real_amount > 0.4:
-                    #     diff_date = to_date(next_obj.due_date) - to_date(obj.due_date)
-                    #     obj.day = diff_date.days
-                    # elif not next_obj and obj.real_amount > 0.4:
-                    #     diff_date = datetime.today().date() - obj.due_date.date()
-                    #     obj.day = diff_date.days
-                    # else:
-                    #     obj.day = 0
-
-                    # obj.adat_amount = obj.real_amount * obj.day
-                    # obj.default_amount = (obj.real_amount * (interest_rate/100) * obj.day) / Decimal("360")
-                    # obj.overdue_interest_rate = obj.default_amount + (obj.default_amount * Decimal("0.01"))
-                    # obj.save()
                 else:
                     new_obj_count += 1
-                    ad_obj = AmountDebitTransaction.objects.select_related("lease").create(
+                    lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"]))
+                    ad_obj = AmountDebitTransaction.objects.select_related().create(
                         company = company_obj,
                         trn_id = str(data["TrnId"]) or "",
-                        lease = leases_dict.get(str(data["TrnOprLeasingOperationPrjId"])),
+                        lease = lease,
                         process_group_id = str(data["TrnPostingGroupId"]) or "",
                         process_group = str(data["JrnStpPstGrpName"]) or "",
                         due_date = make_aware(data["TrnDueDate"]) if data["TrnDueDate"] else None,
@@ -382,50 +320,8 @@ def fetch_amounts_and_debits(company):
 
                         debit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00"),
                         credit_amount = safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00"),
-                        interest_rate = safe_decimal(interest_rate)
+                        interest_rate = safe_decimal(lease.interest_rate)
                     )
-                    # obj = AmountDebitTransaction(
-                    #     company=company_obj,
-                    #     trn_id=str(data["TrnId"]) or "",
-                    #     lease=leases_dict.get(str(data["TrnOprLeasingOperationPrjId"])),
-                    #     process_group_id=str(data["TrnPostingGroupId"]) or "",
-                    #     process_group=str(data["JrnStpPstGrpName"]) or "",
-                    #     due_date=make_aware(data["TrnDueDate"]) if data["TrnDueDate"] else None,
-                    #     process_type=str(data["viewTrnPostingType"]) or "",
-                    #     debit_amount=safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "1" else Decimal("0.00"),
-                    #     credit_amount=safe_decimal(data["TrnAmount"]) if str(data["TrnAmountType"]) == "0" else Decimal("0.00"),
-                    #     interest_rate=safe_decimal(interest_rate)
-                    # )
-
-                    # #real amount
-                    # prev_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk-1)))
-                    # if prev_obj:
-                    #     ad_obj.real_amount = (ad_obj.debit_amount - ad_obj.credit_amount) + prev_obj.real_amount
-                    # else:
-                    #     ad_obj.real_amount = ad_obj.debit_amount - ad_obj.credit_amount
-                    # ad_obj.for_default_amount = ad_obj.real_amount
-
-                    # #day
-                    # next_obj = (adt_by_lease_and_process.get((ad_obj.lease.lease_id,ad_obj.process_group_id,ad_obj.pk+1)))
-                    # print(ad_obj.lease.code)
-                    # print(ad_obj.due_date)
-                    # print(next_obj.due_date)
-                    # if next_obj and ad_obj.real_amount > 0.4:
-                    #     diff_date = to_date(next_obj.due_date) - to_date(ad_obj.due_date)
-                    #     ad_obj.day = diff_date.days
-                    # elif not next_obj and ad_obj.real_amount > 0.4:
-                    #     diff_date = datetime.today().date() - ad_obj.due_date.date()
-                    #     ad_obj.day = diff_date.days
-                    # else:
-                    #     ad_obj.day = 0
-
-                    # ad_obj.adat_amount = ad_obj.real_amount * ad_obj.day
-                    # ad_obj.default_amount = (ad_obj.real_amount * (interest_rate/100) * ad_obj.day) / Decimal("360")
-                    # ad_obj.overdue_interest_rate = ad_obj.default_amount + (ad_obj.default_amount * Decimal("0.01"))
-                    # ad_obj.save()
-
-                    
-                    #new_objs.append(obj)
             
             ####temerrüt hesapla
             ad_objs = obj.lease_amount_debits.all().order_by("pk")
@@ -451,7 +347,7 @@ def fetch_amounts_and_debits(company):
                     ad_obj.day = 0
 
                 ad_obj.adat_amount = ad_obj.real_amount * ad_obj.day
-                ad_obj.default_amount = (ad_obj.real_amount * (interest_rate/100) * ad_obj.day) / Decimal("360")
+                ad_obj.default_amount = (ad_obj.real_amount * (ad_obj.interest_rate/100) * ad_obj.day) / Decimal("360")
                 ad_obj.overdue_interest_rate = ad_obj.default_amount + (ad_obj.default_amount * Decimal("0.01"))
                 ad_obj.save()
 

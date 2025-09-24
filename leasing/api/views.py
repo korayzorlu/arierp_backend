@@ -415,8 +415,12 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = []
@@ -469,8 +473,12 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = []
@@ -532,8 +540,12 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = []
@@ -610,8 +622,12 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = []
@@ -698,8 +714,12 @@ class DeliveryConfirmList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
         custom_related_fields = []
@@ -749,8 +769,12 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
 
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
@@ -807,9 +831,13 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+            
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 

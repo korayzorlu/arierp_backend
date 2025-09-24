@@ -14,6 +14,7 @@ from django.utils.timezone import make_aware
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from .models import *
+from contracts.models import Contract
 from common.utils.websocket_utils import send_alert
 from common.utils.common_utils import parse_amount
 from common.models import ImportProcess,ExportProcess
@@ -145,3 +146,20 @@ class PartnerAdvanceActivitiesExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+    
+
+class UpdateContractOperationStatusView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Contract
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuids = data.get('uuids')
+
+        for uuid in uuids:
+            contract = Contract.objects.select_related().filter(uuid = uuid).first()
+
+            if contract:
+                contract.operation_status = data.get('operationStatus') or contract.operation_status
+                contract.save()
+
+        return JsonResponse({'message': 'Kaydedildi!','status':'success'}, status=200)
