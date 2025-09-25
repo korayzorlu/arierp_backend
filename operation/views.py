@@ -158,8 +158,8 @@ class UpdateContractOperationStatusView(LoginRequiredMixin,CompanyOwnershipRequi
         for uuid in uuids:
             contract = Contract.objects.select_related().filter(uuid = uuid).first()
 
-            if contract:
-                contract.operation_status = data.get('operationStatus') or contract.operation_status
+            if contract and data.get('operationStatus'):
+                contract.operation_status = data.get('operationStatus')
                 contract.save()
 
         return JsonResponse({'message': 'Kaydedildi!','status':'success'}, status=200)
