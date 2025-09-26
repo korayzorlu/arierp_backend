@@ -189,7 +189,14 @@ def add_finekra_bank_accounts(company):
 @shared_task()
 def update_finekra_bank_accounts(company):
     try:
-        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().filter(currency__isnull=False,finmaks_account_type = "1",uuid="3f9561c1-49cd-49f5-81cb-a2194b4a072a")
+        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().filter(
+            Q(currency__isnull=False) &
+            Q(finmaks_account_type="1") &
+            Q(iban__isnull=False) &
+            Q(iban__startswith="TR") &
+            ~Q(iban="TR850001200962600053000709") &
+            ~Q(iban="TR180001200962600058000422")
+        )
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         finmaks_bank_account_by_code = {f.bank_account_id: f for f in finmaks_bank_accounts if f.bank_account_id}
@@ -245,7 +252,7 @@ def update_finekra_bank_accounts(company):
                 "blockedAmount": float(obj.blocked_balance),
             }
 
-            response = put_finekra_bank_accounts(payload2)
+            response = put_finekra_bank_accounts(payload)
 
             print(f"{obj.bank_name} - {obj.bank_code} - {obj.iban} - {obj.account_no} - {obj.currency.code}")
             print(response)
