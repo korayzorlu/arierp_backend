@@ -220,6 +220,7 @@ def update_finekra_bank_accounts(company):
 
             payload = {
                 "id": obj.finekra_bank_account_id if obj.finekra_bank_account_id else None,
+                "iban": obj.iban if obj.iban else None,
                 "balance": float(obj.balance),
                 "availableCreditBalance": float(obj.available_balance),
                 "availableBalance": float(obj.available_balance),
