@@ -81,6 +81,8 @@ class PartnerAdvanceActivity(models.Model):
                                 partner_advance_activity = self,
                                 lease = lease
                             )
+                self.amount = self.partner.advance_amount
+                super().save(update_fields=['amount'])
     
 class PartnerAdvanceActivityLease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
