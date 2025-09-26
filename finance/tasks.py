@@ -16,6 +16,7 @@ from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts
+from django.db.models import Q
 
 @shared_task()
 def fetch_partner_advances(company):
@@ -117,7 +118,14 @@ def post_finmaks_bank_accounts(company):
 @shared_task()
 def add_finekra_bank_accounts(company):
     try:
-        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().filter(currency__isnull=False,finmaks_account_type = "1",uuid="3f9561c1-49cd-49f5-81cb-a2194b4a072a")
+        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().filter(
+            Q(currency__isnull=False) &
+            Q(finmaks_account_type="1") &
+            Q(iban__isnull=False) &
+            Q(iban__startswith="TR") &
+            ~Q(iban="TR850001200962600053000709") &
+            ~Q(iban="TR180001200962600058000422")
+        )
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         finmaks_bank_account_by_code = {f.bank_account_id: f for f in finmaks_bank_accounts if f.bank_account_id}
