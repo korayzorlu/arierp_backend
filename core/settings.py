@@ -317,10 +317,21 @@ CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_CONNECTION_HEARTBEAT = 60  # saniye
 CELERY_BROKER_CONNECTION_RETRY = True
 
+# # Celery restart olduğunda schedule task'ların hemen çalışmaması için:
+# CELERY_BEAT_SYNC_EVERY = 1  # Django Celery Beat için
+# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+# CELERY_BEAT_SYNC_SECONDS = 60  # (isteğe bağlı, default 60)
+
+# CELERY_BEAT_SCHEDULER_MAX_INTERVAL = 60  # Scheduler'ın en fazla 60 saniyede bir kontrol etmesini sağlar
+
+# # Celery'de restart sonrası scheduled task'ların hemen tetiklenmemesi için:
+# CELERY_BEAT_SCHEDULE_FILENAME = None  # Scheduler state dosyası tutulmaz, sadece DB kullanılır
+
 CELERY_BEAT_SCHEDULE = {
-    "my-daily-task": {
-        "task": "leasing.tasks.test_scheduler_task",
-        "schedule": crontab(hour=17, minute=52),
+    "update-finekra-bank-accounts-task": {
+        "task": "finance.tasks.update_finekra_bank_accounts",
+        "schedule": crontab(minute="*/5"),
+        "args": [2],
     },
 }
 

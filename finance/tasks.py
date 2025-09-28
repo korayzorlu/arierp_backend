@@ -209,9 +209,9 @@ def update_finekra_bank_accounts(company):
 
             if current_progress - previous_progress >= 1:
                 previous_progress = current_progress
-                print(f"{int(current_progress)} %")
+                # print(f"{int(current_progress)} %")
 
-            print(f"banka: {obj.bank_name} - banka kodu: {obj.bank_code}")
+            # print(f"banka: {obj.bank_name} - banka kodu: {obj.bank_code}")
             
             currencies = fetch_finekra_currencies()
             currency_id = next((item["id"] for item in currencies if item["code"] == obj.currency.code), None)
@@ -246,10 +246,14 @@ def update_finekra_bank_accounts(company):
 
             response = put_finekra_bank_accounts(payload)
 
-            print(f"{obj.bank_name} - {obj.bank_code} - {obj.iban} - {obj.account_no} - {obj.currency.code}")
-            print(response)
+            if response["status"] == "error":
+                print(f"Error updating bank account {obj.bank_name} - {obj.bank_code} - {obj.iban} - {obj.account_no} - {obj.currency.code}: {response['message']}" )
+        
+        print("Successfully updated all bank accounts.")
+        #     print(f"{obj.bank_name} - {obj.bank_code} - {obj.iban} - {obj.account_no} - {obj.currency.code}")
+        #     print(response)
 
-        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
+        # print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
 
     except Exception as e:
         traceback.print_exc()
