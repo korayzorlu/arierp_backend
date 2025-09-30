@@ -13,6 +13,56 @@ import string
 
 from .models import *
 
+def export_partner_advances(self):
+    objs = Partner.objects.select_related().filter(
+        Q(advance_amount__gt=0) |
+        Q(advance_amount__lt=0)
+    ).order_by('advance_amount')
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Müşteri": [],
+        "TC/VKN No": [],
+        "CRM Kodu": [],
+        "TL Bakiye": [],
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+
+        data["Müşteri"].append(obj.name)
+        data["TC/VKN No"].append(obj.tc_vkn_no)
+        data["CRM Kodu"].append(obj.crm_code)
+        data["TL Bakiye"].append(obj.advance_amount)
+
+    df = pd.DataFrame(data)
+    # df = df.drop_duplicates()
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "operation", "partner_advances", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    karakterler = string.ascii_letters + string.digits
+    rastgele_deger = ''.join(random.choices(karakterler, k=8))
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-müşteri-avansları.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Müşteri Avansları', index=False)
+        
+
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+
 def export_partner_advance_activities(self):
     objs = PartnerAdvanceActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("partner_advance_activity__partner__name","-id")
 

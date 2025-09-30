@@ -147,6 +147,36 @@ class PartnerAdvanceActivitiesExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
     
+class ExportPartnerAdvancesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="operation",
+            model_name="PartnerAdvance",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-müşteri-avansları.xlsx",
+            export_url="/operation/partner_advances_excel"
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class PartnerAdvancesExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "operation", "partner_advances", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-müşteri-avansları.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+
 
 class UpdateContractOperationStatusView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Contract
