@@ -35,6 +35,8 @@ class Command(BaseCommand):
             print(f"Banka: {account['bankId']}")
             print(f"IBAN: {account['iban']}")
             print(f"Bakiye: {account['availableBalance']}")
+            print(f"lastQueryDate: {account['lastQueryDate']}")
+            print(f"updateDate: {account['updateDate']}")
             print("-----")
         
         print(f"Toplam Hesap Sayısı: {len(bank_accounts)}")
