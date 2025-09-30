@@ -330,7 +330,7 @@ CELERY_BROKER_CONNECTION_RETRY = True
 CELERY_BEAT_SCHEDULE = {
     "fetch-finmaks-bank-accounts-task": {
         "task": "finance.tasks.fetch_finmaks_bank_accounts",
-        "schedule": crontab(minute="*/3"),
+        "schedule": crontab(minute="*/5"),
         "args": [2],
     },
     "update-finekra-bank-accounts-task": {
