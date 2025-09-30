@@ -41,19 +41,19 @@ class Command(BaseCommand):
         #     contract_count__gt=1
         # )
 
-        objs = Partner.objects.select_related().filter(customer_type="institutional")
+        #objs = Partner.objects.select_related().filter(customer_type="institutional")
 
         
 
-        # objs = Partner.objects.select_related().annotate(
-        #     unique_contract_count=Count(
-        #         CodePrefix('partner_contracts__code'),
-        #         distinct=True
-        #     )
-        # ).filter(
-        #     customer_type="individual",
-        #     unique_contract_count__gt=1
-        # )
+        objs = Partner.objects.select_related().annotate(
+            unique_contract_count=Count(
+                CodePrefix('partner_contracts__code'),
+                distinct=True
+            )
+        ).filter(
+            customer_type="individual",
+            unique_contract_count__gt=1
+        )
 
         objs.update(is_commercial=True)
 
