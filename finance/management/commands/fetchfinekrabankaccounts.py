@@ -32,6 +32,10 @@ class Command(BaseCommand):
         bank_accounts = fetch_finekra_bank_accounts()
         
         for account in bank_accounts:
-            print(account)
+            print(f"IBAN: {account['iban']}")
+            print(f"Bakiye: {account['availableBalance']}")
+            print("-----")
+        
+        print(f"Toplam Hesap Sayısı: {len(bank_accounts)}")
 
         print("done!")
