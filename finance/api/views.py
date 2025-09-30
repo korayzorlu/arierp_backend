@@ -149,7 +149,7 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
                     obj.bank_account_id = str(bank_account["BankAccountId"]) or ""
                     obj.iban = str(bank_account["IBAN"]) or ""
                     obj.account_no = str(bank_account["AccountNo"]) or ""
-                    obj.branch_code = str(bank_account["BranchCode"]) or ""
+                    obj.branch_code = str(bank_account["BranchCode"]).replace("S0","") if str(bank_account["BranchCode"]) == "S01245" or str(bank_account["BranchCode"]) == "S00442" else str(bank_account["BranchCode"])
                     obj.branch_name = str(bank_account["BranchName"]) or ""
                     obj.finmaks_account_type = str(bank_account["FinmaksAccountType"]) or ""
                     obj.balance = safe_decimal(bank_account["Balance"].replace(",", ""))
@@ -176,7 +176,7 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
                         bank_account_id = str(bank_account["BankAccountId"]) or "",
                         iban = str(bank_account["IBAN"]) or "",
                         account_no = str(bank_account["AccountNo"]) or "",
-                        branch_code = str(bank_account["BranchCode"]) or "",
+                        branch_code = str(bank_account["BranchCode"]).replace("S0","") if str(bank_account["BranchCode"]) == "S01245" or str(bank_account["BranchCode"]) == "S00442" else str(bank_account["BranchCode"]),
                         branch_name = str(bank_account["BranchName"]) or "",
                         finmaks_account_type = str(bank_account["FinmaksAccountType"]) or "",
                         balance = safe_decimal(bank_account["Balance"].replace(",", "")),
