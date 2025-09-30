@@ -30,6 +30,7 @@ class Command(BaseCommand):
 
         #get bank accounts
         bank_accounts = fetch_finekra_bank_accounts()
+        bank_accounts = sorted(bank_accounts, key=lambda account: account['bankId'])
         
         for account in bank_accounts:
             print(f"Banka: {account['bankId']}")
