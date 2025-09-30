@@ -93,6 +93,8 @@ def get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID,
     else:
         return response.text
     
+    
+    
 def fetch_finmaks_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID,BANK_INTEGRATION_INFO_ID="",BANK_CODE=""):
     encrypted_password = finmaks_encrypt_password(PASSWORD)
 

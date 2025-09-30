@@ -118,7 +118,7 @@ def fetch_finmaks_bank_accounts(company):
 
             if current_progress - previous_progress >= 1:
                 previous_progress = current_progress
-                print(f"{int(current_progress)} %")
+                # print(f"{int(current_progress)} %")
 
             obj = (finmaks_bank_account_by_code.get(str(bank_account["BankAccountId"])))
             if obj:
@@ -174,8 +174,10 @@ def fetch_finmaks_bank_accounts(company):
                     status = bank_account["Status"],
                 )
 
-        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
-
+        # print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
+        
+        
+        print("Successfully updated all bank accounts.")
     except Exception as e:
         traceback.print_exc()
 
