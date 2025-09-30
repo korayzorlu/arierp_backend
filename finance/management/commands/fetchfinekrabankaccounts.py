@@ -32,6 +32,7 @@ class Command(BaseCommand):
         bank_accounts = fetch_finekra_bank_accounts()
         
         for account in bank_accounts:
+            print(f"Banka: {account['bankId']}")
             print(f"IBAN: {account['iban']}")
             print(f"Bakiye: {account['availableBalance']}")
             print("-----")
