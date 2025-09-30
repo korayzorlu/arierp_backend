@@ -59,6 +59,7 @@ def fetch_partner_advances(company):
         ]
 
         partners = Partner.objects.select_related().all()
+        partners.update(advance_amount=0)
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         partner_by_code = {p.crm_code: p for p in partners if p.crm_code}
