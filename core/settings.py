@@ -328,6 +328,11 @@ CELERY_BROKER_CONNECTION_RETRY = True
 # CELERY_BEAT_SCHEDULE_FILENAME = None  # Scheduler state dosyası tutulmaz, sadece DB kullanılır
 
 CELERY_BEAT_SCHEDULE = {
+    "update-finmaks-bank-accounts-task": {
+        "task": "finance.tasks.update_finmaks_bank_accounts",
+        "schedule": crontab(minute="*/3"),
+        "args": [2],
+    },
     "update-finekra-bank-accounts-task": {
         "task": "finance.tasks.update_finekra_bank_accounts",
         "schedule": crontab(minute="*/5"),
