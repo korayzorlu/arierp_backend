@@ -30,7 +30,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from finance.utils import fetch_finmaks_bank_accounts,fetch_finmaks_transactions
+from finance.utils import get_finmaks_bank_accounts,fetch_finmaks_transactions
 from common.utils.common_utils import normalize,safe_decimal
 
 
@@ -130,7 +130,7 @@ class BankAccountList(ModelViewSet, QueryListAPIView):
 
         logger = logging.getLogger("django")
         try:
-            bank_accounts = fetch_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+            bank_accounts = get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
 
             finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
             currencies = Currency.objects.select_related().all()

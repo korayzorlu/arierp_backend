@@ -177,7 +177,7 @@ class RiskPartnerFilter(FilterSet):
     #project = CharFilter(method = 'filter_project')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -236,7 +236,7 @@ class RiskPartnerKDVFilter(FilterSet):
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -285,7 +285,7 @@ class ToWarnedRiskPartnerFilter(FilterSet):
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -334,7 +334,7 @@ class WarnedRiskPartnerFilter(FilterSet):
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -382,7 +382,7 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
     overdue_terminated = CharFilter(method = 'filter_overdue_terminated')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -438,7 +438,7 @@ class TomorrowPartnerFilter(FilterSet):
     tomorrow = CharFilter(method = 'filter_tomorrow')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -473,7 +473,7 @@ class TodayPartnerFilter(FilterSet):
     today = CharFilter(method = 'filter_today')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -509,7 +509,7 @@ class DeliveryConfirmFilter(FilterSet):
     the_project = CharFilter(method = 'filter_the_project')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -559,7 +559,7 @@ class DepositPartnerFilter(FilterSet):
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
@@ -606,7 +606,7 @@ class AgreedTerminatedPartnerFilter(FilterSet):
     bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
     class Meta:
         model = Partner
-        fields = ['uuid','name','tc_vkn_no']
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(

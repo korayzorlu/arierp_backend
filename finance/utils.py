@@ -1,4 +1,5 @@
 from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
+from django.conf import settings
 
 import requests
 from datetime import datetime,date,timedelta
@@ -9,6 +10,9 @@ import re
 import os
 import random
 import string
+import logging
+
+from .models import *
 
 def vendor_filter_for_serializers(filter_params):
     if filter_params.get('project') == "all":
@@ -70,7 +74,7 @@ def finmaks_encrypt_password(PASSWORD):
     else:
         return response.text
     
-def fetch_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID,BANK_INTEGRATION_INFO_ID="",BANK_CODE=""):
+def get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID,BANK_INTEGRATION_INFO_ID="",BANK_CODE=""):
     encrypted_password = finmaks_encrypt_password(PASSWORD)
 
 
@@ -262,3 +266,4 @@ def delete_finekra_bank_account(id):
         return {"status": "success", "status_code": 200, "message": response.json()}
     else:
         return {"status": "error", "status_code": response.status_code, "message": response.text}
+    

@@ -9,13 +9,14 @@ import io
 import pyodbc
 import os
 import traceback
+import logging
 
 from .models import *
 from users.models import User
 from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
-from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts
+from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts
 from django.db.models import Q
 
 @shared_task()
@@ -85,6 +86,93 @@ def fetch_partner_advances(company):
                 obj.save()
 
                 print(obj.advance_amount)
+
+        print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
+
+    except Exception as e:
+        traceback.print_exc()
+
+@shared_task()
+def fetch_finmaks_bank_accounts(company):
+    USERNAME = settings.FINMAKS_USERNAME
+    PASSWORD = settings.FINMAKS_PASSWORD
+    INSTITUTION_CODE = "0001"
+    INSTITUTION_ID = 1
+
+    logger = logging.getLogger("django")
+    try:
+        bank_accounts = get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+
+        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
+        currencies = Currency.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        finmaks_bank_account_by_code = {b.bank_account_id: b for b in finmaks_bank_accounts if b.bank_account_id}
+        currencies_dict = {c.code: c for c in currencies}
+        
+        previous_progress = 0
+        old_obj_count = 0
+        new_obj_count = 0
+        for index,bank_account in enumerate(bank_accounts):
+            current_progress = ((index + 1)/len(bank_accounts))*100
+
+            if current_progress - previous_progress >= 1:
+                previous_progress = current_progress
+                print(f"{int(current_progress)} %")
+
+            obj = (finmaks_bank_account_by_code.get(str(bank_account["BankAccountId"])))
+            if obj:
+                if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
+                    currency = "TRY"
+                else:
+                    currency = bank_account["Currency"]
+                obj.bank_account_id = str(bank_account["BankAccountId"]) or ""
+                obj.iban = str(bank_account["IBAN"]) or ""
+                obj.account_no = str(bank_account["AccountNo"]) or ""
+                obj.branch_code = str(bank_account["BranchCode"]) or ""
+                obj.branch_name = str(bank_account["BranchName"]) or ""
+                obj.finmaks_account_type = str(bank_account["FinmaksAccountType"]) or ""
+                obj.balance = safe_decimal(bank_account["Balance"].replace(",", ""))
+                obj.available_balance = safe_decimal(bank_account["AvailableBalance"].replace(",", ""))
+                obj.over_draft = safe_decimal(bank_account["OverDraft"].replace(",", ""))
+                obj.credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", ""))
+                obj.blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", ""))
+                obj.credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", ""))
+                obj.currency = currencies_dict.get(currency)
+                obj.currency_type = str(bank_account["CurrencyType"]) or ""
+                obj.bank_name = str(bank_account["BankName"]) or ""
+                obj.bank_code = str(bank_account["BankCode"]) or ""
+                obj.bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or ""
+                obj.last_read_time = datetime.fromisoformat(bank_account["LastReadTime"])
+                obj.status = bank_account["Status"]
+                obj.save()
+            else:
+                if obj["Currency"] == "TL" or bank_account["Currency"] == "YTL":
+                    currency = "TRY"
+                else:
+                    currency = bank_account["Currency"]
+                FinmaksBankAccount.objects.create(
+                    company = company_obj,
+                    bank_account_id = str(bank_account["BankAccountId"]) or "",
+                    iban = str(bank_account["IBAN"]) or "",
+                    account_no = str(bank_account["AccountNo"]) or "",
+                    branch_code = str(bank_account["BranchCode"]) or "",
+                    branch_name = str(bank_account["BranchName"]) or "",
+                    finmaks_account_type = str(bank_account["FinmaksAccountType"]) or "",
+                    balance = safe_decimal(bank_account["Balance"].replace(",", "")),
+                    available_balance = safe_decimal(bank_account["AvailableBalance"].replace(",", "")),
+                    over_draft = safe_decimal(bank_account["OverDraft"].replace(",", "")),
+                    credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", "")),
+                    blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", "")),
+                    credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", "")),
+                    currency = currencies_dict.get(currency),
+                    currency_type = str(bank_account["CurrencyType"]) or "",
+                    bank_name = str(bank_account["BankName"]) or "",
+                    bank_code = str(bank_account["BankCode"]) or "",
+                    bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or "",
+                    last_read_time = datetime.fromisoformat(bank_account["LastReadTime"]),
+                    status = bank_account["Status"],
+                )
 
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
 
