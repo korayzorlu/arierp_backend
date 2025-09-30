@@ -97,6 +97,7 @@ class Partner(models.Model):
     last_scan_date = models.DateTimeField(_("Last Scan Date"), blank=True, null=True)
     next_scan_date = models.DateTimeField(_("Next Scan Date"), blank=True, null=True)
     is_reliable_person = models.BooleanField(default=False)
+    is_commercial = models.BooleanField(default=False)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

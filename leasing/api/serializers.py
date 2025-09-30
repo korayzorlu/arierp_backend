@@ -342,6 +342,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -448,6 +449,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -591,6 +593,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -765,6 +768,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -940,6 +944,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -1184,6 +1189,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -1303,6 +1309,7 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -1396,6 +1403,7 @@ class TodayPartnerListSerializer(serializers.Serializer):
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -1509,6 +1517,7 @@ class DepositPartnerListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -1680,6 +1689,7 @@ class AgreedTerminatedPartnerListSerializer(serializers.Serializer):
     barter = serializers.SerializerMethodField()
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    is_commercial = serializers.BooleanField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no

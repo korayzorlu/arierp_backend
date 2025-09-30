@@ -18,6 +18,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -194,7 +196,13 @@ class PartnerList(ModelViewSet, QueryListAPIView):
 
         custom_related_fields = ["company","country"]
 
-        queryset = Partner.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("name")
+        # crm_code alanını integer olarak sıralamak için annotate ile dönüştür
+
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            company=active_company.company if active_company else None
+        ).annotate(
+            crm_code_int=Cast('crm_code', IntegerField())
+        ).order_by('crm_code_int')
 
         query = self.request.query_params.get('search[value]', None)
         if query:
