@@ -282,11 +282,9 @@ def update_finekra_bank_accounts(company):
     try:
         finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().filter(
             Q(currency__isnull=False) &
-            Q(finmaks_account_type="1") &
             Q(iban__isnull=False) &
             Q(iban__startswith="TR") &
-            ~Q(iban="TR850001200962600053000709") &
-            ~Q(iban="TR180001200962600058000422")
+            Q(is_active=True)
         )
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
@@ -377,5 +375,14 @@ def delete_finekra_bank_accounts(company):
 
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
 
+    except Exception as e:
+        traceback.print_exc()
+
+@shared_task()
+def remove_finekra_bank_account(company,uuid):
+    try:        
+        if uuid:
+            response = delete_finekra_bank_account(uuid)
+            print(response)
     except Exception as e:
         traceback.print_exc()

@@ -5,6 +5,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models import Q
 from django.db.models.functions import Lower,Upper
+from django.conf import settings
 
 import pandas as pd
 import io
@@ -13,6 +14,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from tqdm import tqdm
 import sys
+import os
 
 from common.models import ImportProcess
 from common.utils.common_utils import normalize
@@ -188,32 +190,10 @@ def fetch_partners(company):
 
     try:
         conn = pyodbc.connect(connectionString)
-        
-        SQL_QUERY = """
-        SELECT FullName,
-            FirstName,
-            SecondName,
-            Surname,
-            ContactCompanyName,
-            CustomerCode,
-            IndividualCustomerId,
-            IndividualCustomerCode,
-            Phone,
-            Address,
-            CityName,
-            MainSectorId,
-            TaxDepartmentName,
-            CommercialTaxNo,
-            TCIdentityNo,
-            TaxAndTCIdentity,
-            CountryCode,
-            FathersName,
-            BirthDate,
-            Email,
-            PassportNo,
-            IS_TURKKEP_CUSTOMER
-        FROM CrmIndividualCustomerList
-        """
+
+        SQL_PATH = os.path.join(settings.BASE_DIR, "partners","sql","bireysel_musteriler.sql")
+        with open(SQL_PATH, "r", encoding="utf-8") as file:
+            SQL_QUERY = file.read()
 
         cursor = conn.cursor()
         cursor.execute(SQL_QUERY)

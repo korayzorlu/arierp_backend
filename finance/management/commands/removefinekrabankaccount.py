@@ -3,7 +3,7 @@ from django.conf import settings
 
 from contracts.models import *
 from finance.models import *
-from finance.utils import fetch_finekra_bank_accounts
+from finance.tasks import remove_finekra_bank_account
 
 import pandas as pd
 import json
@@ -22,25 +22,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-c', type=str, help='Company to associate with operation')
+        parser.add_argument('--id', type=str, help='UUID of the bank account to remove')
 
     def handle(self, *args, **options):
         company = options.get('c')
+        uuid = options.get('id')
 
         print("processing...")
 
-        #get bank accounts
-        bank_accounts = fetch_finekra_bank_accounts()
-        bank_accounts = sorted(bank_accounts, key=lambda account: account['bankId'])
-        
-        for account in bank_accounts:
-            print(f"ID: {account['id']}")
-            print(f"Banka: {account['bankId']}")
-            print(f"IBAN: {account['iban']}")
-            print(f"Bakiye: {account['availableBalance']}")
-            print(f"lastQueryDate: {account['lastQueryDate']}")
-            print(f"updateDate: {account['updateDate']}")
-            print("-----")
-        
-        print(f"Toplam Hesap Sayısı: {len(bank_accounts)}")
+        remove_finekra_bank_account.delay(company,uuid)
 
         print("done!")

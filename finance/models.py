@@ -46,6 +46,8 @@ class FinmaksBankAccount(models.Model):
     status = models.BooleanField(default=False)
 
     finekra_bank_account_id = models.CharField(_("Finekra Bank Account Id"), max_length=250, null=True, blank=True)
+    
+    is_active = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
