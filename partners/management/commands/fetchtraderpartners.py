@@ -41,10 +41,14 @@ class Command(BaseCommand):
         #     contract_count__gt=1
         # )
 
+        all_objs = Partner.objects.select_related().filter()
+        all_objs.update(is_commercial=False)
+
         institutional_objs = Partner.objects.select_related().filter(customer_type="institutional")
         contract_count = 0
         for obj in institutional_objs:
             contract_count += obj.partner_contracts.count()
+        institutional_objs.update(is_commercial=True)
 
         print(f"Institutional Count: {len(institutional_objs)}")
         print(f"Total Contract Count: {contract_count}")
@@ -59,7 +63,7 @@ class Command(BaseCommand):
             unique_contract_count__gt=1
         )
 
-        #objs.update(is_commercial=True)
+        objs.update(is_commercial=True)
         contract_count = 0
         for obj in objs:
             contract_count += obj.partner_contracts.count()

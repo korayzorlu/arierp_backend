@@ -157,7 +157,7 @@ class PartnerFilter(FilterSet):
 
     class Meta:
         model = Partner
-        fields = ['uuid','types','name','crm_code','customer_code','customer_type']
+        fields = ['uuid','types','name','crm_code','customer_code','customer_type','is_commercial','tc_vkn_no']
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)

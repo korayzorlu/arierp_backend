@@ -24,6 +24,7 @@ class ContractListSerializer(serializers.Serializer):
     mkk_tesciline_gonderilecek_mi = serializers.BooleanField()
     kof_tan_sozlesmeye_aktarim_tarihi = serializers.DateTimeField()
     lop_open_date = serializers.DateTimeField()
+    is_commercial = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -33,6 +34,9 @@ class ContractListSerializer(serializers.Serializer):
         
     def get_partner(self, obj):
         return obj.partner.name if obj.partner else ""
+    
+    def get_is_commercial(self, obj):
+        return obj.partner.is_commercial if obj.partner else False
     
     def get_partner_tc(self, obj):
         return obj.partner.tc_vkn_no if obj.partner else ""

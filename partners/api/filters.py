@@ -20,4 +20,4 @@ class PartnerFilter(FilterSet):
 
     class Meta:
         model = Partner
-        fields = ['uuid','name','crm_code','customer_code','tc_vkn_no']
+        fields = ['uuid','name','crm_code','customer_code','tc_vkn_no','is_commercial']

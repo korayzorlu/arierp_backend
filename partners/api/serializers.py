@@ -70,6 +70,7 @@ class PartnerListSerializer(serializers.Serializer):
     web = serializers.EmailField()
     about = serializers.CharField()
     is_reliable_person = serializers.BooleanField()
+    is_commercial = serializers.BooleanField()
     
     def get_customer(self, obj):
         return True if "customer" in obj.types else False

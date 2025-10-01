@@ -16,6 +16,8 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "sub_menu", "class" : "free", "label" : "Partner", "icon" : "handshake", "items" : [
                 {"type" : "item", "class" : "free", "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
+                {"type" : "item", "class" : "free", "label" : "Tüketici Müşteriler", "icon" : "handshake", "route" : "/tuketici-partners"},
+                {"type" : "item", "class" : "free", "label" : "Ticari Müşteriler", "icon" : "handshake", "route" : "/ticari-partners"},
                 {"type" : "item", "class" : "free", "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
             ]},
             {"type" : "item", "class" : "free", "label" : "Projeler", "icon" : "home_work", "route" : "/projects"},
