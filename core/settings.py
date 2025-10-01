@@ -338,6 +338,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="*/5"),
         "args": [2],
     },
+    "fetch-data-from-leaseflex-task": {
+        "task": "common.tasks.fetch_data_from_leaseflex",
+        "schedule": crontab(minute=0),
+        "args": [2],
+    },
 }
 
 # Proxy
@@ -532,6 +537,24 @@ import pprint
 logger = logging.getLogger('django_auth_ldap')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
+
+# Leaseflex Server
+ARI_SERVER = os.getenv('ARI_SERVER','')
+ARI_DATABASE = os.getenv('ARI_DATABASE','')
+ARI_USERNAME = os.getenv('ARI_USERNAME','')
+ARI_PASSWORD = os.getenv('ARI_PASSWORD','')
+ARI_CONNECTION_STRING = f'''
+    DRIVER={{ODBC Driver 18 for SQL Server}};
+    SERVER={ARI_SERVER};
+    DATABASE={ARI_DATABASE};
+    UID={ARI_USERNAME};
+    PWD={ARI_PASSWORD};
+    Provider=SQLNCLI11;
+    Integrated Security=SSPI;
+    Persist Security Info=False;
+    Initial Catalog=MASTER;
+    TrustServerCertificate=yes;
+'''
 
 # Finmaks
 FINMAKS_USERNAME = os.getenv('FINMAKS_USERNAME','')

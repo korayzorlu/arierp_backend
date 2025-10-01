@@ -25,4 +25,3 @@ def get_partner_types(data):
     if data.get('pep'):
         types.append("pep")
     return types
-

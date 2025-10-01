@@ -13,7 +13,7 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 
 from partners.models import *
 from partners.tasks import importPartners
-from partners.utils import is_valid_partner_data, get_partner_types,is_valid_sector_data
+from partners.utils.common_utils import is_valid_partner_data, get_partner_types,is_valid_sector_data
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert

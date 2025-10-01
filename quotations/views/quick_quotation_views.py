@@ -12,7 +12,7 @@ from asgiref.sync import async_to_sync
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from quotations.models import *
-from quotations.utils import is_valid_quick_quotation_data
+from quotations.utils.common_utils import is_valid_quick_quotation_data
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
