@@ -150,14 +150,10 @@ class ContractPaymentList(ModelViewSet, QueryListAPIView):
                 Q(company=active_company.company if active_company else None) &
                 Q(date__gte=start_date) &
                 Q(date__lte=end_date)
-            ).exclude(
-                contract__partner__crm_code__in=["23371", "9341"]
             ).order_by("-date", "contract__project")
         else:
             queryset = ContractPayment.objects.select_related(*custom_related_fields).filter(
                 Q(company = active_company.company if active_company else None)
-            ).exclude(
-                contract__partner__crm_code__in=["23371", "9341"]
             ).order_by("-date","contract__project")
 
         query = self.request.query_params.get('search[value]', None)

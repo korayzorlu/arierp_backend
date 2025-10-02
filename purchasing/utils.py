@@ -10,7 +10,9 @@ from decimal import Decimal
 from .models import PurchasePayment,PurchaseDocument
 
 def export_purchase_payments(self):
-    objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").all()
+    objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").exclude(
+        lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)

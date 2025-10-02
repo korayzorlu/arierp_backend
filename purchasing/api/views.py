@@ -132,6 +132,8 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
                 F('lease_payment_amount') - F('before_total_payment'),
                 output_field=DecimalField(max_digits=14, decimal_places=2)
             )
+        ).exclude(
+            lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]
         )
 
         query = self.request.query_params.get('search[value]', None)
