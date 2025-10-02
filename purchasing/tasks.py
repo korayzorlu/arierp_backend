@@ -213,6 +213,10 @@ def fetch_purchase_documents(company):
                     exchange_rate = safe_decimal(data["ExchangeRate"]),
                     document_status = str(data["DocumentStatus"]) or ""
                 )
+            if obj.vendor.crm_code in ["1461", "3374", "3781", "5451", "5785", "7987", "10356", "10506","10681","10682","23670","28814","29447"]:
+                obj.delete()
+                new_obj_count -= 1
+                old_obj_count -= 1
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
     except Exception as e:
         print(e)
