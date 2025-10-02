@@ -13,6 +13,7 @@ from partners.utils.partner_utils import fetch_partners_from_leaseflex,fetch_par
 from projects.utils.project_utils import fetch_projects_from_leaseflex
 from quotations.utils.quotation_utils import fetch_quotations_from_leaseflex
 from quotations.utils.quick_quotation_utils import fetch_quick_quotations_from_leaseflex
+from contracts.utils.contract_utils import fetch_contracts_from_leaseflex,fetch_contract_payments_from_leaseflex,fetch_warning_notices_from_leaseflex
 
 @shared_task(bind=True)
 def importData(self,df_json,user_id,app,model_name):
@@ -33,3 +34,9 @@ def fetch_data_from_leaseflex(company):
     fetch_projects_from_leaseflex(company)
     fetch_quick_quotations_from_leaseflex(company)
     fetch_quotations_from_leaseflex(company)
+    fetch_contracts_from_leaseflex(company)
+    fetch_warning_notices_from_leaseflex(company)
+
+@shared_task()
+def fetch_big_data_from_leaseflex(company):
+    fetch_contract_payments_from_leaseflex(company)

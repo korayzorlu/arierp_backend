@@ -25,7 +25,7 @@ from risk.utils.to_warned_risk_partners_utils import *
 from risk.utils.warned_risk_partners_utils import *
 from risk.utils.to_terminated_risk_partners_utils import *
 from risk.utils.risk_utils import export_amount_debit_transactions
-from contracts.utils import export_contract_payments
+from contracts.utils.contract_utils import export_contract_payments
 from operation.utils import export_partner_advance_activities,export_partner_advances
 
 from dotenv import load_dotenv

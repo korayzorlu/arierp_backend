@@ -343,6 +343,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=0),
         "args": [2],
     },
+    "fetch-big-data-from-leaseflex-task": {
+        "task": "common.tasks.fetch_big_data_from_leaseflex",
+        "schedule": crontab(minute=0, hour='*/2'),
+        "args": [2],
+    },
 }
 
 # Proxy

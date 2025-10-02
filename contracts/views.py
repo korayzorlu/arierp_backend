@@ -12,7 +12,7 @@ from asgiref.sync import async_to_sync
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from .models import *
-from .utils import is_valid_contract_data
+from .utils.common_utils import is_valid_contract_data
 from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
