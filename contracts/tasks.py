@@ -381,6 +381,10 @@ def fetch_contract_payments(company):
                         description = str(data["TrnDescription"]) or "",
                         user_name = str(data["CreatedUserId"]) or "",
                     )
+            if obj.contract.partner.crm_code in ["23371", "9341","10495","4305","10437","4441","11722","24120"]:
+                obj.delete()
+                new_obj_count -= 1
+                old_obj_count -= 1
         print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contract payments.")
     except Exception as e:
         print(e)
