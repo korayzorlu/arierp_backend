@@ -7,7 +7,7 @@ from datetime import date,timedelta,datetime
 from django.utils import timezone
 
 from leasing.models import *
-from leasing.utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers
+from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers
 from companies.models import Company,UserCompany
 from partners.models import Partner
 from contracts.models import WarningNotice

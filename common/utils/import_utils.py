@@ -19,7 +19,7 @@ from common.models import ImportProcess,Country,City
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from contracts.utils.contract_utils import import_contracts
-from leasing.utils import import_leases,import_installments,import_bank_activities
+from leasing.utils.import_utils import import_leases,import_installments,import_bank_activities
 from quotations.utils.quotation_utils import import_quotations
 from quotations.utils.quick_quotation_utils import import_quick_quotations
 

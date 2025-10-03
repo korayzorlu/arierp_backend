@@ -12,7 +12,6 @@ from asgiref.sync import async_to_sync
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from leasing.models import *
-from leasing.utils import is_valid_installment_data,is_valid_installment_data
 from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter

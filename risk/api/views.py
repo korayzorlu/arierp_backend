@@ -24,7 +24,6 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from leasing.utils import vendor_filter_for_views
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
