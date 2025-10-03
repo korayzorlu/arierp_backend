@@ -7,7 +7,7 @@ import pandas as pd
 import os
 from decimal import Decimal
 
-from .models import PurchasePayment,PurchaseDocument
+from purchasing.models import PurchasePayment,PurchaseDocument
 
 def export_purchase_payments(self):
     objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").exclude(
@@ -139,3 +139,4 @@ def export_purchase_payments(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+    

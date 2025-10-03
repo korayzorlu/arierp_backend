@@ -19,7 +19,7 @@ from common.models import ImportProcess,Country,City,ExportProcess
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from leasing.utils.export_utils import export_bank_activities,export_today_partners,export_tomorrow_partners,export_kdv_risk_partners,export_deposite_partners,export_delivery_confirms
-from purchasing.utils import export_purchase_payments
+from purchasing.utils.common_utils import export_purchase_payments
 from risk.utils.risk_partners_utils import *
 from risk.utils.to_warned_risk_partners_utils import *
 from risk.utils.warned_risk_partners_utils import *

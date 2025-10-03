@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from purchasing.models import *
-from purchasing.utils import export_purchase_payments
+from purchasing.utils.common_utils import export_purchase_payments
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
