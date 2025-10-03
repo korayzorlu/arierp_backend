@@ -126,3 +126,6 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         print("--------")
     except Exception as e:
         print(e)
+
+def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
+    pass
