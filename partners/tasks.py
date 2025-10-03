@@ -21,7 +21,7 @@ from common.utils.common_utils import normalize
 from users.models import User
 from .models import *
 from leasing.models import Lease
-from .utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex
+from .utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex,fetch_partner_advances_from_leaseflex
 
 #tekrar eden düzeltme
 # from django.db.models import Max
@@ -175,6 +175,7 @@ def fetch_partners(company):
     fetch_partnersi_from_leaseflex(company)
     fetch_phone_numbers_from_leaseflex(company)
     fetch_phone_numbersi_from_leaseflex(company)
+    fetch_partner_advances_from_leaseflex(company)
 
 @shared_task()
 def fetch_special_partners(company):

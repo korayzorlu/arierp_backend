@@ -16,6 +16,7 @@ from quotations.utils.quick_quotation_utils import fetch_quick_quotations_from_l
 from contracts.utils.contract_utils import fetch_contracts_from_leaseflex,fetch_contract_payments_from_leaseflex,fetch_warning_notices_from_leaseflex
 from leasing.utils.lease_utils import fetch_leases_from_leaseflex
 from leasing.utils.installment_utils import fetch_installments_from_leaseflex
+
 @shared_task(bind=True)
 def importData(self,df_json,user_id,app,model_name):
     importer = BaseImporter(user_id=user_id, app=app, model_name=model_name, task_id=self.request.id)

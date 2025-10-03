@@ -2,8 +2,10 @@ from django.conf import settings
 
 import pyodbc
 import os
+import traceback
+import logging
 
-from common.utils.common_utils import normalize
+from common.utils.common_utils import normalize,safe_decimal
 from partners.models import *
 
 def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
@@ -362,3 +364,46 @@ def fetch_phone_numbersi_from_leaseflex(company,BATCH_SIZE=1000):
         print("--------")
     except Exception as e:
         print(e)
+
+def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
+    try:
+        conn = pyodbc.connect(settings.ARI_CONNECTION_STRING)
+
+        SQL_PATH = os.path.join(settings.BASE_DIR, "partners","sql","musteri_avanslari.sql")
+        with open(SQL_PATH, "r", encoding="utf-8") as file:
+            SQL_QUERY = file.read()
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        cursor.fast_executemany = True
+
+        partners = Partner.objects.select_related().filter(company_id=int(company))
+        partners.update(advance_amount=0)
+
+        partner_by_code = {p.crm_code: p for p in partners if p.crm_code}
+        
+        update_progress = 0
+        while True:
+            records = cursor.fetchmany(BATCH_SIZE)
+            if not records:
+                break
+            update_objs = []
+            for index,data in enumerate(records):
+                if str(data.TrnAccountCrmId):
+                    obj = (partner_by_code.get(str(data.TrnAccountCrmId)))
+                else:
+                    obj = None
+
+                if obj:
+                    obj.advance_amount = safe_decimal(data.TrnAmountLocal)
+                    update_objs.append(obj)
+                    update_progress += 1
+
+            if update_objs:
+                Partner.objects.bulk_update(update_objs, [
+                    "advance_amount",
+                ], batch_size=BATCH_SIZE)
+        print(f"Toplam {update_progress} müşteri avansı güncellendi.")
+        print("--------")
+    except Exception as e:
+        traceback.print_exc()
