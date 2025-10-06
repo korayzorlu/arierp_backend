@@ -311,8 +311,14 @@ def add_finekra_bank_accounts(company):
             Q(finmaks_account_type="1") &
             Q(iban__isnull=False) &
             Q(iban__startswith="TR") &
-            ~Q(iban="TR850001200962600053000709") &
-            ~Q(iban="TR180001200962600058000422")
+            Q(iban__in=[
+                "TR850001200962600053000709",
+                "TR180001200962600058000422",
+                "TR550006701000000095058720",
+                "TR610006701000000014651335",
+                "TR370006701000000014690373",
+                "TR590006701000000042502690"
+            ])
         )
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
