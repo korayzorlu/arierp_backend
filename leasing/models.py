@@ -22,167 +22,10 @@ from common.utils.ai_utils import EXAMPLE_DEF,EXAMPLE_LIST
 from contracts.models import Contract
 from partners.models import Partner
 from finance.models import FinmaksTransaction
+from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
+from .utils.bank_activity_utils import match_bank_activity_from_iban
 
 # Create your models here.
-
-def extract_contract_numberss(description):
-    # Parantez içindeki tüm numaraları yakalar
-    # matches = re.findall(r'sözleşme.*?\(?(\d{4,})[-–]?(\d{0,})\)?', description.lower())
-    # contract_numbers = []
-    # for match in matches:
-    #     contract_numbers.append(match[0])
-    #     if match[1]:
-    #         contract_numbers.append(match[1])
-    # return contract_numbers
-
-    # if not isinstance(description, str):
-    #     return []
-######
-    # pattern = r"""
-    #     (?:
-    #         sözleşme\s*no[:\s]*       # sözleşme no: 12345
-    #         |
-    #         sözleşme\s*[:\s]*
-    #         |
-    #         söz\.?\s*no[:\s]*
-    #         |
-    #         no[:\s]+
-    #         |
-    #         nolu\s+sözleşme           # 12345 nolu sözleşme
-    #     )
-    #     [^\d]*(\d[\d\-_]*)            # sözleşme numarası (rakam, alt çizgi, tire içerebilir)
-    # """
-
-    # matches = re.findall(pattern, description.lower(), re.VERBOSE)
-    # return matches
-######
-    if not isinstance(description, str):
-        return []
-
-    text = description.lower() # Tüm metni küçük harfe çevir
-
-    matches = []
-
-    # 1. 'sözleşme no', 'no:', 'söz. no', 'nolu sözleşme' gibi tanımlayıcılarla birlikte geçen numaralar
-    #    Nokta ile ayrılmış sayıları da yakalamak için [\d\.-_]+ kullanıldı.
-    pattern_named = r"""
-        (?:
-            sözleşme\s*no[:\s]* | # sözleşme no:
-            sözleşme\s*[:\s]* | # sözleşme:
-            söz\.?\s*no[:\s]* | # söz. no:
-            kontrat\s*no[:\s]* | # kontrat no:
-            no[:\s]+                  | # no:
-            nolu\s+sözleşme             # nolu sözleşme
-        )
-        [^\d]*([\d\.-_]+)             # numara (rakam, nokta, tire, alt çizgi içerebilir)
-    """
-    matches.extend(re.findall(pattern_named, text, re.VERBOSE))
-
-    # 2. Parantez içindeki 5+ haneli (veya nokta/tire/alt çizgi içeren) numaralar
-    pattern_parens = r'\(([\d\.-_]{5,}(?:[-_]\d{2,})*)\)'
-    matches.extend(re.findall(pattern_parens, text))
-
-    # 3. 'sözleşme' kelimesinden hemen önce veya sonra gelen veya içinde geçen numaralar
-    # Bu, '48.152 sözleşme' gibi durumları yakalamak için eklendi.
-    pattern_proximity = r'(?:\b(\d[\d\.-_]*)\s*sözleşme\b|\bsözleşme\s*(\d[\d\.-_]*)\b)'
-    proximity_matches = re.findall(pattern_proximity, text)
-    for m in proximity_matches:
-        if m[0]: # eğer ilk grup eşleştiyse
-            matches.append(m[0])
-        if m[1]: # eğer ikinci grup eşleştiyse
-            matches.append(m[1])
-
-    # 4. Açıkta geçen 5-12 haneli numaralar (daha dikkatli bir filtreleme ile)
-    # Bu kısmı daha güvenli hale getirmek için, banka hareketlerinde TC, IBAN veya tarih gibi sayıları ayırt etmek gerekebilir.
-    # Ancak genel bir 'standalone' numara arayışı için kullanılabilir.
-    # Şimdilik bu bölümü çok geniş tutmamak adına, sadece belirli bir uzunluktaki sayıları alalım.
-    # Daha fazla false positive önlemek için, bu kısmı, eğer diğer kurallar işe yaramazsa son çare olarak kullanmak daha mantıklı olabilir.
-    # Örneğin: YIL/AY/GÜN, veya 11 haneli TC, 26 haneli IBAN desenleri dışındaki sayıları hedefleyebiliriz.
-    pattern_standalone = r'\b(\d{5,12})\b' # 5-12 haneli sayılar
-    raw_standalone_matches = re.findall(pattern_standalone, text)
-
-    # Bulunan tüm eşleşmeleri bir set'e atarak tekrar edenleri kaldır ve temizle
-    unique_matches = set()
-    for match in matches:
-        # Yakalanan numara genellikle string formatında olacaktır.
-        # İstenirse burada daha fazla doğrulama veya temizleme yapılabilir (örneğin baştaki/sondaki tireleri kaldırma)
-        unique_matches.add(match.strip('-_. ')) # Boşluk, nokta, tire, alt çizgi gibi karakterleri temizle
-
-    # Standalone eşleşmeleri de kontrol edip ekle
-    for m in raw_standalone_matches:
-        # TC veya IBAN gibi duran sayıları eleyebiliriz, ancak bu her zaman kesin bir çözüm değildir.
-        # Bu kısım uygulamanın iş mantığına göre daha fazla geliştirilebilir.
-        if m not in unique_matches and len(m) != 11: # Basit bir TC kimlik numarası elemesi
-            unique_matches.add(m)
-
-    return list(unique_matches)
-
-def extract_contract_numbers(description):
-    """
-    Extract contract numbers from a description string according to the following rules:
-    - Contract numbers are usually 4-7 digit numbers.
-    - They do not contain punctuation marks in between, except for revised contracts (e.g., 65789/1).
-    - Sometimes written with dots (e.g., 48.152), but should be returned without punctuation.
-    - There may be more than one contract number in the description.
-    - Ignore the last number if it is an 11-digit identity number (TC kimlik).
-    - Return only contract numbers as a list of strings. If none found, return an empty list.
-    """
-    if not isinstance(description, str):
-        return []
-
-    text = description.lower()
-
-    # Find all numbers in the text
-    all_numbers = re.findall(r'\b\d{4,}\b', text)
-
-    # If last number is 11 digits, ignore it
-    if all_numbers and len(all_numbers[-1]) == 11:
-        text = text[:text.rfind(all_numbers[-1])]
-
-    # 1. Find numbers with 'sözleşme', 'kontrat', 'no', 'nolu' etc.
-    pattern = r"""
-        (?:
-            sözleşme\s*no[:\s]* | 
-            sözleşme\s*[:\s]* | 
-            söz\.?\s*no[:\s]* | 
-            kontrat\s*no[:\s]* | 
-            no[:\s]+ | 
-            nolu\s+sözleşme | 
-            sözleşme\s*numaralı
-        )
-        [^\d]*(\d{4,7}(?:/\d{1,2})?)
-    """
-    matches = re.findall(pattern, text, re.VERBOSE)
-
-    # 2. Find numbers followed or preceded by 'sözleşme' (e.g., '65175 VE 65174 SÖZLEŞME NUMARALI')
-    pattern_proximity = r'(\d{4,7}(?:/\d{1,2})?)\s*(?:ve\s*)?sözleşme'
-    matches += re.findall(pattern_proximity, text)
-
-    # 3. Find numbers written with dots (e.g., '48.152 sözleşme')
-    pattern_dot = r'(\d{1,3}\.\d{3,5})\s*sözleşme'
-    dot_matches = re.findall(pattern_dot, text)
-    for m in dot_matches:
-        matches.append(m.replace('.', ''))
-
-    # 4. Find revised contract numbers (e.g., '65789/1')
-    pattern_revised = r'(\d{4,7}/\d{1,2})'
-    matches += re.findall(pattern_revised, text)
-
-    # 5. Find standalone 4-7 digit numbers (not TC, not IBAN, not date)
-    pattern_standalone = r'\b(\d{4,7})\b'
-    raw_standalone = re.findall(pattern_standalone, text)
-    for num in raw_standalone:
-        if num not in matches and num not in ['2024', '2025', '2023']:
-            matches.append(num)
-
-    # Clean up: remove duplicates, strip spaces, filter only 4-7 digit numbers or revised format
-    result = set()
-    for m in matches:
-        m = m.strip()
-        if re.fullmatch(r'\d{4,7}', m) or re.fullmatch(r'\d{4,7}/\d{1,2}', m):
-            result.add(m)
-
-    return list(result)
 
 class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -370,7 +213,7 @@ class BankActivity(models.Model):
                 #print(f"Extracted contract numbers: {response}")
 
                 ####AI TEST END####
-                current_sender_bank_activites = BankActivity.objects.select_related().filter(cross_bank_account_no = self.cross_bank_account_no).exclude(pk=self.pk)
+                current_sender_bank_activites = match_bank_activity_from_iban()
                 if current_sender_bank_activites:
                     print(f"current_sender_bank_activites: {current_sender_bank_activites}")
                     current_sender_bank_activity_leases = BankActivityLease.objects.select_related().filter(bank_activity__in = current_sender_bank_activites)

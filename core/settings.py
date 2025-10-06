@@ -357,16 +357,16 @@ if not DEBUG:
     }
 else:
     CELERY_BEAT_SCHEDULE = {
-        "fetch-finmaks-bank-accounts-task": {
-            "task": "finance.tasks.fetch_finmaks_bank_accounts",
-            "schedule": crontab(minute="*/5"),
-            "args": [2],
-        },
-        "fetch-finmaks-transactions-task": {
-            "task": "finance.tasks.fetch_finmaks_transactions",
-            "schedule": crontab(minute="*/5"),
-            "args": [2],
-        },
+        # "fetch-finmaks-bank-accounts-task": {
+        #     "task": "finance.tasks.fetch_finmaks_bank_accounts",
+        #     "schedule": crontab(minute="*/5"),
+        #     "args": [2],
+        # },
+        # "fetch-finmaks-transactions-task": {
+        #     "task": "finance.tasks.fetch_finmaks_transactions",
+        #     "schedule": crontab(minute="*/5"),
+        #     "args": [2],
+        # },
     }
 
 # Proxy

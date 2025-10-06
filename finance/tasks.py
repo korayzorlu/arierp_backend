@@ -224,9 +224,7 @@ def fetch_finmaks_transactions(company):
         finmaks_bank_accounts_dict = {b.bank_account_id: b for b in finmaks_bank_accounts}
         
         BATCH_SIZE = 1000
-        update_progress = 0
         create_progress = 0
-        update_objs = []
         create_objs = []
         for index, transaction in enumerate(transactions):
             obj = (finmaks_transaction_by_code.get(str(transaction["TransactionId"])))
@@ -272,44 +270,6 @@ def fetch_finmaks_transactions(company):
                     transaction_status = str(transaction["TransactionStatus"]) or ""
                 ))
                 create_progress += 1
-        if update_objs:
-            FinmaksTransaction.objects.bulk_update(update_objs,[
-                "bank_account",
-                "transaction_date",
-                "explanation_field",
-                "description",
-                "amount",
-                "sender_vkn",
-                "sender_iban",
-                "sender_account_name",
-                "receiver_vkn",
-                "receiver_iban",
-                "receipt_number",
-                "value_date",
-                "transaction_type",
-                "bank_code",
-                "balance",
-                "firm_id",
-                "firm_name",
-                "firm_merchantId",
-                "firm_externalCode",
-                "firm_externalId",
-                "transaction_branch_code",
-                "transaction_branch_name",
-                "firm_code",
-                "currency_type",
-                "debit",
-                "branch_code",
-                "transaction_external_id",
-                "external_id_used",
-                "external_bank_id",
-                "reference_no",
-                "finmaks_process_type",
-                "category_name",
-                "integration_field_value",
-                "transaction_status"
-            ], batch_size=BATCH_SIZE)
-
         if create_objs:
             FinmaksTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
 
