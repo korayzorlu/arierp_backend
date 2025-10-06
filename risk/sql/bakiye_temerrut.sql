@@ -1,4 +1,4 @@
-SELECT TOP 100000
+SELECT TOP 1000
     TrnId,
     TrnIsDeleted,
     TrnJournalHeaderId,
@@ -23,7 +23,7 @@ SELECT TOP 100000
                 (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                 OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
             )
-            AND TrnDueDate <= '20250923'
+            AND TrnDueDate <= CONVERT(VARCHAR, GETDATE(), 112)
             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
         )
         THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -39,7 +39,7 @@ SELECT TOP 100000
                     (TrnIsDeleted <> 9 AND TrnPostingType >= 110 AND TrnPostingType <= 120)
                     OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
                 )
-                AND TrnDueDate <= '20250923'
+                AND TrnDueDate <= CONVERT(VARCHAR, GETDATE(), 112)
                 AND ISNULL(xx.OperationProjectId_Count, 0) = 0
             )
             THEN TrnAmountCapital + TrnAmountInterest + TrnVATAmount
@@ -54,6 +54,7 @@ SELECT TOP 100000
     TrnAmountInterest,
     TrnVATAmount,
     TrnVATRate,
+    ir.InterestRate,
     TrnDueDate,
     TrnReturnDocumentDate,
     TrnReturnDocumentNo,
@@ -133,6 +134,9 @@ AND e1.JrnStpEnumType = 50
 LEFT JOIN CrmCustomerWithTypesLight (NOLOCK)
     ON con.CustomerId = CrmCustomerWithTypesLight.CustomerId
 
+LEFT JOIN TradeOverdueInterestRate ir (NOLOCK)
+    ON TrnOprLeasingOperationPrjId = ir.LeasingOperationProjectId
+
 WHERE
     TrnDummy = 0
     AND (
@@ -148,7 +152,7 @@ WHERE
                 (TrnPostingType >= 110 AND TrnPostingType <= 120)
                 OR (TrnPostingType = 420 AND TrnReturnDocumentNo LIKE 'P%')
             )
-            AND TrnDueDate <= '20250923'
+            AND TrnDueDate <= CONVERT(VARCHAR, GETDATE(), 112)
             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
         )
     )
@@ -166,13 +170,13 @@ WHERE
             AND TrnLedgerStatu = 10
             AND TrnPostingType >= 110
             AND TrnPostingType <= 120
-            AND TrnDueDate <= '20250923'
+            AND TrnDueDate <= CONVERT(VARCHAR, GETDATE(), 112)
             AND ISNULL(xx.OperationProjectId_Count, 0) = 0
         )
     )
     AND TrnAccountType = 11
     AND TrnAccountId <> 0
-    AND TrnDueDate <= CONVERT(DATETIME, '2025-09-23', 102)
+    AND TrnDueDate <= CAST(GETDATE() AS DATE)
 
     -- FARK BURADA
     -- AND TrnOprLeasingOperationPrjId IN (96287)
