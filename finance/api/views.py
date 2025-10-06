@@ -30,7 +30,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from finance.utils import get_finmaks_bank_accounts,fetch_finmaks_transactions
+from finance.utils import get_finmaks_bank_accounts,get_finmaks_transactions
 from common.utils.common_utils import normalize,safe_decimal
 
 
@@ -116,236 +116,89 @@ class DatatablesPagination(LimitOffsetPagination):
     
 class BankAccountList(ModelViewSet, QueryListAPIView):
     serializer_class = BankAccountListSerializer
+    filterset_class = BankAccountFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
-    def list(self, request, *args, **kwargs):
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-     
-        USERNAME = settings.FINMAKS_USERNAME
-        PASSWORD = settings.FINMAKS_PASSWORD
-        INSTITUTION_CODE = "0001"
-        INSTITUTION_ID = 1
-
-        logger = logging.getLogger("django")
-        try:
-            bank_accounts = get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
-
-            finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
-            currencies = Currency.objects.select_related().all()
-            company_obj = active_company.company
-
-            finmaks_bank_account_by_code = {b.bank_account_id: b for b in finmaks_bank_accounts if b.bank_account_id}
-            currencies_dict = {c.code: c for c in currencies}
-
-            for bank_account in bank_accounts:
-                obj = (finmaks_bank_account_by_code.get(str(bank_account["BankAccountId"])))
-                if obj:
-                    if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
-                        currency = "TRY"
-                    else:
-                        currency = bank_account["Currency"]
-                    obj.bank_account_id = str(bank_account["BankAccountId"]) or ""
-                    obj.iban = str(bank_account["IBAN"]) or ""
-                    obj.account_no = str(bank_account["AccountNo"]) or ""
-                    obj.branch_code = str(bank_account["BranchCode"]).replace("S0","") if str(bank_account["BranchCode"]) == "S01245" or str(bank_account["BranchCode"]) == "S00442" else str(bank_account["BranchCode"])
-                    obj.branch_name = str(bank_account["BranchName"]) or ""
-                    obj.finmaks_account_type = str(bank_account["FinmaksAccountType"]) or ""
-                    obj.balance = safe_decimal(bank_account["Balance"].replace(",", ""))
-                    obj.available_balance = safe_decimal(bank_account["AvailableBalance"].replace(",", ""))
-                    obj.over_draft = safe_decimal(bank_account["OverDraft"].replace(",", ""))
-                    obj.credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", ""))
-                    obj.blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", ""))
-                    obj.credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", ""))
-                    obj.currency = currencies_dict.get(currency)
-                    obj.currency_type = str(bank_account["CurrencyType"]) or ""
-                    obj.bank_name = str(bank_account["BankName"]) or ""
-                    obj.bank_code = str(bank_account["BankCode"]) or ""
-                    obj.bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or ""
-                    obj.last_read_time = datetime.fromisoformat(bank_account["LastReadTime"])
-                    obj.status = bank_account["Status"]
-                    obj.save()
-                else:
-                    if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
-                        currency = "TRY"
-                    else:
-                        currency = bank_account["Currency"]
-                    FinmaksBankAccount.objects.create(
-                        company = company_obj,
-                        bank_account_id = str(bank_account["BankAccountId"]) or "",
-                        iban = str(bank_account["IBAN"]) or "",
-                        account_no = str(bank_account["AccountNo"]) or "",
-                        branch_code = str(bank_account["BranchCode"]).replace("S0","") if str(bank_account["BranchCode"]) == "S01245" or str(bank_account["BranchCode"]) == "S00442" else str(bank_account["BranchCode"]),
-                        branch_name = str(bank_account["BranchName"]) or "",
-                        finmaks_account_type = str(bank_account["FinmaksAccountType"]) or "",
-                        balance = safe_decimal(bank_account["Balance"].replace(",", "")),
-                        available_balance = safe_decimal(bank_account["AvailableBalance"].replace(",", "")),
-                        over_draft = safe_decimal(bank_account["OverDraft"].replace(",", "")),
-                        credit_risk = safe_decimal(bank_account["CreditRisk"].replace(",", "")),
-                        blocked_balance = safe_decimal(bank_account["BlockedBalance"].replace(",", "")),
-                        credit_limit = safe_decimal(bank_account["CreditLimit"].replace(",", "")),
-                        currency = currencies_dict.get(currency),
-                        currency_type = str(bank_account["CurrencyType"]) or "",
-                        bank_name = str(bank_account["BankName"]) or "",
-                        bank_code = str(bank_account["BankCode"]) or "",
-                        bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or "",
-                        last_read_time = datetime.fromisoformat(bank_account["LastReadTime"]),
-                        status = bank_account["Status"],
-                    )
-
-            data = [item for item in bank_accounts if item.get("Status")]
-            data = sorted(data, key=lambda x: x["BankName"])
-            for item in data:
-                item["Balance"] = Decimal(item["Balance"].replace(",", ""))
-                item["AvailableBalance"] = Decimal(item["AvailableBalance"].replace(",", ""))
-                item["BlockedBalance"] = Decimal(item["BlockedBalance"].replace(",", ""))
-        except Exception as e:
-            print(e)
-            data = []
-
-        data_format = request.query_params.get('format', None)
-
-        if data_format == 'datatables':
-            filter_backends = (DatatablesFilterBackend)
-            data = {
-                "draw": int(self.request.GET.get('draw', 1)),  # Müşteri tarafından gönderilen çizim sayısı
-                "recordsTotal": len(data),  # Toplam kayıt sayısı
-                "recordsFiltered": len(data),  # Filtre sonrası kayıt sayısı
-                "data": data  # Gösterilecek veri
-            }
-            
-            return Response(data)
+        ordering = self.request.query_params.get('ordering') or "bank_name"
         
-        serializer = self.get_serializer(data, many=True)
-        return Response(serializer.data)
+        custom_related_fields = ["company"]
+
+        queryset = FinmaksBankAccount.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
+        ).order_by(str(ordering))
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            # Modelin tüm alanlarını otomatik olarak ekle, ForeignKey alanları hariç
+            search_fields = [
+                field.name for field in queryset.model._meta.get_fields()
+                if not (field.is_relation and field.many_to_one)
+            ]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
     
 class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
     serializer_class = BankAccountTransactionListSerializer
-    required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    filterset_class = BankAccountTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
 
     def get_queryset(self):
         if hasattr(self, '_cached_queryset'):
             return self._cached_queryset
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-
-        ####fetch
-
-        USERNAME = settings.FINMAKS_USERNAME
-        PASSWORD = settings.FINMAKS_PASSWORD
-        INSTITUTION_CODE = "0001"
-        INSTITUTION_ID = 1
-
-        logger = logging.getLogger("django")
-        try:
-            transactions = fetch_finmaks_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
-            #transactions = []
-
-            finmaks_transactions = FinmaksTransaction.objects.select_related().all()
-            finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
-            currencies = Currency.objects.select_related().all()
-            company_obj = active_company.company
-
-            finmaks_transaction_by_code = {t.transaction_id: t for t in finmaks_transactions if t.transaction_id}
-            finmaks_bank_accounts_dict = {b.bank_account_id: b for b in finmaks_bank_accounts}
-
-            for transaction in transactions:
-                obj = (finmaks_transaction_by_code.get(str(transaction["TransactionId"])))
-                if obj:
-                    # obj.bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"]))
-                    # obj.transaction_id =str(transaction["TransactionId"]) or ""
-                    # obj.transaction_date = datetime.fromisoformat(transaction["TransactionDate"])
-                    # obj.explanation_field = str(transaction["ExplanationField"]) or ""
-                    # obj.description = str(transaction["Description"]) or ""
-                    # obj.amount = safe_decimal(transaction["Amount"].replace(",", ""))
-                    # obj.sender_vkn = str(transaction["SenderVKN"]) or ""
-                    # obj.sender_iban = str(transaction["SenderIBAN"]) or ""
-                    # obj.sender_account_name = str(transaction["SenderAccountName"]) or ""
-                    # obj.receiver_vkn = str(transaction["ReceiverVKN"]) or ""
-                    # obj.receiver_iban = str(transaction["ReceiverIBAN"]) or ""
-                    # obj.receipt_number = str(transaction["ReceiptNumber"]) or ""
-                    # obj.value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None
-                    # obj.transaction_type = str(transaction["TransactionType"]) or ""
-                    # obj.bank_code = str(transaction["BankCode"]) or ""
-                    # obj.balance = safe_decimal(transaction["Balance"].replace(",", ""))
-                    # obj.firm_id = str(transaction["FirmId"]) or ""
-                    # obj.firm_name =str(transaction["FirmName"]) or ""
-                    # obj.firm_merchantId = str(transaction["FirmMerchantId"]) or ""
-                    # obj.firm_externalCode = str(transaction["FirmExternalCode"]) or ""
-                    # obj.firm_externalId = str(transaction["FirmExternalId"]) or ""
-                    # obj.transaction_branch_code = str(transaction["TransactionBranchCode"]) or ""
-                    # obj.transaction_branch_name = str(transaction["TransactionBranchName"]) or ""
-                    # obj.firm_code = str(transaction["FirmCode"]) or ""
-                    # obj.currency_type = str(transaction["CurrencyType"]) or ""
-                    # obj.debit = str(transaction["Debit"]) or ""
-                    # obj.branch_code = str(transaction["BranchCode"]) or ""
-                    # obj.transaction_external_id = str(transaction["TransactionExternalId"]) or ""
-                    # obj.external_id_used = transaction["ExternalIdUsed"]
-                    # obj.external_bank_id = str(transaction["ExternalBankId"]) or ""
-                    # obj.reference_no = str(transaction["ReferenceNo"]) or ""
-                    # obj.finmaks_process_type = str(transaction["FinmaksProcessType"]) or ""
-                    # obj.category_name = str(transaction["CategoryName"]) or ""
-                    # obj.integration_field_value = str(transaction["IntegrationFieldValue"]) or ""
-                    # obj.transaction_status = str(transaction["TransactionStatus"]) or ""
-                    # obj.save()
-                    pass
-                else:
-                    FinmaksTransaction.objects.create(
-                        company = company_obj,
-                        bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"])),
-                        transaction_id =str(transaction["TransactionId"]) or "",
-                        transaction_date = datetime.fromisoformat(transaction["TransactionDate"]),
-                        explanation_field = str(transaction["ExplanationField"]) or "",
-                        description = str(transaction["Description"]) or "",
-                        amount = safe_decimal(transaction["Amount"].replace(",", "")),
-                        sender_vkn = str(transaction["SenderVKN"]) or "",
-                        sender_iban = str(transaction["SenderIBAN"]) or "",
-                        sender_account_name = str(transaction["SenderAccountName"]) or "",
-                        receiver_vkn = str(transaction["ReceiverVKN"]) or "",
-                        receiver_iban = str(transaction["ReceiverIBAN"]) or "",
-                        receipt_number = str(transaction["ReceiptNumber"]) or "",
-                        value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None,
-                        transaction_type = str(transaction["TransactionType"]) or "",
-                        bank_code = str(transaction["BankCode"]) or "",
-                        balance = safe_decimal(transaction["Balance"].replace(",", "")),
-                        firm_id = str(transaction["FirmId"]) or "",
-                        firm_name =str(transaction["FirmName"]) or "",
-                        firm_merchantId = str(transaction["FirmMerchantId"]) or "",
-                        firm_externalCode = str(transaction["FirmExternalCode"]) or "",
-                        firm_externalId = str(transaction["FirmExternalId"]) or "",
-                        transaction_branch_code = str(transaction["TransactionBranchCode"]) or "",
-                        transaction_branch_name = str(transaction["TransactionBranchName"]) or "",
-                        firm_code = str(transaction["FirmCode"]) or "",
-                        currency_type = str(transaction["CurrencyType"]) or "",
-                        debit = str(transaction["Debit"]) or "",
-                        branch_code = str(transaction["BranchCode"]) or "",
-                        transaction_external_id = str(transaction["TransactionExternalId"]) or "",
-                        external_id_used = transaction["ExternalIdUsed"],
-                        external_bank_id = str(transaction["ExternalBankId"]) or "",
-                        reference_no = str(transaction["ReferenceNo"]) or "",
-                        finmaks_process_type = str(transaction["FinmaksProcessType"]) or "",
-                        category_name = str(transaction["CategoryName"]) or "",
-                        integration_field_value = str(transaction["IntegrationFieldValue"]) or "",
-                        transaction_status = str(transaction["TransactionStatus"]) or ""
-                    )
-        except Exception as e:
-            print(e)
-            traceback.print_exc()
-
-        ####fetch-end
+        ordering = self.request.query_params.get('ordering') or "transaction_date"
         
         custom_related_fields = ["company"]
 
-        queryset = FinmaksTransaction.objects.select_related(*custom_related_fields).filter()
+        queryset = FinmaksTransaction.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
+        ).order_by(str(ordering))
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = []
+            # Modelin tüm alanlarını otomatik olarak ekle, ForeignKey alanları hariç
+            search_fields = [
+                field.name for field in queryset.model._meta.get_fields()
+                if not (field.is_relation and field.many_to_one)
+            ]
             
             q_objects = Q()
             for field in search_fields:

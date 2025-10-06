@@ -334,6 +334,11 @@ if not DEBUG:
             "schedule": crontab(minute="*/5"),
             "args": [2],
         },
+        "fetch-finmaks-transactions-task": {
+            "task": "finance.tasks.fetch_finmaks_transactions",
+            "schedule": crontab(minute="*/5"),
+            "args": [2],
+        },
         "update-finekra-bank-accounts-task": {
             "task": "finance.tasks.update_finekra_bank_accounts",
             "schedule": crontab(minute="*/5"),
@@ -349,6 +354,19 @@ if not DEBUG:
         #     "schedule": crontab(minute=0, hour='*/2'),
         #     "args": [2],
         # },
+    }
+else:
+    CELERY_BEAT_SCHEDULE = {
+        "fetch-finmaks-bank-accounts-task": {
+            "task": "finance.tasks.fetch_finmaks_bank_accounts",
+            "schedule": crontab(minute="*/5"),
+            "args": [2],
+        },
+        "fetch-finmaks-transactions-task": {
+            "task": "finance.tasks.fetch_finmaks_transactions",
+            "schedule": crontab(minute="*/5"),
+            "args": [2],
+        },
     }
 
 # Proxy
@@ -565,6 +583,8 @@ ARI_CONNECTION_STRING = f'''
 # Finmaks
 FINMAKS_USERNAME = os.getenv('FINMAKS_USERNAME','')
 FINMAKS_PASSWORD = os.getenv('FINMAKS_PASSWORD','')
+FINMAKS_INSTITUTION_CODE = os.getenv('FINMAKS_INSTITUTION_CODE','')
+FINMAKS_INSTITUTION_ID = os.getenv('FINMAKS_INSTITUTION_ID',0)
 
 # AI
 AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")

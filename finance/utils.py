@@ -63,9 +63,9 @@ def vendor_filter_for_serializers(filter_params):
         return Q(lease__contract__vendor__crm_code=filter_params.get('project'))
 
 
-def finmaks_encrypt_password(PASSWORD):
+def finmaks_encrypt_password():
     url = "http://finmaks.arileasing.com.tr:92/EncryptPass"
-    payload = {"Pass": PASSWORD}
+    payload = {"Pass": settings.FINMAKS_PASSWORD}
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, params=payload, headers=headers)
 
@@ -74,45 +74,43 @@ def finmaks_encrypt_password(PASSWORD):
     else:
         return response.text
     
-def get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID,BANK_INTEGRATION_INFO_ID="",BANK_CODE=""):
-    encrypted_password = finmaks_encrypt_password(PASSWORD)
-
+def get_finmaks_bank_accounts():
+    encrypted_password = finmaks_encrypt_password()
 
     url = "http://finmaks.arileasing.com.tr:92/BankAccounts"
     payload = {
-        "username": USERNAME,
+        "username": settings.FINMAKS_USERNAME,
         "password": encrypted_password,
-        "institutionCode": INSTITUTION_CODE,
-        "institutionId": INSTITUTION_ID
+        "institutionCode": settings.FINMAKS_INSTITUTION_CODE,
+        "institutionId": settings.FINMAKS_INSTITUTION_ID
     }
     headers = {"Content-Type": "application/json"}
     response = requests.get(url, params=payload, headers=headers)
     
     if response.status_code == 200:
-        return response.json().get("InstitutionBankAccounts")
+        return {"status": "success", "status_code": 200, "message": response.json().get("InstitutionBankAccounts")}
     else:
-        return response.text
+        return {"status": "error", "status_code": response.status_code, "message": response.text}
     
     
     
-def fetch_finmaks_transactions(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID,BANK_INTEGRATION_INFO_ID="",BANK_CODE=""):
-    encrypted_password = finmaks_encrypt_password(PASSWORD)
-
+def get_finmaks_transactions():
+    encrypted_password = finmaks_encrypt_password()
 
     url = "http://finmaks.arileasing.com.tr:92/Transactions"
     payload = {
-        "username": USERNAME,
+        "username": settings.FINMAKS_USERNAME,
         "password": encrypted_password,
-        "institutionCode": INSTITUTION_CODE,
-        "institutionId": INSTITUTION_ID
+        "institutionCode": settings.FINMAKS_INSTITUTION_CODE,
+        "institutionId": settings.FINMAKS_INSTITUTION_ID
     }
     headers = {"Content-Type": "application/json"}
     response = requests.get(url, params=payload, headers=headers)
     
     if response.status_code == 200:
-        return response.json().get("BankTransactionList")
+        return {"status": "success", "status_code": 200, "message": response.json().get("BankTransactionList")}
     else:
-        return response.text
+        return {"status": "error", "status_code": response.status_code, "message": response.text}
     
 def fetch_finekra_token():
     url = "https://finekra-api.sinpas.com.tr/api/Auth/DealerLogin"

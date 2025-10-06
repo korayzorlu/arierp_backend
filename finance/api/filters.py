@@ -21,3 +21,15 @@ class PartnerAdvanceFilter(FilterSet):
     class Meta:
         model = Partner
         fields = ['uuid']
+
+class BankAccountFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    class Meta:
+        model = FinmaksBankAccount
+        fields = ['uuid']
+
+class BankAccountTransactionFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    class Meta:
+        model = FinmaksTransaction
+        fields = ['uuid']

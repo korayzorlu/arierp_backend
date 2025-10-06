@@ -3,6 +3,7 @@ from core.celery import app
 from django.http import JsonResponse
 from django.utils.timezone import make_aware
 from django.conf import settings
+from django.utils.dateparse import parse_datetime
 
 import pandas as pd
 import io
@@ -16,7 +17,7 @@ from users.models import User
 from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
-from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts
+from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts,get_finmaks_transactions
 from django.db.models import Q
 
 @shared_task()
@@ -94,14 +95,14 @@ def fetch_partner_advances(company):
 
 @shared_task()
 def fetch_finmaks_bank_accounts(company):
-    USERNAME = settings.FINMAKS_USERNAME
-    PASSWORD = settings.FINMAKS_PASSWORD
-    INSTITUTION_CODE = "0001"
-    INSTITUTION_ID = 1
-
     logger = logging.getLogger("django")
     try:
-        bank_accounts = get_finmaks_bank_accounts(USERNAME,PASSWORD,INSTITUTION_CODE,INSTITUTION_ID)
+        response = get_finmaks_bank_accounts()
+        if response["status"] == "success":
+            bank_accounts = response["message"]
+        else:
+            bank_accounts = []
+            print(f"Error fetching finmaks bank accounts: {response['message']}")
 
         finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
@@ -199,6 +200,120 @@ def fetch_finmaks_bank_accounts(company):
 
         print(f"Toplam {update_progress} finmaks banka hesapları güncellendi.")
         print(f"Toplam {create_progress} finmaks banka hesapları oluşturuldu.")
+        print("--------")
+    except Exception as e:
+        traceback.print_exc()
+
+@shared_task()
+def fetch_finmaks_transactions(company):
+    logger = logging.getLogger("django")
+    try:
+        response = get_finmaks_transactions()
+        if response["status"] == "success":
+            transactions = response["message"]
+        else:
+            transactions = []
+            print(f"Error fetching finmaks transactions: {response['message']}")
+
+        finmaks_transactions = FinmaksTransaction.objects.select_related().all()
+        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
+        currencies = Currency.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        finmaks_transaction_by_code = {t.transaction_id: t for t in finmaks_transactions if t.transaction_id}
+        finmaks_bank_accounts_dict = {b.bank_account_id: b for b in finmaks_bank_accounts}
+        
+        BATCH_SIZE = 1000
+        update_progress = 0
+        create_progress = 0
+        update_objs = []
+        create_objs = []
+        for index, transaction in enumerate(transactions):
+            obj = (finmaks_transaction_by_code.get(str(transaction["TransactionId"])))
+            if obj:
+                pass
+            else:
+                create_objs.append(FinmaksTransaction(
+                    company = company_obj,
+                    bank_account = finmaks_bank_accounts_dict.get(str(transaction["InstitutionBankAccountId"])),
+                    transaction_id =str(transaction["TransactionId"]) or "",
+                    transaction_date = datetime.fromisoformat(transaction["TransactionDate"]),
+                    explanation_field = str(transaction["ExplanationField"]) or "",
+                    description = str(transaction["Description"]) or "",
+                    amount = safe_decimal(transaction["Amount"].replace(",", "")),
+                    sender_vkn = str(transaction["SenderVKN"]) or "",
+                    sender_iban = str(transaction["SenderIBAN"]) or "",
+                    sender_account_name = str(transaction["SenderAccountName"]) or "",
+                    receiver_vkn = str(transaction["ReceiverVKN"]) or "",
+                    receiver_iban = str(transaction["ReceiverIBAN"]) or "",
+                    receipt_number = str(transaction["ReceiptNumber"]) or "",
+                    value_date = parse_datetime(transaction["ValueDate"]) if isinstance(transaction["ValueDate"], str) else None,
+                    transaction_type = str(transaction["TransactionType"]) or "",
+                    bank_code = str(transaction["BankCode"]) or "",
+                    balance = safe_decimal(transaction["Balance"].replace(",", "")),
+                    firm_id = str(transaction["FirmId"]) or "",
+                    firm_name =str(transaction["FirmName"]) or "",
+                    firm_merchantId = str(transaction["FirmMerchantId"]) or "",
+                    firm_externalCode = str(transaction["FirmExternalCode"]) or "",
+                    firm_externalId = str(transaction["FirmExternalId"]) or "",
+                    transaction_branch_code = str(transaction["TransactionBranchCode"]) or "",
+                    transaction_branch_name = str(transaction["TransactionBranchName"]) or "",
+                    firm_code = str(transaction["FirmCode"]) or "",
+                    currency_type = str(transaction["CurrencyType"]) or "",
+                    debit = str(transaction["Debit"]) or "",
+                    branch_code = str(transaction["BranchCode"]) or "",
+                    transaction_external_id = str(transaction["TransactionExternalId"]) or "",
+                    external_id_used = transaction["ExternalIdUsed"],
+                    external_bank_id = str(transaction["ExternalBankId"]) or "",
+                    reference_no = str(transaction["ReferenceNo"]) or "",
+                    finmaks_process_type = str(transaction["FinmaksProcessType"]) or "",
+                    category_name = str(transaction["CategoryName"]) or "",
+                    integration_field_value = str(transaction["IntegrationFieldValue"]) or "",
+                    transaction_status = str(transaction["TransactionStatus"]) or ""
+                ))
+                create_progress += 1
+        if update_objs:
+            FinmaksTransaction.objects.bulk_update(update_objs,[
+                "bank_account",
+                "transaction_date",
+                "explanation_field",
+                "description",
+                "amount",
+                "sender_vkn",
+                "sender_iban",
+                "sender_account_name",
+                "receiver_vkn",
+                "receiver_iban",
+                "receipt_number",
+                "value_date",
+                "transaction_type",
+                "bank_code",
+                "balance",
+                "firm_id",
+                "firm_name",
+                "firm_merchantId",
+                "firm_externalCode",
+                "firm_externalId",
+                "transaction_branch_code",
+                "transaction_branch_name",
+                "firm_code",
+                "currency_type",
+                "debit",
+                "branch_code",
+                "transaction_external_id",
+                "external_id_used",
+                "external_bank_id",
+                "reference_no",
+                "finmaks_process_type",
+                "category_name",
+                "integration_field_value",
+                "transaction_status"
+            ], batch_size=BATCH_SIZE)
+
+        if create_objs:
+            FinmaksTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+
+        print(f"Toplam {create_progress} finmaks banka hereketi oluşturuldu.")
         print("--------")
     except Exception as e:
         traceback.print_exc()

@@ -11,25 +11,35 @@ from companies.models import Company,UserCompany
 from partners.models import Partner
     
 class BankAccountListSerializer(serializers.Serializer):
-    BankAccountId = serializers.CharField()
-    IBAN = serializers.CharField()
-    AccountNo = serializers.CharField()
-    BranchCode = serializers.CharField()
-    BranchName = serializers.CharField()
-    FinmaksAccountType = serializers.CharField()
-    Balance = serializers.CharField()
-    AvailableBalance = serializers.CharField()
-    OverDraft = serializers.CharField()
-    CreditRisk = serializers.CharField()
-    BlockedBalance = serializers.CharField()
-    CreditLimit = serializers.CharField()
-    Currency = serializers.CharField()
-    CurrencyType = serializers.CharField()
-    BankName = serializers.CharField()
-    BankCode = serializers.CharField()
-    BankIntegrationInfoId = serializers.CharField()
-    LastReadTime = serializers.CharField()
-    Status = serializers.CharField()
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    bank_account_id = serializers.CharField()
+    iban = serializers.CharField()
+    account_no = serializers.CharField()
+    branch_code = serializers.CharField()
+    branch_name = serializers.CharField()
+    finmaks_account_type = serializers.CharField()
+    balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    available_balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    over_draft = serializers.DecimalField(max_digits=14, decimal_places=2)
+    credit_risk = serializers.DecimalField(max_digits=14, decimal_places=2)
+    blocked_balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    credit_limit = serializers.DecimalField(max_digits=14, decimal_places=2)
+    currency = serializers.SerializerMethodField()
+    currency_type = serializers.CharField()
+    bank_name = serializers.CharField()
+    bank_code = serializers.CharField()
+    bank_integration_info_id = serializers.CharField()
+    last_read_time = serializers.DateTimeField()
+    status = serializers.BooleanField()
+    finekra_bank_account_id = serializers.CharField()
+    is_active = serializers.BooleanField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ''
 
 class BankAccountTransactionListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
