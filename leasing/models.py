@@ -213,7 +213,7 @@ class BankActivity(models.Model):
                 #print(f"Extracted contract numbers: {response}")
 
                 ####AI TEST END####
-                current_sender_bank_activites = match_bank_activity_from_iban(params={
+                current_sender_bank_activites = match_bank_activity_from_iban({
                     "cross_bank_account_no": self.cross_bank_account_no,
                     "exclude_pk": self.pk
                 })
