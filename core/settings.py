@@ -327,28 +327,29 @@ CELERY_BROKER_CONNECTION_RETRY = True
 # # Celery'de restart sonrası scheduled task'ların hemen tetiklenmemesi için:
 # CELERY_BEAT_SCHEDULE_FILENAME = None  # Scheduler state dosyası tutulmaz, sadece DB kullanılır
 
-CELERY_BEAT_SCHEDULE = {
-    "fetch-finmaks-bank-accounts-task": {
-        "task": "finance.tasks.fetch_finmaks_bank_accounts",
-        "schedule": crontab(minute="*/5"),
-        "args": [2],
-    },
-    "update-finekra-bank-accounts-task": {
-        "task": "finance.tasks.update_finekra_bank_accounts",
-        "schedule": crontab(minute="*/5"),
-        "args": [2],
-    },
-    "fetch-data-from-leaseflex-task": {
-        "task": "common.tasks.fetch_data_from_leaseflex",
-        "schedule": crontab(minute=0),
-        "args": [2],
-    },
-    "fetch-big-data-from-leaseflex-task": {
-        "task": "common.tasks.fetch_big_data_from_leaseflex",
-        "schedule": crontab(minute=0, hour='*/2'),
-        "args": [2],
-    },
-}
+if not DEBUG:
+    CELERY_BEAT_SCHEDULE = {
+        "fetch-finmaks-bank-accounts-task": {
+            "task": "finance.tasks.fetch_finmaks_bank_accounts",
+            "schedule": crontab(minute="*/5"),
+            "args": [2],
+        },
+        "update-finekra-bank-accounts-task": {
+            "task": "finance.tasks.update_finekra_bank_accounts",
+            "schedule": crontab(minute="*/5"),
+            "args": [2],
+        },
+        # "fetch-data-from-leaseflex-task": {
+        #     "task": "common.tasks.fetch_data_from_leaseflex",
+        #     "schedule": crontab(minute=0),
+        #     "args": [2],
+        # },
+        # "fetch-big-data-from-leaseflex-task": {
+        #     "task": "common.tasks.fetch_big_data_from_leaseflex",
+        #     "schedule": crontab(minute=0, hour='*/2'),
+        #     "args": [2],
+        # },
+    }
 
 # Proxy
 

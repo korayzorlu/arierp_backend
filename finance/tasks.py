@@ -110,16 +110,12 @@ def fetch_finmaks_bank_accounts(company):
         finmaks_bank_account_by_code = {b.bank_account_id: b for b in finmaks_bank_accounts if b.bank_account_id}
         currencies_dict = {c.code: c for c in currencies}
         
-        previous_progress = 0
-        old_obj_count = 0
-        new_obj_count = 0
+        BATCH_SIZE = 1000
+        update_progress = 0
+        create_progress = 0
+        update_objs = []
+        create_objs = []
         for index,bank_account in enumerate(bank_accounts):
-            current_progress = ((index + 1)/len(bank_accounts))*100
-
-            if current_progress - previous_progress >= 1:
-                previous_progress = current_progress
-                # print(f"{int(current_progress)} %")
-
             obj = (finmaks_bank_account_by_code.get(str(bank_account["BankAccountId"])))
             if obj:
                 if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
@@ -145,13 +141,14 @@ def fetch_finmaks_bank_accounts(company):
                 obj.bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or ""
                 obj.last_read_time = datetime.fromisoformat(bank_account["LastReadTime"])
                 obj.status = bank_account["Status"]
-                obj.save()
+                update_objs.append(obj)
+                update_progress += 1
             else:
                 if obj["Currency"] == "TL" or bank_account["Currency"] == "YTL":
                     currency = "TRY"
                 else:
                     currency = bank_account["Currency"]
-                FinmaksBankAccount.objects.create(
+                create_objs.append(FinmaksBankAccount(
                     company = company_obj,
                     bank_account_id = str(bank_account["BankAccountId"]) or "",
                     iban = str(bank_account["IBAN"]) or "",
@@ -172,12 +169,37 @@ def fetch_finmaks_bank_accounts(company):
                     bank_integration_info_id = str(bank_account["BankIntegrationInfoId"]) or "",
                     last_read_time = datetime.fromisoformat(bank_account["LastReadTime"]),
                     status = bank_account["Status"],
-                )
+                ))
+                create_progress += 1
+        if update_objs:
+            FinmaksBankAccount.objects.bulk_update(update_objs,[
+                "bank_account_id",
+                "iban",
+                "account_no",
+                "branch_code",
+                "branch_name",
+                "finmaks_account_type",
+                "balance",
+                "available_balance",
+                "over_draft",
+                "credit_risk",
+                "blocked_balance",
+                "credit_limit",
+                "currency",
+                "currency_type",
+                "bank_name",
+                "bank_code",
+                "bank_integration_info_id",
+                "last_read_time",
+                "status",
+            ], batch_size=BATCH_SIZE)
 
-        # print(f"{old_obj_count} objects updated and {new_obj_count} objects created for contracts.")
-        
-        
-        print("Successfully updated all bank accounts.")
+        if create_objs:
+            FinmaksBankAccount.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+
+        print(f"Toplam {update_progress} finmaks banka hesapları güncellendi.")
+        print(f"Toplam {create_progress} finmaks banka hesapları oluşturuldu.")
+        print("--------")
     except Exception as e:
         traceback.print_exc()
 
