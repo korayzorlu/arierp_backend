@@ -344,16 +344,16 @@ if not DEBUG:
             "schedule": crontab(minute="*/5"),
             "args": [2],
         },
-        # "fetch-data-from-leaseflex-task": {
-        #     "task": "common.tasks.fetch_data_from_leaseflex",
-        #     "schedule": crontab(minute=0),
-        #     "args": [2],
-        # },
-        # "fetch-big-data-from-leaseflex-task": {
-        #     "task": "common.tasks.fetch_big_data_from_leaseflex",
-        #     "schedule": crontab(minute=0, hour='*/2'),
-        #     "args": [2],
-        # },
+        "fetch-data-from-leaseflex-task": {
+            "task": "common.tasks.fetch_data_from_leaseflex",
+            "schedule": crontab(minute=0),
+            "args": [2],
+        },
+        "fetch-big-data-from-leaseflex-task": {
+            "task": "common.tasks.fetch_big_data_from_leaseflex",
+            "schedule": crontab(minute=0, hour='*/2'),
+            "args": [2],
+        },
     }
 else:
     CELERY_BEAT_SCHEDULE = {
