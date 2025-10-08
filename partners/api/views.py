@@ -148,9 +148,10 @@ class SectorList(ModelViewSet, QueryListAPIView):
 
 class PartnerFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
-    customer_code = CharFilter(method = 'filter_customer_code')
+    customerCode = CharFilter(method = 'filter_customer_code')
     customer_type = CharFilter(method = 'filter_customer_type')
-    crm_code = CharFilter(method = 'filter_crm_code')
+    crmCode = CharFilter(method = 'filter_crm_code')
+    tcVknNo = CharFilter(method = 'filter_tc_vkn_no')
     types = CharFilter(method = 'filter_types')
     name = CharFilter(method = 'filter_name')
     country_name = CharFilter(method = 'filter_country')
@@ -167,6 +168,9 @@ class PartnerFilter(FilterSet):
 
     def filter_crm_code(self, queryset, crm_code, value):
         return queryset.filter(crm_code = value)
+    
+    def filter_tc_vkn_no(self, queryset, tc_vkn_no, value):
+        return queryset.filter(tc_vkn_no = value)
     
     def filter_types(self, queryset, types, value):
         return queryset.filter(types__overlap = value)
