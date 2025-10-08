@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from users.models import Profile
 from companies.models import Company,UserCompany
-from subscriptions.models import Subscription
+from subscriptions.models import Subscription,Authorization
 
 @receiver(post_save, sender=User)
 def create_related_models(sender, instance, created, **kwargs):
@@ -25,3 +25,4 @@ def create_related_models(sender, instance, created, **kwargs):
 
         subscription = Subscription.objects.create(user = instance)
         subscription.save()
+        Authorization.objects.create(user = instance)

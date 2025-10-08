@@ -83,7 +83,7 @@ class MenuItemList(EditorModelMixin, ModelViewSet, QueryListAPIView):
 
     serializer_class = MenuItemListSerializer
     filterset_fields = {
-                        'type': ['exact','in', 'isnull'],
+                        'department': ['exact','in', 'isnull'],
     }
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
@@ -96,7 +96,7 @@ class MenuItemList(EditorModelMixin, ModelViewSet, QueryListAPIView):
 
         custom_related_fields = []
 
-        queryset = Subscription.objects.select_related(*custom_related_fields).filter(user = self.request.user).order_by("user__username")
+        queryset = Authorization.objects.select_related(*custom_related_fields).filter(user = self.request.user).order_by("user__username")
 
         query = self.request.query_params.get('search[value]', None)
         if query:

@@ -21,6 +21,7 @@ class UserListSerializer(serializers.Serializer):
     image = serializers.SerializerMethodField()
     image2 = serializers.SerializerMethodField()
     subscription = serializers.SerializerMethodField()
+    authorization = serializers.SerializerMethodField()
     theme = serializers.SerializerMethodField()
     userSourceCompanies = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -33,6 +34,9 @@ class UserListSerializer(serializers.Serializer):
     
     def get_subscription(self, obj):
         return obj.subscription.get_type_display() if obj.subscription else ''
+    
+    def get_authorization(self, obj):
+        return obj.authorization.get_department_display() if obj.authorization else ''
     
     def get_phone_country(self, obj):
         return obj.phone_country.iso2 if obj.phone_country else ''

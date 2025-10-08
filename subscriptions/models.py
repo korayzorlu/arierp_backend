@@ -31,9 +31,12 @@ class Authorization(models.Model):
         ('default', 'Default'),
         ('finans', 'Finans'),
         ('genel_mudurluk', 'Genel Müdürlük'),
+        ('ic_denetim', 'İç Denetim'),
+        ('ic_kontrol', 'İç Kontrol'),
+        ('kredi_risk_izleme', 'Kredi Risk İzleme'),
+        ('kredi_tahsis', 'Kredi Tahsis'),
         ('muhasebe', 'Muhasebe'),
         ('operasyon', 'Operasyon'),
-        ('risk', 'Risk'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, blank=True, related_name="authorization")

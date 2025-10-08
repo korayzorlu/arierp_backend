@@ -2,6 +2,7 @@ from django.contrib.gis.geoip2 import GeoIP2
 from django.conf import settings
 import ldap
 import logging
+import traceback
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -106,5 +107,15 @@ def fetch_ldap_departments_info():
     except Exception as e:
         logging.error(f"LDAP user info error: {e}")
 
-
+def get_ldap_user_department(username):
+    try:
+        data = fetch_ldap_user_info(username)
+        if data and len(data) > 0:
+            department_value = data[0][1]["department"][0]
+            if isinstance(department_value, bytes):
+                department_value = department_value.decode("utf-8")
+            return department_value
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
 

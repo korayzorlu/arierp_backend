@@ -17,3 +17,17 @@ class SubscriptionAdmin(admin.ModelAdmin):
         return obj.user.email if obj.user else ""
     class Meta:
         model = Subscription
+
+@admin.register(Authorization)
+class AuthorizationAdmin(admin.ModelAdmin):
+    list_display = ["user","department"]
+    list_display_links = ["user"]
+    search_fields = ["user__email","department"]
+    list_filter = []
+    inlines = []
+    ordering = ["-pk"]
+    
+    def user(self,obj):
+        return obj.user.email if obj.user else ""
+    class Meta:
+        model = Authorization

@@ -36,9 +36,9 @@ from twilio.rest import Client
 import ldap
 
 from .models import *
-from .utils import get_client_ip,get_client_country,fetch_ldap_user_info
+from .utils import get_client_ip,get_client_country,fetch_ldap_user_info,get_ldap_user_department
 from .tasks import fetch_ldap_user_department
-from subscriptions.models import Subscription
+from subscriptions.models import Subscription,Authorization
 from common.models import Country,Currency
 from companies.models import Company, UserCompany
 
@@ -124,8 +124,25 @@ class UserLoginView(View):
             currency = Currency.objects.filter(countries__iso2=country).first()
             curr = currency.code if currency else ""
 
-            department = fetch_ldap_user_info(user.username)
-            print(department)
+            department = get_ldap_user_department(user.username)
+            matched_choice = None
+            if department:
+                for value, display in Authorization._meta.get_field('department').choices:
+                    if display.lower() == department.lower():
+                        matched_choice = value
+                        break
+            if matched_choice:
+                if not Authorization.objects.filter(user=user).exists():
+                    if user.username in ["koray.zorlu","korayzorlu"]:
+                        matched_choice = "admin"
+                    Authorization.objects.create(user=user, department=matched_choice)
+                else:
+                    auth = Authorization.objects.filter(user=user).first()
+                    if user.username in ["koray.zorlu","korayzorlu"]:
+                        matched_choice = "admin"
+                    auth.department = matched_choice
+                    auth.save()
+            
             user_data = {
                 'id': user.id,
                 'email': user.email,
@@ -138,7 +155,8 @@ class UserLoginView(View):
                 'image': request.build_absolute_uri(user.profile.image.url) if user.profile.image else "",
                 'theme': user.profile.theme,
                 'userSourceCompanies': [],
-                'subscription' : user.subscription.get_type_display() if user.subscription else '',
+                'subscription' : user.subscription.get_type_display(),
+                'authorization' : user.authorization.get_department_display(),
                 'location' : {"country":country,"currency":curr}
             }
             return JsonResponse({'user':user_data, 'theme': user.profile.theme}, status=200)
@@ -230,7 +248,8 @@ class UserRegisterView(View):
                 'profile':user.profile.pk,
                 'theme': user.profile.theme,
                 'userSourceCompanies': [],
-                'subscription' : user.subscription.get_type_display() if user.subscription else ''
+                'subscription' : user.subscription.get_type_display() if user.subscription else '',
+                'authorization' : user.authorization.get_department_display() if user.authorization else ''
             }
         return JsonResponse({'user':user_data}, status=201)
     
@@ -465,6 +484,7 @@ class UserInformationView(LoginRequiredMixin,View):
                 'last_name': user.last_name,
                 'name' : user.get_full_name(),
                 'profile':user.profile.pk,
+                'authorization' : user.authorization.get_department_display(),
                 'image': request.build_absolute_uri(user.profile.image.url) if user.profile.image else "",
         }
 
