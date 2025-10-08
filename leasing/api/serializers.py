@@ -7,7 +7,7 @@ from datetime import date,timedelta,datetime
 from django.utils import timezone
 
 from leasing.models import *
-from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers
+from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
 from companies.models import Company,UserCompany
 from partners.models import Partner
 from contracts.models import WarningNotice
@@ -189,7 +189,6 @@ class BankActivityListSerializer(serializers.Serializer):
     description = serializers.CharField()
     tc_vkn_no = serializers.CharField()
     leases = serializers.SerializerMethodField()
-    processed_amount = serializers.SerializerMethodField()
     is_processed = serializers.BooleanField()
     is_third_person = serializers.BooleanField()
     is_reliable_person = serializers.BooleanField()
@@ -197,13 +196,6 @@ class BankActivityListSerializer(serializers.Serializer):
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
-    
-    def get_processed_amount(self, obj):
-        ba_leases = obj.bank_activity_bank_acitivity_leases.all()
-        total_ba_leases_amount = 0
-        for ba_lease in ba_leases:
-            total_ba_leases_amount += ba_lease.processed_amount
-        return total_ba_leases_amount
     
     def get_leases(self, obj):
         bank_activity_leases = BankActivityLease.objects.select_related().filter(
@@ -213,8 +205,9 @@ class BankActivityListSerializer(serializers.Serializer):
                 Q(lease__lease_status='planlandi') |
                 Q(lease__lease_status='durduruldu')
             )
-        )
+        ).order_by("-lease__overdue_days")
         bank_activity_lease_list = []
+        bank_activity_lease_dict = {"leases": [],"processed_amount": processed_amount(bank_activity_leases) }
         if bank_activity_leases:
             for bank_activity_lease in bank_activity_leases:
                 installments = bank_activity_lease.lease.lease_installments.all()
@@ -247,7 +240,7 @@ class BankActivityListSerializer(serializers.Serializer):
                     .last()
                 )
 
-                bank_activity_lease_list.append({
+                bank_activity_lease_dict["leases"].append({
                     "id" : bank_activity_lease.uuid,
                     "code" : bank_activity_lease.lease.code,
                     "contract" : bank_activity_lease.lease.contract.code if bank_activity_lease.lease.contract else "",
@@ -281,7 +274,8 @@ class BankActivityListSerializer(serializers.Serializer):
                         }
                     ]
                 })
-        return sorted(bank_activity_lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        #return sorted(bank_activity_lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        return bank_activity_lease_dict
     
     def get_created_date(self, obj):
         return obj.created_date.date()
