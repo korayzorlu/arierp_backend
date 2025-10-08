@@ -133,12 +133,12 @@ class UserLoginView(View):
                         break
             if matched_choice:
                 if not Authorization.objects.filter(user=user).exists():
-                    if user.username in ["koray.zorlu","korayzorlu"]:
+                    if user.username in ["koray.zorlu","korayzorlu","tolga.dumantepe"]:
                         matched_choice = "admin"
                     Authorization.objects.create(user=user, department=matched_choice)
                 else:
                     auth = Authorization.objects.filter(user=user).first()
-                    if user.username in ["koray.zorlu","korayzorlu"]:
+                    if user.username in ["koray.zorlu","korayzorlu","tolga.dumantepe"]:
                         matched_choice = "admin"
                     auth.department = matched_choice
                     auth.save()
