@@ -184,7 +184,7 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
             return self._cached_queryset
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        ordering = self.request.query_params.get('ordering') or "transaction_date"
+        ordering = self.request.query_params.get('ordering') or "-transaction_date"
         
         custom_related_fields = ["company"]
 

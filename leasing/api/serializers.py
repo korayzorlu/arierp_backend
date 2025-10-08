@@ -239,6 +239,14 @@ class BankActivityListSerializer(serializers.Serializer):
                     .first()
                 )
 
+                last_payment = (
+                    bank_activity_lease.lease.lease_installments
+                    .filter()
+                    .order_by('sequency')
+                    .values_list('amount', flat=True)
+                    .last()
+                )
+
                 bank_activity_lease_list.append({
                     "id" : bank_activity_lease.uuid,
                     "code" : bank_activity_lease.lease.code,
@@ -253,11 +261,12 @@ class BankActivityListSerializer(serializers.Serializer):
                     "devremulk" : bank_activity_lease.lease.contract.quotation_obj.quick_quotation.devremulk if bank_activity_lease.lease.contract.quotation_obj.quick_quotation else "",
                     "overdue_amount" : bank_activity_lease.lease.overdue_amount,
                     "processed_amount" : bank_activity_lease.processed_amount,
-                    "overdue_days" : overdue_days,
+                    "overdue_days" : bank_activity_lease.lease.overdue_days,
                     "currency" : bank_activity_lease.lease.currency.code if bank_activity_lease.lease.currency else "",
                     "lease_status" : bank_activity_lease.lease.lease_status,
                     "leaseflex_automation" : bank_activity_lease.leaseflex_automation,
                     "next_payment" : first_future_payment,
+                    "last_payment" : last_payment,
                     "overdues" : [
                         {   
                             'id': bank_activity_lease.lease.code,

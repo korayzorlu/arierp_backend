@@ -55,7 +55,7 @@ def format_currency_tr(value):
         return ""
 
 
-def extract_contract_numbers(description):
+def extract_contract_numbersss(description):
     # Parantez içindeki tüm numaraları yakalar
     matches = re.findall(r'sözleşme.*?\(?(\d{4,})[-–]?(\d{0,})\)?', description.lower())
     contract_numbers = []
@@ -405,7 +405,7 @@ def extract_contract_numberss(description):
 
     return list(unique_matches)
 
-def extract_contract_numbers(description):
+def extract_contract_numbersi(description):
     """
     Extract contract numbers from a description string according to the following rules:
     - Contract numbers are usually 4-7 digit numbers.
@@ -453,7 +453,7 @@ def extract_contract_numbers(description):
         matches.append(m.replace('.', ''))
 
     # 4. Find revised contract numbers (e.g., '65789/1')
-    pattern_revised = r'(\d{4,7}/\d{1,2})'
+    pattern_revised = r'(\d{4,6}/\d{1,2})'
     matches += re.findall(pattern_revised, text)
 
     # 5. Find standalone 4-7 digit numbers (not TC, not IBAN, not date)
@@ -471,3 +471,37 @@ def extract_contract_numbers(description):
             result.add(m)
 
     return list(result)
+
+
+def extract_contract_numbers(description):
+    matches = []
+    
+    # normal yazılmış numaralar
+    normal_numbers = re.findall(r'\b\d{4,5}\b', description.lower())
+    for number in normal_numbers:
+        if number not in matches and number not in ['2024', '2025', '2023']:
+            matches.append(number)
+
+    #nokta ile ayrılmış numaralar
+    dot_numbers = re.findall(r'\b\d{1,2}.\d{3,4}\b', description.lower())
+    for number in dot_numbers:
+        if number not in matches:
+            matches.append(number.replace('.',''))
+
+    #/ ile ayrılmış numaralar
+    slash_numbers = re.findall(r'\b\d{4,5}/\d{1,2}\b', description.lower())
+    for number in slash_numbers:
+        if number not in matches:
+            matches.append(number)
+
+    # temizlenmiş ve tekrar edenlerden arındırılmış numaralar
+    result = []
+    seen = set()
+    for match in matches:
+        match = match.strip()
+        if (re.fullmatch(r'\d{4,5}', match) or re.fullmatch(r'\d{4,5}/\d{1,2}', match)) and match not in seen:
+            result.append(match)
+            seen.add(match)
+
+    return result
+    
