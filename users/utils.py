@@ -55,3 +55,56 @@ def fetch_ldap_user_info(username):
         conn.unbind_s()
     except Exception as e:
         logging.error(f"LDAP user info error: {e}")
+
+def fetch_ldap_all_users_info():
+    try:
+        ldap_server = settings.AUTH_LDAP_SERVER_URI
+        bind_dn = settings.AUTH_LDAP_BIND_DN
+        bind_password = settings.AUTH_LDAP_BIND_PASSWORD
+
+        conn = ldap.initialize(ldap_server)
+        conn.simple_bind_s(bind_dn, bind_password)
+        search_base = "OU=ARI,DC=arileasing,DC=local"
+        # Kullanabileceğiniz bazı LDAP filtre örnekleri:
+        # "(objectClass=user)"            -> Tüm kullanıcı nesneleri
+        # "(objectClass=person)"          -> Tüm person nesneleri
+        # "(sAMAccountName=*)"            -> sAMAccountName alanı olan tüm nesneler
+        # "(mail=*)"                      -> E-posta adresi olan kullanıcılar
+        # "(department=IT)"               -> Departmanı IT olan kullanıcılar
+        # "(memberOf=CN=GroupName,OU=Groups,DC=arileasing,DC=local)" -> Belirli bir gruba üye olanlar
+        # "(|(objectClass=user)(objectClass=group))" -> Kullanıcı ve grup nesneleri
+        # "(&(objectClass=user)(department=Sales))"  -> Departmanı Sales olan kullanıcılar
+
+        search_filter = "(objectClass=department)"  # Tüm kullanıcıları getirir
+        result = conn.search_s(search_base, ldap.SCOPE_SUBTREE, search_filter)
+        return result
+    except Exception as e:
+        logging.error(f"LDAP user info error: {e}")
+
+def fetch_ldap_departments_info():
+    try:
+        ldap_server = settings.AUTH_LDAP_SERVER_URI
+        bind_dn = settings.AUTH_LDAP_BIND_DN
+        bind_password = settings.AUTH_LDAP_BIND_PASSWORD
+
+        conn = ldap.initialize(ldap_server)
+        conn.simple_bind_s(bind_dn, bind_password)
+        search_base = "OU=ARI,DC=arileasing,DC=local"
+        search_filter = "(department=*)"
+        result = conn.search_s(search_base, ldap.SCOPE_SUBTREE, search_filter)
+        departments = set()
+        for dn, attrs in result:
+            dept = attrs.get('department')
+            if dept:
+                # department genellikle bytes tipinde olur
+                for d in dept:
+                    if isinstance(d, bytes):
+                        departments.add(d.decode('utf-8'))
+                    else:
+                        departments.add(str(d))
+        return list(departments)
+    except Exception as e:
+        logging.error(f"LDAP user info error: {e}")
+
+
+

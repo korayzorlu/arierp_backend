@@ -36,7 +36,8 @@ from twilio.rest import Client
 import ldap
 
 from .models import *
-from .utils import get_client_ip,get_client_country
+from .utils import get_client_ip,get_client_country,fetch_ldap_user_info
+from .tasks import fetch_ldap_user_department
 from subscriptions.models import Subscription
 from common.models import Country,Currency
 from companies.models import Company, UserCompany
@@ -123,6 +124,8 @@ class UserLoginView(View):
             currency = Currency.objects.filter(countries__iso2=country).first()
             curr = currency.code if currency else ""
 
+            department = fetch_ldap_user_info(user.username)
+            print(department)
             user_data = {
                 'id': user.id,
                 'email': user.email,
