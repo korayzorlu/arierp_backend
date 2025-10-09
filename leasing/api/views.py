@@ -154,7 +154,55 @@ class LeaseList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
-    
+
+class LeaseSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        queryset = Lease.objects.filter(
+            Q(company=active_company.company if active_company else None) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            )
+        )
+
+        status_counts = (
+            queryset
+            .values('lease_status')
+            .annotate(count=Count('id'))
+        )
+
+        # Prepare result as dict for each status
+        result = {
+            'aktiflestirildi': 0,
+            'planlandi': 0,
+            'durduruldu': 0
+        }
+        for item in status_counts:
+            result[item['lease_status']] = item['count']
+
+        return Response(result)
+
 class LeaseUnpageList(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseListSerializer
     filterset_class = LeaseFilter
