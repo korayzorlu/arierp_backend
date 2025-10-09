@@ -233,22 +233,21 @@ class PartnerAdvanceActivityLeaseListSerializer(serializers.Serializer):
     def get_lease(self, obj):
         if obj.lease:
             return {
-                    "id" : obj.lease.uuid,
-                    "code" : obj.lease.code,
-                    "contract" : obj.lease.contract.code if obj.lease.contract else "",
-                    "lease_status" : obj.lease.lease_status,
-                    "partner" : obj.lease.contract.partner.name if obj.lease.contract.partner else "",
-                    "partner_tc" : obj.lease.contract.partner.tc_vkn_no if obj.lease.contract else "",
-                    "partner_crm_code" : obj.lease.contract.partner.crm_code if obj.lease.contract else "",
-                    "project" : obj.lease.contract.project if obj.lease.contract else "",
-                    "block" : obj.lease.contract.quotation_obj.quick_quotation.block if obj.lease.contract.quotation_obj.quick_quotation else "",
-                    "unit" : obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else "",
-                    "overdue_amount" : obj.lease.overdue_amount,
-                    "processed_amount" : obj.lease.processed_amount,
-                    "overdue_days" : obj.lease.overdue_days,
-                    "currency" : obj.lease.currency.code if obj.lease.currency else "",
-                    "lease_status" : obj.lease.lease_status,
-                    "leaseflex_automation" : obj.lease.leaseflex_automation,
+                "id": obj.lease.uuid,
+                "code": obj.lease.code,
+                "contract": obj.lease.contract.code if obj.lease.contract else "",
+                "lease_status": obj.lease.get_lease_status_display() if hasattr(obj.lease, "get_lease_status_display") else obj.lease.lease_status,
+                "partner": obj.lease.contract.partner.name if obj.lease.contract.partner else "",
+                "partner_tc": obj.lease.contract.partner.tc_vkn_no if obj.lease.contract else "",
+                "partner_crm_code": obj.lease.contract.partner.crm_code if obj.lease.contract else "",
+                "project": obj.lease.contract.project if obj.lease.contract else "",
+                "block": obj.lease.contract.quotation_obj.quick_quotation.block if obj.lease.contract.quotation_obj.quick_quotation else "",
+                "unit": obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else "",
+                "overdue_amount": obj.lease.overdue_amount,
+                "processed_amount": obj.lease.processed_amount,
+                "overdue_days": obj.lease.overdue_days,
+                "currency": obj.lease.currency.code if obj.lease.currency else "",
+                "leaseflex_automation": obj.lease.leaseflex_automation,
             }
         else:
             return ""

@@ -396,6 +396,7 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
 
                 if obj:
                     obj.advance_amount = safe_decimal(data.TrnAmountLocal)
+                    obj.save()
                     update_objs.append(obj)
                     update_progress += 1
 

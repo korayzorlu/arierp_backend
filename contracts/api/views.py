@@ -19,6 +19,9 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from datetime import datetime, timedelta
+from django.db.models.functions import TruncDate
+from django.db.models import Count
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -113,8 +116,10 @@ class ContractList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         custom_related_fields = ["company","partner","status"]
-
-        queryset = Contract.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-kof_tan_sozlesmeye_aktarim_tarihi")
+        
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
+        ).order_by("-kof_tan_sozlesmeye_aktarim_tarihi")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -127,6 +132,57 @@ class ContractList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
     
+class ContractSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractListSerializer
+    filterset_class = ContractFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+
+        active_company_uuid = request.query_params.get('active_company')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=29)
+
+        queryset = Contract.objects.filter(
+            company=active_company.company if active_company else None,
+            lop_open_date__date__gte=start_date,
+            lop_open_date__date__lte=today
+        ).order_by('lop_open_date')
+
+        # Group by day and count contracts
+
+        daily_counts = (
+            queryset
+            .annotate(day=TruncDate('lop_open_date'))
+            .values('day')
+            .annotate(count=Count('id'))
+            .order_by('day')
+        )
+
+        # Fill missing days with zero
+        result = []
+        for i in range(30):
+            day = start_date + timedelta(days=i)
+            count = next((item['count'] for item in daily_counts if item['day'] == day), 0)
+            result.append({'day': day, 'count': count})
+
+        return Response(result)
+
 class ContractPaymentList(ModelViewSet, QueryListAPIView):
     serializer_class = ContractPaymentListSerializer
     filterset_class = ContractPaymentFilter
