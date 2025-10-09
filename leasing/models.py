@@ -174,6 +174,7 @@ class BankActivity(models.Model):
 
     leases = models.ManyToManyField(Lease,related_name='lease_bank_activities', blank = True)
 
+    is_certain = models.BooleanField(default=False)
     is_processed = models.BooleanField(default=False)
     is_third_person = models.BooleanField(default=False)
     is_reliable_person = models.BooleanField(default=False)
@@ -229,6 +230,9 @@ class BankActivity(models.Model):
 
                 if matched_partner:
                     matched_contract_numbers = extract_contract_numbers(self.description)
+                    if matched_contract_numbers:
+                        self.is_certain = True
+                        super().save(update_fields=['is_certain'])
                     matched_leases = matched_leases_with_contract_numbers({
                         "partner": matched_partner,
                         "contract_numbers": matched_contract_numbers
@@ -250,6 +254,7 @@ class BankActivity(models.Model):
                     })
                     #print(f"matched_bank_activity_leases: {matched_bank_activity_leases}")
                     remaining_amount = distribute_amount({
+                        "is_certain": self.is_certain,
                         "bank_activity_leases": matched_bank_activity_leases,
                         "total_amount": self.amount
                     })

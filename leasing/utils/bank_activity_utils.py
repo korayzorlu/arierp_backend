@@ -151,8 +151,8 @@ def distribute_amount(params):
         
         next_installment = bank_activity_lease.lease.lease_installments.filter(payment_date__gte=timezone.now().date()).order_by('payment_date').first()
         last_installment = bank_activity_lease.lease.lease_installments.filter().order_by('sequency').last()
-
-        if bank_activity_lease.lease.overdue_days > 0:
+        
+        if not params["is_certain"] and bank_activity_lease.lease.overdue_days > 0:
             bank_activity_lease.processed_amount += min(remaining_amount, bank_activity_lease.lease.overdue_amount)
             bank_activity_lease.leaseflex_automation = True
             bank_activity_lease.save()
