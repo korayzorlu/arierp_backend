@@ -61,7 +61,8 @@ class Lease(models.Model):
         ('kanuni_takibe_alindi', ('Kanuni Takibe Alındı')),
     )
     lease_status = models.CharField(_("Status"), max_length=25, default='aktiflestirildi', choices=LEASE_STATUS_CHOICES, blank=True, null=True)
-
+    lease_status_update_date = models.DateTimeField(_("Lease Status Update Date"), blank=True, null=True)
+    
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_leases")
     musteri_baz_maliyet = models.DecimalField(_("Müşteri Baz Maliyet"), default = 0.00, max_digits=14, decimal_places=2)
     vade = models.IntegerField(_("Vade"), default = 0)
@@ -91,6 +92,7 @@ class Lease(models.Model):
     is_tufe = models.BooleanField(default=False)
     is_musterek = models.BooleanField(default=False)
     bbsn = models.CharField(_("BBSN"), max_length=25, blank=True, null=True)
+    
 
     leaseflex_automation = models.BooleanField(default=False)
     processed_amount = models.DecimalField(_("Processed Amount"), default = 0.00, max_digits=14, decimal_places=2)

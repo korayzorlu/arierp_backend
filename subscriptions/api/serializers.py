@@ -62,11 +62,11 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["finans"], "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
                 #{"type" : "item", "class" : ["finans"], "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
-            {"type" : "sub_menu", "class" : ["kredi_risk_izleme"], "label" : "Risk", "icon" : "report", "items" : [
+            {"type" : "sub_menu", "class" : ["kredi_risk_izleme","operasyon"], "label" : "Risk", "icon" : "report", "items" : [
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Vadesi Geçmişler", "icon" : "policy", "route" : "/risk-partners"},
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "İhtar Çekilenler", "icon" : "policy", "route" : "/warned-risk-partners"},
+                {"type" : "item", "class" : ["kredi_risk_izleme","operasyon"], "label" : "İhtar Çekilenler", "icon" : "policy", "route" : "/warned-risk-partners"},
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
@@ -102,7 +102,7 @@ class MenuItemListSerializer(serializers.Serializer):
             "ic_kontrol": ["default","ic_kontrol"],
             "kredi_risk_izleme": ["default","kredi_risk_izleme"],
             "kredi_tahsis": ["default","kredi_tahsis"],
-            "muhasebe": ["default","muhasebe","operasyon"],
+            "muhasebe": ["default","muhasebe","finans","genel_mudurluk","ic_denetim","ic_kontrol","kredi_risk_izleme","kredi_tahsis","operasyon"],
             "operasyon": ["default","operasyon"],
         }
 

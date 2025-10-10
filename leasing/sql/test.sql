@@ -1,0 +1,2 @@
+SELECT RiskIncludingLastUpdateDate
+FROM LeasingOperationProject

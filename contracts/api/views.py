@@ -268,7 +268,7 @@ class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
             warning_notices
             .annotate(day=TruncDate('process_start_date'))
             .values('day')
-            .annotate(amount=Sum('debit_amount'))
+            .annotate(amount=Sum('debit_amount'),count=Count('id'))
             .order_by('day')
         )
 
@@ -277,7 +277,8 @@ class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
         for i in range(30):
             day = start_date + timedelta(days=i)
             amount = next((item['amount'] for item in warning_notices_daily_amounts if item['day'] == day), 0)
-            result.append({'day': day, 'amount': amount})
+            count = next((item['count'] for item in warning_notices_daily_amounts if item['day'] == day), 0)
+            result.append({'day': day, 'amount': amount, 'count': count})
 
         return Response(result)
 

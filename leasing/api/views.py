@@ -198,10 +198,60 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
         result = {
             'aktiflestirildi': 0,
             'planlandi': 0,
-            'durduruldu': 0
+            'durduruldu': 0,
+            'feshedildi': 0
         }
         for item in status_counts:
             result[item['lease_status']] = item['count']
+
+        return Response(result)
+
+class TerminatedSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=29)
+
+        queryset = Lease.objects.filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lease_status='feshedildi') &
+            Q(lease_status_update_date__gte=start_date) &
+            Q(lease_status_update_date__lte=today)
+        ).order_by('lease_status_update_date')
+
+        lease_daily_counts = (
+            queryset
+            .annotate(day=TruncDate('lease_status_update_date'))
+            .values('day')
+            .annotate(count=Count('id'))
+            .order_by('day')
+        )
+
+        # Prepare result as dict for each status
+        result = []
+        for i in range(30):
+            day = start_date + timedelta(days=i)
+            count = next((item['count'] for item in lease_daily_counts if item['day'] == day), 0)
+            result.append({'day': day, 'count': count})
 
         return Response(result)
 

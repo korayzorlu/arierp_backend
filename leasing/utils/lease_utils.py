@@ -2,6 +2,7 @@ from celery import shared_task
 from core.celery import app
 from django.http import JsonResponse
 from django.db.models import Q
+from django.utils.timezone import make_aware
 
 import pandas as pd
 import io
@@ -10,6 +11,7 @@ from decimal import Decimal
 from datetime import datetime,date
 from collections import defaultdict
 import os
+import traceback
 
 from leasing.models import *
 from leasing.utils.common_utils import get_lease_status_value
@@ -65,6 +67,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.vat = safe_decimal(data.VatRate)
                     obj.activation_date = data.ActivationDate.date() if data.ActivationDate else None
                     obj.lease_status = get_lease_status_value(str(data.RiskIncludingTypeName)) or None
+                    obj.lease_status_update_date = make_aware(data.RiskIncludingLastUpdateDate) if data.RiskIncludingLastUpdateDate else None
                     obj.currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode)
                     obj.musteri_baz_maliyet = safe_decimal(data.CustomerBaseCost)
                     obj.vade = int(data.PaymentCount) or ""
@@ -87,6 +90,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         vat = safe_decimal(data.VatRate),
                         activation_date = data.ActivationDate.date() if data.ActivationDate else None,
                         lease_status = get_lease_status_value(str(data.RiskIncludingTypeName)) or None,
+                        lease_status_update_date = make_aware(data.RiskIncludingLastUpdateDate) if data.RiskIncludingLastUpdateDate else None,
                         currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode),
                         musteri_baz_maliyet = safe_decimal(data.CustomerBaseCost),
                         vade = int(data.PaymentCount) or "",
@@ -108,6 +112,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "vat",
                     "activation_date",
                     "lease_status",
+                    "lease_status_update_date",
                     "currency",
                     "musteri_baz_maliyet",
                     "vade",
@@ -126,6 +131,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         print("--------")
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
 
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass

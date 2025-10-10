@@ -16,6 +16,7 @@ router.register(r'kdv_risk_partners',RiskPartnerKDVList, "kdv_risk_partners_api"
 router.register(r'to_warned_risk_partners',ToWarnedRiskPartnerList, "to_warned_risk_partners_api")
 router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_partners_api")
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
+router.register(r'terminated_summary', TerminatedSummaryList, "terminated_summary_api")
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
 router.register(r'delivery_confirms',DeliveryConfirmList, "delivery_confirms_api")
