@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
 from django.utils.timezone import now
+from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django_filters import CharFilter
@@ -20,6 +21,9 @@ from rest_framework.permissions import AllowAny
 import traceback
 from datetime import datetime,timedelta
 
+from leasing.models import Installment
+from leasing.api.filters import LeaseFilter
+from leasing.api.serializers import LeaseListSerializer
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
@@ -145,3 +149,4 @@ class AmountDebitTransactionList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+

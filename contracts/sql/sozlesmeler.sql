@@ -10,9 +10,11 @@ SELECT c.ContractHeaderId,
     c.Project,
     c.SubStatuteName,
     c.LopOpenDate,
+    CreatedDate,
     c.CurrencyCode
 FROM ContractHeaderLightList c
 LEFT JOIN QuotationLine q ON c.QuotationHeaderId = q.QuotationHeaderId
 WHERE  
     q.Deleted = 0 
 AND q.ItemType = 0
+ORDER BY CreatedDate DESC

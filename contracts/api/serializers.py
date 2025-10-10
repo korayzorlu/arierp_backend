@@ -24,6 +24,7 @@ class ContractListSerializer(serializers.Serializer):
     mkk_tesciline_gonderilecek_mi = serializers.BooleanField()
     kof_tan_sozlesmeye_aktarim_tarihi = serializers.DateTimeField()
     lop_open_date = serializers.DateTimeField()
+    created_date_leaseflex = serializers.DateTimeField()
     is_commercial = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):

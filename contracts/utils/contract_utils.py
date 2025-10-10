@@ -229,6 +229,7 @@ def fetch_contracts_from_leaseflex(company,BATCH_SIZE=1000):
                     # obj.status = statuses_dict.get(normalize(data["SubStatuteName"]))
                     obj.status = statuses_dict.get(str(data.SubStatuteName))
                     obj.lop_open_date = make_aware(data.LopOpenDate) if data.LopOpenDate else None
+                    obj.created_date_leaseflex = make_aware(data.CreatedDate) if data.CreatedDate else None
                     obj.currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode)
                     update_objs.append(obj)
                     update_progress += 1
@@ -247,6 +248,7 @@ def fetch_contracts_from_leaseflex(company,BATCH_SIZE=1000):
                         project = data.Project or "",
                         status = statuses_dict.get(str(data.SubStatuteName)),
                         lop_open_date = make_aware(data.LopOpenDate) if data.LopOpenDate else None,
+                        created_date_leaseflex = make_aware(data.CreatedDate) if data.CreatedDate else None,
                         currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode)
                     ))
                     create_progress += 1
@@ -264,6 +266,7 @@ def fetch_contracts_from_leaseflex(company,BATCH_SIZE=1000):
                     "project",
                     "status",
                     "lop_open_date",
+                    "created_date_leaseflex",
                     "currency",
                 ], batch_size=BATCH_SIZE)
             if create_objs:

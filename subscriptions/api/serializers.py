@@ -102,7 +102,7 @@ class MenuItemListSerializer(serializers.Serializer):
             "ic_kontrol": ["default","ic_kontrol"],
             "kredi_risk_izleme": ["default","kredi_risk_izleme"],
             "kredi_tahsis": ["default","kredi_tahsis"],
-            "muhasebe": ["default","muhasebe"],
+            "muhasebe": ["default","muhasebe","operasyon"],
             "operasyon": ["default","operasyon"],
         }
 

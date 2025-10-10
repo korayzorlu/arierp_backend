@@ -36,6 +36,7 @@ class Contract(models.Model):
     mkk_tesciline_gonderilecek_mi = models.BooleanField(default=False)
     kof_tan_sozlesmeye_aktarim_tarihi = models.DateTimeField(_("Kof'tan Sözleşmeye Aktarım Tarihi"), blank=True, null=True)
     lop_open_date = models.DateTimeField(_("Lop Open Date"), blank=True, null=True)
+    created_date_leaseflex = models.DateTimeField(_("Created Date Leaseflex"), blank=True, null=True)
 
     OPERATION_STATUS_CHOICES = (
         ('tedarikcide', ('Tedarikçide')),

@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
 from django.utils.timezone import now
+from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django_filters import CharFilter
@@ -182,7 +183,8 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(lease_status='durduruldu') |
+                Q(lease_status='feshedildi')
             )
         )
 
@@ -200,6 +202,59 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
         }
         for item in status_counts:
             result[item['lease_status']] = item['count']
+
+        return Response(result)
+
+class InstallmentsSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=29)
+
+        installments = Installment.objects.filter(
+            Q(company=active_company.company if active_company else None) &
+            (
+                Q(lease__lease_status='aktiflestirildi') |
+                Q(lease__lease_status='planlandi') |
+                Q(lease__lease_status='durduruldu')
+            ) &
+            Q(payment_date__gte=start_date) &
+            Q(payment_date__lte=today)
+        ).order_by('payment_date')
+
+        installment_daily_amounts = (
+            installments
+            .annotate(day=TruncDate('payment_date'))
+            .values('day')
+            .annotate(amount=Sum('amount'))
+            .order_by('day')
+        )
+
+        # Prepare result as dict for each status
+        result = []
+        for i in range(30):
+            day = start_date + timedelta(days=i)
+            amount = next((item['amount'] for item in installment_daily_amounts if item['day'] == day), 0)
+            result.append({'day': day, 'amount': amount})
 
         return Response(result)
 

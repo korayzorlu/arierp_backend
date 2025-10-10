@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,F
+from django.db.models import QuerySet, Q,F,Sum
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -160,19 +160,21 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
 
         queryset = Contract.objects.filter(
             company=active_company.company if active_company else None,
-            lop_open_date__date__gte=start_date,
-            lop_open_date__date__lte=today
-        ).order_by('lop_open_date')
-
+            created_date_leaseflex__gte=start_date,
+            created_date_leaseflex__lte=today
+        ).order_by('created_date_leaseflex')
+        
         # Group by day and count contracts
 
         daily_counts = (
             queryset
-            .annotate(day=TruncDate('lop_open_date'))
+            .annotate(day=TruncDate('created_date_leaseflex'))
             .values('day')
             .annotate(count=Count('id'))
             .order_by('day')
         )
+
+        
 
         # Fill missing days with zero
         result = []
@@ -182,6 +184,121 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
             result.append({'day': day, 'count': count})
 
         return Response(result)
+    
+class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractPaymentListSerializer
+    filterset_class = ContractPaymentFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=29)
+
+        contract_paymentss = ContractPayment.objects.filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(date__gte=start_date) &
+            Q(date__lte=today)
+        ).order_by('date')
+
+        contract_payments_daily_amounts = (
+            contract_paymentss
+            .annotate(day=TruncDate('date'))
+            .values('day')
+            .annotate(amount=Sum('credit_amount'))
+            .order_by('day')
+        )
+
+        # Prepare result as dict for each status
+        result = []
+        for i in range(30):
+            day = start_date + timedelta(days=i)
+            amount = next((item['amount'] for item in contract_payments_daily_amounts if item['day'] == day), 0)
+            result.append({'day': day, 'amount': amount})
+
+        return Response(result)
+    
+class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = WarningNoticeListSerializer
+    filterset_class = WarningNoticeFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=29)
+
+        warning_notices = WarningNotice.objects.filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(process_start_date__gte=start_date) &
+            Q(process_start_date__lte=today)
+        ).order_by('process_start_date')
+
+        warning_notices_daily_amounts = (
+            warning_notices
+            .annotate(day=TruncDate('process_start_date'))
+            .values('day')
+            .annotate(amount=Sum('debit_amount'))
+            .order_by('day')
+        )
+
+        # Prepare result as dict for each status
+        result = []
+        for i in range(30):
+            day = start_date + timedelta(days=i)
+            amount = next((item['amount'] for item in warning_notices_daily_amounts if item['day'] == day), 0)
+            result.append({'day': day, 'amount': amount})
+
+        return Response(result)
+
+        # daily_counts = (
+        #     warning_notices
+        #     .annotate(day=TruncDate('process_start_date'))
+        #     .values('day')
+        #     .annotate(count=Count('id'))
+        #     .order_by('day')
+        # )
+
+        
+
+        # # Fill missing days with zero
+        # result = []
+        # for i in range(30):
+        #     day = start_date + timedelta(days=i)
+        #     count = next((item['count'] for item in daily_counts if item['day'] == day), 0)
+        #     result.append({'day': day, 'count': count})
+
+        # return Response(result)
 
 class ContractPaymentList(ModelViewSet, QueryListAPIView):
     serializer_class = ContractPaymentListSerializer
