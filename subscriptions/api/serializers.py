@@ -80,8 +80,8 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Özet", "icon" : "policy", "route" : "/manager-summary"},
             ]},
             {"type" : "sub_menu", "class" : ["muhasebe"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
-                {"type" : "item", "class" : ["muhasebe"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
-                {"type" : "item", "class" : ["muhasebe"], "label" : "Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
+                # {"type" : "item", "class" : ["muhasebe"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
+                {"type" : "item", "class" : ["muhasebe"], "label" : "Genel Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
             ]},
             {"type" : "sub_menu", "class" : ["muhasebe"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["muhasebe"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
