@@ -86,6 +86,7 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
+                {"type" : "item", "class" : ["default"], "label" : "Cari Hesap Hareketleri", "icon" : "price_change", "route" : "/trade-transactions"},
             ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},

@@ -9,6 +9,7 @@ SELECT
     CrmCustomerWithTypesLightTradeRisk.CustomerName AS viewTrnAccountId,
     RATING,
     TrnAccountId,
+    TrnLedgerCode,
     TrnDescription,
     TrnOffsetInfo,
     TrnCurrencyCode,
@@ -103,7 +104,7 @@ WHERE
     AND TrnPostingType <> 461
     -- AND TrnOprContractId = 59061
     -- AND TrnOprProjectId = 61034
-    -- AND TrnOprLeasingOperationPrjId = 93862
+    AND TrnOprLeasingOperationPrjId = 251
     AND (
         lopStatu.LastSubStatuId IN (
             405, 416, 415, 402, 2028, 2057, 2041, 2058, 2059, 408, 2073, 806, 412, 2047, 503, 1026, 1014, 2032, 2072,
@@ -114,6 +115,7 @@ WHERE
     )
     AND TrnPostingGroupId IN (1, 4, 6, 7, 9, 13, 16, 17, 19, 20, 21, 23, 27, 28, 29)
     AND TrnAccountType = 11
+    AND TrnLedgerCode LIKE '151%'
 ORDER BY
     TrnAccountId,
     TrnCurrencyCode,
