@@ -212,7 +212,8 @@ class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
     serializer_class = PartnerAdvanceListSerializer
     filterset_class = PartnerAdvanceFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    ordering_fields = [f.name for f in Partner._meta.get_fields() if hasattr(f, 'name')] + ['trial_balance_amount']
+    ordering = ['name']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -225,7 +226,7 @@ class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
         return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [AllowAny]
-    
+
     def get_queryset(self):
         user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
@@ -244,7 +245,9 @@ class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
                 Q(advance_amount__gt=0) |
                 Q(advance_amount__lt=0)
             )
-        ).order_by('name')
+        ).annotate(
+            trial_balance_amount=Sum(F('partner_trial_balances__total_debit_alternate') - F('partner_trial_balances__total_credit_alternate')) or Decimal('0.00')
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
