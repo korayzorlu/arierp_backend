@@ -14,21 +14,21 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["admin"], "label" : "Firmalar", "icon" : "badge", "route" : "/companies"},
                 {"type" : "item", "class" : ["admin"], "label" : "Davetiyeler", "icon" : "mail", "route" : "/invitations"}
             ]},
-            {"type" : "sub_menu", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Partner", "icon" : "handshake", "items" : [
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Tüketici Müşteriler", "icon" : "handshake", "route" : "/tuketici-partners"},
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Ticari Müşteriler", "icon" : "handshake", "route" : "/ticari-partners"},
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Partner", "icon" : "handshake", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Tüketici Müşteriler", "icon" : "handshake", "route" : "/tuketici-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Ticari Müşteriler", "icon" : "handshake", "route" : "/ticari-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
             ]},
-            {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Projeler", "icon" : "home_work", "route" : "/projects"},
-            {"type" : "sub_menu", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Teklif", "icon" : "unknown", "items" : [
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},
+            {"type" : "item", "class" : ["default"], "label" : "Projeler", "icon" : "home_work", "route" : "/projects"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Teklif", "icon" : "unknown", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
+                {"type" : "item", "class" : ["default"], "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},
             ]},
-            {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Sözleşmeler", "icon" : "description", "route" : "/contracts"},
-            {"type" : "sub_menu", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Kira Planı", "icon" : "unknown", "items" : [
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
-                {"type" : "item", "class" : ["bilgi_islem","finans","operasyon","kredi_tahsis","kredi_risk_izleme"], "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
+            {"type" : "item", "class" : ["default"], "label" : "Sözleşmeler", "icon" : "description", "route" : "/contracts"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Kira Planı", "icon" : "unknown", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
+                {"type" : "item", "class" : ["default"], "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
             ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Gayrimenkul", "icon" : "in_home_mode", "items" : [
             #     {"type" : "item", "class" : ["admin"], "label" : "Tapu Gayrimenkulleri", "icon" : "paid", "route" : "/krs-notifications"},
@@ -37,54 +37,55 @@ class MenuItemListSerializer(serializers.Serializer):
             #     {"type" : "item", "class" : ["admin"], "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
             #     {"type" : "item", "class" : ["admin"], "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
             # ]},
-            {"type" : "sub_menu", "class" : ["kredi_tahsis"], "label" : "Uyum", "icon" : "policy", "items" : [
-                {"type" : "item", "class" : ["kredi_tahsis"], "label" : "Sakıncalı Müşteri Listesi", "icon" : "paid", "route" : "/black-list-persons"},
-                {"type" : "item", "class" : ["kredi_tahsis"], "label" : "Kişi Sorgulama", "icon" : "paid", "route" : "/scan-partners"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Uyum", "icon" : "policy", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Sakıncalı Müşteri Listesi", "icon" : "paid", "route" : "/black-list-persons"},
+                {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama", "icon" : "paid", "route" : "/scan-partners"},
             ]},
-            {"type" : "sub_menu", "class" : ["operasyon"], "label" : "Operasyon", "icon" : "hub", "items" : [
-                {"type" : "item", "class" : ["operasyon"], "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Operasyon", "icon" : "hub", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
                 {"type" : "item", "class" : ["operasyon"], "label" : "Müşteri Avansı İşleme", "icon" : "description", "route" : "/partner-advance-activities"},
-                {"type" : "sub_menu", "class" : ["operasyon"], "label" : "Sözleşme İzleme", "icon" : "description", "items" : [
-                    {"type" : "item", "class" : ["operasyon"], "label" : "Tedarikçide", "icon" : "paid", "route" : "/contract-in-suppliers"},
-                    {"type" : "item", "class" : ["operasyon"], "label" : "İşlemde", "icon" : "paid", "route" : "/contract-in-processs"},
-                    {"type" : "item", "class" : ["operasyon"], "label" : "Arşivde", "icon" : "paid", "route" : "/contract-in-archives"},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Sözleşme İzleme", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Tedarikçide", "icon" : "paid", "route" : "/contract-in-suppliers"},
+                    {"type" : "item", "class" : ["default"], "label" : "İşlemde", "icon" : "paid", "route" : "/contract-in-processs"},
+                    {"type" : "item", "class" : ["default"], "label" : "Arşivde", "icon" : "paid", "route" : "/contract-in-archives"},
                 ]},
             ]},
-            {"type" : "sub_menu", "class" : ["finans"], "label" : "Finans", "icon" : "paid", "items" : [
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "item", "class" : ["finans"], "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
                 {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Hareketleri", "icon" : "description", "route" : "/bank-account-transactions"},
-                {"type" : "item", "class" : ["finans"], "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
+                {"type" : "item", "class" : ["default"], "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
                 {"type" : "item", "class" : ["finans"], "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
-                {"type" : "item", "class" : ["finans"], "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
-                {"type" : "item", "class" : ["finans"], "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
-                {"type" : "item", "class" : ["finans"], "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
-                {"type" : "item", "class" : ["finans"], "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},
-                {"type" : "item", "class" : ["finans"], "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
-                #{"type" : "item", "class" : ["finans"], "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
+                {"type" : "item", "class" : ["default"], "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
+                {"type" : "item", "class" : ["default"], "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
+                {"type" : "item", "class" : ["default"], "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
+                {"type" : "item", "class" : ["default"], "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},
+                {"type" : "item", "class" : ["default"], "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
+                #{"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
-            {"type" : "sub_menu", "class" : ["kredi_risk_izleme","operasyon"], "label" : "Risk", "icon" : "report", "items" : [
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Vadesi Geçmişler", "icon" : "policy", "route" : "/risk-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme","operasyon"], "label" : "İhtar Çekilenler", "icon" : "policy", "route" : "/warned-risk-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Kaporalar", "icon" : "policy", "route" : "/deposit-partners"},
-                #{"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Anlaşmalı Fesihler", "icon" : "policy", "route" : "/agreed-terminated-partners"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Bakiye Temerrüt Raporu", "icon" : "policy", "route" : "/amount-debit-transaction"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
-                {"type" : "item", "class" : ["kredi_risk_izleme"], "label" : "Özet", "icon" : "policy", "route" : "/manager-summary"},
+            {"type" : "sub_menu", "class" : ["default","operasyon"], "label" : "Risk", "icon" : "report", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Risk İzleme(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
+                {"type" : "item", "class" : ["default"], "label" : "Vadesi Geçmişler", "icon" : "policy", "route" : "/risk-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
+                {"type" : "item", "class" : ["default","operasyon"], "label" : "İhtar Çekilenler", "icon" : "policy", "route" : "/warned-risk-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Hatalı/Belirsiz Olanlar", "icon" : "policy", "route" : "/under-reviews"},
+                {"type" : "item", "class" : ["default"], "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Kaporalar", "icon" : "policy", "route" : "/deposit-partners"},
+                #{"type" : "item", "class" : ["default"], "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
+                {"type" : "item", "class" : ["default"], "label" : "Anlaşmalı Fesihler", "icon" : "policy", "route" : "/agreed-terminated-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Bakiye Temerrüt Raporu", "icon" : "policy", "route" : "/amount-debit-transaction"},
+                {"type" : "item", "class" : ["default"], "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
+                {"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "policy", "route" : "/manager-summary"},
             ]},
-            {"type" : "sub_menu", "class" : ["muhasebe"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
-                # {"type" : "item", "class" : ["muhasebe"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
-                {"type" : "item", "class" : ["muhasebe"], "label" : "Genel Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
+                # {"type" : "item", "class" : ["default"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
+                {"type" : "item", "class" : ["default"], "label" : "Genel Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
             ]},
-            {"type" : "sub_menu", "class" : ["muhasebe"], "label" : "Cari", "icon" : "price_change", "items" : [
-                {"type" : "item", "class" : ["muhasebe"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Cari", "icon" : "price_change", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
             ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
