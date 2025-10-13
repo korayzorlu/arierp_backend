@@ -384,7 +384,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff = False) &
-            Q(is_credit=False)
+            Q(is_credit=False) &
+            Q(is_under_review=False)
         ).order_by("-overdue_days")
 
         # if str(filter_params.get('project')) == "diger":
@@ -479,6 +480,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff=True) &
+            Q(is_under_review=False) &
             Q(overdue_amount__gt=100)
         )
 
@@ -501,6 +503,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='durduruldu')
             ) &
             Q(is_kdv_diff=True) &
+            Q(is_under_review=False) &
             Q(overdue_amount__gt=100)
         )
 
@@ -521,7 +524,8 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff=True)
+            Q(is_kdv_diff=True) &
+            Q(is_under_review=False)
         ).order_by("-overdue_days")
 
         lease_list = []
@@ -631,6 +635,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(overdue_days__gt=30) &
             (
                 Q(overdue_31_60__gt=0) |
@@ -663,6 +668,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(overdue_days__gt=30) &
             (
                 Q(overdue_31_60__gt=0) |
@@ -694,6 +700,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(overdue_days__gt=30) &
             (
                 Q(overdue_31_60__gt=0) |
@@ -807,6 +814,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -834,6 +842,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -860,6 +869,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
@@ -986,6 +996,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
@@ -1037,6 +1048,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
@@ -1087,6 +1099,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
