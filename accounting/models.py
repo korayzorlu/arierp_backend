@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 from decimal import Decimal
 
-from .utils import get_or_create_account,create_transaction
+from .utils.common_utils import get_or_create_account,create_transaction
 
 from partners.models import Partner
 from common.models import Currency
@@ -337,3 +337,31 @@ class Payment(models.Model):
             bank_account = get_or_create_account(self.company, self.currency, "bank" if self.receiver == "bank" else "cash")
             payable_txn = create_transaction(self.company, "debit", payable_account, self.amount, self.uuid,description)
             bank_txn = create_transaction(self.company, "credit", bank_account, self.amount, self.uuid,description)
+
+
+class TrialBalance(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="trial_balances")
+    
+    account_id = models.CharField(_("Account ID"), max_length=50, null=True, blank=True)
+    account_code = models.CharField(_("Account Code"), max_length=50, null=True, blank=True)
+    account_code_trim = models.CharField(_("Account Code Trim"), max_length=50, null=True, blank=True)
+    account_name = models.CharField(_("Account Name"), max_length=500, null=True, blank=True)
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_trial_balances", null=True, blank=True)
+    balance_account_type = models.CharField(_("Balance Account Type"), max_length=50, null=True, blank=True)
+    
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_trial_balances")
+    balance_debit = models.DecimalField(_("Balance Debit"), default = 0.00, max_digits=14, decimal_places=2)
+    balance_credit = models.DecimalField(_("Balance Credit"), default = 0.00, max_digits=14, decimal_places=2)
+    total_debit = models.DecimalField(_("Total Debit"), default = 0.00, max_digits=14, decimal_places=2)
+    total_credit = models.DecimalField(_("Total Credit"), default = 0.00, max_digits=14, decimal_places=2)
+    balance_debit_alternate = models.DecimalField(_("Balance Debit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
+    balance_credit_alternate = models.DecimalField(_("Balance Credit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
+    total_debit_alternate = models.DecimalField(_("Total Debit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
+    total_credit_alternate = models.DecimalField(_("Total Credit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.account_code} - {self.account_name}")     

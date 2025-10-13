@@ -23,7 +23,7 @@ def is_valid_payment_data(data):
 
 # model save processes
 def get_or_create_account(company,currency,type,partner=None):
-    from .models import Account,AccountType
+    from accounting.models import Account,AccountType
     filters = {'currency': currency, 'type__code': type}
     if partner:
         filters['partner'] = partner
@@ -41,7 +41,7 @@ def get_or_create_account(company,currency,type,partner=None):
     return account
 
 def create_transaction(company, type, account, amount, ref_uuid, description=""):
-    from .models import Transaction
+    from accounting.models import Transaction
     transaction = Transaction.objects.create(
         company=company,
         type=type,

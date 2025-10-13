@@ -105,6 +105,7 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     advance_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     partner_advance_activity = serializers.SerializerMethodField()
+    trial_balance_amount = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -115,4 +116,7 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
             return True
         else:
             return False
+        
+    def get_trial_balance_amount(self, obj):
+        return obj.partner_trial_balances.aggregate(total=Sum(models.F('total_debit_alternate') - models.F('total_credit_alternate')))['total'] or Decimal('0.00')
     

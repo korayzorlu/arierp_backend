@@ -9,7 +9,7 @@ import json
 from decimal import Decimal
 
 from accounting.models import *
-from accounting.utils import is_valid_account_data, is_valid_invoice_data
+from accounting.utils.common_utils import is_valid_account_data, is_valid_invoice_data
 
 class AddInvoiceView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):

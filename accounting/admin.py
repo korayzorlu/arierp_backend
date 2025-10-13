@@ -115,3 +115,22 @@ class PaymentAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Payment
+
+@admin.register(TrialBalance)
+class TrialBalanceAdmin(admin.ModelAdmin):
+    list_display = ["company","account_code","account_name","currency","total_debit","total_credit"]
+    list_display_links = ["account_name"]
+    search_fields = ["company__name","account_code","account_name","currency__code"]
+    list_filter = []
+    inlines = []
+    ordering = ["account_name"]
+    autocomplete_fields = ["currency"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def currency(self,obj):
+        return obj.currency.code if obj.currency else ""
+    
+    class Meta:
+        model = TrialBalance

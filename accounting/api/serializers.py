@@ -140,3 +140,39 @@ class PaymentListSerializer(serializers.Serializer):
         
         def get_receiver(self, obj):
             return obj.get_receiver_display() if obj.receiver else ''
+        
+class TrialBalanceListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    partner = serializers.SerializerMethodField()
+    currency = serializers.SerializerMethodField()
+    account_id = serializers.CharField()
+    account_code = serializers.CharField()
+    account_code_trim = serializers.CharField()
+    account_name = serializers.CharField()
+    balance_account_type = serializers.CharField()
+    balance_debit = serializers.DecimalField(max_digits=14,decimal_places=2)
+    balance_credit = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_debit = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_credit = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_tl = serializers.SerializerMethodField()
+    balance_debit_alternate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    balance_credit_alternate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_debit_alternate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_credit_alternate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_currency = serializers.SerializerMethodField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_partner(self, obj):
+        return obj.partner.name if obj.partner else ''
+    
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ''
+
+    def get_total_tl(self, obj):
+        return obj.total_debit - obj.total_credit
+
+    def get_total_currency(self, obj):
+        return obj.total_debit_alternate - obj.total_credit_alternate

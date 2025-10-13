@@ -21,3 +21,12 @@ class PaymentFilter(FilterSet):
     
     def filter_partner(self, queryset, partner, value):
         return queryset.filter(partner__uuid = value)
+    
+class TrialBalanceFilter(FilterSet):
+    partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
+    account_code = CharFilter(field_name='account_code', lookup_expr='icontains')
+
+    class Meta:
+        model = TrialBalance
+        fields = ['uuid','account_id','account_code','account_code_trim','account_name']

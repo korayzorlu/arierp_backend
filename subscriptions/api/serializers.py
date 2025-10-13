@@ -81,6 +81,7 @@ class MenuItemListSerializer(serializers.Serializer):
             ]},
             {"type" : "sub_menu", "class" : ["muhasebe"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 {"type" : "item", "class" : ["muhasebe"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
+                {"type" : "item", "class" : ["muhasebe"], "label" : "Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
             ]},
             {"type" : "sub_menu", "class" : ["muhasebe"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["muhasebe"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},

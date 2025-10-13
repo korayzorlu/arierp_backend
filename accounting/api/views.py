@@ -18,6 +18,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from django.db.models import F, ExpressionWrapper, DecimalField
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -275,3 +276,39 @@ class PaymentList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class TrialBalanceList(ModelViewSet, QueryListAPIView):
+    serializer_class = TrialBalanceListSerializer
+    filterset_class = TrialBalanceFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in TrialBalance._meta.get_fields() if hasattr(f, 'name')] + ['total_tl']
+    ordering = ['account_name']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","currency"]
+        
+        queryset = TrialBalance.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None)
+        ).annotate(
+            total_tl=ExpressionWrapper(F('total_debit') - F('total_credit'),output_field=DecimalField())
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["account_id","account_code","account_name","partner__name","balance_account_type","currency__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
