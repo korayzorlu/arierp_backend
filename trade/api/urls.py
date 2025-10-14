@@ -5,6 +5,7 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'trade_accounts',TradeAccountList, "trade_accounts_api")
+router.register(r'trade_transactions',TradeTransactionList, "trade_transactions_api")
 
 urlpatterns = [
     path('',include(router.urls)),

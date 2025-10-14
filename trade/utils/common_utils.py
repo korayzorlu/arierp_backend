@@ -6,7 +6,7 @@ import pandas as pd
 import io
 from decimal import Decimal
 
-from .models import *
+from trade.models import *
 from common.models import Status
 from partners.models import Partner
 
@@ -44,3 +44,4 @@ def import_leases(self, df_json):
         self.process.progress = 100
         self.process.status = "completed"
         self.process.save()
+

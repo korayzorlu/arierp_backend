@@ -10,6 +10,7 @@ from .models import *
 from users.models import User
 from contracts.models import *
 from common.models import Currency
+from .utils.trade_transaction_utils import fetch_trade_transactions_from_leaseflex
 
 @shared_task()
 def transfer_trade_accounts(company):
@@ -71,3 +72,7 @@ def transfer_trade_accounts(company):
             obj.save()
     except Exception as e:
         print(e)
+
+@shared_task()
+def fetch_trade_transactions(company):
+    fetch_trade_transactions_from_leaseflex(company)

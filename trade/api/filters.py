@@ -25,3 +25,16 @@ class TradeAccountFilter(FilterSet):
     
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
+    
+class TradeTransactionFilter(FilterSet):
+    partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
+    lease = CharFilter(field_name='lease__code', lookup_expr='icontains')
+    posting_group_name = CharFilter(field_name='posting_group__name', lookup_expr='icontains')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
+    document_no = CharFilter(field_name='document_no', lookup_expr='icontains')
+
+    class Meta:
+        model = TradeTransaction
+        fields = ['uuid','trade_transaction_id','posting_group_id','posting_group_name','description','document_no','amount_type','due_date','record_date']
+
