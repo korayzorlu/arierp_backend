@@ -54,7 +54,7 @@ class TradeTransaction(models.Model):
     lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_trade_transactions", null=True, blank=True)
     posting_group_id = models.CharField(_("Posting Group ID"), max_length=50, null=True, blank=True)
     posting_group_name = models.CharField(_("Posting Group Name"), max_length=140, null=True, blank=True)
-    description = models.CharField(_("Description"), max_length=500, null=True, blank=True)
+    description = models.CharField(_("Description"), max_length=750, null=True, blank=True)
     document_no = models.CharField(_("Document No"), max_length=140, null=True, blank=True)
     amount_type = models.CharField(_("Amount Type"), max_length=50, null=True, blank=True)
 
