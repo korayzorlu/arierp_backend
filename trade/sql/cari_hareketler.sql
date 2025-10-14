@@ -104,7 +104,7 @@ WHERE
     AND TrnPostingType <> 461
     -- AND TrnOprContractId = 59061
     -- AND TrnOprProjectId = 61034
-    -- AND TrnOprLeasingOperationPrjId = 251
+    AND TrnOprLeasingOperationPrjId = 251
     AND (
         lopStatu.LastSubStatuId IN (
             405, 416, 415, 402, 2028, 2057, 2041, 2058, 2059, 408, 2073, 806, 412, 2047, 503, 1026, 1014, 2032, 2072,
