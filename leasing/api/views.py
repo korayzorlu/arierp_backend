@@ -183,8 +183,7 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu') |
-                Q(lease_status='feshedildi')
+                Q(lease_status='durduruldu')
             ) &
             Q(is_last_project=True)
         )
