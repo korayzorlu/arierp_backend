@@ -242,6 +242,7 @@ class BankActivityListSerializer(serializers.Serializer):
 
                 bank_activity_lease_dict["leases"].append({
                     "id" : bank_activity_lease.uuid,
+                    "lease_id" : bank_activity_lease.lease.uuid,
                     "code" : bank_activity_lease.lease.code,
                     "contract" : bank_activity_lease.lease.contract.code if bank_activity_lease.lease.contract else "",
                     "lease_status" : bank_activity_lease.lease.lease_status,
@@ -256,13 +257,12 @@ class BankActivityListSerializer(serializers.Serializer):
                     "processed_amount" : bank_activity_lease.processed_amount,
                     "overdue_days" : bank_activity_lease.lease.overdue_days,
                     "currency" : bank_activity_lease.lease.currency.code if bank_activity_lease.lease.currency else "",
-                    "lease_status" : bank_activity_lease.lease.lease_status,
                     "leaseflex_automation" : bank_activity_lease.leaseflex_automation,
                     "next_payment" : first_future_payment,
                     "last_payment" : last_payment,
                     "overdues" : [
                         {   
-                            'id': bank_activity_lease.lease.code,
+                            'id': bank_activity_lease.lease.id,
                             'lease': bank_activity_lease.lease.code,
                             'overdue_0_30': bank_activity_lease.lease.overdue_0_30,
                             'overdue_31_60': bank_activity_lease.lease.overdue_31_60,
