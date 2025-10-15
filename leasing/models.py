@@ -187,7 +187,7 @@ class BankActivity(models.Model):
 
 
     def __str__(self):
-        return str(self.amount)
+        return str(self.description)
     
     def save(self, *args, **kwargs):
         with transaction.atomic():

@@ -53,7 +53,7 @@ class BankActivityAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["-updated_date"]
-    autocomplete_fields = ["currency"]
+    autocomplete_fields = ["currency","finmaks_transaction"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
@@ -71,7 +71,8 @@ class BankActivityLeaseAdmin(admin.ModelAdmin):
     search_fields = ["company__name","bank_activity__uuid","lease__code"]
     list_filter = []
     inlines = []
-    ordering = ["created_date"]
+    ordering = ["-created_date"]
+    autocomplete_fields = ["bank_activity","lease"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""

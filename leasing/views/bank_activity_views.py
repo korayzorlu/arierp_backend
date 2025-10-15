@@ -174,9 +174,10 @@ class UpdateBankActivityLeasesView(LoginRequiredMixin,View):
                 Q(lease_status = "aktiflestirildi") |
                 Q(lease_status = "planlandi") |
                 Q(lease_status = "durduruldu")
-            ) 
+            ) &
+            Q(is_last_project = True)
         ).order_by('contract_id', '-activation_date').distinct('contract_id')
-
+        
         if leases:
             for lease in leases:
                 bank_activity_lease = BankActivityLease.objects.create(
