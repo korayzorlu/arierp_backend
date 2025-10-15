@@ -185,7 +185,8 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu') |
                 Q(lease_status='feshedildi')
-            )
+            ) &
+            Q(is_last_project=True)
         )
 
         status_counts = (
