@@ -57,7 +57,11 @@ class TradeTransactionListSerializer(serializers.Serializer):
         objs = TradeTransaction.objects.filter(lease = obj.lease).order_by('posting_group_id','due_date','record_date','trade_transaction_id')
         prev_balance = 0
         prev_tl_balance = 0
+        group = ""
         for o in objs:
+            if group != "" and group != o.posting_group_id:
+                prev_balance = 0
+                prev_tl_balance = 0
             current_amount = o.amount if o.amount_type == '1' else -o.amount
             current_local_amount = o.local_amount if o.amount_type == '1' else -o.local_amount
             prev_balance += current_amount
@@ -67,4 +71,5 @@ class TradeTransactionListSerializer(serializers.Serializer):
                     "balance": prev_balance,
                     "tl_balance": prev_tl_balance
                 }
+            group = o.posting_group_id
 
