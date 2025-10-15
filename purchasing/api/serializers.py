@@ -28,6 +28,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     temerrut = serializers.SerializerMethodField()
     talimat = serializers.SerializerMethodField()
     total_purchase_document_amount = serializers.SerializerMethodField()
+    updated_amount = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -68,6 +69,26 @@ class PurchasePaymentListSerializer(serializers.Serializer):
         purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
 
         return purchase_documents['total_total_amount'] or Decimal("0.00")
+    
+    def get_updated_amount(self, obj):
+        installments = obj.lease.lease_installments.select_related().filter(
+            Q(lease__activation_date__gte=date(2023, 7, 10)) &
+            (
+                Q(lease__vat=Decimal('18.00')) |
+                Q(lease__vat=Decimal('8.00'))
+            )
+        ).order_by('sequency')
+
+        if installments:
+            max_sequency = installments.aggregate(max_seq=Max('sequency'))['max_seq']
+            installments = installments.exclude(sequency=max_sequency)
+            installments_total = installments.select_related().filter().aggregate(
+                total_amount=Sum('amount')
+            )
+        
+            return (installments_total['total_amount']/Decimal('1.18'))*Decimal('1.2') if installments_total['total_amount'] else Decimal('0.00')
+        else:
+            return Decimal('0.00')
         
 class PurchaseDocumentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()

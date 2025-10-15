@@ -40,6 +40,7 @@ class PurchasePaymentFilter(FilterSet):
         else:
             print("hayır yok")
             return queryset.filter()
+        
     
 class PurchaseDocumentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
