@@ -18,6 +18,7 @@ from leasing.utils.lease_utils import fetch_leases_from_leaseflex
 from leasing.utils.installment_utils import fetch_installments_from_leaseflex
 from purchasing.utils.purchase_document_utils import fetch_purchase_documents_from_leaseflex
 from accounting.utils.trial_balance_utils import fetch_trial_balances_from_leaseflex
+from trade.utils.trade_transaction_utils import fetch_trade_transactions_from_leaseflex
 
 @shared_task(bind=True)
 def importData(self,df_json,user_id,app,model_name):
@@ -48,3 +49,4 @@ def fetch_data_from_leaseflex(company):
 def fetch_big_data_from_leaseflex(company):
     fetch_contract_payments_from_leaseflex(company)
     fetch_installments_from_leaseflex(company)
+    fetch_trade_transactions_from_leaseflex(company)
