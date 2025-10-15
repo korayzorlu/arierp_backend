@@ -33,6 +33,7 @@ def export_purchase_payments(self):
         "Alt Statü": [],
         "KDV (%)": [],
         "Toplam Sözleşme Bedeli": [],
+        "KDV Farkı Uygulanmış Sözleşme Bedeli": [],
         "Ödeme Toplam Öncesi": [],
         "Toplam Ödeme Sonrası": [],
         "Yönetim Gideri (KDV Dahil)": [],
@@ -67,7 +68,33 @@ def export_purchase_payments(self):
             else:
                 talimat = obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
             
-            purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+            purchase_documents = obj.lease.lease_purchase_documents.all().aggregate(total_total_amount=Sum('total_amount'))
+
+            #kdv farkı
+            if obj.lease.activation_date and obj.lease.activation_date >= date(2023, 7, 10) and (obj.lease.vat == Decimal('18.00') or obj.lease.vat == Decimal('8.00')):
+                installments = obj.lease.lease_installments.select_related().filter(
+                    Q(lease__activation_date__gte=date(2023, 7, 10)) &
+                    (
+                        Q(lease__vat=Decimal('18.00')) |
+                        Q(lease__vat=Decimal('8.00'))
+                    )
+                ).order_by('sequency')
+
+                kdv_rate = Decimal('1.18') if obj.lease.vat == Decimal('18.00') else Decimal('1.08')
+                kdv_new_rate = Decimal('1.2') if obj.lease.vat == Decimal('18.00') else Decimal('1.1')
+
+                if installments:
+                    max_sequency = installments.aggregate(max_seq=Max('sequency'))['max_seq']
+                    installments = installments.exclude(sequency=max_sequency)
+                    installments_total = installments.select_related().filter().aggregate(
+                        total_amount=Sum('amount')
+                    )
+
+                    updated_amount = (installments_total['total_amount']/kdv_rate)*kdv_new_rate if installments_total['total_amount'] else Decimal('0.00')
+                else:
+                    updated_amount = (obj.total_contract_amount/kdv_rate)*kdv_new_rate
+            else:
+                updated_amount = Decimal('0.00')
 
             data["Sözleşme No"].append(obj.lease.contract.code or "")
             data["Kira Planı"].append(obj.lease.code or "")
@@ -81,6 +108,7 @@ def export_purchase_payments(self):
             data["Alt Statü"].append(obj.lease.status or "")
             data["KDV (%)"].append(obj.lease.vat or Decimal("0.00"))
             data["Toplam Sözleşme Bedeli"].append(obj.total_contract_amount)
+            data["KDV Farkı Uygulanmış Sözleşme Bedeli"].append(updated_amount)
             data["Ödeme Toplam Öncesi"].append(obj.before_total_payment)
             data["Toplam Ödeme Sonrası"].append(obj.after_total_payment)
             data["Yönetim Gideri (KDV Dahil)"].append(obj.managing_expense)
@@ -102,6 +130,7 @@ def export_purchase_payments(self):
     numeric_columns = [
         "KDV (%)",
         "Toplam Sözleşme Bedeli",
+        "KDV Farkı Uygulanmış Sözleşme Bedeli",
         "Ödeme Toplam Öncesi",
         "Toplam Ödeme Sonrası",
         "Yönetim Gideri (KDV Dahil)",

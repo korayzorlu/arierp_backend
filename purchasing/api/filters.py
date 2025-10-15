@@ -23,7 +23,8 @@ class PurchasePaymentFilter(FilterSet):
     project = CharFilter(field_name='lease__contract__project', lookup_expr='icontains')
     status = CharFilter(field_name='lease__status__name', lookup_expr='icontains')
     lease_status = CharFilter(field_name='lease__lease_status', lookup_expr='icontains')
-    status_control = CharFilter(method = 'filter_status_control') 
+    status_control = CharFilter(method = 'filter_status_control')
+    kdv = CharFilter(method = 'filter_kdv')
 
     class Meta:
         model = PurchasePayment
@@ -39,6 +40,18 @@ class PurchasePaymentFilter(FilterSet):
             ).filter(total_purchase_document__gt=0)
         else:
             print("hayır yok")
+            return queryset.filter()
+        
+    def filter_kdv(self, queryset, kdv, value):
+        if value == "true":
+            return queryset.filter(
+                Q(lease__activation_date__gte=date(2023, 7, 10)) &
+                (
+                    Q(lease__vat=Decimal('18.00')) |
+                    Q(lease__vat=Decimal('8.00'))
+                )
+            )
+        else:
             return queryset.filter()
         
     
