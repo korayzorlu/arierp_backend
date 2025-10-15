@@ -8,6 +8,7 @@ SELECT lop.OperationProjectId,
     l.RiskIncludingLastUpdateDate AS RiskIncludingLastUpdateDate,
     lop.CurrencyCode,
     lop.CustomerBaseCost,
+    lop.CustomerBaseCost * 1.1 AS CustomerBaseCostWithIncrease,
     lop.PaymentCount,
     lop.AnnualRate,
     lop.OperationBaseIRR,
@@ -18,3 +19,7 @@ SELECT lop.OperationProjectId,
     lop.CurrentRequest
 FROM LeasingOperationProjectList lop
 LEFT JOIN LeasingOperationProject l ON lop.OperationProjectId = l.OperationProjectId
+-- WHERE
+--     lop.ActivationDate > '2023-07-10'
+--     AND lop.VatRate = '18.00'
+--     AND lop.IS_LAST_PROJECT = 1
