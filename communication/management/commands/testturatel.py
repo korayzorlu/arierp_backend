@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
+from communication.utils.turatel_utils import *
 from contracts.models import *
 from leasing.models import *
 from accounting.tasks import fetch_trial_balances
@@ -27,6 +28,7 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        print("yar")
+        response = get_turatel_send_sms()
+        print(response)
         
         print("done!")

@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     "underwriting",
     "compliance",
     "operation",
+    "communication",
 ]
 
 MIDDLEWARE = [

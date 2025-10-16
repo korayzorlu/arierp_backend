@@ -45,7 +45,7 @@ class PurchasePaymentFilter(FilterSet):
     def filter_kdv(self, queryset, kdv, value):
         if value == "true":
             return queryset.filter(
-                Q(lease__activation_date__gte=date(2023, 7, 10)) &
+                Q(lease__lease_installments__payment_date__gte=date(2023, 7, 10)) &
                 (
                     Q(lease__vat=Decimal('18.00')) |
                     Q(lease__vat=Decimal('8.00'))

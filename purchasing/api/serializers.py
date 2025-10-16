@@ -71,9 +71,12 @@ class PurchasePaymentListSerializer(serializers.Serializer):
         return purchase_documents['total_total_amount'] or Decimal("0.00")
     
     def get_updated_amount(self, obj):
-        if obj.lease.activation_date and obj.lease.activation_date >= date(2023, 7, 10) and (obj.lease.vat == Decimal('18.00') or obj.lease.vat == Decimal('8.00')):
-            installments = obj.lease.lease_installments.select_related().filter(
-                Q(lease__activation_date__gte=date(2023, 7, 10)) &
+        # if obj.lease.activation_date and obj.lease.activation_date >= date(2023, 7, 10) and (obj.lease.vat == Decimal('18.00') or obj.lease.vat == Decimal('8.00')):
+        
+        if (obj.lease.vat == Decimal('18.00') or obj.lease.vat == Decimal('8.00')) and obj.lease.lease_installments.filter(payment_date__gte=date(2023, 7, 10)).exists():
+            next_installments_total = Decimal('0.00')
+            next_installments = obj.lease.lease_installments.select_related().filter(
+                Q(payment_date__gte=date(2023, 7, 10)) &
                 (
                     Q(lease__vat=Decimal('18.00')) |
                     Q(lease__vat=Decimal('8.00'))
@@ -83,16 +86,39 @@ class PurchasePaymentListSerializer(serializers.Serializer):
             kdv_rate = Decimal('1.18') if obj.lease.vat == Decimal('18.00') else Decimal('1.08')
             kdv_new_rate = Decimal('1.2') if obj.lease.vat == Decimal('18.00') else Decimal('1.1')
 
-            if installments:
-                max_sequency = installments.aggregate(max_seq=Max('sequency'))['max_seq']
-                installments = installments.exclude(sequency=max_sequency)
-                installments_total = installments.select_related().filter().aggregate(
+            if next_installments:
+                max_sequency = next_installments.aggregate(max_seq=Max('sequency'))['max_seq']
+                next_installments = next_installments.exclude(sequency=max_sequency)
+                installments_total = next_installments.select_related().filter().aggregate(
                     total_amount=Sum('amount')
                 )
 
-                return (installments_total['total_amount']/kdv_rate)*kdv_new_rate if installments_total['total_amount'] else Decimal('0.00')
+                next_installments_total = (installments_total['total_amount'] / kdv_rate) * kdv_new_rate if installments_total['total_amount'] else Decimal('0.00')
+
+            prev_installments_total = Decimal('0.00')
+            prev_installments = obj.lease.lease_installments.select_related().filter(
+                Q(payment_date__lt=date(2023, 7, 10)) &
+                (
+                    Q(lease__vat=Decimal('18.00')) |
+                    Q(lease__vat=Decimal('8.00'))
+                )
+            ).order_by('sequency')
+
+            kdv_rate = Decimal('1.18') if obj.lease.vat == Decimal('18.00') else Decimal('1.08')
+            kdv_new_rate = Decimal('1.2') if obj.lease.vat == Decimal('18.00') else Decimal('1.1')
+
+            if prev_installments:
+                max_sequency = prev_installments.aggregate(max_seq=Max('sequency'))['max_seq']
+                prev_installments = prev_installments.exclude(sequency=max_sequency)
+                installments_total = prev_installments.select_related().filter().aggregate(
+                    total_amount=Sum('amount')
+                )
+
+                prev_installments_total = installments_total['total_amount'] if installments_total['total_amount'] else Decimal('0.00')
+
+                return prev_installments_total + next_installments_total
             else:
-                return (obj.total_contract_amount/kdv_rate)*kdv_new_rate if obj.total_contract_amount else Decimal('0.00')
+                return obj.total_contract_amount if obj.total_contract_amount else Decimal('0.00')
         else:
             return Decimal('0.00')
 
