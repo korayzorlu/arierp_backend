@@ -20,6 +20,7 @@ from rest_framework.permissions import AllowAny
 
 import traceback
 from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
@@ -156,6 +157,59 @@ class LeaseList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
 
+class ActiveLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = ActiveLeaseListSerializer
+    filterset_class = ActiveLeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn']
+    ordering = ['-activation_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
+
+        queryset = Lease.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            # (
+            #     Q(lease_status='aktiflestirildi') |
+            #     Q(lease_status='planlandi') |
+            #     Q(lease_status='durduruldu') |
+            #     Q(lease_status='feshedildi') |
+            #     Q(lease_status='devredildi')
+            # ) &
+            Q(is_last_project=True)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+
+
 class LeaseSummaryList(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseListSerializer
     filterset_class = LeaseFilter
@@ -183,7 +237,9 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
+                Q(lease_status='durduruldu') |
+                Q(lease_status='feshedildi') |
+                Q(lease_status='devredildi')
             ) &
             Q(is_last_project=True)
         )
@@ -204,6 +260,64 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
         for item in status_counts:
             result[item['lease_status']] = item['count']
 
+        return Response(result)
+    
+class PortfolioSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today()
+        months = []
+        for i in range(12):
+            date = today - relativedelta(months=i)
+            months.append(date.strftime("%m/%Y"))
+
+        months.reverse()
+        
+        result = []
+
+        for month in months:
+            print(f"start date: {datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")} | end date: {(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01")}")
+            queryset = Lease.objects.filter(
+                Q(company=active_company.company if active_company else None) &
+                (
+                    Q(lease_status='aktiflestirildi') |
+                    Q(lease_status='planlandi') |
+                    Q(lease_status='durduruldu') |
+                    Q(lease_status='devredildi')
+                ) &
+                # Q(activation_date__gte=month.split('/')[1] + '-' + month.split('/')[0] + '-01') &
+                Q(activation_date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
+                Q(activation_date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01")) &
+                Q(is_last_project=True)
+            ).annotate(
+                total_installments_amount=Sum('lease_installments__amount')
+            ).aggregate(
+                total_amount=Sum('total_installments_amount')
+            )
+            result.append({
+                'month': month,
+                'total': queryset['total_amount'] or Decimal('0.00')
+            })
+        print(result)
         return Response(result)
 
 class TerminatedSummaryList(ModelViewSet, QueryListAPIView):

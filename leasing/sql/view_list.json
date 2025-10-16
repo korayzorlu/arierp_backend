@@ -1,0 +1,4778 @@
+[
+  {
+    "name": "InventoryStockCodeUnitCyclesList"
+  },
+  {
+    "name": "FoundationMenuNewRecordCompaniesList"
+  },
+  {
+    "name": "ClaimAlienationTrusteeName"
+  },
+  {
+    "name": "ContractNotaryPublicCustomer"
+  },
+  {
+    "name": "FinanceInvestmentDepositsList"
+  },
+  {
+    "name": "InsuranceTrackingUnInsuredList"
+  },
+  {
+    "name": "LOP_INTEREST_SUPPORT_REPORT"
+  },
+  {
+    "name": "CNTNOTARYPUBLICHEADERLIGHT2"
+  },
+  {
+    "name": "TRD_BANK_INT_DAILY_DEBIT_LIST"
+  },
+  {
+    "name": "CreditLeasingPrintSubCommittee"
+  },
+  {
+    "name": "LeasingOperationMERBANList"
+  },
+  {
+    "name": "TradeTransactionAllInvoicesBA"
+  },
+  {
+    "name": "TradeBankOutTransactions"
+  },
+  {
+    "name": "GuaranteeList"
+  },
+  {
+    "name": "CrmIndividualCustomerBankAccountsList"
+  },
+  {
+    "name": "CrmCustomerWithTypes"
+  },
+  {
+    "name": "AriTeklifList"
+  },
+  {
+    "name": "LeasePurchaseCostingDocumentLine"
+  },
+  {
+    "name": "TradePriceDiscountList"
+  },
+  {
+    "name": "JournalSetupEnumsFromToTypeList"
+  },
+  {
+    "name": "TradeSentenceCustInvoiceList"
+  },
+  {
+    "name": "InventoryItem"
+  },
+  {
+    "name": "ContractHeaderLightList"
+  },
+  {
+    "name": "_FndStatuteOrderedQuo_indexed2"
+  },
+  {
+    "name": "TradeAccountBankComboList"
+  },
+  {
+    "name": "FoundationMenuNewRecordCompaniesListWithMainMenuId"
+  },
+  {
+    "name": "CrmIndividualCustomerListWithRPR"
+  },
+  {
+    "name": "ContractNotaryPublicGuarantorCompany"
+  },
+  {
+    "name": "InventoryStockCodeUnitsList"
+  },
+  {
+    "name": "CrmPersonelRelationshipList"
+  },
+  {
+    "name": "CrmActivityTemplateList"
+  },
+  {
+    "name": "InventoryStockCodeList2"
+  },
+  {
+    "name": "TradeAgreementApprovals"
+  },
+  {
+    "name": "CNT_PRNT_VENDOR_FROM_TEPUM"
+  },
+  {
+    "name": "InsuranceUmbrellaContractList"
+  },
+  {
+    "name": "TradeAgreementPriceDiscount"
+  },
+  {
+    "name": "InventoryStockCodePrice"
+  },
+  {
+    "name": "TradeFixedAssetGroupSetupList"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType1LeasingOrFinancing"
+  },
+  {
+    "name": "JournalSetupEnumsVoucherTypeList"
+  },
+  {
+    "name": "CNTGUARANTEETEMPVEHICLELIST"
+  },
+  {
+    "name": "ContractNotaryPublicGuarantorContact"
+  },
+  {
+    "name": "TradeFixedAssetExistsList"
+  },
+  {
+    "name": "TradeLOPOnly1Project"
+  },
+  {
+    "name": "InsuranceWarrantyList"
+  },
+  {
+    "name": "TradePriceDiscountList2"
+  },
+  {
+    "name": "TradeFixedAssetListAll"
+  },
+  {
+    "name": "CrmAddressAllCmpList"
+  },
+  {
+    "name": "LPVendorPaymentList_20161128"
+  },
+  {
+    "name": "InventoryInstructionFileList"
+  },
+  {
+    "name": "BDG_GENERALEXPENSEACCOUNTSLIST"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType3LeasingOrFinancing"
+  },
+  {
+    "name": "TradeTransactionVendorPaymentsList"
+  },
+  {
+    "name": "TradeFixedAssetTransAll"
+  },
+  {
+    "name": "FndStatuteOrderedCnt"
+  },
+  {
+    "name": "LOPCRMLIST"
+  },
+  {
+    "name": "CreditGuaranteeProposedList"
+  },
+  {
+    "name": "ContractNotaryPublicHeader"
+  },
+  {
+    "name": "TEMP_TradeTransactionRiskList"
+  },
+  {
+    "name": "ProcessedLeasingProjects"
+  },
+  {
+    "name": "TradeFixedAssetListCalculation"
+  },
+  {
+    "name": "TradeAgreementWorks"
+  },
+  {
+    "name": "TradeMakeProvisionOrderList"
+  },
+  {
+    "name": "TRADEITEMGROUPWITHVAT"
+  },
+  {
+    "name": "QuotationPrintPayment"
+  },
+  {
+    "name": "AgreementDocumentLineList"
+  },
+  {
+    "name": "JournalDescriptionViaPurchase"
+  },
+  {
+    "name": "InsurancePolicyList"
+  },
+  {
+    "name": "OCLocationListForCombo"
+  },
+  {
+    "name": "InventoryItemLightList"
+  },
+  {
+    "name": "FndStatuteOrderedCrd"
+  },
+  {
+    "name": "OCCompanyTypeList"
+  },
+  {
+    "name": "ApprovalInstallationList"
+  },
+  {
+    "name": "ContractNotaryPublicLOP"
+  },
+  {
+    "name": "TRD_RISK_APPROVAL_LIST"
+  },
+  {
+    "name": "TradeFixedAssetReportListBaseView"
+  },
+  {
+    "name": "TradeChequeAccountBarcodeFileHeaderList"
+  },
+  {
+    "name": "CRMCUSTHUKUKIYAPILISTLI"
+  },
+  {
+    "name": "CRM_CUST_SECTOR_GROUP_LIST"
+  },
+  {
+    "name": "LedgerAccountLayerSums"
+  },
+  {
+    "name": "INVENTORYSTOCKCODELISTWITHVAT"
+  },
+  {
+    "name": "TradeFixedAssetStatusList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerListReport"
+  },
+  {
+    "name": "QuotationLineDetailList"
+  },
+  {
+    "name": "QuotationProjectCharge"
+  },
+  {
+    "name": "LedgerTransactionReportList"
+  },
+  {
+    "name": "OCLocationListForComboPOSTING"
+  },
+  {
+    "name": "FndStatuteOrderedLop"
+  },
+  {
+    "name": "InventoryStockCodeModelList"
+  },
+  {
+    "name": "TaskTasksGroupList"
+  },
+  {
+    "name": "JournalSetupEnumFreeInvoiceListFilterVendors"
+  },
+  {
+    "name": "ContractNotaryPublicOurCompany"
+  },
+  {
+    "name": "CompanyPrintInformation"
+  },
+  {
+    "name": "CRDCRREVENUELIST"
+  },
+  {
+    "name": "TradeFixedAssetTransListAll"
+  },
+  {
+    "name": "CRMADDRESSDEFCOMPANYLIGHTLIST2"
+  },
+  {
+    "name": "TradeFixedAssetTransAllInfo"
+  },
+  {
+    "name": "InventoryItemListForQuarantyWarning"
+  },
+  {
+    "name": "InventoryItemSubItemsShortSummary"
+  },
+  {
+    "name": "LeasePurchaseOrderLineListSelect"
+  },
+  {
+    "name": "InventoryItemListForMenu"
+  },
+  {
+    "name": "CrmCustHukukiYapiList"
+  },
+  {
+    "name": "QUOREFBRANCHGROUPLIST"
+  },
+  {
+    "name": "RPR_LEASING_COM_INC_COLL_LIST"
+  },
+  {
+    "name": "CRDCRREVENUEDETAILLIST"
+  },
+  {
+    "name": "TradeFixedAssetTransListExist"
+  },
+  {
+    "name": "GeneralTableNames"
+  },
+  {
+    "name": "TradeFixedAssetTransList"
+  },
+  {
+    "name": "TradeEInvoiceReport"
+  },
+  {
+    "name": "LeasePurchaseCustomsAgentList"
+  },
+  {
+    "name": "LeasePurchaseLetterOfCreditReport"
+  },
+  {
+    "name": "TradeFixedAssetValuationTMS"
+  },
+  {
+    "name": "PurchaseDocumentLineHeaderList"
+  },
+  {
+    "name": "CrmCustomerLegalStructureList"
+  },
+  {
+    "name": "TradeFixedAssetValuationListForQuery"
+  },
+  {
+    "name": "LeasePurchaseCustomsDirectorateList"
+  },
+  {
+    "name": "CreditLeasingPrintGuaranteeActivated"
+  },
+  {
+    "name": "InventoryStockCodeListForContractHeader"
+  },
+  {
+    "name": "OCLocationTitlesList"
+  },
+  {
+    "name": "TradeFixedAssetValuationVUK"
+  },
+  {
+    "name": "TradeChequeAccountVoucherList"
+  },
+  {
+    "name": "CrmMeetingActivityDefinitionList"
+  },
+  {
+    "name": "TrdFixAstExcludeList"
+  },
+  {
+    "name": "MGR_TEMP_LEDGER_CHECKLIST"
+  },
+  {
+    "name": "LeasePurchaseGtipDefinitionsList"
+  },
+  {
+    "name": "CRM_CUST_SUMMARY_LA_LIST"
+  },
+  {
+    "name": "CreditLeasingPrintGuaranteeShared"
+  },
+  {
+    "name": "InventoryStockExcludeReport"
+  },
+  {
+    "name": "GenCurExchDateOrderListAsc"
+  },
+  {
+    "name": "OCEmployeeList"
+  },
+  {
+    "name": "TrdFixAssetBaseReport"
+  },
+  {
+    "name": "TradeChequeAccountVoucherListRevision"
+  },
+  {
+    "name": "TradeBankList"
+  },
+  {
+    "name": "LopListRpt"
+  },
+  {
+    "name": "TradeLopProtocolsHeader"
+  },
+  {
+    "name": "CRMINSTCUSTOMERWITHBRANCH"
+  },
+  {
+    "name": "TrdFixAstListForLeasing"
+  },
+  {
+    "name": "TrdFixValForAccList"
+  },
+  {
+    "name": "InventoryStockEntryReport"
+  },
+  {
+    "name": "FoundationFailedUserList"
+  },
+  {
+    "name": "GenCurExchDateOrderList"
+  },
+  {
+    "name": "CRDCRBASEREVENUELIST"
+  },
+  {
+    "name": "JournalSetupPostingTypeGroupsList"
+  },
+  {
+    "name": "TrdFixAssetListForInvBase"
+  },
+  {
+    "name": "ReportArchiveHeaderComboList"
+  },
+  {
+    "name": "TradeItemGroupListForCombo"
+  },
+  {
+    "name": "CRMINSTCUSTOMERONLYBRANCH"
+  },
+  {
+    "name": "TrdFixTotalsByGroup"
+  },
+  {
+    "name": "FoundationUnitList"
+  },
+  {
+    "name": "CrmCustomerWithTypesLight"
+  },
+  {
+    "name": "QuotationAggrementCampaignAvaibleList"
+  },
+  {
+    "name": "MERSISQUERYLIST"
+  },
+  {
+    "name": "TRDTRANSALLINVCUSTBS"
+  },
+  {
+    "name": "TradeSentenceCutList"
+  },
+  {
+    "name": "CreditPrintPaymentPlan"
+  },
+  {
+    "name": "TrdFixAssetListForInvoice"
+  },
+  {
+    "name": "CRMADDRESSDEFCNTLIGHT"
+  },
+  {
+    "name": "LOP_AVRGDUEINT_CCBASE"
+  },
+  {
+    "name": "LPCostingValueSums"
+  },
+  {
+    "name": "TradeBankAccList"
+  },
+  {
+    "name": "TrdAccAccountCodeList"
+  },
+  {
+    "name": "LGAccountsBalancesTrn"
+  },
+  {
+    "name": "InventoryItemRequestBagList"
+  },
+  {
+    "name": "TradeUnpaidInvoiceList"
+  },
+  {
+    "name": "QuoEquipmentList2"
+  },
+  {
+    "name": "FinanceCreditAllocationTypes"
+  },
+  {
+    "name": "TrdFixAstAcqList"
+  },
+  {
+    "name": "CNT_PRNT_VENDOR_LP"
+  },
+  {
+    "name": "CRMINSTCUSTWITHCR2"
+  },
+  {
+    "name": "CNT_PROJECT_VALID_LIST"
+  },
+  {
+    "name": "CRD_COMMITTEE_RPT_LIST"
+  },
+  {
+    "name": "LPReportCostClosing"
+  },
+  {
+    "name": "InventoryItemTreeListForBDDK"
+  },
+  {
+    "name": "ContractPrintHeader"
+  },
+  {
+    "name": "ContractPrintProject"
+  },
+  {
+    "name": "LGAccountsBalancesTrnOld"
+  },
+  {
+    "name": "TradeTransactionRiskList"
+  },
+  {
+    "name": "ClaimAlienationMinimumPaymentPerMounth"
+  },
+  {
+    "name": "BankAccountPrint"
+  },
+  {
+    "name": "TrdFixAstList"
+  },
+  {
+    "name": "LeasingOperationProjectCommonList"
+  },
+  {
+    "name": "CNT_PRNT_VENDOR"
+  },
+  {
+    "name": "InsurancePolicyTransferToCustomer"
+  },
+  {
+    "name": "CRMADDRESSDEFCMPLIGHT"
+  },
+  {
+    "name": "CrmMeetingList"
+  },
+  {
+    "name": "LeasingOperationPrintCustomerTransfer"
+  },
+  {
+    "name": "LPReportCostDocumentSummary"
+  },
+  {
+    "name": "TrdFixOutToCustomerList"
+  },
+  {
+    "name": "CRM_QUO_STATUTE_REPORT_LIST"
+  },
+  {
+    "name": "LedgerAccountActiveListTrn"
+  },
+  {
+    "name": "GuaranteeTrusteeAddres"
+  },
+  {
+    "name": "TradeLOPList"
+  },
+  {
+    "name": "TrdFixValues"
+  },
+  {
+    "name": "CreditLeasingPrintLine"
+  },
+  {
+    "name": "QUOREFTYPEALLLIST"
+  },
+  {
+    "name": "GUARANTEE_RPRT_LIST_BY_INSURANCE"
+  },
+  {
+    "name": "TradeCustomerChargeIncludeTypeList"
+  },
+  {
+    "name": "LedgerAccountActiveListTrnOld"
+  },
+  {
+    "name": "TaskCancelReasonRelationList"
+  },
+  {
+    "name": "GuaranteeGradeAndAddres"
+  },
+  {
+    "name": "FoundationUserRoleList"
+  },
+  {
+    "name": "FoundationSystemColumns"
+  },
+  {
+    "name": "SurveyQuestionSubCategoryDefinitionList"
+  },
+  {
+    "name": "TradeFixedAssetList"
+  },
+  {
+    "name": "CrmProhibitedCustomerList"
+  },
+  {
+    "name": "LPEquipmentDetailList"
+  },
+  {
+    "name": "LeasingOperationPaymentRawList"
+  },
+  {
+    "name": "CRM_RATING_DEF_LIST"
+  },
+  {
+    "name": "COLL_POOL_PERSON_LIST"
+  },
+  {
+    "name": "TradeItemGroupListByBDDK"
+  },
+  {
+    "name": "CrmAddressDefaultCmpListNoCommunicationOther"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsList"
+  },
+  {
+    "name": "LGAccountsBalancesCITrn"
+  },
+  {
+    "name": "FoundationDocumentDefinitionList"
+  },
+  {
+    "name": "SurveyQuestionAnswersList"
+  },
+  {
+    "name": "AriKofOnay"
+  },
+  {
+    "name": "FoundationSystemTables"
+  },
+  {
+    "name": "FinanceCreditDefinition_ApprovalForALJ"
+  },
+  {
+    "name": "ContractGuaranteeVoucherList"
+  },
+  {
+    "name": "LPVendorPaymentImportList"
+  },
+  {
+    "name": "FND_USER_PWD_ACTIONS_LIST"
+  },
+  {
+    "name": "GeneralTemplateGuaranteeList"
+  },
+  {
+    "name": "QuotationPrintHeader"
+  },
+  {
+    "name": "InventoryStockEntryReceiptList"
+  },
+  {
+    "name": "LGAccountsBalancesCITrnOld"
+  },
+  {
+    "name": "FoundationDocumentList"
+  },
+  {
+    "name": "INV_STOCK_PROPERTY_LIST"
+  },
+  {
+    "name": "FoundationShemaColumns"
+  },
+  {
+    "name": "FinanceCreditPayment_ApprovalForALJ"
+  },
+  {
+    "name": "CONTRACT_GUARANTOR_LIST"
+  },
+  {
+    "name": "CRMCUSTOMERWITHTYPESLIGHT2"
+  },
+  {
+    "name": "InventoryItemFilesList"
+  },
+  {
+    "name": "JournalSetupEnumFreeInvoiceList"
+  },
+  {
+    "name": "TradeChequeAccountReportView"
+  },
+  {
+    "name": "RPR_QUO_COMBO_LIST"
+  },
+  {
+    "name": "LOPQUOLIST"
+  },
+  {
+    "name": "ContractGuaranteeAllList"
+  },
+  {
+    "name": "FoundationShemaTables"
+  },
+  {
+    "name": "FinanceInvestmentRepurchase__ApprovalForALJ"
+  },
+  {
+    "name": "ContractMKKRegistrationList"
+  },
+  {
+    "name": "FND_OPTION_QUO_LIST"
+  },
+  {
+    "name": "QuotationProductDetailList"
+  },
+  {
+    "name": "TradeChequeAccountItemsReportView"
+  },
+  {
+    "name": "LedgerTransactionTrnList"
+  },
+  {
+    "name": "TradeAccountAndTypeComboListForPayment"
+  },
+  {
+    "name": "LOP_QUO_LIST"
+  },
+  {
+    "name": "TradeAccountAndTypeComboList"
+  },
+  {
+    "name": "TradeTransactionAllInvoicesBA2"
+  },
+  {
+    "name": "QuotationReferenceCommissionCalculationList"
+  },
+  {
+    "name": "FoundationRoleComboList"
+  },
+  {
+    "name": "LOP_QUO_DOUBLE_COUNT_LIST"
+  },
+  {
+    "name": "CreditReferencePrintProject"
+  },
+  {
+    "name": "TradeAccountAndTypeComboCrmList"
+  },
+  {
+    "name": "FoundationUsersTest"
+  },
+  {
+    "name": "QuotationReferenceList"
+  },
+  {
+    "name": "FinanceInvestmentRepurchaseList"
+  },
+  {
+    "name": "TradeFixedAssetListForMenu"
+  },
+  {
+    "name": "InsurancePolicyPrintHeader"
+  },
+  {
+    "name": "TradePrjActivateList"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationLinesView"
+  },
+  {
+    "name": "BDG_BUDGETCOLLECTINGFIRSTYEAR"
+  },
+  {
+    "name": "InventoryPurchaseOrderList"
+  },
+  {
+    "name": "InventoryProductTemplateLinesList"
+  },
+  {
+    "name": "FinanceSwapList"
+  },
+  {
+    "name": "LeasePurchaseCostingDocumentLineFIN"
+  },
+  {
+    "name": "BDG_BUDGETCOLLECTINGSECONDYEAR"
+  },
+  {
+    "name": "LedgerAccountListForCombo"
+  },
+  {
+    "name": "LeasingOperationPrintPaymentPlan"
+  },
+  {
+    "name": "FoundationShemaTableColumns"
+  },
+  {
+    "name": "LeasingOperationProjectLightList"
+  },
+  {
+    "name": "CreditHeaderNotApprovedList"
+  },
+  {
+    "name": "TRDVENDORINVOICEPAYMENTS"
+  },
+  {
+    "name": "FoundationUserComboList"
+  },
+  {
+    "name": "BDG_BUDGETCOLLECTINGTHIRDYEAR"
+  },
+  {
+    "name": "CreditGuaranteeMortgageList"
+  },
+  {
+    "name": "TradeSectorItemMatchList"
+  },
+  {
+    "name": "CrmAccountListWithRelationship"
+  },
+  {
+    "name": "LedgerParametersMakeProvisionList"
+  },
+  {
+    "name": "GUARANTOR_LIST_WITH_TYPE"
+  },
+  {
+    "name": "FinanceBankToBankTransferList"
+  },
+  {
+    "name": "InventoryStockCodeListWithTreePath"
+  },
+  {
+    "name": "CrmInstitutionalCustomerPartnershipIndividualList"
+  },
+  {
+    "name": "TrdGuaranteePawnList"
+  },
+  {
+    "name": "ALGO_GUARANTEE_LOP"
+  },
+  {
+    "name": "BDG_BUDGETPAYMENTFIRSTYEAR"
+  },
+  {
+    "name": "LeasePurchaseDocumentLineList"
+  },
+  {
+    "name": "OCLocationTitleHistoryList"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationList"
+  },
+  {
+    "name": "JournalHeaderTemplateList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerPartnershipInstitutionalList"
+  },
+  {
+    "name": "CRMCUSTCOMMONDATAPROV"
+  },
+  {
+    "name": "CrmCustomerRepresentativeList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerTypeView"
+  },
+  {
+    "name": "InventoryUpKeepRelationProposingDateList"
+  },
+  {
+    "name": "BDG_BUDGETPAYMENTSECONDYEAR"
+  },
+  {
+    "name": "CreditReferencePrintLine"
+  },
+  {
+    "name": "_VakifBankListeView"
+  },
+  {
+    "name": "crmcustomersectorgrouplist"
+  },
+  {
+    "name": "BDG_BUDGETPAYMENTTHIRDYEAR"
+  },
+  {
+    "name": "OCLocationIntegrationList"
+  },
+  {
+    "name": "TradeFixedAssetValueModelList"
+  },
+  {
+    "name": "TradePriceDiscountView"
+  },
+  {
+    "name": "JournalSetupPostingTypesList"
+  },
+  {
+    "name": "InventoryUpKeepLaborDefinitionsList"
+  },
+  {
+    "name": "LeasingOperationProjectPartList"
+  },
+  {
+    "name": "PurchaseFormTemplateList"
+  },
+  {
+    "name": "TRADETRANSACTIONLEASELIST"
+  },
+  {
+    "name": "CUS_BASE_MANAGER_SUMMARY_RPT_LIST"
+  },
+  {
+    "name": "TradeTransactionInvoiceInputList"
+  },
+  {
+    "name": "BDG_BUDGETCOLLECTINGFIRSTYEARSUMMARY"
+  },
+  {
+    "name": "InventoryItemStockCodesRelationStockCodeList"
+  },
+  {
+    "name": "LPDocumentsMDReportMList"
+  },
+  {
+    "name": "LPCustomerAdvanceList"
+  },
+  {
+    "name": "CrmActivitySubCategoryList"
+  },
+  {
+    "name": "LopEquipmentTransferSellList"
+  },
+  {
+    "name": "CrmCityList"
+  },
+  {
+    "name": "CreditFAQuestionList"
+  },
+  {
+    "name": "TradeCustomerActiveGuarantee"
+  },
+  {
+    "name": "TRDVENDORINVOICES"
+  },
+  {
+    "name": "ContractHeaderComboList"
+  },
+  {
+    "name": "MGR_TEMPCHECK_CHEQUECOUNTER"
+  },
+  {
+    "name": "TRDTRANSALLINVCRMSUM"
+  },
+  {
+    "name": "BDG_BUDGETCOLLECTINGSECONDYEARSUMMARY"
+  },
+  {
+    "name": "FinanceParameterCollectionType"
+  },
+  {
+    "name": "TradeSectorList"
+  },
+  {
+    "name": "TaskCheckListQuestionList"
+  },
+  {
+    "name": "CrmAddressCompanyList"
+  },
+  {
+    "name": "TradeAgreementListViaUser"
+  },
+  {
+    "name": "InventoryEquipmentEntryListForExclude"
+  },
+  {
+    "name": "CreditLeasingPrintFA"
+  },
+  {
+    "name": "FinanceCCSwapPaymentList"
+  },
+  {
+    "name": "LPVENDORINVOICESLIST"
+  },
+  {
+    "name": "TradeRiskContractPrint"
+  },
+  {
+    "name": "TradeInterestFloatingLineList"
+  },
+  {
+    "name": "TRADETRANSACTIONALLINVOICESCRM"
+  },
+  {
+    "name": "LOP_INCITE_LIST"
+  },
+  {
+    "name": "BDG_BUDGETCOLLECTINGTHIRDYEARSUMMARY"
+  },
+  {
+    "name": "FND_BACKGROUND_WORKS_LIST"
+  },
+  {
+    "name": "InventoryItemExpendituresList"
+  },
+  {
+    "name": "FinanceParameterCreditGroupType"
+  },
+  {
+    "name": "CrmAddressContactList"
+  },
+  {
+    "name": "TradeLOPRevisions"
+  },
+  {
+    "name": "TRADE_LEDGER_SELECT_RECONCILATION_VIEW"
+  },
+  {
+    "name": "TradeRiskDocumentPrint"
+  },
+  {
+    "name": "DM_CRM_LIST_2"
+  },
+  {
+    "name": "IncomingRequestList"
+  },
+  {
+    "name": "QuotationProjectList"
+  },
+  {
+    "name": "FoundationRecordOperationWatchList"
+  },
+  {
+    "name": "BDG_BUDGETPAYMENTFIRSTYEARSUMMARY"
+  },
+  {
+    "name": "LeasingOperationStatuteData"
+  },
+  {
+    "name": "TaskTasksList"
+  },
+  {
+    "name": "QuoRediscountRapListAri"
+  },
+  {
+    "name": "CreditIEHeaderList"
+  },
+  {
+    "name": "InventoryItemDetailControlList"
+  },
+  {
+    "name": "TradeOverdueInterestRateList"
+  },
+  {
+    "name": "APP_APPROVAL_MAIL_LIST"
+  },
+  {
+    "name": "ADA_CUSTOMER_INFO"
+  },
+  {
+    "name": "InventoryStockCodeListOnlySpareItem"
+  },
+  {
+    "name": "TRADE_LEDGER_SELECT_RECONCILATION_VIEW_OLD"
+  },
+  {
+    "name": "InventoryEquipmentEntryGiveBacksList"
+  },
+  {
+    "name": "crminstcustomercntactive"
+  },
+  {
+    "name": "TradeRiskHeaderAssigningACallPersonList"
+  },
+  {
+    "name": "LedgerPeriodDateSortList"
+  },
+  {
+    "name": "FoundationStatuteMenuList"
+  },
+  {
+    "name": "CustomerRiskInstrumentsPrint"
+  },
+  {
+    "name": "CrmNotaryPublicListForCombo"
+  },
+  {
+    "name": "LedgerTransactionCredit"
+  },
+  {
+    "name": "BDG_BUDGETPAYMENTSECONDYEARSUMMARY"
+  },
+  {
+    "name": "QuoRediscountRapListAri_20230807"
+  },
+  {
+    "name": "InventoryStockCodeCommonList"
+  },
+  {
+    "name": "FinanceParameterDueType"
+  },
+  {
+    "name": "ContractVendorList"
+  },
+  {
+    "name": "LeasingOperationFormerLop"
+  },
+  {
+    "name": "APP_CATEGORY_PROPERTY_LIST"
+  },
+  {
+    "name": "OCLocationComboList"
+  },
+  {
+    "name": "InventoryUpKeepStockReservesList"
+  },
+  {
+    "name": "ApprovalApprovalsMailContentList"
+  },
+  {
+    "name": "ProcessFlowWorkSheetDefinitionList"
+  },
+  {
+    "name": "CreditLeasingPrintProject"
+  },
+  {
+    "name": "LedgerTransactionDebit"
+  },
+  {
+    "name": "BDG_BUDGETPAYMENTTHIRDYEARSUMMARY"
+  },
+  {
+    "name": "TradeVendorAdvanceList"
+  },
+  {
+    "name": "LOPRevisionJoinMainList_new"
+  },
+  {
+    "name": "FinanceParameterForexTransactionType"
+  },
+  {
+    "name": "CRM_CUST_AND_VENDOR_LIST"
+  },
+  {
+    "name": "FinanceCCSwapList"
+  },
+  {
+    "name": "LOPRevisionJoinList"
+  },
+  {
+    "name": "APP_CATEGORY_LIST"
+  },
+  {
+    "name": "CrmCityDistrictList"
+  },
+  {
+    "name": "QuotationCustomerTypeWithNullRow"
+  },
+  {
+    "name": "DLLBaselAgreementInterest"
+  },
+  {
+    "name": "InsuranceCompanyWillGetPaidTotalReportList"
+  },
+  {
+    "name": "CRM_CUST_GROUP_SUMMARY_LA_LIST"
+  },
+  {
+    "name": "LedgerTransactionUnion"
+  },
+  {
+    "name": "BDG_GENERALCOLLECTINGFINANCE"
+  },
+  {
+    "name": "ContractPrintHeaderNotResidentialFin"
+  },
+  {
+    "name": "FoundationRecordRelatedCompaniesList"
+  },
+  {
+    "name": "CRM_CUST_REFRNCE_LIST"
+  },
+  {
+    "name": "InventoryEquipmentExcludeList"
+  },
+  {
+    "name": "APP_APPROVAL_HISTORY_ALL_LIST"
+  },
+  {
+    "name": "TradeInterestFloatingList"
+  },
+  {
+    "name": "DLLBaselAgreementPaymentSchedule"
+  },
+  {
+    "name": "InsurancePolicyEquipmentList"
+  },
+  {
+    "name": "LeasePurchaseCostingPaymentList"
+  },
+  {
+    "name": "BDG_GENERALPAYMENTFINANCE"
+  },
+  {
+    "name": "ContractPrintAffidavitOfInsurance"
+  },
+  {
+    "name": "TradeTransactionAllInvoicesBS"
+  },
+  {
+    "name": "FinanceParameterLimitType"
+  },
+  {
+    "name": "CrmAddressCompanyListReport"
+  },
+  {
+    "name": "LedgerVoucherTradeTransactionReportList"
+  },
+  {
+    "name": "LopLedgerList"
+  },
+  {
+    "name": "ContractPrintGuaranteeProposed"
+  },
+  {
+    "name": "BDG_ACTIVEBUDGET"
+  },
+  {
+    "name": "FinanceParameterPeriodType"
+  },
+  {
+    "name": "CrmAddressDefaultCompanyLightList"
+  },
+  {
+    "name": "APP_APPROVAL_HISTORY"
+  },
+  {
+    "name": "UpdateLedgerAccountEval"
+  },
+  {
+    "name": "LPVENDORINVOICEPAYMENTSLIST"
+  },
+  {
+    "name": "QUOTATIONPROJECTPAYMENTLIST"
+  },
+  {
+    "name": "LopActivationDateList"
+  },
+  {
+    "name": "TradeLOPListAddPlaningDebit_QuoEquipmentList"
+  },
+  {
+    "name": "CNTGUARANTEETEPMLIST"
+  },
+  {
+    "name": "FinanceParameterPeriodUnit"
+  },
+  {
+    "name": "INV_PROPERTY_CONFIGURATION_VALUE_LIST"
+  },
+  {
+    "name": "CrmAddressLocationList"
+  },
+  {
+    "name": "LOPCOMMONREPORTDATAPROVIDER"
+  },
+  {
+    "name": "FoundationMenuColumns"
+  },
+  {
+    "name": "AriBarkodSorgu"
+  },
+  {
+    "name": "TradeChequeAccountVouchersPayrollCreated"
+  },
+  {
+    "name": "BDG_DRAFTBUDGET"
+  },
+  {
+    "name": "FinanceCreditAllocationReport"
+  },
+  {
+    "name": "TradeItemGroupList"
+  },
+  {
+    "name": "FinanceParameterRepurchaseType"
+  },
+  {
+    "name": "INV_PROPERTY_LIST"
+  },
+  {
+    "name": "CrmCommissionBranchCompanyList"
+  },
+  {
+    "name": "JournalInformationList"
+  },
+  {
+    "name": "CrmMeetingWeeklyPlanList"
+  },
+  {
+    "name": "CrmDistrictQuarterList"
+  },
+  {
+    "name": "InventoryWayBillList"
+  },
+  {
+    "name": "CrmVendorListForCombo"
+  },
+  {
+    "name": "ApprovalApprovalsApproverDetail"
+  },
+  {
+    "name": "CREDITQUOTATIONHEADERLIST"
+  },
+  {
+    "name": "CreditGuarantorList"
+  },
+  {
+    "name": "TradeSectorCompany"
+  },
+  {
+    "name": "CrmGeneralCompanyBusinessRelationshipList"
+  },
+  {
+    "name": "BDG_GENERATEDBUDGETS"
+  },
+  {
+    "name": "CHKANSWERGROUPLINELIST"
+  },
+  {
+    "name": "CpiRatesList"
+  },
+  {
+    "name": "InventoryStockCodeList"
+  },
+  {
+    "name": "LeasinOperationProjectChildList"
+  },
+  {
+    "name": "ContractPaymentPlanList"
+  },
+  {
+    "name": "InventoryInstructionUpKeepWithUpKeepPeriod"
+  },
+  {
+    "name": "CrmAddressDefaultCmpListNoCommunication"
+  },
+  {
+    "name": "FinanceParameterSourceType"
+  },
+  {
+    "name": "PROPERTY_CONFIGURATION_FILTER_LIST"
+  },
+  {
+    "name": "CrmCommissionVendorCompanyList"
+  },
+  {
+    "name": "TradeTriggerMergeList"
+  },
+  {
+    "name": "JournalSetupEnumCreditExpenseList"
+  },
+  {
+    "name": "InventoryItemRequestListForPurchaseRequest"
+  },
+  {
+    "name": "CrOfPortfolioBaseTradingList"
+  },
+  {
+    "name": "DM_CRM_INDIVIDUAL"
+  },
+  {
+    "name": "LeasingOperationItemGroupList"
+  },
+  {
+    "name": "CRM_CUST_GROUP_LIST"
+  },
+  {
+    "name": "BDG_BUDGETSKINDSLIST"
+  },
+  {
+    "name": "CHKCHECKERQUEANSGRPREGISTERLI"
+  },
+  {
+    "name": "LedgerAccountListTrn"
+  },
+  {
+    "name": "FoundationTechnicalPartsList"
+  },
+  {
+    "name": "FinanceParameterTransactionLayer"
+  },
+  {
+    "name": "CrmNoBranchCompanyList"
+  },
+  {
+    "name": "SurveyQuestionsCallStartQuestionsList"
+  },
+  {
+    "name": "LOPPRODUCTIVITYVIEW"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_LIST"
+  },
+  {
+    "name": "InventoryStockCodeComboList"
+  },
+  {
+    "name": "QUO_PROJECT_ORIGINAL_PP_LIST"
+  },
+  {
+    "name": "CrmMeetingRelationList"
+  },
+  {
+    "name": "CHKCHECKERTESTCONDITIONLIST"
+  },
+  {
+    "name": "ContractMKKItemGroupList"
+  },
+  {
+    "name": "CreditFAQuestionGroupFAList"
+  },
+  {
+    "name": "CrmCustomerListWithCR"
+  },
+  {
+    "name": "LedgerAccountListTrnOld"
+  },
+  {
+    "name": "FinanceParameterYearDayType"
+  },
+  {
+    "name": "FinanceCreditPaymentReport"
+  },
+  {
+    "name": "CRM_CUST_LIST_COMBO_BY_RLTSHP"
+  },
+  {
+    "name": "CrmNotaryPublicList"
+  },
+  {
+    "name": "QuotationTemplateList"
+  },
+  {
+    "name": "APP_APPROVAL_LINE_LIST"
+  },
+  {
+    "name": "ContractListPaymentReportList"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_LIST2"
+  },
+  {
+    "name": "CRM_CUST_CNT_DETAIL_LIST"
+  },
+  {
+    "name": "InventoryDocumentHeaderList"
+  },
+  {
+    "name": "CLA_LIMIT_UTILIZATION"
+  },
+  {
+    "name": "CHKQUESTIONGROUPLINELIST"
+  },
+  {
+    "name": "CreditFAQuestionGroupMeetingList"
+  },
+  {
+    "name": "TRD_MASTER_LOP_COMBOLIST"
+  },
+  {
+    "name": "CntLprProjectHeaderList"
+  },
+  {
+    "name": "TradeFixedAssetValuationList"
+  },
+  {
+    "name": "LPTradePaymentList"
+  },
+  {
+    "name": "CrmCustByRelListCombo"
+  },
+  {
+    "name": "CrmRelationship1List"
+  },
+  {
+    "name": "JournalSetupEnumLumpPaymentList"
+  },
+  {
+    "name": "FoundationUserListForCombo"
+  },
+  {
+    "name": "InventoryEquipmentEntryListMenu"
+  },
+  {
+    "name": "CREDITHEADERGUARANTEELIST"
+  },
+  {
+    "name": "FinanceInterestRateSwapList"
+  },
+  {
+    "name": "TrdVolContractSpecificReport"
+  },
+  {
+    "name": "PurchaseDocumentHeaderList"
+  },
+  {
+    "name": "ContractOurCompanyLastAuthorized"
+  },
+  {
+    "name": "InventoryItemListForCombo"
+  },
+  {
+    "name": "CreditFAQuestionMeetingList"
+  },
+  {
+    "name": "LGAccountsBalancesWithoutBalance"
+  },
+  {
+    "name": "CrmCustomerListCombo"
+  },
+  {
+    "name": "INV_PROPERTY_CONFIGURATION_LIST"
+  },
+  {
+    "name": "CrmSectorDefinitionAssociationList"
+  },
+  {
+    "name": "CrmQuarterVillageList"
+  },
+  {
+    "name": "CRM_INTEGRATION_USERS_LIST"
+  },
+  {
+    "name": "FinanceFXSwapList"
+  },
+  {
+    "name": "APP_CATEGORY_STEP_LINE_LIST"
+  },
+  {
+    "name": "InsuranceCompanyWillGetPaidDetailReportList"
+  },
+  {
+    "name": "TradeCrmList"
+  },
+  {
+    "name": "ALGO_CRM"
+  },
+  {
+    "name": "FinanceCreditLimitRiskReport"
+  },
+  {
+    "name": "PM_CRM_LIST"
+  },
+  {
+    "name": "LedgerVoucherBAList"
+  },
+  {
+    "name": "CreditFAQuestionFAList"
+  },
+  {
+    "name": "FinanceCreditPoolList"
+  },
+  {
+    "name": "QUOTATIONPORTFOYREPORTLIST"
+  },
+  {
+    "name": "CrmCustomerListComboWithMBB"
+  },
+  {
+    "name": "CrmVendorCommissionBranchCompanyList"
+  },
+  {
+    "name": "FoundationUserList"
+  },
+  {
+    "name": "ContractControlList"
+  },
+  {
+    "name": "AgreementDocumentHeaderList"
+  },
+  {
+    "name": "LopTurnoverReportList"
+  },
+  {
+    "name": "PurchaseProductRequest"
+  },
+  {
+    "name": "CrmVendorLightList"
+  },
+  {
+    "name": "CrmInformationList"
+  },
+  {
+    "name": "PM_CRM_ADDRESS_LIST"
+  },
+  {
+    "name": "TradeCrmGroupList"
+  },
+  {
+    "name": "RPR_INTEREST_LIST"
+  },
+  {
+    "name": "QuotationHeaderLightList"
+  },
+  {
+    "name": "CrmIMSBrickHistoryList"
+  },
+  {
+    "name": "QuotationHeaderList"
+  },
+  {
+    "name": "FinanceCreditProfileLineList"
+  },
+  {
+    "name": "CREDITPORTFOYREPORTLIST"
+  },
+  {
+    "name": "CrmVendorInsuranceLightList"
+  },
+  {
+    "name": "AriFtsSozlesme"
+  },
+  {
+    "name": "LedgerAccountActiveList"
+  },
+  {
+    "name": "LeasingOperationPrintRevision"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderList"
+  },
+  {
+    "name": "FND_COMMENTS_SIMPLE_LIST_MOBILE"
+  },
+  {
+    "name": "CrmInformationListApproved"
+  },
+  {
+    "name": "PM_CRM_CONTACT_LIST"
+  },
+  {
+    "name": "TRDCL_LOP_ERRORREVISION"
+  },
+  {
+    "name": "CrdLeasingProjectActiveList"
+  },
+  {
+    "name": "FoundationMessagesList"
+  },
+  {
+    "name": "FinanceCreditTransactionList"
+  },
+  {
+    "name": "CONTRACTPORTFOYREPORTLIST"
+  },
+  {
+    "name": "QuoInterestListAll"
+  },
+  {
+    "name": "CrmVendorList"
+  },
+  {
+    "name": "LeasingOperationProjectListWithStopped"
+  },
+  {
+    "name": "FoundationUsersWithEmployeeInfo"
+  },
+  {
+    "name": "TradeAccountsActiveList"
+  },
+  {
+    "name": "LeasingOperationPrintCustomerChanges"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderPrint"
+  },
+  {
+    "name": "BudgetItemGroupList"
+  },
+  {
+    "name": "FoundationDealerUserList"
+  },
+  {
+    "name": "PM_CRM_BANK_LIST"
+  },
+  {
+    "name": "TRDCL_LOP_NONEMULTDELETE"
+  },
+  {
+    "name": "FinanceInvestmentForexChange"
+  },
+  {
+    "name": "RPR_FREE_PART_PARCEL_LIST"
+  },
+  {
+    "name": "FoundationMessagesRelatedUsersList"
+  },
+  {
+    "name": "FinanceCreditTypeList"
+  },
+  {
+    "name": "LOPPORTFOYREPORTLIST"
+  },
+  {
+    "name": "QuotationInterestRateList"
+  },
+  {
+    "name": "CrmVendorListForPopupcombo"
+  },
+  {
+    "name": "CRM_CDD_REPORT"
+  },
+  {
+    "name": "InventoryDemoChildList"
+  },
+  {
+    "name": "ProcessFlowProcessWorkSheetsWorkManagement"
+  },
+  {
+    "name": "PurchaseRequisitionLineView"
+  },
+  {
+    "name": "BudgetItemTreeList"
+  },
+  {
+    "name": "TRDRISKAPPCANCELLISTTOAPPROVEVOLVO"
+  },
+  {
+    "name": "FinanceInvestmentForexSell"
+  },
+  {
+    "name": "InventoryStockCodeListForComboLight"
+  },
+  {
+    "name": "FinanceFloatingIndexList"
+  },
+  {
+    "name": "CUST_GUARANTOR_LIST"
+  },
+  {
+    "name": "LPVendorPaymentListForCustomerCollection"
+  },
+  {
+    "name": "InsuranceIntegrationHeaderList"
+  },
+  {
+    "name": "CrmAddressList"
+  },
+  {
+    "name": "BudgetPurchaseLineDistinctItemAccountCode"
+  },
+  {
+    "name": "LeasingOperationBalanceReportGuarantee"
+  },
+  {
+    "name": "SurveyDependantQuestionsList"
+  },
+  {
+    "name": "FinanceForwardList"
+  },
+  {
+    "name": "EInvoiceListForMenu"
+  },
+  {
+    "name": "VendorLeasePurchaseProjects"
+  },
+  {
+    "name": "PurchaseWebRequisitionHeaderView"
+  },
+  {
+    "name": "QuotationHeaderLOPRevisionList"
+  },
+  {
+    "name": "BudgetControlPurchaseLineList"
+  },
+  {
+    "name": "FoundationCommentsOutbox"
+  },
+  {
+    "name": "TradeLPOpenAdvancesList"
+  },
+  {
+    "name": "LeasePurchaseVendorBankList"
+  },
+  {
+    "name": "RPR_FREE_PART_LIST_FOR_DET"
+  },
+  {
+    "name": "TRDRISKAPPCANCELLISTVOLVO"
+  },
+  {
+    "name": "TradeCostCenterReportList"
+  },
+  {
+    "name": "FinanceInvestmentForexBuy"
+  },
+  {
+    "name": "LeasePurchaseOrderHeaderPrintOut"
+  },
+  {
+    "name": "CONTRACTLISTREPORTEXCELLISTFORARI"
+  },
+  {
+    "name": "ContractQuotationCharges"
+  },
+  {
+    "name": "FinanceFloatingInterestList"
+  },
+  {
+    "name": "LOPPAYMENTDUELIST"
+  },
+  {
+    "name": "ProcessFlowUserWorksNew"
+  },
+  {
+    "name": "CUST_GUARANTOR_LOP_LIST"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationLinesList"
+  },
+  {
+    "name": "FNDASSRELLST"
+  },
+  {
+    "name": "CrmTaxDepartmentList"
+  },
+  {
+    "name": "FinanceDerivativeSwapReport"
+  },
+  {
+    "name": "ContractHeaderListForCombo"
+  },
+  {
+    "name": "CrmRecordHistoryChangeNameList"
+  },
+  {
+    "name": "PurchaseWebRequisitionOfferView"
+  },
+  {
+    "name": "CrmCustomerSummaryList"
+  },
+  {
+    "name": "TRDRISKAPPLIST1VOLVO"
+  },
+  {
+    "name": "TradeCostCenterList"
+  },
+  {
+    "name": "CONTRACTLISTREPORTLIST"
+  },
+  {
+    "name": "TRADE_GUARANTOR_RPT"
+  },
+  {
+    "name": "FinanceInvestmentEurobondList"
+  },
+  {
+    "name": "ProcessFlowUserWorksContinuing"
+  },
+  {
+    "name": "CustomerRepresentativeListForMobile"
+  },
+  {
+    "name": "GetGeneralRiskReportForAllRecord"
+  },
+  {
+    "name": "ContractGuaranteeList"
+  },
+  {
+    "name": "PurchaseDocumentLineList"
+  },
+  {
+    "name": "TradeLPOpenAdvancesDetail"
+  },
+  {
+    "name": "TRDRISKAPPLIST2VOLVO"
+  },
+  {
+    "name": "CONTRACTLISTREPORTSUMMARYLIST"
+  },
+  {
+    "name": "ProcessFlowUserWorksDone"
+  },
+  {
+    "name": "LeasingOperationRediscountList"
+  },
+  {
+    "name": "LOPEQUIPMENTMAXLIST"
+  },
+  {
+    "name": "OCEmployeeView"
+  },
+  {
+    "name": "BudgetPurchaseLineList"
+  },
+  {
+    "name": "SurveyDetailList"
+  },
+  {
+    "name": "TradeLOPListWithPlanned"
+  },
+  {
+    "name": "InventoryItemGroupRelatedMarksList"
+  },
+  {
+    "name": "LeasePurchaseProjectLineList"
+  },
+  {
+    "name": "PurchaseOrderLineList"
+  },
+  {
+    "name": "TRDRISKAPPLISTTOAPPROVEVOLVO"
+  },
+  {
+    "name": "LeasePurchaseCostingDocumentHeader"
+  },
+  {
+    "name": "ProcessFlowUserWorksCanceled"
+  },
+  {
+    "name": "LeasingOperationRediscountListLight"
+  },
+  {
+    "name": "LOPEQUIPMENTFREELIST"
+  },
+  {
+    "name": "AgreementResponsibilityList"
+  },
+  {
+    "name": "TradeLOPListAddPlaningDebitWithCancel"
+  },
+  {
+    "name": "PurchaseOrderLineView"
+  },
+  {
+    "name": "TRDRISKAPPLISTVOLVO"
+  },
+  {
+    "name": "LeasePurchaseCostingDocumentHeaderFIN"
+  },
+  {
+    "name": "GANTEK_LOP_DETAIL_LIST"
+  },
+  {
+    "name": "CRMCUSTOMERPROJECTREPORTLIST"
+  },
+  {
+    "name": "CRM_CUST_CNT_LIST"
+  },
+  {
+    "name": "ApprovalApprovalsHistory"
+  },
+  {
+    "name": "AlienationContractPrintout"
+  },
+  {
+    "name": "LeasePurchaseRegistrationReport"
+  },
+  {
+    "name": "TradeResFMVProbabitlyList"
+  },
+  {
+    "name": "TRDRISKLEGALWARNINGLISTCANCELVOLVO"
+  },
+  {
+    "name": "TRDCOSTSPREADLIST"
+  },
+  {
+    "name": "TrdFixAstExcListForMenu"
+  },
+  {
+    "name": "FinanceTransactionTypeList"
+  },
+  {
+    "name": "GANTEK_LOP_LIST"
+  },
+  {
+    "name": "CrmCustomerGroupListForDimension"
+  },
+  {
+    "name": "GeneralTaxGroupLineView"
+  },
+  {
+    "name": "TradeLOPListWithIBAAddPlaningDebit"
+  },
+  {
+    "name": "PurchaseProductRequestLineListForOrder"
+  },
+  {
+    "name": "InventoryPurchaseRequestBagList"
+  },
+  {
+    "name": "TRDRISKLEGALWARNINGLISTVOLVO"
+  },
+  {
+    "name": "SurveyQuestionsCallStartList"
+  },
+  {
+    "name": "LeasingOperationEquipmentList"
+  },
+  {
+    "name": "CrmRoutePharmacyStopSequenceHistoryList"
+  },
+  {
+    "name": "PurchaseProductRequestLineListForRequisition"
+  },
+  {
+    "name": "TradeItemTreeEquipmentList"
+  },
+  {
+    "name": "FinanceCreditGroupList"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelationList"
+  },
+  {
+    "name": "InventoryModelList2"
+  },
+  {
+    "name": "QuoProjectOrgPPList"
+  },
+  {
+    "name": "FoundationDocumentRequiredSelectGroupLineList"
+  },
+  {
+    "name": "TradeCompanySectorList"
+  },
+  {
+    "name": "PurchaseRequisitionLineList"
+  },
+  {
+    "name": "InsuranceQuatationLineDetailList"
+  },
+  {
+    "name": "TRDRISKAPPLIST"
+  },
+  {
+    "name": "FndStatuteOrderedTrdGrnt"
+  },
+  {
+    "name": "TradeLOPListAddPlaningDebit"
+  },
+  {
+    "name": "QuotationPrintPaymentByRevision"
+  },
+  {
+    "name": "TradeDebitTraceList"
+  },
+  {
+    "name": "FinanceCreditProfileList"
+  },
+  {
+    "name": "FoundationUserOCTitleList"
+  },
+  {
+    "name": "FoundationUserDefinedPropertiesList"
+  },
+  {
+    "name": "PurchaseRequisitionOfferList"
+  },
+  {
+    "name": "QuotationLineMaxList"
+  },
+  {
+    "name": "RPR_PROJECT_BLOCK_LIST_FOR_COMBO"
+  },
+  {
+    "name": "LPReportCostDocument"
+  },
+  {
+    "name": "TradeFixedAssetListForReport"
+  },
+  {
+    "name": "PurchaseDocumentHeaderApprovals"
+  },
+  {
+    "name": "FndStatuteOrderedQuo"
+  },
+  {
+    "name": "FND_WORK_ITEMS_HTM_LIST"
+  },
+  {
+    "name": "ContractNotaryPublicLOPLight"
+  },
+  {
+    "name": "CrmCustomerListForMB"
+  },
+  {
+    "name": "TradeAllAccount"
+  },
+  {
+    "name": "LeasePurchaseCostingVendorPayment"
+  },
+  {
+    "name": "PurchaseWebRequisitionLineView"
+  },
+  {
+    "name": "TRDRISKAPPLIST2"
+  },
+  {
+    "name": "RPR_PROJECT_BLOCK_LIST"
+  },
+  {
+    "name": "LOP_MONTH_CLOSE_LIST"
+  },
+  {
+    "name": "LPReportCostPayment"
+  },
+  {
+    "name": "TRADERISKHEADERCONTACTLIST"
+  },
+  {
+    "name": "ContractHeaderPrintCustomerTransfer"
+  },
+  {
+    "name": "GuaranteeTemplateColumns"
+  },
+  {
+    "name": "PurchaseOrderHeaderApprovals"
+  },
+  {
+    "name": "TrdVendorPaymentStatus"
+  },
+  {
+    "name": "QuotationHeaderLightListTMP"
+  },
+  {
+    "name": "CrmAddressDefaultLocationList"
+  },
+  {
+    "name": "TradeInflationRateList"
+  },
+  {
+    "name": "InventoryEquipmentEntryListForExcludeUpdate"
+  },
+  {
+    "name": "FoundationTableUpdateLogHeaderList"
+  },
+  {
+    "name": "LeasingOperationProjectList"
+  },
+  {
+    "name": "PurchaseRequisitionRequestList"
+  },
+  {
+    "name": "CrmRouteScheduleRealizedList"
+  },
+  {
+    "name": "TRDRISKAPPLIST1"
+  },
+  {
+    "name": "TRADERISKHEADERFOLLOWUPLIST"
+  },
+  {
+    "name": "InventoryItemStockCodesList"
+  },
+  {
+    "name": "PurchaseDocumentInvoiceList"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderApprovals"
+  },
+  {
+    "name": "InventoryItemRequestList"
+  },
+  {
+    "name": "QUOREFBRANCHLIST"
+  },
+  {
+    "name": "CrmSectorList"
+  },
+  {
+    "name": "GuaranteesCustomerList"
+  },
+  {
+    "name": "PurchaseOrderHeaderList"
+  },
+  {
+    "name": "TRDRISKAPPLISTTOAPPROVE"
+  },
+  {
+    "name": "LGAccountsBalancesM"
+  },
+  {
+    "name": "FinanceLOPRelatedCreditList"
+  },
+  {
+    "name": "INV_BDDK_CODE_LIST"
+  },
+  {
+    "name": "TradeRiskDocumentList"
+  },
+  {
+    "name": "QuoInterestListAllWithMargin"
+  },
+  {
+    "name": "PurchaseDocumentHeaderWorks"
+  },
+  {
+    "name": "DemoInsuranceInformationsList"
+  },
+  {
+    "name": "CrmCustomerWithTypesLightTradeRisk"
+  },
+  {
+    "name": "QuoRefBranchGroupList"
+  },
+  {
+    "name": "InventoryItemUsageLifeFinishWarningUsersList"
+  },
+  {
+    "name": "GuarantorCustomerList"
+  },
+  {
+    "name": "PurchaseOrderHeaderView"
+  },
+  {
+    "name": "TRDRISKAPPCANCELLISTTOAPPROVE"
+  },
+  {
+    "name": "LGAccountsBalancesMTrn"
+  },
+  {
+    "name": "CrmContactList"
+  },
+  {
+    "name": "PurchaseOrderHeaderWorks"
+  },
+  {
+    "name": "QuotationGeneralReportList"
+  },
+  {
+    "name": "PurchaseApprovalDefinitionList"
+  },
+  {
+    "name": "InventoryShelfCellList"
+  },
+  {
+    "name": "LeasingOperationMISData"
+  },
+  {
+    "name": "InsurancePolicyListLight"
+  },
+  {
+    "name": "QuatationLineDetailList"
+  },
+  {
+    "name": "QuotationSmallPaymentList"
+  },
+  {
+    "name": "LGAccountsBalances"
+  },
+  {
+    "name": "QuotationAmountProjectList"
+  },
+  {
+    "name": "KPSQueryReport"
+  },
+  {
+    "name": "LGAccountsBalancesMTrnOld"
+  },
+  {
+    "name": "TradeRiskDocumentView"
+  },
+  {
+    "name": "CrmInstitutionalCustomerList"
+  },
+  {
+    "name": "CONTRACT_DATA_UPDATE_LIST"
+  },
+  {
+    "name": "FndStatuteOrderedLop2000"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderWorks"
+  },
+  {
+    "name": "PurchaseCentreList"
+  },
+  {
+    "name": "AriWebKiraPlaniBaslik"
+  },
+  {
+    "name": "LPVendorPaymentListForCustomerCollection_ARI"
+  },
+  {
+    "name": "LeasePurchaseQuotationLine"
+  },
+  {
+    "name": "CreditPrintPaymentPlanForSummary"
+  },
+  {
+    "name": "LGAccountsBalancesMCI"
+  },
+  {
+    "name": "BudgetPurchaseLineComboList"
+  },
+  {
+    "name": "CRMCUSTOMERLISTFORADDRESS"
+  },
+  {
+    "name": "LeasePurchaseEncouragementList"
+  },
+  {
+    "name": "SurveyFoundationTableColumnsList"
+  },
+  {
+    "name": "ActivePerionLedgerVoucherList"
+  },
+  {
+    "name": "QuoRediscountRapListAri_20170124"
+  },
+  {
+    "name": "QuotationHeaderNotValidList"
+  },
+  {
+    "name": "CreditGuarantorListWithAuthorized"
+  },
+  {
+    "name": "InsurancePolicyReportList"
+  },
+  {
+    "name": "QuotationCPBasedReportList"
+  },
+  {
+    "name": "LGAccountsBalancesMCITrn"
+  },
+  {
+    "name": "FinanceInvestmentBondList"
+  },
+  {
+    "name": "LeasePurchaseEncouragementReport"
+  },
+  {
+    "name": "CONTRACTNOTARYPUBLICCONTRACT"
+  },
+  {
+    "name": "APP_CATEGORY_STEP_LIST"
+  },
+  {
+    "name": "QuotationLineList"
+  },
+  {
+    "name": "LGAccountsBalancesMCITrnOld"
+  },
+  {
+    "name": "FinanceInvestmentForexList"
+  },
+  {
+    "name": "PurchaseInventoryMasterUnitList"
+  },
+  {
+    "name": "TradeDebitForLopList"
+  },
+  {
+    "name": "LeasePurchaseReportOrderLines"
+  },
+  {
+    "name": "TradeFixedAssetGroupList"
+  },
+  {
+    "name": "CreditGuarantorProposedAllList"
+  },
+  {
+    "name": "LGAccountsBalances1M"
+  },
+  {
+    "name": "PurchaseOrderedRequestList"
+  },
+  {
+    "name": "InventoryItemGroupPropertiesList"
+  },
+  {
+    "name": "BudgetPurchaseLineSummaryList"
+  },
+  {
+    "name": "ContractGuarantorListWithTypesSign"
+  },
+  {
+    "name": "LGAccountsBalances1MTrn"
+  },
+  {
+    "name": "TrdAccTypeComboListWithBalance_AK"
+  },
+  {
+    "name": "GeneralTaxGroupLineList"
+  },
+  {
+    "name": "LeasingOperationPrintGuarantor"
+  },
+  {
+    "name": "RiskDocumentWarningFollowListBaseLPDDOR"
+  },
+  {
+    "name": "InventoryStockCodeMarkList"
+  },
+  {
+    "name": "LeasePurchaseOrderLineList"
+  },
+  {
+    "name": "TradeInterestVariableLineList"
+  },
+  {
+    "name": "InventoryDocumentLineList"
+  },
+  {
+    "name": "LGAccountsBalances1MTrnOld"
+  },
+  {
+    "name": "QUO_LINE_DETAIL_WITH_TERM"
+  },
+  {
+    "name": "RprInterestList"
+  },
+  {
+    "name": "LeasingOperationMISDataAklease"
+  },
+  {
+    "name": "TradePaymentTypesList"
+  },
+  {
+    "name": "TRD_UNMATCHED_ITEM_GROUPS_LIST"
+  },
+  {
+    "name": "QuotationAggrementHeaderCampaignList"
+  },
+  {
+    "name": "PurchaseOrderRequestView"
+  },
+  {
+    "name": "TaskTemplateCheckListQuestionList"
+  },
+  {
+    "name": "FoundationUserListbyType"
+  },
+  {
+    "name": "RiskReportList"
+  },
+  {
+    "name": "LeasePurchaseOrderLinePrintOut"
+  },
+  {
+    "name": "QuoRediscountRapListAri_20170130"
+  },
+  {
+    "name": "CrmInstitutionalCustomerContactList"
+  },
+  {
+    "name": "TradeIntegrationOverdueLeaseMBBAklease"
+  },
+  {
+    "name": "TradeCompanyMainSectorList"
+  },
+  {
+    "name": "SurveySurveyQuestionWithQuestionInfos"
+  },
+  {
+    "name": "QuotationPaymentPlanPayments"
+  },
+  {
+    "name": "LGAccountsBalances1MCI"
+  },
+  {
+    "name": "TRDTRANSACTIONRISKOVERDUELIST"
+  },
+  {
+    "name": "FinanceInvestmentTreasuryList"
+  },
+  {
+    "name": "LOPFV100MASTERLIST"
+  },
+  {
+    "name": "QuotationAggrementCampaignProductList"
+  },
+  {
+    "name": "CrmAddressPhoneList"
+  },
+  {
+    "name": "ContractGuarantorListbyLop"
+  },
+  {
+    "name": "AriIndividualCustomerList"
+  },
+  {
+    "name": "TradeAccountAndTypeWithAddressComboList"
+  },
+  {
+    "name": "CrmBusinessRelCommonList"
+  },
+  {
+    "name": "InventoryStockCodeListOnlyExpenditure"
+  },
+  {
+    "name": "QUO_ASSET_GRP_PAYMENT_TERM_LIST"
+  },
+  {
+    "name": "ADA_INCIDENT_INFO"
+  },
+  {
+    "name": "GeneralDimensionColumnList"
+  },
+  {
+    "name": "LGAccountsBalances1MCITrn"
+  },
+  {
+    "name": "FinanceInvestmentBondOperationsList"
+  },
+  {
+    "name": "GeneralCurrencyMenuList"
+  },
+  {
+    "name": "CrmAddressFaxList"
+  },
+  {
+    "name": "TradeTransactionLayerList"
+  },
+  {
+    "name": "CrmCheckListList"
+  },
+  {
+    "name": "TRADEITEMGROUPWITHVATBRANCHFILTER"
+  },
+  {
+    "name": "LGAccountsBalances1MCITrnOld"
+  },
+  {
+    "name": "FinanceInvestmentBondOperationsSummaryList"
+  },
+  {
+    "name": "JournalDescriptionViaInsurance"
+  },
+  {
+    "name": "CRM_RLTSHP_GROUP_DEF_LIST"
+  },
+  {
+    "name": "CrmAddressEmailList"
+  },
+  {
+    "name": "TradeItemList"
+  },
+  {
+    "name": "TradeTransactionGeneralList"
+  },
+  {
+    "name": "LopPaymentList"
+  },
+  {
+    "name": "QUO_INTEREST_RATE_LIMITS_LIST"
+  },
+  {
+    "name": "QuotationVendorProjectName"
+  },
+  {
+    "name": "InventoryUpKeepForItemList"
+  },
+  {
+    "name": "LPTradeTransactionList"
+  },
+  {
+    "name": "_VakifBankListeForMenu"
+  },
+  {
+    "name": "JournalSetupProfilesDetailList"
+  },
+  {
+    "name": "CrmCustomerList"
+  },
+  {
+    "name": "FoundationPartList"
+  },
+  {
+    "name": "FoundationUserRolesReport"
+  },
+  {
+    "name": "TRN_LOP_EQUIPMENT_COUNT"
+  },
+  {
+    "name": "ContractNotaryPublicEntryList"
+  },
+  {
+    "name": "TRD_GRNT_UNTAKED_LIST"
+  },
+  {
+    "name": "LGAccountsBalances1Trn"
+  },
+  {
+    "name": "Qradar_JDBC_log"
+  },
+  {
+    "name": "InventoryUpKeepForUpKeepPeriodList"
+  },
+  {
+    "name": "OCLocationsComboListOnlyNonCollectedLocations"
+  },
+  {
+    "name": "LPOrderLinesForAdvance"
+  },
+  {
+    "name": "TradeBulkTradeChequePayrollOutLists"
+  },
+  {
+    "name": "APP_APPROVAL_LINE_HISTORY"
+  },
+  {
+    "name": "ProcessFlowProcessWorkSheetsList"
+  },
+  {
+    "name": "ContractGuaranteeTakingList"
+  },
+  {
+    "name": "LGAccountsBalances1TrnOld"
+  },
+  {
+    "name": "QuoEquipmentList"
+  },
+  {
+    "name": "OCLocationList"
+  },
+  {
+    "name": "LPProjectLinesForAdvance"
+  },
+  {
+    "name": "TradeChequeAccountChequeList"
+  },
+  {
+    "name": "CreditLeasingPrintPartnerCompany"
+  },
+  {
+    "name": "TRDRISKLEGALWARNINGLIST"
+  },
+  {
+    "name": "ContractGuaranteeAccruedList"
+  },
+  {
+    "name": "CompanyDefaultBankInformation"
+  },
+  {
+    "name": "LGAccountsBalances1CI"
+  },
+  {
+    "name": "JournalHeaderList"
+  },
+  {
+    "name": "CreditLimitAllocationProjectsList"
+  },
+  {
+    "name": "TradeChequeAccountChequesForOutList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationshipList"
+  },
+  {
+    "name": "CRM_CUST_REQ_FIELDS_LIST"
+  },
+  {
+    "name": "TRDRISKLEGALWARNINGLISTCANCEL"
+  },
+  {
+    "name": "LopPaymentListExtended"
+  },
+  {
+    "name": "TradeInterestList"
+  },
+  {
+    "name": "APP_APPROVAL_LIST_WITHINFOS"
+  },
+  {
+    "name": "LGAccountsBalances1CITrn"
+  },
+  {
+    "name": "PurchaseOrderReport"
+  },
+  {
+    "name": "InventoryItemCallsHistoryList"
+  },
+  {
+    "name": "CrmCustomerMergeTablesList"
+  },
+  {
+    "name": "LedgerFindVoucherList"
+  },
+  {
+    "name": "LOPCRMLISTFORALJ"
+  },
+  {
+    "name": "GuaranteesToBeReceiptList"
+  },
+  {
+    "name": "GeneralBankList"
+  },
+  {
+    "name": "FoundationUserListWithTypes"
+  },
+  {
+    "name": "LGAccountsBalances1CITrnOld"
+  },
+  {
+    "name": "PurchaseDocumentReport"
+  },
+  {
+    "name": "DM_SFM_APP_LIST_FOR_DIMENSION"
+  },
+  {
+    "name": "PurchaseVendorDefinitionList"
+  },
+  {
+    "name": "CrmAddressDefaultCompanyList"
+  },
+  {
+    "name": "TradeAccountTypesBankComboList"
+  },
+  {
+    "name": "LOPCRMLISTFORFINANCE"
+  },
+  {
+    "name": "CustomerRepresentativeList"
+  },
+  {
+    "name": "GuaranteeListOfDueDate"
+  },
+  {
+    "name": "PurchaseProductRequestLine"
+  },
+  {
+    "name": "JournalMenuRelationList"
+  },
+  {
+    "name": "ContractControlListWithTotalPaymentAmount"
+  },
+  {
+    "name": "PurchaseRequisitionReport"
+  },
+  {
+    "name": "QuotationPrintProject"
+  },
+  {
+    "name": "TrdFixTotalsByLocAndGroup"
+  },
+  {
+    "name": "ALGO_GUARANTEE"
+  },
+  {
+    "name": "FoundationUserListbyTypeKOF"
+  },
+  {
+    "name": "CrmAccountList"
+  },
+  {
+    "name": "FoundationUserMenuFieldRestrictionsList"
+  },
+  {
+    "name": "QuotationPaymentPlanList"
+  },
+  {
+    "name": "LopSubStatuteChangeViaTradeReportList"
+  },
+  {
+    "name": "ContractPrintLineVendorGrant"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_LIST_CC"
+  },
+  {
+    "name": "LeasePurchaseOrderHeaderList"
+  },
+  {
+    "name": "TradeChequeAccountVouchersForOutList"
+  },
+  {
+    "name": "InventoryItemGroupParentGroupsList"
+  },
+  {
+    "name": "InventoryCollectLinesListMenu"
+  },
+  {
+    "name": "JrnStpPstTypGroupCompExpenses"
+  },
+  {
+    "name": "FoundationUserMenuFieldRestrictionsWithRoleList"
+  },
+  {
+    "name": "CreditLineList"
+  },
+  {
+    "name": "LGTransactionDateOrder"
+  },
+  {
+    "name": "ContractPrintLineVendor"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_LIST_AM"
+  },
+  {
+    "name": "TradeTransactionAllInvoices"
+  },
+  {
+    "name": "PurchaseRequisitionRequestApprovedOffers"
+  },
+  {
+    "name": "QUO_APPROVAL_LIST"
+  },
+  {
+    "name": "JournalSetupTemplatesList"
+  },
+  {
+    "name": "InventoryCollectLineListForTransfer"
+  },
+  {
+    "name": "LeasePurchaseContractHeader"
+  },
+  {
+    "name": "CRD_COMMITTEE_ACTIVE_LIST"
+  },
+  {
+    "name": "LOPMasterLops"
+  },
+  {
+    "name": "LGTransactionDateOrderTrn"
+  },
+  {
+    "name": "LPRegistrationDeliveredDocumentType"
+  },
+  {
+    "name": "CNTPREPAREGENERALLIST"
+  },
+  {
+    "name": "ApprovalCategoryStepsUsersList"
+  },
+  {
+    "name": "LeasingOperationEquipmentReportData"
+  },
+  {
+    "name": "CNT_PRINT_INSURANCE"
+  },
+  {
+    "name": "CRM_IND_CUST_CNT_LIST_FOR_CMB"
+  },
+  {
+    "name": "TaskSchedulerTasksList"
+  },
+  {
+    "name": "CreditMeetingList"
+  },
+  {
+    "name": "LOPPAYMENTDUELISTFORADNL"
+  },
+  {
+    "name": "TradeChequePayrollInContractList"
+  },
+  {
+    "name": "FoundationDelegationsList"
+  },
+  {
+    "name": "ApprovalCategoryStartUpLocationTypesList"
+  },
+  {
+    "name": "ContractChequeHeaderList"
+  },
+  {
+    "name": "QuotationHeaderList_EquipmentList"
+  },
+  {
+    "name": "RCIKKBQueryList"
+  },
+  {
+    "name": "LeasePurchaseContractProject"
+  },
+  {
+    "name": "LGTransactionDateOrderTrnList"
+  },
+  {
+    "name": "LPRegistrationSendDocumentType"
+  },
+  {
+    "name": "ContractGuarantorListWithTypesDelete"
+  },
+  {
+    "name": "CalendarItemList"
+  },
+  {
+    "name": "FND_COMMENTS_SIMPLE_LIST"
+  },
+  {
+    "name": "CRD_ACTIVE_LOPS_CAF_LIMIT_LIST"
+  },
+  {
+    "name": "ContractProjectCustomerList"
+  },
+  {
+    "name": "TradeChequePayrollInList"
+  },
+  {
+    "name": "LPRegistrationState"
+  },
+  {
+    "name": "CRM_ADR_MC_LIST"
+  },
+  {
+    "name": "CreditHeaderList"
+  },
+  {
+    "name": "CRDGUARANTORDEFADDRESSLIST"
+  },
+  {
+    "name": "LGTransactionDateOrderTrnOld"
+  },
+  {
+    "name": "CNT_PRNT_VENDOR_DELETE"
+  },
+  {
+    "name": "TRDTRANSALLINVCUSTBA"
+  },
+  {
+    "name": "TradeChequePayrollInReport"
+  },
+  {
+    "name": "LPAddressType"
+  },
+  {
+    "name": "CreditLimitPrintGuarantee"
+  },
+  {
+    "name": "LPDocumentsMDReportCurrencySumList"
+  },
+  {
+    "name": "InventoryPartPropertyList"
+  },
+  {
+    "name": "FinanceCreditTransactionReport"
+  },
+  {
+    "name": "LGAccountsBalances1"
+  },
+  {
+    "name": "LeasingOperationRediscountListLightByBeforeActivation"
+  },
+  {
+    "name": "ContractPrintHeaderDetail"
+  },
+  {
+    "name": "TRDTRANSALLINVCUSTBA2"
+  },
+  {
+    "name": "InventoryInstructionList"
+  },
+  {
+    "name": "TradeChequePayrollOutFileHeaderWithDetailList"
+  },
+  {
+    "name": "LPChargeType"
+  },
+  {
+    "name": "CreditLimitPrintLine"
+  },
+  {
+    "name": "ProcessFlowStatuteRelationList"
+  },
+  {
+    "name": "LOPPAYMENTDUELISTFORARI"
+  },
+  {
+    "name": "FoundationNumeratorList"
+  },
+  {
+    "name": "FoundationFileBrowserList"
+  },
+  {
+    "name": "LeasingOperationRediscountListAri"
+  },
+  {
+    "name": "InventoryPurchaseOrderReport"
+  },
+  {
+    "name": "ContractGuarantorList"
+  },
+  {
+    "name": "SurveyList"
+  },
+  {
+    "name": "TradeRiskHeaderList"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType3ClosedForTL"
+  },
+  {
+    "name": "ContractHeaderListLi"
+  },
+  {
+    "name": "PurchaseOrderRequestListForDocument"
+  },
+  {
+    "name": "InventoryInstructionGroupList"
+  },
+  {
+    "name": "TradeChequePayrollOutList"
+  },
+  {
+    "name": "LPCollectingType"
+  },
+  {
+    "name": "CreditLimitPrintProject"
+  },
+  {
+    "name": "CrmCustomerRepresentativeWithPartList"
+  },
+  {
+    "name": "CRMADDRESSLISTFORMC"
+  },
+  {
+    "name": "FoundationUserRolePermissionList2"
+  },
+  {
+    "name": "QuotationHeaderLightList2"
+  },
+  {
+    "name": "LeasingOperationSectorList"
+  },
+  {
+    "name": "FoundationFileBrowserListNoContent"
+  },
+  {
+    "name": "TradeProjectList"
+  },
+  {
+    "name": "InsuranceNotificationFormHeader"
+  },
+  {
+    "name": "SurveyQuestionList"
+  },
+  {
+    "name": "TradeContractList"
+  },
+  {
+    "name": "CrmRelationshipDefinitionList"
+  },
+  {
+    "name": "ProjectLedgerList"
+  },
+  {
+    "name": "CreditHeaderListLi"
+  },
+  {
+    "name": "PurchaseDocumentHeaderSummary"
+  },
+  {
+    "name": "TradeChequePositionToList"
+  },
+  {
+    "name": "LPCostingStatus"
+  },
+  {
+    "name": "TradeTransactionLightList"
+  },
+  {
+    "name": "ContractTestList"
+  },
+  {
+    "name": "CrmContactRecordStatusList"
+  },
+  {
+    "name": "InventoryProductTemplateList"
+  },
+  {
+    "name": "InventoryCollectOnlyPropertiesToExcel"
+  },
+  {
+    "name": "FND_PART_MANAGER_LIST"
+  },
+  {
+    "name": "CreditHeaderLightList"
+  },
+  {
+    "name": "LPPaymentType"
+  },
+  {
+    "name": "CrmInstitutionalCustomerAllList"
+  },
+  {
+    "name": "LeasingOperationProjectListPrint"
+  },
+  {
+    "name": "InventoryEquipmentEntryListMenuForInvoice"
+  },
+  {
+    "name": "CrmCustomerListComboLi"
+  },
+  {
+    "name": "PurchaseDocumentLineSummary"
+  },
+  {
+    "name": "GeneralCurrencyListForEInvoice"
+  },
+  {
+    "name": "TradeChequeTransList"
+  },
+  {
+    "name": "LPCustomerType"
+  },
+  {
+    "name": "QUOVNDADVINTERESTLIST"
+  },
+  {
+    "name": "CrmCompanyEstablishmentStructureList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerRecordStatusList"
+  },
+  {
+    "name": "RprPaymentTypeList"
+  },
+  {
+    "name": "FoundationSystemLockList"
+  },
+  {
+    "name": "CreditLeasingDecisionPrintHeader"
+  },
+  {
+    "name": "CrmCustomerWithTypesOther"
+  },
+  {
+    "name": "CreditLeasingPrintHeaderCompanyLight"
+  },
+  {
+    "name": "PurchaseOrderHeaderSummary"
+  },
+  {
+    "name": "TradeGuaranteeInsuranceList"
+  },
+  {
+    "name": "CUST_PARTNER_LOP_LIST"
+  },
+  {
+    "name": "TradeChequeTransSortList"
+  },
+  {
+    "name": "LPDeliveryMethod"
+  },
+  {
+    "name": "InventoryItemListForProductRequestSummary"
+  },
+  {
+    "name": "ProcessFlowProcessesSummaryList"
+  },
+  {
+    "name": "FND_LOG_EXTENDED_CATEGORY_LIST"
+  },
+  {
+    "name": "CrmAddressDefaultContactList2"
+  },
+  {
+    "name": "DLLBaselAgreementProvision"
+  },
+  {
+    "name": "TradeAccountList"
+  },
+  {
+    "name": "ContractHeaderList"
+  },
+  {
+    "name": "PurchaseOrderLineSummary"
+  },
+  {
+    "name": "TRDGRNT_CASHBLOCKAGELIST"
+  },
+  {
+    "name": "CreditGuarantorProposedList"
+  },
+  {
+    "name": "FinanceParameterTransactionType"
+  },
+  {
+    "name": "PurchaseOrderHeadeApprovedByRequisition"
+  },
+  {
+    "name": "LOPRevisionJoinMainList"
+  },
+  {
+    "name": "PurchaseRequisitionVendorView"
+  },
+  {
+    "name": "LPDeliveryType"
+  },
+  {
+    "name": "CRMCUSTPARTNERWITHTYPES"
+  },
+  {
+    "name": "InsurancePurchaseList"
+  },
+  {
+    "name": "FND_LOG_EXTENDED_FIELDS_LIST"
+  },
+  {
+    "name": "EONAYKategori"
+  },
+  {
+    "name": "PM_LOP_PORTFOLIO_LIST"
+  },
+  {
+    "name": "OCVirtualCompanyDetailList"
+  },
+  {
+    "name": "DLLBaselAgreementNonIFRS"
+  },
+  {
+    "name": "GUARANTOR_RPRT_LIST"
+  },
+  {
+    "name": "PurchaseRequisitionOfferSummary"
+  },
+  {
+    "name": "FND_USER_ACCESS_CONTROL_LIST"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsWarningUsersList"
+  },
+  {
+    "name": "LPDocumentKind"
+  },
+  {
+    "name": "TaskTasksTemplateList"
+  },
+  {
+    "name": "PurchaseVendorDefinitionView"
+  },
+  {
+    "name": "LPReportCostInsurance"
+  },
+  {
+    "name": "FoundationStatuteMenuListChildGroupNameIsNull"
+  },
+  {
+    "name": "QuotationHeaderDeclinedList"
+  },
+  {
+    "name": "PM_LOP_PAYMENT_LIST"
+  },
+  {
+    "name": "LPVendorPaymentsForCredit"
+  },
+  {
+    "name": "PurchaseDocumentRequestSummary"
+  },
+  {
+    "name": "LPDocumentStatus"
+  },
+  {
+    "name": "CrmCustomerSuppInfosCurrent"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType2Closed"
+  },
+  {
+    "name": "LOP_LIST_REP1"
+  },
+  {
+    "name": "InventoryStockCodeListForCombo"
+  },
+  {
+    "name": "FoundationMenuTablesResList"
+  },
+  {
+    "name": "LPPrefinanceHeaderList"
+  },
+  {
+    "name": "ContractNotaryPublicEntryLightList"
+  },
+  {
+    "name": "APP_APPROVAL_LIST"
+  },
+  {
+    "name": "LedgerTransactionDEKList"
+  },
+  {
+    "name": "PurchaseOrderRequestSummary"
+  },
+  {
+    "name": "TradeLeaseDueOrderList"
+  },
+  {
+    "name": "TradeTransactionReportList"
+  },
+  {
+    "name": "TrdCostCntrPhoneMergeList"
+  },
+  {
+    "name": "LPDocumentType"
+  },
+  {
+    "name": "CreditHeaderMenuList"
+  },
+  {
+    "name": "CrmCustomerLeasingLegalInfoList"
+  },
+  {
+    "name": "CreditGuarantorListWithTypes"
+  },
+  {
+    "name": "LeasingOperationProjectFirstOperation"
+  },
+  {
+    "name": "InsuranceGuaranteeInsuredList"
+  },
+  {
+    "name": "FND_FROM_TO_LIST"
+  },
+  {
+    "name": "CreditLimitAllocationList"
+  },
+  {
+    "name": "LeasePurchaseQuotationLineDetail"
+  },
+  {
+    "name": "QuotationAmountHeaderList"
+  },
+  {
+    "name": "LeasingOperationMISReportList"
+  },
+  {
+    "name": "LedgerTransactionDEKListV2"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderSummary"
+  },
+  {
+    "name": "ALGOGUARENTEE_DETAIL"
+  },
+  {
+    "name": "RPR_PROJECT_LIST"
+  },
+  {
+    "name": "PurchaseDocumentRequestList"
+  },
+  {
+    "name": "LPEncouragementStatus"
+  },
+  {
+    "name": "InsuranceGuaranteeUnInsuredList"
+  },
+  {
+    "name": "LedgerAccountErrorSelectList"
+  },
+  {
+    "name": "LPQuotationHeaderForAjax"
+  },
+  {
+    "name": "InventoryStockCodeExceptExpenditureList"
+  },
+  {
+    "name": "q_sil"
+  },
+  {
+    "name": "CRM_CUST_REFERENCE_LIST"
+  },
+  {
+    "name": "PurchaseRequisitionRequestSummary"
+  },
+  {
+    "name": "EInvoiceUnsentList"
+  },
+  {
+    "name": "CRM_CUST_LIST_WITH_GROUP"
+  },
+  {
+    "name": "LPExpenseType"
+  },
+  {
+    "name": "QuotationRivalFirmChoiceReasonList"
+  },
+  {
+    "name": "FoundationDelegationRolesForUsersList"
+  },
+  {
+    "name": "CrmMeetingCheckListPrint"
+  },
+  {
+    "name": "CrmCityList2"
+  },
+  {
+    "name": "LPQuotationProjectForAjax"
+  },
+  {
+    "name": "InventoryItemListOfLocation"
+  },
+  {
+    "name": "ApprovalCategoryStepRelationsList"
+  },
+  {
+    "name": "InventoryPurchaseRequestList"
+  },
+  {
+    "name": "LedgerPeriodOperationList"
+  },
+  {
+    "name": "InventoryItemTreeOfAssociationsList"
+  },
+  {
+    "name": "CrmContactPrimaryCompanyList"
+  },
+  {
+    "name": "PurchaseOrderRequestList"
+  },
+  {
+    "name": "LPFileFormat"
+  },
+  {
+    "name": "FoundationDelegationTargetTypesForUsersList"
+  },
+  {
+    "name": "LedgerAccountLayerSums_OLD"
+  },
+  {
+    "name": "LeasingOperationAL100UFReportList"
+  },
+  {
+    "name": "LeasePurchaseDocumentSumPriceList"
+  },
+  {
+    "name": "RPR_PROJECT_EXCEL_LIST"
+  },
+  {
+    "name": "LeasingOperationMatchingData"
+  },
+  {
+    "name": "LPReportCostValue"
+  },
+  {
+    "name": "CrmContactLightList"
+  },
+  {
+    "name": "InventoryPurchaseRequestRelationOrderList"
+  },
+  {
+    "name": "TaskSchedulerScheduleDefinitionsList"
+  },
+  {
+    "name": "LPInvestmentDiscount"
+  },
+  {
+    "name": "FND_SESSION_LIST"
+  },
+  {
+    "name": "RPR_PROJECT_STAGE_LIST"
+  },
+  {
+    "name": "CreditLeasingPrintGuaranteeProposed"
+  },
+  {
+    "name": "InventoryInvoiceList"
+  },
+  {
+    "name": "TEST_VIEW"
+  },
+  {
+    "name": "LeasePurchaseQuotationProject"
+  },
+  {
+    "name": "TradeTransactionInvoicePrintLine"
+  },
+  {
+    "name": "LOPEQUIPMENTLIST"
+  },
+  {
+    "name": "CreditRatingList"
+  },
+  {
+    "name": "LPContractHeaderReport"
+  },
+  {
+    "name": "LPLOCPaymentType"
+  },
+  {
+    "name": "QuoRediscountRapListAri2"
+  },
+  {
+    "name": "CreditLimitAllocationCreditList"
+  },
+  {
+    "name": "ContractPrintOurCompanyAuthorized"
+  },
+  {
+    "name": "TradeTransactionInvoicePrintLineForALJ"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelationEmployeesList"
+  },
+  {
+    "name": "CreditGeneralReportExcelList"
+  },
+  {
+    "name": "InventoryCollectLineListToExcel"
+  },
+  {
+    "name": "LPContractProjectReport"
+  },
+  {
+    "name": "ari_test1"
+  },
+  {
+    "name": "LPLOCStatus"
+  },
+  {
+    "name": "LeasePurchaseCostingDocumentHeaderARI"
+  },
+  {
+    "name": "ContractPrintGuarantorContact"
+  },
+  {
+    "name": "LeasePurchaseCustomsLoadList"
+  },
+  {
+    "name": "QUO_REF_CALC_CUST_LIST"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType1"
+  },
+  {
+    "name": "CrmRouteList"
+  },
+  {
+    "name": "TradeInsuranceSimpleList"
+  },
+  {
+    "name": "EInvoiceList"
+  },
+  {
+    "name": "LEACNTCUSTOMERBASELIST"
+  },
+  {
+    "name": "LPDocumentsReportList"
+  },
+  {
+    "name": "LPLOCType"
+  },
+  {
+    "name": "LeasePurchaseCostingDocumentLineARI"
+  },
+  {
+    "name": "InventoryStockCodeYearlyLimitsList"
+  },
+  {
+    "name": "LedgerTransactionAccrualBudgetSums"
+  },
+  {
+    "name": "ContractPrintGuarantorCustomer"
+  },
+  {
+    "name": "CRM_KEP_IMPORT_LIST"
+  },
+  {
+    "name": "QUO_REF_COMM_LIST"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType2"
+  },
+  {
+    "name": "CrmInsuranceCompanyAgencyList"
+  },
+  {
+    "name": "QuotationProjectItemGroupNameList"
+  },
+  {
+    "name": "InventoryItemTreeAssociationRelationList"
+  },
+  {
+    "name": "TrdRiskContractList"
+  },
+  {
+    "name": "PurchaseWebOrderHeaderView"
+  },
+  {
+    "name": "LPOperationStatus"
+  },
+  {
+    "name": "LedgerTransactionDEKListOnlyAmountCurrency"
+  },
+  {
+    "name": "LedgerTransactionAccrualBudgetDebitCreditSums"
+  },
+  {
+    "name": "TRDGRNT_CASHBLCK_RVN_LIST"
+  },
+  {
+    "name": "ContractPrintCustomerInformariton"
+  },
+  {
+    "name": "GET_INTERESTDATE_LIST_BY_BBSNNO"
+  },
+  {
+    "name": "LeasePurchaseDocumentEquipment"
+  },
+  {
+    "name": "FoundationMakerCheckerTransactionsList"
+  },
+  {
+    "name": "GeneralCurrencyExchangeByPeriod"
+  },
+  {
+    "name": "DLLBaselCollateral"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType3"
+  },
+  {
+    "name": "CreditGeneralReportList"
+  },
+  {
+    "name": "EInvoiceLineDetailList"
+  },
+  {
+    "name": "CrmInsuranceCompanyList"
+  },
+  {
+    "name": "LPVendorDocuments"
+  },
+  {
+    "name": "FoundationUserMessagesList"
+  },
+  {
+    "name": "BDG_NEWCREDITACCOUNTSLIST"
+  },
+  {
+    "name": "InventoryStockCodeAssociationRelationList"
+  },
+  {
+    "name": "LPOrderStatus"
+  },
+  {
+    "name": "FoundationParameterList"
+  },
+  {
+    "name": "ContractGuarantorListWithTypesSignOzgur"
+  },
+  {
+    "name": "ContractPrintGuarantorCompanyInformariton"
+  },
+  {
+    "name": "GetListCollection"
+  },
+  {
+    "name": "LeasePurchaseEquipmentExpenses"
+  },
+  {
+    "name": "CRM_IND_CUST_RATING_LIST"
+  },
+  {
+    "name": "TradeInsuranceList"
+  },
+  {
+    "name": "DLLBaselCollateralAgreement"
+  },
+  {
+    "name": "FinanceCreditPaymentList"
+  },
+  {
+    "name": "EInvoiceLineList"
+  },
+  {
+    "name": "QuotationPrintPaymentPlan"
+  },
+  {
+    "name": "LPCustomerDocuments"
+  },
+  {
+    "name": "LPOriginType"
+  },
+  {
+    "name": "CreditLeasingPrintCommittee"
+  },
+  {
+    "name": "InvestmentForexDetailsPrint"
+  },
+  {
+    "name": "ContractPrintGuarantorContactInformariton"
+  },
+  {
+    "name": "FND_COMMENTS_PARTITIONBY_RECORD_ID"
+  },
+  {
+    "name": "TRADETRANSALLINVOICESCRMSUM"
+  },
+  {
+    "name": "DLLBaselCollateralParty"
+  },
+  {
+    "name": "CNT_GUARANTEE_CHK_LIST"
+  },
+  {
+    "name": "EInvoiceListForDelayed"
+  },
+  {
+    "name": "PurchaseVendorLogList"
+  },
+  {
+    "name": "LPVendorDocumentsList"
+  },
+  {
+    "name": "FinanceParameterCurrencyType"
+  },
+  {
+    "name": "LPPaymentPlace"
+  },
+  {
+    "name": "FinanceInvestmentRepurchaseListPrint"
+  },
+  {
+    "name": "ContractPrintGuarantorInformariton"
+  },
+  {
+    "name": "QUO_PRINT_NOTARY"
+  },
+  {
+    "name": "CrmIndividualCustomerList"
+  },
+  {
+    "name": "QuotationPrintPaymentWithCommission"
+  },
+  {
+    "name": "LedgerPeriodDailyList"
+  },
+  {
+    "name": "ContractChequePrintHeader2"
+  },
+  {
+    "name": "EInvoiceListForNoResponse"
+  },
+  {
+    "name": "CONTRACTLISTREPORTEXCELLIST"
+  },
+  {
+    "name": "LPCustomerDocumentsList"
+  },
+  {
+    "name": "FinanceParameterCashType"
+  },
+  {
+    "name": "CrmInstitutionSubClassList"
+  },
+  {
+    "name": "LPPaymentStatus"
+  },
+  {
+    "name": "CrmCustomerAndTradeAccountList"
+  },
+  {
+    "name": "QuotationPrintHeaderNotResidentialFin"
+  },
+  {
+    "name": "FinanceCreditDefinitionListPrint"
+  },
+  {
+    "name": "LPTradeVendorAdvance"
+  },
+  {
+    "name": "TRADE_COLLECTION_BANK_LIST"
+  },
+  {
+    "name": "LeasingOperationBalanceReport"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType1Closed"
+  },
+  {
+    "name": "ContractPrintOurCompanyInformariton"
+  },
+  {
+    "name": "QUO_PRINT_INSURANCE"
+  },
+  {
+    "name": "ProcessFlowProcessesReport"
+  },
+  {
+    "name": "QUO_LIST_FOR_MEETING"
+  },
+  {
+    "name": "DLLBaselDeliveryControl"
+  },
+  {
+    "name": "EInvoiceApplicationResponseListForMail"
+  },
+  {
+    "name": "LeasePurchaseProjectLineListSelect"
+  },
+  {
+    "name": "FinanceParameterInterestType"
+  },
+  {
+    "name": "FinanceBankToBankTransferListPrint"
+  },
+  {
+    "name": "RPR_PROJECT_VGKA_REPORT_DATA"
+  },
+  {
+    "name": "GuaranteeGrade"
+  },
+  {
+    "name": "CollectionAutomationDetailList"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsListMenu"
+  },
+  {
+    "name": "CrmOccupationList"
+  },
+  {
+    "name": "CreditLeasingPrintHeaderCompany"
+  },
+  {
+    "name": "QuotationLineDetailPrint"
+  },
+  {
+    "name": "DLLBaselFileControl"
+  },
+  {
+    "name": "EInvoiceFoundationRoleMailList"
+  },
+  {
+    "name": "CreditBuyBackList"
+  },
+  {
+    "name": "LPPaymentTypeExtra"
+  },
+  {
+    "name": "InventoryItemUpKeepResponsibleUsersSelectList1"
+  },
+  {
+    "name": "InventoryWareHouseState"
+  },
+  {
+    "name": "LeasePurchaseCustomerAdvanceList"
+  },
+  {
+    "name": "CrmCityVillageList"
+  },
+  {
+    "name": "DLLBaselFacility"
+  },
+  {
+    "name": "EInvoiceInfoTableList"
+  },
+  {
+    "name": "TradeVendorTypeComboList"
+  },
+  {
+    "name": "CrmSPCList"
+  },
+  {
+    "name": "LPProjectStatus"
+  },
+  {
+    "name": "QuotationOccasionList"
+  },
+  {
+    "name": "ContractPrintMinutesOfDelivery"
+  },
+  {
+    "name": "InventoryItemForListBox"
+  },
+  {
+    "name": "CrmInstitutionalCustPersonnelRelationList"
+  },
+  {
+    "name": "INV_STOCK_PROPERTY__LIST"
+  },
+  {
+    "name": "LeasePurchaseVendorAdvanceList"
+  },
+  {
+    "name": "RPR_PROJECT_EXCEL_LINE_LIST"
+  },
+  {
+    "name": "FoundationUsersPreInitList"
+  },
+  {
+    "name": "EInvoiceOverdueApprovalMailList"
+  },
+  {
+    "name": "RPR_QUO_LIST"
+  },
+  {
+    "name": "FinanceDerivativeSwapPaymentReport"
+  },
+  {
+    "name": "LPPurchaseType"
+  },
+  {
+    "name": "InventoryItemList"
+  },
+  {
+    "name": "ChattelGuaranteeVehicles"
+  },
+  {
+    "name": "RPR_BLOCK_DEFINITION_LIST"
+  },
+  {
+    "name": "LPTradeVendorPayment"
+  },
+  {
+    "name": "LedgerAccountTrnList"
+  },
+  {
+    "name": "ApprovalCategoryStepsPartsList"
+  },
+  {
+    "name": "LeasePurchaseVendorPaymentList"
+  },
+  {
+    "name": "DLLBaselParty"
+  },
+  {
+    "name": "CHKANSWERDETAILLIST"
+  },
+  {
+    "name": "EInvQuantityUnitList"
+  },
+  {
+    "name": "PurchaseApprovalDefinitionCategory"
+  },
+  {
+    "name": "LPRecordStatus"
+  },
+  {
+    "name": "ApprovalCategoryList"
+  },
+  {
+    "name": "InventoryEquipmentExcludeListReport"
+  },
+  {
+    "name": "ChattelGuaranteeDayCount"
+  },
+  {
+    "name": "ProcessFlowProcessesList"
+  },
+  {
+    "name": "LedgerVoucherReportList"
+  },
+  {
+    "name": "InventoryItemTemplateList"
+  },
+  {
+    "name": "LPTradePayments"
+  },
+  {
+    "name": "DLLBaselPartyExternalReference"
+  },
+  {
+    "name": "EInvTaxAmountList"
+  },
+  {
+    "name": "ContractChequePrintHeaderWithFastQuotation"
+  },
+  {
+    "name": "CrmCustListByLocation"
+  },
+  {
+    "name": "MERSIS_QUERY_LIST"
+  },
+  {
+    "name": "BDG_ACTIVEINVESTMENTACCOUNTSLIST"
+  },
+  {
+    "name": "InventoryItemRequestDetailView"
+  },
+  {
+    "name": "LPRegistrationStatus"
+  },
+  {
+    "name": "ProjectManagementProjectList"
+  },
+  {
+    "name": "CRDGUARANTORCOMLIST"
+  },
+  {
+    "name": "InventoryEquipmentEntryList"
+  },
+  {
+    "name": "ContractGuarantorListWithTypes"
+  },
+  {
+    "name": "OpLeasingGeneralOperationReportList"
+  },
+  {
+    "name": "CRMCUSTOMERWITHTYPESSUMMARY"
+  },
+  {
+    "name": "Noterler"
+  },
+  {
+    "name": "CrmInstitutionalCustomerLightList"
+  },
+  {
+    "name": "DLLBaselPartyStreetAddress"
+  },
+  {
+    "name": "MERSISQUERYPRINT"
+  },
+  {
+    "name": "LPRegistryState"
+  },
+  {
+    "name": "ContractActiveGuarontorList"
+  },
+  {
+    "name": "CAItemList"
+  },
+  {
+    "name": "LetterofGuarantee"
+  },
+  {
+    "name": "CrmMembershipCheckListRelation"
+  },
+  {
+    "name": "OpLeasingInvoiceList"
+  },
+  {
+    "name": "TRADEMODEXPENSE_KEPLIST"
+  },
+  {
+    "name": "LPReportCostHeader"
+  },
+  {
+    "name": "CrmIMSBrickList"
+  },
+  {
+    "name": "DLLBaselAgreementClassification"
+  },
+  {
+    "name": "LPPrefinanceDetails"
+  },
+  {
+    "name": "LPRevenueTypeExtra"
+  },
+  {
+    "name": "InventoryItemGroupVendorsList"
+  },
+  {
+    "name": "LedgerBalanceSheetAssetsList"
+  },
+  {
+    "name": "CrmMembershipChecklistQuestionRelation"
+  },
+  {
+    "name": "OpLeasingList"
+  },
+  {
+    "name": "PurchaseProductRequestLineListForDocument"
+  },
+  {
+    "name": "DLLBaselAgreementParty"
+  },
+  {
+    "name": "FoundationRoleList"
+  },
+  {
+    "name": "CrmRouteScheduleList"
+  },
+  {
+    "name": "CrmCustomerListComboLight"
+  },
+  {
+    "name": "FinanceInvestmentRepoTypes"
+  },
+  {
+    "name": "LPSendType"
+  },
+  {
+    "name": "ContractActiveGuaranteeList"
+  },
+  {
+    "name": "ChattelGuaranteeForMachine"
+  },
+  {
+    "name": "CrmMembershipApplicationStateList"
+  },
+  {
+    "name": "FoundationUserDefinedFieldList"
+  },
+  {
+    "name": "OpLeasingOperationBasedUsageReportList"
+  },
+  {
+    "name": "CRM_CUST_SUMMARY_GUARANTEE_LIST"
+  },
+  {
+    "name": "InventoryModelList"
+  },
+  {
+    "name": "LPSendingType"
+  },
+  {
+    "name": "LeasePurchaseGtipDocList"
+  },
+  {
+    "name": "CrmCustomerLeasingLegalInfoList_Tax"
+  },
+  {
+    "name": "CrmMembershipApplicationList"
+  },
+  {
+    "name": "LOPRevisionJoinListOutPlan"
+  },
+  {
+    "name": "OpLeasingProductDetailList"
+  },
+  {
+    "name": "FoundationMenuTableColumns"
+  },
+  {
+    "name": "ContractProjectList"
+  },
+  {
+    "name": "TrdRiskQuotationLineList"
+  },
+  {
+    "name": "TRDTRANSALLINVCUST"
+  },
+  {
+    "name": "AriRevisionJoinMainList"
+  },
+  {
+    "name": "LPReportDocuments"
+  },
+  {
+    "name": "CreditReferencePrintHeader"
+  },
+  {
+    "name": "LPShipmentType"
+  },
+  {
+    "name": "TrdRiskDocumentRepList"
+  },
+  {
+    "name": "CrmAddressContactLightList"
+  },
+  {
+    "name": "CRM_CUST_RLTSHP_LIST"
+  },
+  {
+    "name": "OpLeasingProductDetailsReportList"
+  },
+  {
+    "name": "FinanceCreditPaymentOverdue"
+  },
+  {
+    "name": "PurchaseCentreAndUserList"
+  },
+  {
+    "name": "InventoryModelDetail"
+  },
+  {
+    "name": "LPVendorAdvanceUsages"
+  },
+  {
+    "name": "InventoryPurchaseRequestPoolList"
+  },
+  {
+    "name": "LPUnloadingPlaceType"
+  },
+  {
+    "name": "CreditCommitteeList"
+  },
+  {
+    "name": "CrmActivityUserDefinedFieldList"
+  },
+  {
+    "name": "OpLeasingProductList"
+  },
+  {
+    "name": "FinanceCreditTransactionOverdue"
+  },
+  {
+    "name": "BudgetPurchaseLineSummaryByBudget"
+  },
+  {
+    "name": "ApprovalCategoryStepsRolesList"
+  },
+  {
+    "name": "LPTransactionLayer"
+  },
+  {
+    "name": "GuaranteeCustomerList"
+  },
+  {
+    "name": "OpLeasingVehicleBasedUsageReportList"
+  },
+  {
+    "name": "ApprovalApprovalsList"
+  },
+  {
+    "name": "BudgetPurchaseLineSummaryByLocation"
+  },
+  {
+    "name": "TRD_BANK_AUTOMATION_PARAMETERS_LIST"
+  },
+  {
+    "name": "MersisServiceKeyList"
+  },
+  {
+    "name": "LeasePurchaseItemTreeList"
+  },
+  {
+    "name": "PurchaseInventoryItemGroupList"
+  },
+  {
+    "name": "LOP_CORPORATES_LIST"
+  },
+  {
+    "name": "FoundationUserDefinedTableListView"
+  },
+  {
+    "name": "BudgetPurchaseLineReport"
+  },
+  {
+    "name": "InventoryUpKeepList"
+  },
+  {
+    "name": "FoundationRecordHistoryCommonList"
+  },
+  {
+    "name": "SurveyQuestionAskingMethodDefinitionList"
+  },
+  {
+    "name": "InsurancePolicyPageList"
+  },
+  {
+    "name": "InventoryPurchaseRequestPoolLinesList"
+  },
+  {
+    "name": "BDG_READYAMOUNTACCOUNTSLIST"
+  },
+  {
+    "name": "LeasePurchaseItemGroupList"
+  },
+  {
+    "name": "PurchaseInventoryStockCodeList"
+  },
+  {
+    "name": "CrmAddressPhoneListWithExplanation"
+  },
+  {
+    "name": "ProReqLineForApp"
+  },
+  {
+    "name": "RISK_CORPORATES_LIST"
+  },
+  {
+    "name": "ari_test"
+  },
+  {
+    "name": "InventoryDemoPartPropertiesList"
+  },
+  {
+    "name": "CrmMeetingReportList"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_PAYMENT_LIST"
+  },
+  {
+    "name": "DLLBaselAgreementExposure"
+  },
+  {
+    "name": "LOP_PROJECT_MASTER_LIST"
+  },
+  {
+    "name": "FoundationTableRelationShipList"
+  },
+  {
+    "name": "InventoryEquipmentEntryReservesListForGiveBack"
+  },
+  {
+    "name": "TradeVendorLPTypesList"
+  },
+  {
+    "name": "QuotationRevisionHeaderList"
+  },
+  {
+    "name": "LeasePurchaseStockCodeList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerDocumentList"
+  },
+  {
+    "name": "InventoryStockCodeMarkModelList"
+  },
+  {
+    "name": "ProReqBagsForApp"
+  },
+  {
+    "name": "LeasePurchaseCostingHeaderList"
+  },
+  {
+    "name": "CrmMeetingReportList_ING"
+  },
+  {
+    "name": "DLLBaselAgreement"
+  },
+  {
+    "name": "InsuranceCompanyAgencyList"
+  },
+  {
+    "name": "InsurancePastDuePolicyList"
+  },
+  {
+    "name": "LOP_PROJECT_CHILD_LIST"
+  },
+  {
+    "name": "CRD_INACTIVE_LOPS_CAF_LIMIT_LIST"
+  },
+  {
+    "name": "QuotationRealEstateOpinionFormList"
+  },
+  {
+    "name": "LeasingContractCusProfitabRptForSLopIdView"
+  },
+  {
+    "name": "CrmInstitutionalCustomerNewsList"
+  },
+  {
+    "name": "InventoryItemRequestListForWorkOrders"
+  },
+  {
+    "name": "CrmAddressDefaultContactList"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType3ForTL"
+  },
+  {
+    "name": "ClaimAlienation"
+  },
+  {
+    "name": "InventoryPurchaseRequestView"
+  },
+  {
+    "name": "InventoryStockCodeKitStuructureList"
+  },
+  {
+    "name": "CrmMeetingReportList_ZL"
+  },
+  {
+    "name": "BudgetPurchaseLineSummary"
+  },
+  {
+    "name": "InsuranceDamageList"
+  },
+  {
+    "name": "xxxInventoryStockCodeConfigurationLines"
+  },
+  {
+    "name": "CreditInstitutionalScoringList"
+  },
+  {
+    "name": "QuotationHeaderLimitAllocationList"
+  },
+  {
+    "name": "DemoCustomersList"
+  },
+  {
+    "name": "CRM_CUST_SUMMARY_GUARANTOR_LIST"
+  },
+  {
+    "name": "ApprovalApprovalsListMenu"
+  },
+  {
+    "name": "TradeBankNameAndAccount"
+  },
+  {
+    "name": "InventoryItemSummaryList"
+  },
+  {
+    "name": "CRM_CUST_SUMMARY_LOP_LIST"
+  },
+  {
+    "name": "ContractChequePrintHeader"
+  },
+  {
+    "name": "CRD_GUARANTOR_LIST_WITH_OTHER_LOPIDS"
+  },
+  {
+    "name": "InsuranceGrossPremiumCommissionRateList"
+  },
+  {
+    "name": "TradeProjectListEndPoint"
+  },
+  {
+    "name": "FoundationMenuWithResources"
+  },
+  {
+    "name": "InventoryStockCodePopupList"
+  },
+  {
+    "name": "ApprovalApprovalsListMenuPurchaseDocument"
+  },
+  {
+    "name": "GuaranteeAlienationContract"
+  },
+  {
+    "name": "LeasingOperationPrintHeader"
+  },
+  {
+    "name": "ReporterPrintDocumentsList"
+  },
+  {
+    "name": "TRDRISKAPPCANCELLIST"
+  },
+  {
+    "name": "SurveyQuestionWhoCanAskDefinitionList"
+  },
+  {
+    "name": "TradeContractListEndPoint"
+  },
+  {
+    "name": "InventoryGaugeList"
+  },
+  {
+    "name": "RPR_PRJT_FREE_PRT_LST_FOR_COMBO"
+  },
+  {
+    "name": "TradeFixedAssetListForCombo"
+  },
+  {
+    "name": "ApprovalHistoryForProductRequestBagLines"
+  },
+  {
+    "name": "InventoryItemCommonList"
+  },
+  {
+    "name": "GuaranteeAlienationContractBankInfo"
+  },
+  {
+    "name": "TradeSectorCompanyListLOP"
+  },
+  {
+    "name": "CreditLimitAllocationQuotationList"
+  },
+  {
+    "name": "CreditLimitAllocationReport"
+  },
+  {
+    "name": "SurveyQuestionWhoCanReplyDefinitionList"
+  },
+  {
+    "name": "CAF_RATING_PRINT_LIST"
+  },
+  {
+    "name": "LOPPROJECTINTERESTLIST"
+  },
+  {
+    "name": "CHKCHECKERANSGRPREGISTERLIST"
+  },
+  {
+    "name": "InventoryStockCodeVendorDefinitionList"
+  },
+  {
+    "name": "CrmContactListCombo"
+  },
+  {
+    "name": "ApprovalHistoryForProductRequestBags"
+  },
+  {
+    "name": "GuaranteeRepealContract"
+  },
+  {
+    "name": "LeasePurchaseProjectHeaderList"
+  },
+  {
+    "name": "LedgerAccountDimensionList"
+  },
+  {
+    "name": "DLLBaselRiskCostsMovements"
+  },
+  {
+    "name": "CHKCHECKERQUEGRPREGISTERLIST"
+  },
+  {
+    "name": "CrmCustomerRepresentativeOfficerList"
+  },
+  {
+    "name": "CreditLeasingList"
+  },
+  {
+    "name": "CrmRelationshipDefinitioNComboList"
+  },
+  {
+    "name": "GuaranteeRepealContractTemplateInfo"
+  },
+  {
+    "name": "LeasePurchaseDocumentHeaderList"
+  },
+  {
+    "name": "ContractPrintTextOfCoverForRegistration"
+  },
+  {
+    "name": "TestProductRequestBagLinesList"
+  },
+  {
+    "name": "CrmActivityList"
+  },
+  {
+    "name": "InventoryStockCodeListForProductRequest"
+  },
+  {
+    "name": "DLLBaselAgreementClosingBalance"
+  },
+  {
+    "name": "CrmCustomerTrdContactInfo"
+  },
+  {
+    "name": "LPVendorPaymentList"
+  },
+  {
+    "name": "CrmCustomerRepresentativeManagerList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerList_Emlak"
+  },
+  {
+    "name": "LedgerAccountDimensionHierarchyList"
+  },
+  {
+    "name": "ChattelGuaranteeTrustee"
+  },
+  {
+    "name": "InventoryWareHouseUsersList"
+  },
+  {
+    "name": "LedgerAccountList"
+  },
+  {
+    "name": "LedgerVoucherTypesList"
+  },
+  {
+    "name": "InventoryItemTreeListForProductRequest"
+  },
+  {
+    "name": "ProcessFlowDoneProcessList"
+  },
+  {
+    "name": "FoundationLogReportGetData"
+  },
+  {
+    "name": "BDG_OTHERCOLLECTINGACCOUNTSLIST"
+  },
+  {
+    "name": "FinanceCreditDefinitionUsuryList"
+  },
+  {
+    "name": "ChattelGuaranteeForVehicle"
+  },
+  {
+    "name": "TradeAccountListBank"
+  },
+  {
+    "name": "InventoryItemGroupListForProductRequest"
+  },
+  {
+    "name": "ProcessFlowNotDoneProcessList"
+  },
+  {
+    "name": "InsuranceProductList"
+  },
+  {
+    "name": "KKB_CRM_LOP_LIST"
+  },
+  {
+    "name": "FoundationLogtypeWithUtopiaCombo"
+  },
+  {
+    "name": "OCLocationsComboListOnlyCollectedLocations"
+  },
+  {
+    "name": "ContractPrintLineDetail"
+  },
+  {
+    "name": "InventoryCollectLinesList"
+  },
+  {
+    "name": "ContractPrintLine"
+  },
+  {
+    "name": "APP_APPROVAL_LIST_BPM"
+  },
+  {
+    "name": "InsuranceProductWarrantyList"
+  },
+  {
+    "name": "InventoryDocumentHeaderListType1Posted"
+  },
+  {
+    "name": "InventoryItemQuarantyFinishWarningUsersList"
+  },
+  {
+    "name": "IncomingRequestStatusList"
+  },
+  {
+    "name": "CreditFAHeaderList"
+  },
+  {
+    "name": "CrmCommissionCompanyList"
+  },
+  {
+    "name": "ChattelGuaranteeVehiclesForVehicle"
+  },
+  {
+    "name": "FoundationUserUnitCity"
+  },
+  {
+    "name": "FinancePaymentMethodList"
+  },
+  {
+    "name": "InventoryCollectResponsibleEmployeesList"
+  },
+  {
+    "name": "CrmCustomerSectorList"
+  },
+  {
+    "name": "TradeLedgerControlView"
+  },
+  {
+    "name": "TRADE_REVENUE_PROCESS_FILE_DETAIL_LIST"
+  },
+  {
+    "name": "InventoryInstructionUpKeepList"
+  },
+  {
+    "name": "InvItemLeasedItems"
+  },
+  {
+    "name": "DocumentTypeList"
+  },
+  {
+    "name": "TradeLOPListWithIBA"
+  },
+  {
+    "name": "ContractPrintForApprovalOfOrder"
+  },
+  {
+    "name": "RPR_PROJECT_LIST_FOR_DET"
+  },
+  {
+    "name": "QuotationLineAmountList"
+  },
+  {
+    "name": "ChattelGuaranteeDayCountForVehicle"
+  },
+  {
+    "name": "GeneralBankBranchList"
+  },
+  {
+    "name": "DummyRentsList"
+  },
+  {
+    "name": "FoundationUserUnitCityOnlyUser"
+  },
+  {
+    "name": "FinanceCreditDefinitionList"
+  },
+  {
+    "name": "LeasePurchaseReportLetterOfCredit"
+  },
+  {
+    "name": "InventoryCollectStockCodePropertiesList"
+  },
+  {
+    "name": "TradeFixedAssetAmortizationProfileList"
+  },
+  {
+    "name": "TradeChequeAccountBarcodeFileDetailList"
+  },
+  {
+    "name": "InsuranceSubbranchList"
+  },
+  {
+    "name": "JournalSetupProfilesLedgerAccountsList"
+  },
+  {
+    "name": "TRADE_REVENUE_PROCESS_FILE_LIST"
+  },
+  {
+    "name": "FinanceCreditAllocationList"
+  },
+  {
+    "name": "InvItemLeaseingNumbers"
+  },
+  {
+    "name": "TRD_BANK_INT_COLLECTION_LIST"
+  },
+  {
+    "name": "TradeTransactionCustomerRevenuesList"
+  },
+  {
+    "name": "LGVoucherTotalAmount"
+  },
+  {
+    "name": "LeasingOperationAL102UFReportList"
+  },
+  {
+    "name": "CreditCustomerRatingList"
+  },
+  {
+    "name": "FoundationUserUnitCityOnlyCity"
+  },
+  {
+    "name": "FoundationStatuteList"
+  },
+  {
+    "name": "InventoryCollectsList"
+  },
+  {
+    "name": "ContractPrintPaymentPlan"
+  },
+  {
+    "name": "InsuranceSupplementTypeList"
+  },
+  {
+    "name": "LOP_AKLEASING_OZEL"
+  },
+  {
+    "name": "TradeLOPListAddPlaningDebit_20170817"
+  },
+  {
+    "name": "TradeAgreementList"
+  },
+  {
+    "name": "JournalSetupEnumsPostingTypeList"
+  },
+  {
+    "name": "TradeLopIdForAdvanceList"
+  },
+  {
+    "name": "TaskTasksListMobile"
+  },
+  {
+    "name": "InventoryEquipmentEntryReservesList"
+  },
+  {
+    "name": "InventoryItemAndSubItemsListAll"
+  },
+  {
+    "name": "InventoryStockCodeIntegrationList"
+  },
+  {
+    "name": "InventoryStockCodeOwnerUsersList"
+  },
+  {
+    "name": "InsuranceTrackingInsuredList"
+  },
+  {
+    "name": "LeasingOperationMERBANFinList"
+  },
+  {
+    "name": "LGAccountsBalancesCI"
+  },
+  {
+    "name": "TradeGuaranteeList"
+  },
+  {
+    "name": "TradeAgreementGroupList"
+  },
+  {
+    "name": "JournalSetupEnumsTemplateTypeList"
+  },
+  {
+    "name": "TradeTransCreditInterest"
+  }
+]

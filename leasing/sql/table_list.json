@@ -1,0 +1,8465 @@
+[
+  {
+    "name": "FoundationDocument"
+  },
+  {
+    "name": "PaymentBaseMethod"
+  },
+  {
+    "name": "QuotationReference"
+  },
+  {
+    "name": "InsuranceSupplementTrackingHeader"
+  },
+  {
+    "name": "InsuranceIntegrationTableColumns"
+  },
+  {
+    "name": "Test_CompanyType"
+  },
+  {
+    "name": "QuotationLeaseBeginningOfPeriodType"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationship"
+  },
+  {
+    "name": "CrmQuarterVillage"
+  },
+  {
+    "name": "FoundationUnitRecordNotes"
+  },
+  {
+    "name": "_TAssets"
+  },
+  {
+    "name": "CrmSalariedTask"
+  },
+  {
+    "name": "DM_CUSTOMER_CHECK"
+  },
+  {
+    "name": "JournalLines"
+  },
+  {
+    "name": "TradeChequePayrollOutRecordDescriptions"
+  },
+  {
+    "name": "FoundationMenuPassword"
+  },
+  {
+    "name": "LeasePurchaseVendorAdvance"
+  },
+  {
+    "name": "TradeUnpaidInvoiceStatusDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeBankExternalAccount"
+  },
+  {
+    "name": "PaymentAllocation"
+  },
+  {
+    "name": "TradeItem3001_24UserDefinedPropertyTable"
+  },
+  {
+    "name": "TradePriceDiscountDocumentType"
+  },
+  {
+    "name": "ContractGuarantorEntry"
+  },
+  {
+    "name": "GeneralTemplateDocument"
+  },
+  {
+    "name": "SurveyQuestionCategoryDefinitionRecordNotes"
+  },
+  {
+    "name": "CRM_CDD_RISK_LEVEL_DEF"
+  },
+  {
+    "name": "InventoryProductTemplateLines"
+  },
+  {
+    "name": "TradeChequeAccountBarcodeFileHeader"
+  },
+  {
+    "name": "OCTypeRecordDescriptions"
+  },
+  {
+    "name": "GUARANTEE_TYPE_DEF"
+  },
+  {
+    "name": "CRM_RATING_DEF"
+  },
+  {
+    "name": "CrmContactRecordNotes"
+  },
+  {
+    "name": "ContractStatuteDefinition"
+  },
+  {
+    "name": "LeasingOperationRiskIncludingType"
+  },
+  {
+    "name": "TradePriceDiscountRecordNotes"
+  },
+  {
+    "name": "TradeItem8UserDefinedProperties"
+  },
+  {
+    "name": "RealEstateRestoreRequestRecordNotes"
+  },
+  {
+    "name": "FoundationDocumentDefinition"
+  },
+  {
+    "name": "FND_SESSION_CONTROL_ALERT_USERS"
+  },
+  {
+    "name": "InventoryUpKeepCalendarColors"
+  },
+  {
+    "name": "CRM_MARITAL_STATUS_DEFINITION_RESPONSE"
+  },
+  {
+    "name": "QuoInterestType"
+  },
+  {
+    "name": "PaymentDays"
+  },
+  {
+    "name": "RPR_PARAMETER"
+  },
+  {
+    "name": "TradeItem3001UserDefinedProperties"
+  },
+  {
+    "name": "QuotationReferenceCommissionEntry"
+  },
+  {
+    "name": "InsuranceSupplementTrackingLine"
+  },
+  {
+    "name": "RealEstateHouseRequest"
+  },
+  {
+    "name": "Akt_MergeBanks"
+  },
+  {
+    "name": "CrmActivityTemplateListRecordNotes"
+  },
+  {
+    "name": "CrmMeetingActivityGroupDefinition"
+  },
+  {
+    "name": "CrmInstitutionalCustomerGroup"
+  },
+  {
+    "name": "ServiceManagementWorkOrdersRecordNotes"
+  },
+  {
+    "name": "ReportArchiveType"
+  },
+  {
+    "name": "LeasingOperationRevisionType"
+  },
+  {
+    "name": "_MGR_EKIPMAN"
+  },
+  {
+    "name": "QuotationHeaderRecordNotes"
+  },
+  {
+    "name": "FoundationUnitRecordDescriptions"
+  },
+  {
+    "name": "ContractPrintTextType"
+  },
+  {
+    "name": "TradeSectorAssociation"
+  },
+  {
+    "name": "DM_CUSTOMER_QUERY"
+  },
+  {
+    "name": "TradeChequePayrollOutRecordNotes"
+  },
+  {
+    "name": "TRD_GUARANTEE_REQUEST_TYPE"
+  },
+  {
+    "name": "InventoryInstructionGroupRecordNotes"
+  },
+  {
+    "name": "PaymentCashDiscount"
+  },
+  {
+    "name": "TradeItem3002UserDefinedProperties"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsWarningUsersRecordNotes"
+  },
+  {
+    "name": "SurveyQuestionCategoryDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TRADE_GUARANTORRecordNotes"
+  },
+  {
+    "name": "Akt_MergeBankBranchs"
+  },
+  {
+    "name": "ContractPlantDefinition"
+  },
+  {
+    "name": "SurveyRecordDescriptions"
+  },
+  {
+    "name": "CrmInstitutionalCustomer"
+  },
+  {
+    "name": "ReportArchiveLine"
+  },
+  {
+    "name": "TradeRiskHeaderExpertiseInformation"
+  },
+  {
+    "name": "_MGR_EKIPMAN_DIGER"
+  },
+  {
+    "name": "ContractNotaryStatuteDefinition"
+  },
+  {
+    "name": "InventoryParametersRecordNotes"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUpProcessTypeRecordDescriptions"
+  },
+  {
+    "name": "FND_API_DEFINITION"
+  },
+  {
+    "name": "RealEstateRestoreRequestRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentRequiredGroupHeader"
+  },
+  {
+    "name": "CreditBuyBackItemGroup"
+  },
+  {
+    "name": "TaskTasksRecordNotes"
+  },
+  {
+    "name": "InventoryInstructionUpKeepRecordNotes"
+  },
+  {
+    "name": "TradeItemUserDefinedFields"
+  },
+  {
+    "name": "QuotationCommissionEntry"
+  },
+  {
+    "name": "LeasePurchaseCustomerAdvanceTemp"
+  },
+  {
+    "name": "InsuranceTracking"
+  },
+  {
+    "name": "InventoryWareHouseUsersRecordNotes"
+  },
+  {
+    "name": "ReporterPrintDocMrgBkmSql"
+  },
+  {
+    "name": "CRM_RATING_RISK_LEVEL_DEF"
+  },
+  {
+    "name": "CrmActivityTemplateListRecordDescriptions"
+  },
+  {
+    "name": "ServiceManagementWorkOrdersRecordDescriptions"
+  },
+  {
+    "name": "ReportArchiveHeader"
+  },
+  {
+    "name": "QuotationHeaderRecordDescriptions"
+  },
+  {
+    "name": "FoundationMessagesRecordNotes"
+  },
+  {
+    "name": "QuotationOriginAlternativeDefinition"
+  },
+  {
+    "name": "ContractHeaderRecordHistory"
+  },
+  {
+    "name": "ContractPrintType"
+  },
+  {
+    "name": "TradeSectorItemMatch"
+  },
+  {
+    "name": "DM_CUSTOMER_QUERY_DEF"
+  },
+  {
+    "name": "TradeChequePositionRecordDescriptions"
+  },
+  {
+    "name": "V_PAYROLLINID"
+  },
+  {
+    "name": "RealEstateMunicipalityExpense"
+  },
+  {
+    "name": "LeasePurchaseCustomerAdvance"
+  },
+  {
+    "name": "QuotationReferenceCommissionProfile"
+  },
+  {
+    "name": "SurveyQuestionsCallStartRecordNotes"
+  },
+  {
+    "name": "QuotationCustomerType"
+  },
+  {
+    "name": "GeneralTemplateColumn"
+  },
+  {
+    "name": "GeneralDimensionCombination"
+  },
+  {
+    "name": "TradeRiskHeaderSellerWaiting"
+  },
+  {
+    "name": "CrmInstitutionalCustomerOtherRelationshipDefinition"
+  },
+  {
+    "name": "ContractGuaranteeStatuteDefinition"
+  },
+  {
+    "name": "LeasePurchaseLetterOfCreditRecordNotes"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUpProcessTypeRecordNotes"
+  },
+  {
+    "name": "FND_API_PERMISSION"
+  },
+  {
+    "name": "OPERATING_EXPENSE_TAX"
+  },
+  {
+    "name": "CrmContact_exM"
+  },
+  {
+    "name": "FoundationDocumentDYSIndexRelation"
+  },
+  {
+    "name": "CreditBuyBackInvoiceCompany"
+  },
+  {
+    "name": "xInsurancePolicyWarrantyPro"
+  },
+  {
+    "name": "TaskTasksRecordDescriptions"
+  },
+  {
+    "name": "PaymentDaysType"
+  },
+  {
+    "name": "FinanceSwap"
+  },
+  {
+    "name": "InsuranceTrackingLine"
+  },
+  {
+    "name": "InventoryWareHouseUsersRecordDescriptions"
+  },
+  {
+    "name": "CrmInformationImportance"
+  },
+  {
+    "name": "LeasePurchaseReturnInvoice"
+  },
+  {
+    "name": "1_LIMIT"
+  },
+  {
+    "name": "MBL_SESSION"
+  },
+  {
+    "name": "BudgetParameters"
+  },
+  {
+    "name": "BudgetComparison"
+  },
+  {
+    "name": "ContractPrintPaymentAmountFormat"
+  },
+  {
+    "name": "CreditLimitAllocationRecordNotes"
+  },
+  {
+    "name": "DM_CUSTOMER_QUERY_TRACE"
+  },
+  {
+    "name": "TradeChequePositionRecordNotes"
+  },
+  {
+    "name": "InventoryItemAndSubItemsSummaryListTemp"
+  },
+  {
+    "name": "GeneralPeriodUnits"
+  },
+  {
+    "name": "PaymentMethod"
+  },
+  {
+    "name": "TradeSectorMatch"
+  },
+  {
+    "name": "TradeTransactionOverdueLog"
+  },
+  {
+    "name": "QuotationReferenceParameterTable"
+  },
+  {
+    "name": "CalendarWorkingHour"
+  },
+  {
+    "name": "SurveyQuestionsCallStartRecordDescriptions"
+  },
+  {
+    "name": "CrmCustomerMergeTablesLog"
+  },
+  {
+    "name": "TaskTypeRecordNotes"
+  },
+  {
+    "name": "QuotationCreditType"
+  },
+  {
+    "name": "TradeGuaranteeType"
+  },
+  {
+    "name": "TradeLopProtocols"
+  },
+  {
+    "name": "LOP_RISK_HEADER"
+  },
+  {
+    "name": "CrmInstitutionalCustomerOtherRelationship"
+  },
+  {
+    "name": "FoundationDocumentDefinitionRecordNotes"
+  },
+  {
+    "name": "ContractGuarantorStatuteDefinition"
+  },
+  {
+    "name": "FoundationRequiredField"
+  },
+  {
+    "name": "FoundationDepartmentRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseLetterOfCreditRecordDescriptions"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUpReasonRecordDescriptions"
+  },
+  {
+    "name": "CrmInstitutionalCustomerOrganizationalStatus"
+  },
+  {
+    "name": "InventoryItemRequestBagStatute"
+  },
+  {
+    "name": "FoundationMail"
+  },
+  {
+    "name": "TaskCancelReasonRelation"
+  },
+  {
+    "name": "CrmAFollowStatusDef"
+  },
+  {
+    "name": "PaymentPerType"
+  },
+  {
+    "name": "FoundationDetailPageButtonsRolePermissions"
+  },
+  {
+    "name": "ProcessFlowProcessWorkSheetsUsers"
+  },
+  {
+    "name": "GeneralDimension20131022"
+  },
+  {
+    "name": "GeneralCurrencyExchangeRecordNotes"
+  },
+  {
+    "name": "GeneralDimensionValueCombination"
+  },
+  {
+    "name": "InventoryStockCodeRecordNotes"
+  },
+  {
+    "name": "RecordDescriptions"
+  },
+  {
+    "name": "InventoryStockCodeYearlyLimitsRecordDescriptions"
+  },
+  {
+    "name": "ContractPrintPaymentDateFormat"
+  },
+  {
+    "name": "CreditLimitAllocationRecordDescriptions"
+  },
+  {
+    "name": "TrdAccAccountCode"
+  },
+  {
+    "name": "DM_DOC_FoundationStatute"
+  },
+  {
+    "name": "JournalSetUpEnumsRecordNotes"
+  },
+  {
+    "name": "LeasingOperationVendorUpdates"
+  },
+  {
+    "name": "InventoryStockEntryReceiptDetail"
+  },
+  {
+    "name": "TradeChequeProcessTypeRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentParentRecordPath"
+  },
+  {
+    "name": "PaymentScheduleHeader"
+  },
+  {
+    "name": "TradeInflationRate"
+  },
+  {
+    "name": "PaymentScheduleLineRecordNotes"
+  },
+  {
+    "name": "SurveyQuestionSubCategoryDefinitionRecordNotes"
+  },
+  {
+    "name": "GeneralDimension"
+  },
+  {
+    "name": "CrmMeetingCheckList"
+  },
+  {
+    "name": "CrmInstitutionalCustomerRecordNotes"
+  },
+  {
+    "name": "CrmMeetingActivityGroup"
+  },
+  {
+    "name": "FoundationDocumentDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CrmContactRecordHistory"
+  },
+  {
+    "name": "CrmCompanyDepartmentRecordNotes"
+  },
+  {
+    "name": "CrmRelationship50UserDefinedProperties"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUpReasonRecordNotes"
+  },
+  {
+    "name": "CreditQuotationRevisionStatus"
+  },
+  {
+    "name": "CrmRouteTrack"
+  },
+  {
+    "name": "LedgerParametersMakeProvisionLine"
+  },
+  {
+    "name": "CrmIndividualCustomerUserDefinedFields"
+  },
+  {
+    "name": "PaymentScheduleLine"
+  },
+  {
+    "name": "FinanceSwapPayPayments"
+  },
+  {
+    "name": "FoundationPublicSearcherDesigns"
+  },
+  {
+    "name": "FoundationDetailPageButtonsUserPermissions"
+  },
+  {
+    "name": "MetricUnitRecordNotes"
+  },
+  {
+    "name": "FinanceCreditAllocationType"
+  },
+  {
+    "name": "CrmMeetingPlan"
+  },
+  {
+    "name": "GeneralCurrencyExchangeRecordDescriptions"
+  },
+  {
+    "name": "InventoryUpKeepPeriodRecordNotes"
+  },
+  {
+    "name": "FoundationUserDetailMenuPermissionRecordNotes"
+  },
+  {
+    "name": "BudgetModel"
+  },
+  {
+    "name": "CreditIEHeader"
+  },
+  {
+    "name": "ContractMKKRegistrationStatus"
+  },
+  {
+    "name": "GeneralCurrencyExchange"
+  },
+  {
+    "name": "CrmTaskGroupRecordNotes"
+  },
+  {
+    "name": "CrmDocumentTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "ServiceManagementProjectsRolesRecordDescriptions"
+  },
+  {
+    "name": "COLL_POOL_PERSON"
+  },
+  {
+    "name": "TradeVendorEntryClosing"
+  },
+  {
+    "name": "CrmRelationship72UserDefinedProperties"
+  },
+  {
+    "name": "SozlesmeTransfer"
+  },
+  {
+    "name": "DM_EGM_PROCEDURE"
+  },
+  {
+    "name": "ContractRepresentationTypeRecordNotes"
+  },
+  {
+    "name": "JournalSetUpEnumsRecordDescriptions"
+  },
+  {
+    "name": "TradeChequeProcessTypeRecordNotes"
+  },
+  {
+    "name": "LedgerParametersAccountType"
+  },
+  {
+    "name": "PaymentTaxAllocation"
+  },
+  {
+    "name": "LeasePurchaseOrderHeaderRecordNotes"
+  },
+  {
+    "name": "TradeOverdueInterestType"
+  },
+  {
+    "name": "BDG_OTHERCOLLECTINGACCOUNTS"
+  },
+  {
+    "name": "PaymentScheduleLineRecordDescriptions"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsRecordNotes"
+  },
+  {
+    "name": "SurveyQuestionSubCategoryDefinitionRecordDescriptions"
+  },
+  {
+    "name": "GeneralDimensionFieldRelation20131022"
+  },
+  {
+    "name": "CRM_CRPRTN_RSDNT_TYPE_DEF"
+  },
+  {
+    "name": "CreditIELine"
+  },
+  {
+    "name": "CrmMeetingPlanDetail"
+  },
+  {
+    "name": "ServiceManagementCallsRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalCustomerContactRelationship"
+  },
+  {
+    "name": "QuotationReferenceType"
+  },
+  {
+    "name": "GeneralCompany"
+  },
+  {
+    "name": "QuotationLineRecordNotes"
+  },
+  {
+    "name": "CrmOccupationTitleRecordNotes"
+  },
+  {
+    "name": "CrmRelationship51UserDefinedProperties"
+  },
+  {
+    "name": "TradeRiskHeaderRecordDescriptions"
+  },
+  {
+    "name": "CrmInstitutionalCustomerType"
+  },
+  {
+    "name": "PurchaseDocumentHeader"
+  },
+  {
+    "name": "FoundationDocumentRequiredGroupLine"
+  },
+  {
+    "name": "PaymentWeekDays"
+  },
+  {
+    "name": "TradeOverdueContractRate"
+  },
+  {
+    "name": "FinanceSwapRecPayments"
+  },
+  {
+    "name": "ARecordNotes"
+  },
+  {
+    "name": "CreditHeaderRecordHistory"
+  },
+  {
+    "name": "GeneralDimensionFieldRelation"
+  },
+  {
+    "name": "TradeFixedAssetRevaluationGroup"
+  },
+  {
+    "name": "TaskType"
+  },
+  {
+    "name": "FoundationUserDetailMenuPermissionRecordDescriptions"
+  },
+  {
+    "name": "CreditIELineContact"
+  },
+  {
+    "name": "CreditLimitAllocationProject"
+  },
+  {
+    "name": "ServiceManagementCallWorkOrdersRecordNotes"
+  },
+  {
+    "name": "AriKiraNewx"
+  },
+  {
+    "name": "TaskSchedulerTaskParameterValues"
+  },
+  {
+    "name": "QuotationPayment"
+  },
+  {
+    "name": "CrmAcademicBackgroundRecordNotes"
+  },
+  {
+    "name": "CrmDocumentTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InventoryInstructionRecordDescriptions"
+  },
+  {
+    "name": "CreditMeeting"
+  },
+  {
+    "name": "GeneralDimensionTest"
+  },
+  {
+    "name": "DM_EGM_PROCEDURE_TRANSACTION"
+  },
+  {
+    "name": "ContractRepresentationTypeRecordDescriptions"
+  },
+  {
+    "name": "TradeChequeStateRecordDescriptions"
+  },
+  {
+    "name": "FoundationMailAttachment"
+  },
+  {
+    "name": "PaymentTerm"
+  },
+  {
+    "name": "LeasePurchaseOrderHeaderRecordDescriptions"
+  },
+  {
+    "name": "TradeOverdueCalcAccount"
+  },
+  {
+    "name": "OCLocation"
+  },
+  {
+    "name": "LeasePurchasePreInterest"
+  },
+  {
+    "name": "GeneralReportChecks"
+  },
+  {
+    "name": "RealPropertyPropertyTaxesRecordNotes"
+  },
+  {
+    "name": "BudgetTemplateRecordNotes"
+  },
+  {
+    "name": "GeneralCurrency"
+  },
+  {
+    "name": "QuotationLineRecordDescriptions"
+  },
+  {
+    "name": "SurveyQuestionCategoryDefinition"
+  },
+  {
+    "name": "CrmRelationship52UserDefinedProperties"
+  },
+  {
+    "name": "TradeItem1562UserDefinedProperties"
+  },
+  {
+    "name": "TradeRiskHeaderRecordHistory"
+  },
+  {
+    "name": "CrmInstitutionalCustomerEstablishmentStructure"
+  },
+  {
+    "name": "CreditMeetingItem"
+  },
+  {
+    "name": "PurchaseDocumentLine"
+  },
+  {
+    "name": "GeneralDimensionSetup"
+  },
+  {
+    "name": "OCTitle"
+  },
+  {
+    "name": "TradeFixedAssetGroupValuation"
+  },
+  {
+    "name": "FoundationDocumentType"
+  },
+  {
+    "name": "QuotationOccasionStateReasonDefinition"
+  },
+  {
+    "name": "LedgerParametersMakeProvisionHeader"
+  },
+  {
+    "name": "QuotationContractType"
+  },
+  {
+    "name": "ARecordDescriptions"
+  },
+  {
+    "name": "PaymentHolidayWorkDay"
+  },
+  {
+    "name": "TradeAgreement105UserDefinedProperty"
+  },
+  {
+    "name": "LedgerLGBalanceTemplate"
+  },
+  {
+    "name": "KKB_RecordCollectionHistory"
+  },
+  {
+    "name": "InventoryStockCodeRecordDescriptions"
+  },
+  {
+    "name": "LPVendorPaymentImport"
+  },
+  {
+    "name": "Temp_Transfer_Account"
+  },
+  {
+    "name": "CrmContactResponsibilityToUsDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeRiskHeaderRecordNotes"
+  },
+  {
+    "name": "RPR_QUORecordNotes"
+  },
+  {
+    "name": "TradeVendorInvoiceEntry"
+  },
+  {
+    "name": "CreditMeetingUser"
+  },
+  {
+    "name": "CrmRelationship73UserDefinedProperties"
+  },
+  {
+    "name": "FoundationDelegationsRecordNotes"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_20230708"
+  },
+  {
+    "name": "DM_GIBDATA"
+  },
+  {
+    "name": "ContractRepresentationDocumentRecordNotes"
+  },
+  {
+    "name": "TradeChequeStateRecordNotes"
+  },
+  {
+    "name": "BudgetExpenseLine"
+  },
+  {
+    "name": "SurveyQuestionAskingMethodDefinitionRecordNotes"
+  },
+  {
+    "name": "COLL_CUSTOMER"
+  },
+  {
+    "name": "QuotationLeasingType"
+  },
+  {
+    "name": "CreditHeader"
+  },
+  {
+    "name": "CrmCountryRecordNotes"
+  },
+  {
+    "name": "TradeAgreement111UserDefinedProperty"
+  },
+  {
+    "name": "TradeOverdueInterestRate_20220801"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationshipProposal"
+  },
+  {
+    "name": "RealPropertyPropertyTaxesRecordDescriptions"
+  },
+  {
+    "name": "InventoryUpKeepRecordNotes"
+  },
+  {
+    "name": "BudgetTemplateRecordDescriptions"
+  },
+  {
+    "name": "InventoryLocationIdentitySequence"
+  },
+  {
+    "name": "CrmInstitutionalCustomerContactRelationshipDefinition"
+  },
+  {
+    "name": "CreditGuarantorRepresentationType"
+  },
+  {
+    "name": "FoundationDepartment"
+  },
+  {
+    "name": "CrmRelationship53UserDefinedProperties"
+  },
+  {
+    "name": "TradeItem1481UserDefinedProperties"
+  },
+  {
+    "name": "CrmSignAuthorityLevel"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_20230714"
+  },
+  {
+    "name": "CrmRouteRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyPaymentsRecordNotes"
+  },
+  {
+    "name": "CrmTvTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "CrmActivityUserDefinedFieldsRecordNotes"
+  },
+  {
+    "name": "ReporterPrintDocBkmOpt"
+  },
+  {
+    "name": "InventoryDemo"
+  },
+  {
+    "name": "InventoryProductTemplateRecordNotes"
+  },
+  {
+    "name": "CrmCompanyGroupRecordNotes"
+  },
+  {
+    "name": "LedgerLGBalanceTemplateItemsAccounts"
+  },
+  {
+    "name": "KKB_RecordSettlementHistory"
+  },
+  {
+    "name": "SurveyQuestionRecordNotes"
+  },
+  {
+    "name": "CRM_BUSINESS_UNIT_DEF"
+  },
+  {
+    "name": "LeasePurchaseCostingHeaderRecordHistory"
+  },
+  {
+    "name": "CrmContactResponsibilityToUsDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeSalesHeaderRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship20_4UserDefinedPropertyTable"
+  },
+  {
+    "name": "FoundationDelegationsRecordDescriptions"
+  },
+  {
+    "name": "DM_HOUSE_STATUS"
+  },
+  {
+    "name": "ContractRepresentationDocumentRecordDescriptions"
+  },
+  {
+    "name": "CrmInformationRecordNotes"
+  },
+  {
+    "name": "TradeCustomerPaymentLineRecordDescriptions"
+  },
+  {
+    "name": "CrmMainChildSector"
+  },
+  {
+    "name": "SurveyQuestionAskingMethodDefinitionRecordDescriptions"
+  },
+  {
+    "name": "COLL_CREDIT"
+  },
+  {
+    "name": "JournalSetupPostingTypeGroups_old"
+  },
+  {
+    "name": "TaskCheckListQuestion"
+  },
+  {
+    "name": "LOPAGAINSTSEPANDSECHANDVALRecordNotes"
+  },
+  {
+    "name": "ServiceManagementCallWorkOrderTemplateRecordNotes"
+  },
+  {
+    "name": "CreditHeaderUserOpinion"
+  },
+  {
+    "name": "TradeAccountTypes"
+  },
+  {
+    "name": "CrmCountryRecordDescriptions"
+  },
+  {
+    "name": "CrmActivityTasksTemplate"
+  },
+  {
+    "name": "CollectionAutomation"
+  },
+  {
+    "name": "INV_PROPERTY"
+  },
+  {
+    "name": "GeneralCurrencyExchangeSetup"
+  },
+  {
+    "name": "CreditGuarantorType"
+  },
+  {
+    "name": "GeneralNumberSequenceRecordDescriptions"
+  },
+  {
+    "name": "InsuranceAgencyType"
+  },
+  {
+    "name": "LeasePurchaseRegistrationHeaderRecordNotes"
+  },
+  {
+    "name": "TradeItem3265UserDefinedProperties"
+  },
+  {
+    "name": "InsurancePolicyRecordNotes"
+  },
+  {
+    "name": "TrdAccVoucherStatus"
+  },
+  {
+    "name": "CrmRouteRecordDescriptions"
+  },
+  {
+    "name": "FinancePaymentMethodRecordNotes"
+  },
+  {
+    "name": "LeasingOperationProjectRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyPaymentsRecordDescriptions"
+  },
+  {
+    "name": "CrmTvTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CreditFAHeader"
+  },
+  {
+    "name": "InventoryStockCodeConfiguration"
+  },
+  {
+    "name": "InventoryDemoTree"
+  },
+  {
+    "name": "CrmActivityUserDefinedFieldsRecordDescriptions"
+  },
+  {
+    "name": "BDG_GENERALEXPENSE"
+  },
+  {
+    "name": "ServiceManagementContractsRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationshipContract"
+  },
+  {
+    "name": "InventoryUpKeepRelationProposingDateRecordNotes"
+  },
+  {
+    "name": "InventoryProductTemplateRecordDescriptions"
+  },
+  {
+    "name": "CrmCompanyGroupRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorProductAndMarkType"
+  },
+  {
+    "name": "FND_SYSTEM_WARNINGS"
+  },
+  {
+    "name": "SurveyRecordNotes"
+  },
+  {
+    "name": "TradeSalesHeaderRecordNotes"
+  },
+  {
+    "name": "FoundationUserDefinedGroup"
+  },
+  {
+    "name": "CrmInstitutionalCustomerUserDefinedFields"
+  },
+  {
+    "name": "DM_IMP_RELATION"
+  },
+  {
+    "name": "CrmInformationRecordDescriptions"
+  },
+  {
+    "name": "TradeCustomerPaymentLineRecordNotes"
+  },
+  {
+    "name": "CrmCapitalTypeDefinition"
+  },
+  {
+    "name": "COLL_MEETING"
+  },
+  {
+    "name": "QuotationTargetCategoryDefinition"
+  },
+  {
+    "name": "CreditFALine"
+  },
+  {
+    "name": "TradeFixedAssetRevaluationValue"
+  },
+  {
+    "name": "TRDRISKAPP"
+  },
+  {
+    "name": "FoundationUserDefinedPropertyTable"
+  },
+  {
+    "name": "LOPAGAINSTSEPANDSECHANDVALRecordDescriptions"
+  },
+  {
+    "name": "InsuranceWarrantyRecordNotes"
+  },
+  {
+    "name": "ServiceManagementCallWorkOrderTemplateRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseOrderLineRecordNotes"
+  },
+  {
+    "name": "RealEstateHouseRequestScoresRecordNotes"
+  },
+  {
+    "name": "InventoryInstructionRecordNotes"
+  },
+  {
+    "name": "RealEstateResults"
+  },
+  {
+    "name": "ContractTestRecordNotes"
+  },
+  {
+    "name": "CollectionAutomationDetail"
+  },
+  {
+    "name": "TaskSchedulerTasksRecordNotes"
+  },
+  {
+    "name": "OCLocationTitleRoles"
+  },
+  {
+    "name": "RealPropertyPropertyExpertEvaluationsRecordNotes"
+  },
+  {
+    "name": "InsuranceBranch"
+  },
+  {
+    "name": "LeasePurchaseRegistrationHeaderRecordDescriptions"
+  },
+  {
+    "name": "InsurancePolicyRecordDescriptions"
+  },
+  {
+    "name": "CrmSignAuthorityLevelRecordNotes"
+  },
+  {
+    "name": "TrdAccVoucher"
+  },
+  {
+    "name": "CrmInstitutionalCustomerContactRelationshipDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeFixedAssetStatus"
+  },
+  {
+    "name": "FinancePaymentMethodRecordDescriptions"
+  },
+  {
+    "name": "LeasingOperationProjectRecordDescriptions"
+  },
+  {
+    "name": "Mark"
+  },
+  {
+    "name": "CrmContactMediaInterestTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "RealEstateHouseRequestScores"
+  },
+  {
+    "name": "TradeAgreementTopGroupRecordNotes"
+  },
+  {
+    "name": "TaskTasksRecordHistory"
+  },
+  {
+    "name": "ProcessFlowProcessWorkSheetsFields"
+  },
+  {
+    "name": "ServiceManagementContractsRecordDescriptions"
+  },
+  {
+    "name": "TaskPriorityDegreeRecordNotes"
+  },
+  {
+    "name": "TradeInterest"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorProductAndMark1"
+  },
+  {
+    "name": "FoundationUserTypeRecordDescriptions"
+  },
+  {
+    "name": "FND_SYSTEM_WARNINGS_RECEIVEDS"
+  },
+  {
+    "name": "TradeItem1344_25UserDefinedPropertyTable"
+  },
+  {
+    "name": "TradeSectorAssociationRecordDescriptions"
+  },
+  {
+    "name": "RealEstateUseState"
+  },
+  {
+    "name": "FoundationUserDefinedGroupItem"
+  },
+  {
+    "name": "DM_NBSM_REASON_CODES"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelationRecordNotes"
+  },
+  {
+    "name": "DemoInsuranceInformations"
+  },
+  {
+    "name": "TradeCustomerRecordDescriptions"
+  },
+  {
+    "name": "CrmDefectiveTypeDefinition"
+  },
+  {
+    "name": "COLL_PAYMENT_PROMISE"
+  },
+  {
+    "name": "TradeItem"
+  },
+  {
+    "name": "Model"
+  },
+  {
+    "name": "ContractHeaderRecordNotes"
+  },
+  {
+    "name": "RPR_SET_FREE_PART_QUO_HDR_ID_HISTORY"
+  },
+  {
+    "name": "InsuranceWarrantyRecordDescriptions"
+  },
+  {
+    "name": "TradeGuarantee64UserDefinedProperties"
+  },
+  {
+    "name": "LeasePurchaseOrderLineRecordDescriptions"
+  },
+  {
+    "name": "CrmActivityActivity"
+  },
+  {
+    "name": "TradeBankCheque"
+  },
+  {
+    "name": "RealEstateHouseRequestScoresRecordDescriptions"
+  },
+  {
+    "name": "ContractTestRecordDescriptions"
+  },
+  {
+    "name": "BudgetTemplateLineRecordNotes"
+  },
+  {
+    "name": "FND_LEASING_PART"
+  },
+  {
+    "name": "TradeVendorPaymentLine"
+  },
+  {
+    "name": "InventoryUpKeepRelationUpKeepPeriod"
+  },
+  {
+    "name": "TaskSchedulerTasksRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyExpertEvaluationsRecordDescriptions"
+  },
+  {
+    "name": "TRADE_GUARANTEE_HEADER_TYPE_DEF"
+  },
+  {
+    "name": "SurveyQuestionWhoCanAskDefinitionRecordNotes"
+  },
+  {
+    "name": "GeneralNumberSequence"
+  },
+  {
+    "name": "GeneralDimensionValueCombinationRecordDescriptions"
+  },
+  {
+    "name": "FinanceFXSwap"
+  },
+  {
+    "name": "Ledgertemp35"
+  },
+  {
+    "name": "InsuranceClaim"
+  },
+  {
+    "name": "CrmSignAuthorityLevelRecordDescriptions"
+  },
+  {
+    "name": "RealEstateHouseRequestRecordNotes"
+  },
+  {
+    "name": "FinanceCreditAllocationRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalPartner"
+  },
+  {
+    "name": "CreditBuyBackProject"
+  },
+  {
+    "name": "ModelSub"
+  },
+  {
+    "name": "CrmContactMediaInterestTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeAgreementTopGroupRecordDescriptions"
+  },
+  {
+    "name": "LEDGER_REVERSE_DESC"
+  },
+  {
+    "name": "BudgetForecastSalesHeader"
+  },
+  {
+    "name": "QuotationTimeUnit"
+  },
+  {
+    "name": "FoundationMultiPageTabRestrictionPart"
+  },
+  {
+    "name": "FoundationDocumentRecordNotes"
+  },
+  {
+    "name": "TaskPriorityDegreeRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorProductAndMark2"
+  },
+  {
+    "name": "FoundationStatuteMenuParent"
+  },
+  {
+    "name": "CrmActivityInvitees66UserDefinedActivities"
+  },
+  {
+    "name": "TradeRiskDocument"
+  },
+  {
+    "name": "TradeSectorAssociationRecordNotes"
+  },
+  {
+    "name": "RealEstateUseQuality"
+  },
+  {
+    "name": "LeasePurchaseCostingValue"
+  },
+  {
+    "name": "DM_NBSM_REASON_CODES_CATEGORIES"
+  },
+  {
+    "name": "TradeFixedAssetAmortizationMethod"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelationRecordDescriptions"
+  },
+  {
+    "name": "TradeCustomerRecordNotes"
+  },
+  {
+    "name": "CrmBloodGroupDefinition"
+  },
+  {
+    "name": "COLL_CREDIT_ACTIVITY"
+  },
+  {
+    "name": "CreditInstitutionalScoring"
+  },
+  {
+    "name": "ContractHeaderRecordDescriptions"
+  },
+  {
+    "name": "FoundationLogRecordNotes"
+  },
+  {
+    "name": "TradeItem83UserDefinedProperties"
+  },
+  {
+    "name": "CrmOccupationTitleRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseDocumentHeaderRecordNotes"
+  },
+  {
+    "name": "CrmMeetingWeeklyPlanDetailStatus"
+  },
+  {
+    "name": "LedgerVoucherTypes"
+  },
+  {
+    "name": "CreditHeaderUser"
+  },
+  {
+    "name": "BudgetTemplateLineRecordDescriptions"
+  },
+  {
+    "name": "INV_PROPERTY_OPTION"
+  },
+  {
+    "name": "SurveyQuestionWhoCanAskDefinitionRecordDescriptions"
+  },
+  {
+    "name": "_MGR_TEMINAT_ESLESTIR"
+  },
+  {
+    "name": "QuotationProjectRecordNotes"
+  },
+  {
+    "name": "RealPropertyRentIncreaseTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "CRMGeneralParameter"
+  },
+  {
+    "name": "GeneralTaxGroupRecordDescriptions"
+  },
+  {
+    "name": "InsuranceCompanyAgency"
+  },
+  {
+    "name": "AccountTemp92X"
+  },
+  {
+    "name": "InsuranceIntegrationLog"
+  },
+  {
+    "name": "FoundationPart"
+  },
+  {
+    "name": "DM_NBSM_RESULT"
+  },
+  {
+    "name": "RealEstateHouseRequestRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditAllocationRecordDescriptions"
+  },
+  {
+    "name": "InventoryEquipmentExclude"
+  },
+  {
+    "name": "JournalSetupPostingTypeGroups"
+  },
+  {
+    "name": "CrmNewspaperDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationMenuPasswordRecordNotes"
+  },
+  {
+    "name": "TradeAgreementResponsibilityTypeRecordNotes"
+  },
+  {
+    "name": "CrmProhibitedCustomer"
+  },
+  {
+    "name": "BDG_GENERALEXPENSEACCOUNTS"
+  },
+  {
+    "name": "InventoryUpKeepLaborDefinitions"
+  },
+  {
+    "name": "LeasePurchaseCostingHeader"
+  },
+  {
+    "name": "FoundationMultiPageTabRestrictionRole"
+  },
+  {
+    "name": "InventoryDemoRecordNotes"
+  },
+  {
+    "name": "FoundationLinkGenerator"
+  },
+  {
+    "name": "InventoryEquipmentEntryReservesRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseContractCharge"
+  },
+  {
+    "name": "CrmMeetingVisitorProposal"
+  },
+  {
+    "name": "CrmRoutePharmacyStopSequenceHistory"
+  },
+  {
+    "name": "FoundationStatuteMenuRecordNotes"
+  },
+  {
+    "name": "TradeRiskDocumentApprovalStatus"
+  },
+  {
+    "name": "TradeSectorItemMatchListRecordDescriptions"
+  },
+  {
+    "name": "LedgerAllocation"
+  },
+  {
+    "name": "TradeFixedAssetLayer"
+  },
+  {
+    "name": "CrmInformationTypesRecordNotes"
+  },
+  {
+    "name": "CrmCommunicationGroupDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY"
+  },
+  {
+    "name": "FoundationLogRecordDescriptions"
+  },
+  {
+    "name": "TradeItem1UserDefinedProperties"
+  },
+  {
+    "name": "CrmBloodGroupDefinitionRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseDocumentHeaderRecordDescriptions"
+  },
+  {
+    "name": "TradeChequeAccount"
+  },
+  {
+    "name": "BudgetExpense"
+  },
+  {
+    "name": "TradeFixedAssetRecordMethod"
+  },
+  {
+    "name": "LedgerVoucherNumberSequences"
+  },
+  {
+    "name": "RealPropertyPropertyLegalProblemsRecordHistory"
+  },
+  {
+    "name": "BudgetTypeRecordNotes"
+  },
+  {
+    "name": "OCTitleRecordNotes"
+  },
+  {
+    "name": "InventoryItemGroupTypes"
+  },
+  {
+    "name": "QuotationProjectRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyRentIncreaseTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InsuranceConsumerType"
+  },
+  {
+    "name": "CPI_RATES"
+  },
+  {
+    "name": "InsuranceSupplementDescriptionType"
+  },
+  {
+    "name": "FND_BACKGROUND_WORKS"
+  },
+  {
+    "name": "TrdAccAmountType"
+  },
+  {
+    "name": "DM_NBSM_RESULT_VALID_PARAMETERS"
+  },
+  {
+    "name": "ServiceManagementCallTypesRecordNotes"
+  },
+  {
+    "name": "FinanceCreditDefinitionRecordNotes"
+  },
+  {
+    "name": "CreditLeasingRecordNotes"
+  },
+  {
+    "name": "InventoryEquipmentEntry"
+  },
+  {
+    "name": "RealPropertyPropertyRecordHistory"
+  },
+  {
+    "name": "APP_CATEGORY_PROPERTYRecordDescriptions"
+  },
+  {
+    "name": "CrmNewspaperDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FoundationMenuPasswordRecordDescriptions"
+  },
+  {
+    "name": "TRDRISKDOCUMENTINVOICES"
+  },
+  {
+    "name": "FinanceForward"
+  },
+  {
+    "name": "TradeAgreementResponsibilityTypeRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseCostingPayment"
+  },
+  {
+    "name": "RealEstateContractRenewal"
+  },
+  {
+    "name": "FoundationMultiPageTabRestrictionUser"
+  },
+  {
+    "name": "InventoryDemoRecordDescriptions"
+  },
+  {
+    "name": "ContractGuarantorEntryTypes"
+  },
+  {
+    "name": "FinanceCCSwapPayment"
+  },
+  {
+    "name": "RealPropertyPropertyQualityDefinitionRecordNotes"
+  },
+  {
+    "name": "QuotationLineDetailAssetFields"
+  },
+  {
+    "name": "FoundationStatuteMenuRecordDescriptions"
+  },
+  {
+    "name": "TradeRiskDocumentResult"
+  },
+  {
+    "name": "TradeSectorItemMatchListRecordNotes"
+  },
+  {
+    "name": "CrmRouteMap"
+  },
+  {
+    "name": "TradeFixedAssetType"
+  },
+  {
+    "name": "CrmInformationTypesRecordDescriptions"
+  },
+  {
+    "name": "CrmHobbyTypeDefinition"
+  },
+  {
+    "name": "COLL_POOL_PROFILE"
+  },
+  {
+    "name": "LedgerAccountRecordHistory"
+  },
+  {
+    "name": "CrmBloodGroupDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeAgreementResponsibilityTypeRecordHistory"
+  },
+  {
+    "name": "FoundationDataFilterForPart"
+  },
+  {
+    "name": "TradeItemDefinition"
+  },
+  {
+    "name": "BudgetTypeRecordDescriptions"
+  },
+  {
+    "name": "OCTitleRecordDescriptions"
+  },
+  {
+    "name": "GeneralTaxGroup"
+  },
+  {
+    "name": "FoundationRecordOperationWatch"
+  },
+  {
+    "name": "CreditInformationEntry"
+  },
+  {
+    "name": "CrmParameterTest"
+  },
+  {
+    "name": "TrdAccVoucherLine"
+  },
+  {
+    "name": "DM_NBSM_STATUTE_UPDATE_CONDITIONS"
+  },
+  {
+    "name": "ServiceManagementCallTypesRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CreditLeasingRecordDescriptions"
+  },
+  {
+    "name": "APP_CATEGORY_PROPERTYRecordNotes"
+  },
+  {
+    "name": "FoundationUsersRecordHistory"
+  },
+  {
+    "name": "QuotationTransferStatus"
+  },
+  {
+    "name": "RealEstate"
+  },
+  {
+    "name": "TradeFixedAssetAmortizationProfile"
+  },
+  {
+    "name": "QuotationContractDateDefinition"
+  },
+  {
+    "name": "InventoryDemoChild"
+  },
+  {
+    "name": "OCContactRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyQualityDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InventoryItemPlaceOfExclude"
+  },
+  {
+    "name": "TradeAutoRevenueFileType"
+  },
+  {
+    "name": "LeasePurchaseCustomsAgent"
+  },
+  {
+    "name": "RealEstateMunicipalityExpenseFronts"
+  },
+  {
+    "name": "TradeRiskDocumentStatus"
+  },
+  {
+    "name": "TradeTransactionRecordDescriptions"
+  },
+  {
+    "name": "CrmAddressCommunicationInformation"
+  },
+  {
+    "name": "RealPropertyPropertyRentalDetailsRecordNotes"
+  },
+  {
+    "name": "ContractProject"
+  },
+  {
+    "name": "CrmParameterTestRecordNotes"
+  },
+  {
+    "name": "PurchaseVendorLog"
+  },
+  {
+    "name": "ContractHeader"
+  },
+  {
+    "name": "InventoryStockCodeAssociationRelationRecordNotes"
+  },
+  {
+    "name": "LeasingOperationFTPInterestRates"
+  },
+  {
+    "name": "CrmExecutionLevelDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_TEMPLATE_DEF"
+  },
+  {
+    "name": "GeneralCurrencyRecordHistory"
+  },
+  {
+    "name": "CrmCapitalTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeChequePayrollIn"
+  },
+  {
+    "name": "CreditFAQuestionGroup"
+  },
+  {
+    "name": "FoundationDocumentChecklistMenu"
+  },
+  {
+    "name": "BudgetParametersRecordNotes"
+  },
+  {
+    "name": "INV_PROPERTY_RELATION"
+  },
+  {
+    "name": "QuotationRVAssetTreeDefinition"
+  },
+  {
+    "name": "TradeAutoRevenue"
+  },
+  {
+    "name": "LeasePurchaseCustomsDirectorate"
+  },
+  {
+    "name": "InventoryItemQuarantyFinishWarns"
+  },
+  {
+    "name": "CalendarRecordNotes"
+  },
+  {
+    "name": "QuotationRevisionHeader"
+  },
+  {
+    "name": "DM_NBSM_STATUTE_UPDATE_CONDITIONS_HEADER"
+  },
+  {
+    "name": "APP_CATEGORYRecordDescriptions"
+  },
+  {
+    "name": "FoundationDepartmentRecordNotes"
+  },
+  {
+    "name": "FoundationWarningDefinition"
+  },
+  {
+    "name": "ContractChequeHeaderRecordNotes"
+  },
+  {
+    "name": "OCContactRecordDescriptions"
+  },
+  {
+    "name": "QuotationOwnerType"
+  },
+  {
+    "name": "GeneralBankType"
+  },
+  {
+    "name": "RealPropertyRestrictionTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "ContractPrintDocumentsForVendor"
+  },
+  {
+    "name": "FoundationUserUnit"
+  },
+  {
+    "name": "TradeRiskDocumentType"
+  },
+  {
+    "name": "TradeTransactionRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyRentalDetailsRecordDescriptions"
+  },
+  {
+    "name": "LedgerJournal"
+  },
+  {
+    "name": "CreditMeetingStatute"
+  },
+  {
+    "name": "RealEstateToRentRecordNotes"
+  },
+  {
+    "name": "InventoryStockCodeAssociationRelationRecordDescriptions"
+  },
+  {
+    "name": "DemoPolicyTypes"
+  },
+  {
+    "name": "CrmFanaticismLevelDefinition"
+  },
+  {
+    "name": "FoundationRolePermission"
+  },
+  {
+    "name": "FoundationUserDefinedTableRecordNotes"
+  },
+  {
+    "name": "CrmCapitalTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "BDG_INTEREST"
+  },
+  {
+    "name": "CHKANSWER"
+  },
+  {
+    "name": "CrmActivityCategoryDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationRecordHistoryFieldDefinition"
+  },
+  {
+    "name": "CreditFAQuestion"
+  },
+  {
+    "name": "InventoryPurchaseRequestSourceTypes"
+  },
+  {
+    "name": "BDG_BUDGETKINDS"
+  },
+  {
+    "name": "ContractTestEntry"
+  },
+  {
+    "name": "FoundationDocumentChecklistMenuItemGroup"
+  },
+  {
+    "name": "BudgetParametersRecordDescriptions"
+  },
+  {
+    "name": "FinanceCCSwap"
+  },
+  {
+    "name": "CrmMembershipApplication"
+  },
+  {
+    "name": "TradeInterestFloatingLine"
+  },
+  {
+    "name": "LeasePurchaseDocumentExpense"
+  },
+  {
+    "name": "InsuranceDamageStatusCode"
+  },
+  {
+    "name": "TradeCalculatedOverdue"
+  },
+  {
+    "name": "CalendarRecordDescriptions"
+  },
+  {
+    "name": "CrmParameterTest2RecordNotes"
+  },
+  {
+    "name": "DM_NBSM_VEHICLE_CODES"
+  },
+  {
+    "name": "TradeAgreementRecordNotes"
+  },
+  {
+    "name": "AANOTARY"
+  },
+  {
+    "name": "ServiceManagementWorkOrdersSolutionLocationsRecordNotes"
+  },
+  {
+    "name": "TradeItemGroupMKKTypeDef"
+  },
+  {
+    "name": "APP_CATEGORYRecordNotes"
+  },
+  {
+    "name": "FoundationUserPermission"
+  },
+  {
+    "name": "FOUNDATION_MAIL_TEMPLATE"
+  },
+  {
+    "name": "ContractChequeHeaderRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyRestrictionTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InsuranceDamageType"
+  },
+  {
+    "name": "FoundationUserDefinedGroupRecordNotes"
+  },
+  {
+    "name": "CrmActivityResponseTypeDefinition"
+  },
+  {
+    "name": "InsuranceSupplementTypeRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyRentalPaymentsRecordNotes"
+  },
+  {
+    "name": "CreditMeetingSubject"
+  },
+  {
+    "name": "RealEstateToRentRecordDescriptions"
+  },
+  {
+    "name": "LeasingOperationProject_backup"
+  },
+  {
+    "name": "InventoryStockEntryReceipt"
+  },
+  {
+    "name": "CrmInstitutionalCustomerRecordDescriptions"
+  },
+  {
+    "name": "CrmNewspaperDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_INTERLOCUTOR"
+  },
+  {
+    "name": "TradeAgreementGroupRecordNotes"
+  },
+  {
+    "name": "TradeAutoRevenueLog"
+  },
+  {
+    "name": "CHKANSWERDETAIL"
+  },
+  {
+    "name": "CrmActivityCategoryDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeChequePayrollOut"
+  },
+  {
+    "name": "CrmMeetingPlanRecordNotes"
+  },
+  {
+    "name": "OCLocationCategory"
+  },
+  {
+    "name": "FoundationNumeratorType"
+  },
+  {
+    "name": "InventoryPurchaseRequestBagRecordNotes"
+  },
+  {
+    "name": "RealEstatePaymentRequest"
+  },
+  {
+    "name": "OCTitleDefaultRoles"
+  },
+  {
+    "name": "PurchaseApprovalDefinition"
+  },
+  {
+    "name": "DM_IND_QUERY_ADDRESS_RESP"
+  },
+  {
+    "name": "FoundationUserType"
+  },
+  {
+    "name": "CrmMeetingUserDefinedFields"
+  },
+  {
+    "name": "FoundationUserDefinedTableRecordDescriptions"
+  },
+  {
+    "name": "ContractNotaryPublicEntry"
+  },
+  {
+    "name": "CrmParameterTest2"
+  },
+  {
+    "name": "DM_PARAMETER"
+  },
+  {
+    "name": "TradeAgreementRecordDescriptions"
+  },
+  {
+    "name": "x"
+  },
+  {
+    "name": "ServiceManagementWorkOrdersSolutionLocationsRecordDescriptions"
+  },
+  {
+    "name": "FoundationSmsTaskErrorTryLimits"
+  },
+  {
+    "name": "CalendarItemRecordDescriptions"
+  },
+  {
+    "name": "TradeCustomerPaymentLine"
+  },
+  {
+    "name": "FinanceCreditProfileRecordNotes"
+  },
+  {
+    "name": "InventoryUpKeepStatute"
+  },
+  {
+    "name": "CreditPartnershipStatute"
+  },
+  {
+    "name": "RealPropertyQualificationDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryEquipmentExcludeRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseGtipDefinitions"
+  },
+  {
+    "name": "InventoryUpKeepPeriod"
+  },
+  {
+    "name": "InsuranceGrossPremiumCommissionRate"
+  },
+  {
+    "name": "InsuranceSupplementTypeRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyRentalPaymentsRecordDescriptions"
+  },
+  {
+    "name": "CreditMeetingRecordNotes"
+  },
+  {
+    "name": "GeneralTemplateHeader"
+  },
+  {
+    "name": "IdentitySequence"
+  },
+  {
+    "name": "RealEstatePeriodTypes"
+  },
+  {
+    "name": "FoundationTechnicalParts"
+  },
+  {
+    "name": "CrmMagazineDefinition"
+  },
+  {
+    "name": "FoundationChecklistQuestionRecordDescriptions"
+  },
+  {
+    "name": "TradeAgreementGroupRecordDescriptions"
+  },
+  {
+    "name": "InventoryStatuteRecordDescriptions"
+  },
+  {
+    "name": "CHKANSWERGROUPHEADER"
+  },
+  {
+    "name": "CrmMeetingPlanRecordDescriptions"
+  },
+  {
+    "name": "FinanceInterestRateSwapPayment"
+  },
+  {
+    "name": "ProcessFlowWorkSheetDefinitionsSubStatuteDefinition"
+  },
+  {
+    "name": "OCPositionRecordNotes"
+  },
+  {
+    "name": "temp_ie"
+  },
+  {
+    "name": "TradeRiskHeaderContact"
+  },
+  {
+    "name": "CrmDocument"
+  },
+  {
+    "name": "TradeTEMPGuaranteeUsage"
+  },
+  {
+    "name": "LedgerJournalLine"
+  },
+  {
+    "name": "ContractChequeHeader"
+  },
+  {
+    "name": "DM_POOL_CREDIT"
+  },
+  {
+    "name": "TRADE_GUARANTOR"
+  },
+  {
+    "name": "DemoCity"
+  },
+  {
+    "name": "CalendarItemRecordNotes"
+  },
+  {
+    "name": "ServiceManagementContractInvoicesRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseProjectHeaderRecordHistory"
+  },
+  {
+    "name": "FinanceCreditProfileRecordDescriptions"
+  },
+  {
+    "name": "CRM_INTEGRATION_USERS"
+  },
+  {
+    "name": "CrmIndividualCustomerCredit"
+  },
+  {
+    "name": "FoundationUserDefinedPropertiesRecordNotes"
+  },
+  {
+    "name": "FoundationPartMenuFieldRestrictions"
+  },
+  {
+    "name": "RealPropertyQualificationDefinitionRecordDescriptions"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderRecordNotes"
+  },
+  {
+    "name": "InventoryEquipmentEntryReservesRecordDescriptions"
+  },
+  {
+    "name": "INV_PROPERTY_CONFIGURATION"
+  },
+  {
+    "name": "InsuranceGuaranteeRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseLineIdentity"
+  },
+  {
+    "name": "temp_soz"
+  },
+  {
+    "name": "JournalParameterTemplate"
+  },
+  {
+    "name": "PaymentDaysRecordNotes"
+  },
+  {
+    "name": "TaskSchedulerScheduleDefinitionsRecordNotes"
+  },
+  {
+    "name": "LedgerAccountApprovalTemp"
+  },
+  {
+    "name": "FoundationDocumentDYSEkranKod"
+  },
+  {
+    "name": "FoundationUserDefinedGroupRecordDescriptions"
+  },
+  {
+    "name": "TradeItemType"
+  },
+  {
+    "name": "CreditMeetingRecordDescriptions"
+  },
+  {
+    "name": "DM_POOL_PERSON"
+  },
+  {
+    "name": "RealEstateRentingEconomyProportions"
+  },
+  {
+    "name": "FoundationUserTechnicalParts"
+  },
+  {
+    "name": "CrmReligionLevelDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_CUST_STAT"
+  },
+  {
+    "name": "LedgerDimensionBalanceReportTemplate"
+  },
+  {
+    "name": "InventoryShelfRecordDescriptions"
+  },
+  {
+    "name": "BDG_RATES"
+  },
+  {
+    "name": "CHKANSWERGROUPLINE"
+  },
+  {
+    "name": "SurveyQuestionsCallStartQuestions"
+  },
+  {
+    "name": "TradeChequeTrans"
+  },
+  {
+    "name": "CreditFAQuestionRecordNotes"
+  },
+  {
+    "name": "QuotationOccasionProduct"
+  },
+  {
+    "name": "BDG_BUDGETTYPES"
+  },
+  {
+    "name": "TradeItemTree"
+  },
+  {
+    "name": "BudgetPurchaseHeaderRecordNotes"
+  },
+  {
+    "name": "OCPositionRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseOrderHeader"
+  },
+  {
+    "name": "ContractTest"
+  },
+  {
+    "name": "FoundationMenu2"
+  },
+  {
+    "name": "temp_ie_list"
+  },
+  {
+    "name": "TradeRiskHeaderContractStatus"
+  },
+  {
+    "name": "CrmInstitutionalCustomerContactRelationshipDefinitionRecordNotes"
+  },
+  {
+    "name": "DM_POOL_PROFILE"
+  },
+  {
+    "name": "LedgerAccount_FirstAttempt"
+  },
+  {
+    "name": "CreditInstitutionalScoringRecordDescriptions"
+  },
+  {
+    "name": "ServiceManagementContractInvoicesRecordDescriptions"
+  },
+  {
+    "name": "ContractRepresentationType"
+  },
+  {
+    "name": "InventoryPurchaseOrderRecordDescriptions"
+  },
+  {
+    "name": "FoundationDays"
+  },
+  {
+    "name": "CrmAcademicBackgroundRecordDescriptions"
+  },
+  {
+    "name": "CrmIndividualCustomerCreditCard"
+  },
+  {
+    "name": "InventoryDemoChildRecordNotes"
+  },
+  {
+    "name": "FoundationTableUpdateLogHeader"
+  },
+  {
+    "name": "RealPropertyOwnerShipTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "PurchaseRequisitionHeaderRecordDescriptions"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsRecordDescriptions"
+  },
+  {
+    "name": "InsuranceGuaranteeRecordDescriptions"
+  },
+  {
+    "name": "DM_INDIVIDUAL_QUERY_RESPONSE"
+  },
+  {
+    "name": "InsurancePolicyCancelType"
+  },
+  {
+    "name": "PaymentDaysRecordDescriptions"
+  },
+  {
+    "name": "TaskSchedulerScheduleDefinitionsRecordDescriptions"
+  },
+  {
+    "name": "LedgerAccountApprovalState"
+  },
+  {
+    "name": "CrmInstitutionalCustomerOtherRelationshipDefinitionRecordNotes"
+  },
+  {
+    "name": "BudgetModelLineRecordNotes"
+  },
+  {
+    "name": "TRD_BANK_INT_COLLECTION"
+  },
+  {
+    "name": "CrmSportsTypeDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_CUST_TYPE_STAT"
+  },
+  {
+    "name": "LedgerAccount_SecondAttempt"
+  },
+  {
+    "name": "CrmInformationTypes"
+  },
+  {
+    "name": "CHKCHECKERGROUPHEADER"
+  },
+  {
+    "name": "CrmActivitySubCategoryDefinitionRecordNotes"
+  },
+  {
+    "name": "CreditFAQuestionRecordDescriptions"
+  },
+  {
+    "name": "QuotationOccasion"
+  },
+  {
+    "name": "RealPropertyCategoryDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationDocumentChecklistMenuRecordNotes"
+  },
+  {
+    "name": "BudgetPurchaseHeaderRecordDescriptions"
+  },
+  {
+    "name": "EGM_ARAC_CINS"
+  },
+  {
+    "name": "CreditBuyBack"
+  },
+  {
+    "name": "LeasePurchaseOrderLine"
+  },
+  {
+    "name": "LG_FOLLOWUP_TEMP"
+  },
+  {
+    "name": "LeasePurchaseOrderHeaderRecordHistory"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUp"
+  },
+  {
+    "name": "Ledgertemp_Mehmet"
+  },
+  {
+    "name": "INV_AMORTIZATION_RATE_BASED_BDDK_CODE"
+  },
+  {
+    "name": "QuotationRevisionHeaderRecordNotes"
+  },
+  {
+    "name": "CrmOccupationGroup"
+  },
+  {
+    "name": "DM_POOL_VENDOR"
+  },
+  {
+    "name": "DemoDistrict"
+  },
+  {
+    "name": "CrmIndividualPartner"
+  },
+  {
+    "name": "LedgerAccount"
+  },
+  {
+    "name": "CreditInstitutionalScoringRecordNotes"
+  },
+  {
+    "name": "FoundationTableLookUpRelationship"
+  },
+  {
+    "name": "JournalSetupTemplatesRecordNotes"
+  },
+  {
+    "name": "InventoryWayBillRecordDescriptions"
+  },
+  {
+    "name": "ContractGrantorOfPowerType"
+  },
+  {
+    "name": "InventoryDemoChildRecordDescriptions"
+  },
+  {
+    "name": "JournalPrivateVoucher"
+  },
+  {
+    "name": "TradeItemGroup"
+  },
+  {
+    "name": "RealPropertyOwnerShipTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsWarningUsersRecordDescriptions"
+  },
+  {
+    "name": "CrmProductGroup"
+  },
+  {
+    "name": "LeasePurchaseParameter"
+  },
+  {
+    "name": "InsurancePolicyCollection"
+  },
+  {
+    "name": "CrmCountry"
+  },
+  {
+    "name": "EInvWithholdingTaxType"
+  },
+  {
+    "name": "TaskSchedulerScheduleActionDefinitions"
+  },
+  {
+    "name": "CONTRACT_DATA_UPDATE"
+  },
+  {
+    "name": "CrmDocumentTypeDefinition"
+  },
+  {
+    "name": "RprInterestDate"
+  },
+  {
+    "name": "CrmRouteStopSequence"
+  },
+  {
+    "name": "DM_QUERY_PRIORITY_DEF"
+  },
+  {
+    "name": "BudgetModelLineRecordDescriptions"
+  },
+  {
+    "name": "TRD_BANK_INT_DAILY_DEBIT"
+  },
+  {
+    "name": "CrmSportIntrestTypeDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_COLL_RISK_STAT"
+  },
+  {
+    "name": "CrmContact"
+  },
+  {
+    "name": "FoundationUserDefinedPropertyTableColumn"
+  },
+  {
+    "name": "CHKCHECKERGROUPLINE"
+  },
+  {
+    "name": "CrmActivitySubCategoryDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeChequePosition"
+  },
+  {
+    "name": "CrmActivityInvitees67UserDefinedActivities"
+  },
+  {
+    "name": "CrmIndividualCustomerWorkingInsuranceCompany"
+  },
+  {
+    "name": "RealPropertyCategoryDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CrmContactCommunicationPreferencesMethodRelation"
+  },
+  {
+    "name": "LeasePurchaseProjectHeader"
+  },
+  {
+    "name": "CrmInformationStatute"
+  },
+  {
+    "name": "FinanceInterestRateSwap"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUpProcessType"
+  },
+  {
+    "name": "QuotationRevisionHeaderRecordDescriptions"
+  },
+  {
+    "name": "CrmRegion"
+  },
+  {
+    "name": "QuotationInciteType"
+  },
+  {
+    "name": "CrmCheckListQuestionRecordDescriptions"
+  },
+  {
+    "name": "RecordNotes"
+  },
+  {
+    "name": "JournalSetupTemplatesRecordDescriptions"
+  },
+  {
+    "name": "InventoryInvoiceRecordDescriptions"
+  },
+  {
+    "name": "FoundationTableUpdateLogDetail"
+  },
+  {
+    "name": "JournalPrivateVoucherLine"
+  },
+  {
+    "name": "CrmRelationship20UserDefinedProperties"
+  },
+  {
+    "name": "RealPropertyObtainTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryItemRequestBagRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseProjectLine"
+  },
+  {
+    "name": "FoundationFieldHeaderRecordNotes"
+  },
+  {
+    "name": "InsurancePolicyComissionStatute"
+  },
+  {
+    "name": "ContractChequeLine"
+  },
+  {
+    "name": "TradeAgreementPaymentRecordNotes"
+  },
+  {
+    "name": "FoundationMakerCheckerDefinitions"
+  },
+  {
+    "name": "DM_REASON_CODE_DEF"
+  },
+  {
+    "name": "RealEstateServiceStates"
+  },
+  {
+    "name": "DemoNoClaimState"
+  },
+  {
+    "name": "TRD_BANK_INT_THREAD"
+  },
+  {
+    "name": "CrmComputerKnowledgeDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_COLL_LATE_STAT"
+  },
+  {
+    "name": "CrmReligionTypeDefinition"
+  },
+  {
+    "name": "BDG_GENERALPAYMENT"
+  },
+  {
+    "name": "CHKCHECKERQUEANSGRPREGISTER"
+  },
+  {
+    "name": "CrmActivityStatusDefinitionRecordNotes"
+  },
+  {
+    "name": "PurchaseParameterRequisitionOfferListType"
+  },
+  {
+    "name": "CrmIndividualCustomerWorkingBank"
+  },
+  {
+    "name": "BDG_BUDGETHEADER"
+  },
+  {
+    "name": "InventoryStockCode"
+  },
+  {
+    "name": "CrmInstitutionalCustomerGroupDefinitionRecordNotes"
+  },
+  {
+    "name": "CrmProduct"
+  },
+  {
+    "name": "DM_INDIVIDUAL_QUERY"
+  },
+  {
+    "name": "OCEmployee"
+  },
+  {
+    "name": "FoundationUserMenuFieldRestrictionsRecordNotes"
+  },
+  {
+    "name": "TradeRiskHeaderLegalFollowUpReason"
+  },
+  {
+    "name": "InventoryUpKeepRelationProposingDate"
+  },
+  {
+    "name": "TradeItemUdtUrun_Test_iftihar"
+  },
+  {
+    "name": "QuotationOccasionMeeting"
+  },
+  {
+    "name": "CrmRouteListRecordNotes"
+  },
+  {
+    "name": "RealEstateParticipationTypes"
+  },
+  {
+    "name": "QuotationDeliveryType"
+  },
+  {
+    "name": "InventoryEquipmentEntryGiveBacks"
+  },
+  {
+    "name": "CrmCheckListQuestionRecordNotes"
+  },
+  {
+    "name": "FinanceCreditAllocation"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationRecordDescriptions"
+  },
+  {
+    "name": "InventoryItemUsageDates"
+  },
+  {
+    "name": "RealPropertyObtainTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "QuotationRevisionPaymentPlan"
+  },
+  {
+    "name": "InventoryPurchaseRequestBagRecordDescriptions"
+  },
+  {
+    "name": "QUO_INTEREST_RATE_LIMITS"
+  },
+  {
+    "name": "InventoryItemGroupRelatedMarks"
+  },
+  {
+    "name": "QuotationLineType"
+  },
+  {
+    "name": "RealEstateContractRenewalRecordNotes"
+  },
+  {
+    "name": "TradeAgreementPaymentRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPaymentPeriodDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationMessages"
+  },
+  {
+    "name": "DM_RELATIVE_RELATION_TYPE_DEF"
+  },
+  {
+    "name": "CrmMusicTypeDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_CRDT_COLL_STAT"
+  },
+  {
+    "name": "CrmInformationComeType"
+  },
+  {
+    "name": "CrmCheckList"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationLines"
+  },
+  {
+    "name": "CrmFanaticismLevelDefinitionRecordNotes"
+  },
+  {
+    "name": "CHKCHECKERTESTCONDITION"
+  },
+  {
+    "name": "CrmTriggerRates"
+  },
+  {
+    "name": "CrmActivityStatusDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeChequeState"
+  },
+  {
+    "name": "FinanceCreditBankSlip"
+  },
+  {
+    "name": "QUO_ASSET_GRP_PAYMENT_TERMRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalCustomerGroupDefinitionRecordDescriptions"
+  },
+  {
+    "name": "JournalSetupEnums"
+  },
+  {
+    "name": "CommonProcessDetailLog"
+  },
+  {
+    "name": "CrmInstitutionalCustomer1UserDefinedProperties"
+  },
+  {
+    "name": "QuotationLineDetail"
+  },
+  {
+    "name": "InventoryPurchaseRequestBag"
+  },
+  {
+    "name": "ProcessFlowProcessWorkSheetsCheckListValue"
+  },
+  {
+    "name": "CrmAddress"
+  },
+  {
+    "name": "FoundationUserMenuFieldRestrictionsRecordDescriptions"
+  },
+  {
+    "name": "TradeRiskHeaderStatus"
+  },
+  {
+    "name": "TradeItemUdtUrun_Test_iftihar2"
+  },
+  {
+    "name": "CrmMeetingActivityDefinitionRecordDescriptions"
+  },
+  {
+    "name": "SurveyQuestionAnswerOptions"
+  },
+  {
+    "name": "QuotationItemSituation"
+  },
+  {
+    "name": "CrmRouteListRecordDescriptions"
+  },
+  {
+    "name": "Temp_InventoryItemProperties"
+  },
+  {
+    "name": "QuotationImportType"
+  },
+  {
+    "name": "LeasePurchaseStoppageWithholding"
+  },
+  {
+    "name": "FoundationUserCheckType"
+  },
+  {
+    "name": "InventoryEquipmentEntryReserves"
+  },
+  {
+    "name": "CommonProcessLog"
+  },
+  {
+    "name": "CrmProhibitedCustomerRecordDescriptions"
+  },
+  {
+    "name": "CrmCheckListQuestion"
+  },
+  {
+    "name": "JournalSetupProfilesRecordNotes"
+  },
+  {
+    "name": "ServiceManagementProductsRecordNotes"
+  },
+  {
+    "name": "FinanceCreditDefinition"
+  },
+  {
+    "name": "InventoryShelfCellRecordDescriptions"
+  },
+  {
+    "name": "CrmIndividualCustomerEstate"
+  },
+  {
+    "name": "CrmMembershipApplicantInformingMethodDefinition"
+  },
+  {
+    "name": "RealPropertyPriceWorthTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationMenuTable"
+  },
+  {
+    "name": "InventoryPurchaseRequestRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseEncouragementRecordNotes"
+  },
+  {
+    "name": "InsurancePolicyGroup"
+  },
+  {
+    "name": "RealEstateContractRenewalRecordDescriptions"
+  },
+  {
+    "name": "InventoryStockEntryType"
+  },
+  {
+    "name": "GeneralReportChecksMenu"
+  },
+  {
+    "name": "TradeJournalRecordNotes"
+  },
+  {
+    "name": "RealPropertyPaymentPeriodDefinitionRecordDescriptions"
+  },
+  {
+    "name": "QuotationStatuteDefinition"
+  },
+  {
+    "name": "TRDCOSTSPREAD"
+  },
+  {
+    "name": "CrmReligionLevelDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationTableRelationshipParallels"
+  },
+  {
+    "name": "TRD_RISK_APPROVAL_LISTRecordNotes"
+  },
+  {
+    "name": "LeasingOperationType"
+  },
+  {
+    "name": "QUO_CALC_TYPE_DEF"
+  },
+  {
+    "name": "CRM_MBB_BRANCH_TYPE_DEF"
+  },
+  {
+    "name": "CrmAutoMarksDefinition"
+  },
+  {
+    "name": "COLL_ACTIVITY_CRDT_LATE_STAT"
+  },
+  {
+    "name": "InventoryShelfCategory"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelation"
+  },
+  {
+    "name": "CrmFanaticismLevelDefinitionRecordDescriptions"
+  },
+  {
+    "name": "LeasingContractCusProfitabRptLog"
+  },
+  {
+    "name": "FNCCRDDEFINITIONDETAIL"
+  },
+  {
+    "name": "CrmActivityBudgetTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "FinanceCreditGroup"
+  },
+  {
+    "name": "QUO_ASSET_GRP_PAYMENT_TERMRecordDescriptions"
+  },
+  {
+    "name": "InventoryWayBill"
+  },
+  {
+    "name": "CrmMembershipApplicantInformingMethodDefinitionRecordDescriptions"
+  },
+  {
+    "name": "PurchaseFormTemplate"
+  },
+  {
+    "name": "INV_PROPERTY_GROUP"
+  },
+  {
+    "name": "FoundationMenuUserDefinedProperty"
+  },
+  {
+    "name": "CrmInstitutionalCustomer2UserDefinedProperties"
+  },
+  {
+    "name": "FND_RUNNED_SCRIPTS"
+  },
+  {
+    "name": "TradeRiskHeaderTransferType"
+  },
+  {
+    "name": "FoundationParameter"
+  },
+  {
+    "name": "CrmRoute"
+  },
+  {
+    "name": "QuotationCollectStartDateTypes"
+  },
+  {
+    "name": "FoundationDocumentListRecordNotes"
+  },
+  {
+    "name": "QuotationNativeImportType"
+  },
+  {
+    "name": "GeneralDimensionFieldRestriction"
+  },
+  {
+    "name": "CommonProcessExceptionLog"
+  },
+  {
+    "name": "CrmProhibitedCustomerRecordNotes"
+  },
+  {
+    "name": "CrmCheckListCheckListQuestion"
+  },
+  {
+    "name": "RealEstateMunicipalityExpenseRecordNotes"
+  },
+  {
+    "name": "JournalSetupProfilesRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditPayment"
+  },
+  {
+    "name": "SurveyQuestionDependantQuestions"
+  },
+  {
+    "name": "CrmMembershipApplicantInformingMethodDefinitionRecordNotes"
+  },
+  {
+    "name": "RealPropertyPriceWorthTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyPartsRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseEncouragementRecordDescriptions"
+  },
+  {
+    "name": "ContractDepartureTypeDefinition"
+  },
+  {
+    "name": "denemevirman"
+  },
+  {
+    "name": "InsurancePolicyPaymentPlan"
+  },
+  {
+    "name": "CrmDistrictQuarter"
+  },
+  {
+    "name": "LedgerParameters"
+  },
+  {
+    "name": "TaskSchedulerScheduleActionParameterDataTypeDefinitions"
+  },
+  {
+    "name": "TradeJournalRecordDescriptions"
+  },
+  {
+    "name": "QuotationStatuteCommon"
+  },
+  {
+    "name": "CrmReligionLevelDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CrmRecordTypeDefinition"
+  },
+  {
+    "name": "COLL_ACITIVITY_CRDT_FOLLOW_STAT"
+  },
+  {
+    "name": "InventoryShelfRecordNotes"
+  },
+  {
+    "name": "CrmContactRelationTypeDefinition"
+  },
+  {
+    "name": "CHKCHECKERTESTRESULTHIST"
+  },
+  {
+    "name": "GeneralTemplateRecordNotes"
+  },
+  {
+    "name": "CrmActivityBudgetTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditPool"
+  },
+  {
+    "name": "CrmCityRecordNotes"
+  },
+  {
+    "name": "CrmContactResponsibilityToCompanyDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryParametersServiceExtant"
+  },
+  {
+    "name": "BDG_NEWCREDIT"
+  },
+  {
+    "name": "InventoryMark"
+  },
+  {
+    "name": "PurchaseOrderHeaderRecordNotes"
+  },
+  {
+    "name": "OCLocationType"
+  },
+  {
+    "name": "FoundationMenuUserDefinedPropertyColumns"
+  },
+  {
+    "name": "CrmInstitutionalCustomer1_21UserDefinedPropertyTable"
+  },
+  {
+    "name": "SurveyQuestion"
+  },
+  {
+    "name": "CrmRouteScheduleRealized"
+  },
+  {
+    "name": "FoundationUserDefinedField"
+  },
+  {
+    "name": "TradeUnpaidInvoiceHist"
+  },
+  {
+    "name": "CONTRACT_UPLOADED_DATA"
+  },
+  {
+    "name": "CrmInstitutionalCustomerDocument"
+  },
+  {
+    "name": "CrmRouteSchedule"
+  },
+  {
+    "name": "FoundationDocumentListRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditPoolRecordDescriptions"
+  },
+  {
+    "name": "TradeCalculatedDailyOverdue"
+  },
+  {
+    "name": "InventoryShelfCellRecordNotes"
+  },
+  {
+    "name": "RealEstateMunicipalityExpenseRecordDescriptions"
+  },
+  {
+    "name": "CreditIEHeaderRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseDocumentLineRecordNotes"
+  },
+  {
+    "name": "BDG_GENERALCOLLECTING"
+  },
+  {
+    "name": "CHKCHECKERTESTRESULT"
+  },
+  {
+    "name": "FinanceCreditProfile"
+  },
+  {
+    "name": "CrmMembershipApplicationDecisionReason"
+  },
+  {
+    "name": "FinanceCreditIssueType"
+  },
+  {
+    "name": "RealPropertyTaxTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "APP_PARAMETER"
+  },
+  {
+    "name": "RealPropertyPropertyPartsRecordDescriptions"
+  },
+  {
+    "name": "Temp_TRC"
+  },
+  {
+    "name": "DelinquencyReasonCodes"
+  },
+  {
+    "name": "TradeParameters"
+  },
+  {
+    "name": "CrmActivityTemplate"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelationTitles"
+  },
+  {
+    "name": "QuotationAggrementHeader"
+  },
+  {
+    "name": "CrmSportClubDefinition"
+  },
+  {
+    "name": "COLL_ACITIVITY_CRDT_DUE_STAT"
+  },
+  {
+    "name": "CrmTvTypeDefinition"
+  },
+  {
+    "name": "FoundationFieldHeader"
+  },
+  {
+    "name": "FoundationDocumentChecklistMenuItemGroupRecordNotes"
+  },
+  {
+    "name": "GeneralTemplateRecordDescriptions"
+  },
+  {
+    "name": "CrmActivityInvitationMethodDefinitionRecordNotes"
+  },
+  {
+    "name": "FinanceCreditProfileLine"
+  },
+  {
+    "name": "CrmCityRecordDescriptions"
+  },
+  {
+    "name": "CrmContactResponsibilityToCompanyDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InventoryGaugeRecordDescriptions"
+  },
+  {
+    "name": "CrmMembershipApplicationDecisionReasonRecordDescriptions"
+  },
+  {
+    "name": "JournalSetupProfilesModuleDim"
+  },
+  {
+    "name": "PurchaseOrderHeaderRecordDescriptions"
+  },
+  {
+    "name": "OCLocationLevel"
+  },
+  {
+    "name": "TurkishAuditTransaction"
+  },
+  {
+    "name": "FoundationMenuUserDefinedPropertyTables"
+  },
+  {
+    "name": "RealEstateUseQualityRecordNotes"
+  },
+  {
+    "name": "TradeUnpaidInvoiceStatusDefinition"
+  },
+  {
+    "name": "FND_MAIL_TEMPLATE"
+  },
+  {
+    "name": "QuotationDeliveryTypeRecordNotes"
+  },
+  {
+    "name": "CreditLeasing"
+  },
+  {
+    "name": "FoundationUserDefinedProperties"
+  },
+  {
+    "name": "CrmActivityBudget"
+  },
+  {
+    "name": "DemoQuarter"
+  },
+  {
+    "name": "QuotationAggrementHeaderStatus"
+  },
+  {
+    "name": "RealEstateRecordNotes"
+  },
+  {
+    "name": "FoundationMenuColumnBehaviours"
+  },
+  {
+    "name": "FinanceCreditPoolRecordNotes"
+  },
+  {
+    "name": "FoundationDocumentRecordDescriptions"
+  },
+  {
+    "name": "FoundationUserDefinedPropertyTableRecordNotes"
+  },
+  {
+    "name": "CreditIEHeaderRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseDocumentLineRecordDescriptions"
+  },
+  {
+    "name": "ContractOurCompanyAuthorized"
+  },
+  {
+    "name": "PaymentHoliday"
+  },
+  {
+    "name": "CHKQUESTION"
+  },
+  {
+    "name": "FinanceCreditTransaction"
+  },
+  {
+    "name": "InventoryItemStockCodesRecordDescriptions"
+  },
+  {
+    "name": "CrmIndividualCustomerReferenceContact"
+  },
+  {
+    "name": "CrmMembershipApplicationDecisionReasonRecordNotes"
+  },
+  {
+    "name": "RealPropertyTaxTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CreditCommitteeDesicion"
+  },
+  {
+    "name": "OCLocationTitleHistory"
+  },
+  {
+    "name": "CrmNewsCategoryDefinition"
+  },
+  {
+    "name": "INV_BDDK_CODE"
+  },
+  {
+    "name": "CrmActivityInvitees68UserDefinedActivities"
+  },
+  {
+    "name": "QuotationChargeEntry"
+  },
+  {
+    "name": "FoundationListPageGlobalColumnOptionsRecordNotes"
+  },
+  {
+    "name": "QuotationAggrementHeaderType"
+  },
+  {
+    "name": "TRDFIX_CREATE_CRITERIA"
+  },
+  {
+    "name": "CrmContactPersonalItemDefinition"
+  },
+  {
+    "name": "ServiceManagementProjectsRecordNotes"
+  },
+  {
+    "name": "TradeAgreementType"
+  },
+  {
+    "name": "InventoryUpKeepLaborDefinitionsRecordNotes"
+  },
+  {
+    "name": "CrmActivityInvitationMethodDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditType"
+  },
+  {
+    "name": "CrmCityDistrictRecordNotes"
+  },
+  {
+    "name": "TradeGuaranteeUsage"
+  },
+  {
+    "name": "CrmMembershipApplicationRecordDescriptions"
+  },
+  {
+    "name": "SurveyQuestionSubCategoryDefinition"
+  },
+  {
+    "name": "LedgerLGBalanceTemplateItem"
+  },
+  {
+    "name": "BudgetComparisonLine"
+  },
+  {
+    "name": "RealEstateUseQualityRecordDescriptions"
+  },
+  {
+    "name": "LopEarlyCloseTemp"
+  },
+  {
+    "name": "CrmContactUdtmasraf"
+  },
+  {
+    "name": "TRD_RISK_HEAD_APPROVAL_STATUS"
+  },
+  {
+    "name": "QuotationDeliveryTypeRecordDescriptions"
+  },
+  {
+    "name": "DemoResidenceType"
+  },
+  {
+    "name": "QuotationAggrementLine"
+  },
+  {
+    "name": "RealEstateRecordDescriptions"
+  },
+  {
+    "name": "FinanceInvestmentTreasuryRecordDescriptions"
+  },
+  {
+    "name": "FoundationUserDefinedPropertyTableRecordDescriptions"
+  },
+  {
+    "name": "BudgetModelRecordNotes"
+  },
+  {
+    "name": "InventoryPurchaseWayRecordDescriptions"
+  },
+  {
+    "name": "ContractCustomerAuthorized"
+  },
+  {
+    "name": "CHKQUESTIONGROUPHEADER"
+  },
+  {
+    "name": "FinanceFloatingIndex"
+  },
+  {
+    "name": "TradeGuaranteeShared"
+  },
+  {
+    "name": "TempLop"
+  },
+  {
+    "name": "CrmMembershipApplicationRecordHistory"
+  },
+  {
+    "name": "FoundationMenuLink"
+  },
+  {
+    "name": "RealPropertyPaymentTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "RealEstateHouseRequestProfessions"
+  },
+  {
+    "name": "FoundationUnit"
+  },
+  {
+    "name": "InventoryItemTreeLocationTypes"
+  },
+  {
+    "name": "InsurancePolicyStatute"
+  },
+  {
+    "name": "CrmNewsCategoryDefinitionRecordNotes"
+  },
+  {
+    "name": "QuotationTransferAcceptor"
+  },
+  {
+    "name": "CrmMeetingCancelingReasonDefinition"
+  },
+  {
+    "name": "FoundationListPageGlobalColumnOptionsRecordDescriptions"
+  },
+  {
+    "name": "DM_VENDOR_COMMITMENT"
+  },
+  {
+    "name": "CrmInstitutionalCustomerOtherRelationshipDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InsurancePolicy"
+  },
+  {
+    "name": "QuotationAggrementProduct"
+  },
+  {
+    "name": "TradeAgreementPayment"
+  },
+  {
+    "name": "CrmContactMediaInterestTypeDefinition"
+  },
+  {
+    "name": "LedgerTemp"
+  },
+  {
+    "name": "CrmActivityInvitationResponseTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "FinanceFloatingInterest"
+  },
+  {
+    "name": "CrmCityDistrictRecordDescriptions"
+  },
+  {
+    "name": "QuotationImportTypeRecordNotes"
+  },
+  {
+    "name": "BDG_NEWCREDITACCOUNTS"
+  },
+  {
+    "name": "CrmMembershipApplicationRecordNotes"
+  },
+  {
+    "name": "PurchaseDocumentHeaderRecordNotes"
+  },
+  {
+    "name": "RealEstateUseStateRecordNotes"
+  },
+  {
+    "name": "LeasingContractCusProfitabDet"
+  },
+  {
+    "name": "TRD_RISK_HEAD_PROCESS"
+  },
+  {
+    "name": "EInvApplicationResponse"
+  },
+  {
+    "name": "CrmMeetingImportanceLevelDefinition"
+  },
+  {
+    "name": "FinanceInvestmentTreasuryRecordNotes"
+  },
+  {
+    "name": "CrmInformation"
+  },
+  {
+    "name": "BudgetModelRecordDescriptions"
+  },
+  {
+    "name": "CHKQUESTIONGROUPLINE"
+  },
+  {
+    "name": "FinanceInvestmentEurobond"
+  },
+  {
+    "name": "ProductRequestProviderExplanationsRecordDescriptions"
+  },
+  {
+    "name": "CrmIndividualCustomerSocialRelationship"
+  },
+  {
+    "name": "InventoryGaugeRecordNotes"
+  },
+  {
+    "name": "CrmMembershipApplicationResult"
+  },
+  {
+    "name": "CalendarWorkingDay"
+  },
+  {
+    "name": "RealPropertyPaymentTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeInsurance"
+  },
+  {
+    "name": "TaskSchedulerScheduleActionDefinitionsRecordNotes"
+  },
+  {
+    "name": "RPR_QUO_CORPORATES"
+  },
+  {
+    "name": "RealPropertyConstructionQualityDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryItemGroupLocationTypes"
+  },
+  {
+    "name": "InsurancePolicyWarranty"
+  },
+  {
+    "name": "CreditInformationDesicion"
+  },
+  {
+    "name": "LedgerVoucherLines"
+  },
+  {
+    "name": "CrmMeetingResultDefinition"
+  },
+  {
+    "name": "Faturalar"
+  },
+  {
+    "name": "EGMMahrumiyet"
+  },
+  {
+    "name": "CrmMeetingImportanceLevelDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InventoryItemExpenditures"
+  },
+  {
+    "name": "InventoryShelfCell"
+  },
+  {
+    "name": "CrmRelationshipPropertyTableDefinition"
+  },
+  {
+    "name": "PurchaseParameterPurchaseMenu"
+  },
+  {
+    "name": "FoundationWarningOperator"
+  },
+  {
+    "name": "CrmActivityInvitationResponseTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CrmDistrictQuarterRecordNotes"
+  },
+  {
+    "name": "QuotationImportTypeRecordDescriptions"
+  },
+  {
+    "name": "InventoryPartProperty"
+  },
+  {
+    "name": "CrmMembershipApplicationStateHistory"
+  },
+  {
+    "name": "PurchaseDocumentHeaderRecordDescriptions"
+  },
+  {
+    "name": "INV_PROPERTY_VALUE_TYPE"
+  },
+  {
+    "name": "RealEstateUseStateRecordDescriptions"
+  },
+  {
+    "name": "FoundationSearchPanelQuery"
+  },
+  {
+    "name": "EInvCustomer"
+  },
+  {
+    "name": "InventoryStockCodeProducerCompanyGroups"
+  },
+  {
+    "name": "RealPropertyPropertyObtainDetailsRecordNotes"
+  },
+  {
+    "name": "FinanceInvestmentTypeRecordDescriptions"
+  },
+  {
+    "name": "FND_STATUTE_MAIL"
+  },
+  {
+    "name": "ContractTransferNumbers"
+  },
+  {
+    "name": "CrmMembershipApplicationUserDefinedFields"
+  },
+  {
+    "name": "PaymentHolidayRecordNotes"
+  },
+  {
+    "name": "CalendarLunchHour"
+  },
+  {
+    "name": "RealPropertyObtainUsageTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "TaskSchedulerScheduleActionDefinitionsRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyConstructionQualityDefinitionRecordDescriptions"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_COSTCENTERS"
+  },
+  {
+    "name": "FoundationMenuItem"
+  },
+  {
+    "name": "InventoryStockCodeLocationTypes"
+  },
+  {
+    "name": "InfragisticsVersionUpgradeOfPages"
+  },
+  {
+    "name": "InsuranceProduct"
+  },
+  {
+    "name": "InventoryTurnoverState"
+  },
+  {
+    "name": "CreditFinancialAnalysisDesicion"
+  },
+  {
+    "name": "CrmActivity"
+  },
+  {
+    "name": "CrmMeetingTypeDefinition"
+  },
+  {
+    "name": "EGMSahisArac"
+  },
+  {
+    "name": "CrmLanguageRecordNotes"
+  },
+  {
+    "name": "CalendarWorkingDayModules"
+  },
+  {
+    "name": "LeasingOperationProject"
+  },
+  {
+    "name": "CrmIndividualCustomerRecordNotes"
+  },
+  {
+    "name": "InventoryUpKeepReplacingItemChangedForWhyRecordNotes"
+  },
+  {
+    "name": "CrmActivityAttendTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "FinanceInvestmentTreasury"
+  },
+  {
+    "name": "CrmDistrictQuarterRecordDescriptions"
+  },
+  {
+    "name": "RPR_PROJECT_BLOCK_20221003"
+  },
+  {
+    "name": "CrmIndividualCustomerFormerCompany"
+  },
+  {
+    "name": "CrmMembershipCheckListAfterMembershipProcess"
+  },
+  {
+    "name": "FoundationMakerCheckerTransactionsRecordDescriptions"
+  },
+  {
+    "name": "InventoryRentState"
+  },
+  {
+    "name": "CreditLeasingProject"
+  },
+  {
+    "name": "InventoryMarkRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyObtainDetailsRecordDescriptions"
+  },
+  {
+    "name": "AKT_KOF_STATU_ESLESTIR"
+  },
+  {
+    "name": "FinanceInvestmentTypeRecordNotes"
+  },
+  {
+    "name": "LGPreviousProvisions"
+  },
+  {
+    "name": "CRM_AKBANK_WAREHOUSE_QUERIES"
+  },
+  {
+    "name": "FinanceParameter"
+  },
+  {
+    "name": "ContractAdds"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_20221003"
+  },
+  {
+    "name": "SystemConfiguration"
+  },
+  {
+    "name": "FoundationNumeratorTypeRecordNotes"
+  },
+  {
+    "name": "FoundationTableUpdateLogHeaderRecordNotes"
+  },
+  {
+    "name": "CrmMembershipCheckListAfterMembershipProcessMembership"
+  },
+  {
+    "name": "PaymentHolidayRecordDescriptions"
+  },
+  {
+    "name": "FndDocRequiredGroupLine"
+  },
+  {
+    "name": "RealPropertyObtainUsageTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentRequiredAnswers"
+  },
+  {
+    "name": "InventoryStockCodeVendors"
+  },
+  {
+    "name": "InventoryItemDetailRecordHistory"
+  },
+  {
+    "name": "OCLocationLevelRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyLegalProblemsRecordNotes"
+  },
+  {
+    "name": "Survey"
+  },
+  {
+    "name": "FinanceTransferType"
+  },
+  {
+    "name": "CrmMeeting_temp"
+  },
+  {
+    "name": "QuotationPaymentPlanRecordNotes"
+  },
+  {
+    "name": "InsuranceProductWarranty"
+  },
+  {
+    "name": "CrmInstitutionalCustomerRegisteredCapital"
+  },
+  {
+    "name": "InventoryItemRequestBag"
+  },
+  {
+    "name": "CrmMeetingSubjectDefinitionRecordNotes"
+  },
+  {
+    "name": "CrmLanguageRecordDescriptions"
+  },
+  {
+    "name": "DemoInsuranceInformationsRecordNotes"
+  },
+  {
+    "name": "AKT_KOF_ESLESTIR"
+  },
+  {
+    "name": "InventoryUpKeepReplacingItemChangedForWhyRecordDescriptions"
+  },
+  {
+    "name": "CrmActivityAttendTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FinancePaymentMethod"
+  },
+  {
+    "name": "CrmTaxDepartmentRecordNotes"
+  },
+  {
+    "name": "RPR_QUO_ITEM_20221003"
+  },
+  {
+    "name": "CrmCompanyDepartment"
+  },
+  {
+    "name": "CrmMembershipCheckListAfterMembershipRecordDescriptions"
+  },
+  {
+    "name": "CalendarHoliday"
+  },
+  {
+    "name": "TradeIntegrationOverdueLease"
+  },
+  {
+    "name": "LedgerItemNumberPrint"
+  },
+  {
+    "name": "GeneralTemplateGuaranteeField"
+  },
+  {
+    "name": "CreditGuarantorProposedLine"
+  },
+  {
+    "name": "FoundationNumerator"
+  },
+  {
+    "name": "FinanceInvestmentBond"
+  },
+  {
+    "name": "CrmContactImportanceLevelDefinitionRecordNotes"
+  },
+  {
+    "name": "ReporterPrintDocuments"
+  },
+  {
+    "name": "FoundationTechnicalPartsRecordNotes"
+  },
+  {
+    "name": "FoundationRecordStatus"
+  },
+  {
+    "name": "FinanceTransactionTypeRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship45UserDefinedProperties"
+  },
+  {
+    "name": "CreditFAResults"
+  },
+  {
+    "name": "PurchaseVendorDefinition"
+  },
+  {
+    "name": "TradeGuarantee"
+  },
+  {
+    "name": "ServiceManagementProjectsRolesRecordNotes"
+  },
+  {
+    "name": "PurchaseParameterPaymentWay"
+  },
+  {
+    "name": "TradeBatchLOPIdTrace"
+  },
+  {
+    "name": "FinanceTransactionType"
+  },
+  {
+    "name": "MigrationDefinition"
+  },
+  {
+    "name": "NoneRecordNotes"
+  },
+  {
+    "name": "LedgerLGBalanceTemplate_temp"
+  },
+  {
+    "name": "InventoryWayBillRecordNotes"
+  },
+  {
+    "name": "FoundationNumeratorTypeRecordDescriptions"
+  },
+  {
+    "name": "FoundationTableUpdateLogHeaderRecordDescriptions"
+  },
+  {
+    "name": "BDG_ACTIVEINVESTMENT"
+  },
+  {
+    "name": "CrmMembershipCheckListAfterMembershipRecordNotes"
+  },
+  {
+    "name": "FndDocumentRequiredGroupHeader"
+  },
+  {
+    "name": "RealPropertyPaymentPayTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "OCLocationLevelRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyLegalProblemsRecordDescriptions"
+  },
+  {
+    "name": "CRM_MEETING_ATTENDANCE_LINE"
+  },
+  {
+    "name": "FinanceTransferTypeRecordDescriptions"
+  },
+  {
+    "name": "QuotationPaymentPlanRecordDescriptions"
+  },
+  {
+    "name": "InsuranceSubbranch"
+  },
+  {
+    "name": "CrmMeetingTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeItem12UserDefinedProperties"
+  },
+  {
+    "name": "DemoInsuranceInformationsRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseRegistration"
+  },
+  {
+    "name": "TaskTemplateCheckListQuestion"
+  },
+  {
+    "name": "AAA_PROJECT_FREE_PART"
+  },
+  {
+    "name": "CrmTaxDepartmentRecordDescriptions"
+  },
+  {
+    "name": "BudgetPurchaseLine"
+  },
+  {
+    "name": "CrmMembershipCheckListDocument"
+  },
+  {
+    "name": "CrmIndividualCustomerRecordDescriptions"
+  },
+  {
+    "name": "GeneralTaxType"
+  },
+  {
+    "name": "RealEstateMaritalStatus"
+  },
+  {
+    "name": "GeneralCurrencyExchangeRateType"
+  },
+  {
+    "name": "ProcessFlowWorkSheetFields"
+  },
+  {
+    "name": "CrmMeetingResultDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryEquipmentEntryRecordNotes"
+  },
+  {
+    "name": "CrmRecordOrigin"
+  },
+  {
+    "name": "FinanceTransactionTypeRecordNotes"
+  },
+  {
+    "name": "CrmRelationship45_15UserDefinedPropertyTable"
+  },
+  {
+    "name": "CreditFAQuestionGroupRecordNotes"
+  },
+  {
+    "name": "LedgerPeriod"
+  },
+  {
+    "name": "KRMRecordHistory"
+  },
+  {
+    "name": "CRM_CUST_GROUP"
+  },
+  {
+    "name": "CustomerRRR"
+  },
+  {
+    "name": "MigrationDefinitionDetail"
+  },
+  {
+    "name": "InventoryItemGroupProperties"
+  },
+  {
+    "name": "NoneRecordDescriptions"
+  },
+  {
+    "name": "AAA_PROJECT_BLOCK"
+  },
+  {
+    "name": "CrmSpeech"
+  },
+  {
+    "name": "GeneralTaxGroupLine"
+  },
+  {
+    "name": "CrmRouteListUserDefinedFields"
+  },
+  {
+    "name": "CrmMembershipCheckListDocumentMembership"
+  },
+  {
+    "name": "RealPropertyPaymentPayTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeGeneralParameter"
+  },
+  {
+    "name": "InsuranceSupplementDebitCredit"
+  },
+  {
+    "name": "ProcessFlowWorkDefinitions"
+  },
+  {
+    "name": "ManualAccounting"
+  },
+  {
+    "name": "EInvDocuments"
+  },
+  {
+    "name": "FoundationDistributingListLocations"
+  },
+  {
+    "name": "CrmMeetingImportanceLevelDefinitionRecordNotes"
+  },
+  {
+    "name": "CRM_RLTSHP_GROUP_DEF"
+  },
+  {
+    "name": "CountryofFundUsage"
+  },
+  {
+    "name": "TradeCustomerInvoiceEntry"
+  },
+  {
+    "name": "LGAdvanceVirement"
+  },
+  {
+    "name": "DemoInsuranceInformationsRecordHistory"
+  },
+  {
+    "name": "CrmRelationship2"
+  },
+  {
+    "name": "LeasePurchaseRegistrationTake"
+  },
+  {
+    "name": "InventoryStockCodeMarkModel"
+  },
+  {
+    "name": "CrmMeetingWeeklyPlan"
+  },
+  {
+    "name": "LedgerPeriodOperation"
+  },
+  {
+    "name": "FoundationUserRoles"
+  },
+  {
+    "name": "CrmChildSector"
+  },
+  {
+    "name": "GeneralTaxGroupLineRecordDescriptions"
+  },
+  {
+    "name": "CrmActivityResponseTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "CRM_INST_HOMEBANKING_CONTACT"
+  },
+  {
+    "name": "CrmQuarterVillageRecordNotes"
+  },
+  {
+    "name": "RPR_PROJECT"
+  },
+  {
+    "name": "CrmMembershipCheckListDocumentRecordDescriptions"
+  },
+  {
+    "name": "JournalSetupTemplates"
+  },
+  {
+    "name": "BudgetRequest"
+  },
+  {
+    "name": "LeasePurchaseLumpPosting"
+  },
+  {
+    "name": "LopRiskIncludingHist"
+  },
+  {
+    "name": "InventoryItemDetailBackup"
+  },
+  {
+    "name": "CreditResult"
+  },
+  {
+    "name": "CrmMeetingCancelingReasonDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationEmailGroup"
+  },
+  {
+    "name": "CrmRelationship46UserDefinedProperties"
+  },
+  {
+    "name": "CreditFAQuestionGroupRecordDescriptions"
+  },
+  {
+    "name": "CrmContactPersonalItemTypeDefinition"
+  },
+  {
+    "name": "ProcessFlowAssignedWorkSheetTransactionColumnValue"
+  },
+  {
+    "name": "CrmTaskGroup"
+  },
+  {
+    "name": "CreditLimitAllocationRecordHistory"
+  },
+  {
+    "name": "RPR_PROJECT_BLOCK"
+  },
+  {
+    "name": "InventoryUpKeepRelationResponsibleUser"
+  },
+  {
+    "name": "FoundationMenuChildTables"
+  },
+  {
+    "name": "FoundationUserMenuFieldRestrictions"
+  },
+  {
+    "name": "CrmMembershipCheckListDocumentRecordNotes"
+  },
+  {
+    "name": "CreditCustomerTransaction"
+  },
+  {
+    "name": "RealPropertyRateTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryItemStockCodesRecordNotes"
+  },
+  {
+    "name": "FinanceBankToBankTransfer"
+  },
+  {
+    "name": "InsuranceSupplementIsCancelPolicy"
+  },
+  {
+    "name": "ContractRepresentationDocument"
+  },
+  {
+    "name": "TradeItemBackup"
+  },
+  {
+    "name": "TradeCommissionGroup"
+  },
+  {
+    "name": "CrmMeetingRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship3"
+  },
+  {
+    "name": "LeasePurchaseRegistrationSend"
+  },
+  {
+    "name": "CreditFAHeaderRecordNotes"
+  },
+  {
+    "name": "CrmMainSector"
+  },
+  {
+    "name": "CrmActivityResponseTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "Z_NewCustomers"
+  },
+  {
+    "name": "CrmQuarterVillageRecordDescriptions"
+  },
+  {
+    "name": "CrmMembershipCheckListResultProcess"
+  },
+  {
+    "name": "LEDGER_ACCOUNT_MIGRATION"
+  },
+  {
+    "name": "InventoryItemUsageLifeFinishWarningUsers"
+  },
+  {
+    "name": "CreditPlanedGuarantee"
+  },
+  {
+    "name": "ProcessFlowWorkBookDefinitions"
+  },
+  {
+    "name": "RealEstateHouseRequestChildren"
+  },
+  {
+    "name": "CrmContactDocument"
+  },
+  {
+    "name": "TradeCommission"
+  },
+  {
+    "name": "GUARANTEE_MOVEMENT_TRACK"
+  },
+  {
+    "name": "FoundationCommentDefaultRecipients"
+  },
+  {
+    "name": "TradeAccountBanksApprovalTemp"
+  },
+  {
+    "name": "CrmOccupationTitle"
+  },
+  {
+    "name": "FoundationRequiredFieldRecordNotes"
+  },
+  {
+    "name": "InventoryPartPropertyRecordNotes"
+  },
+  {
+    "name": "BDG_ACTIVEINVESTMENTACCOUNTS"
+  },
+  {
+    "name": "CrmMembershipCheckListResultProcessMembership"
+  },
+  {
+    "name": "RealPropertyRateTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "InsuranceDamageStatus"
+  },
+  {
+    "name": "InventoryEquipmentExcludeRecordNotes"
+  },
+  {
+    "name": "CrmRelationship44UserDefinedProperties"
+  },
+  {
+    "name": "EInvoice"
+  },
+  {
+    "name": "CrmInstitutionalCustomerUdtHAZIM"
+  },
+  {
+    "name": "PurchaseRequisitionLineRecordNotes"
+  },
+  {
+    "name": "RPR_VALIDITY_PERIOD_DEFINITION"
+  },
+  {
+    "name": "TradeCommissionEntry"
+  },
+  {
+    "name": "CRM_FOLLOW_STATUS_DEF"
+  },
+  {
+    "name": "CreditFAHeaderRecordDescriptions"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_190107"
+  },
+  {
+    "name": "InventoryStockCodeOwnerUsers"
+  },
+  {
+    "name": "LeasePurchaseConfiguration"
+  },
+  {
+    "name": "FoundationLookUpRelationshipRecordDescriptions"
+  },
+  {
+    "name": "FndOptionRecordNotes"
+  },
+  {
+    "name": "LeasePurchasePrefinanceHeader"
+  },
+  {
+    "name": "CrmMembershipCheckListResultProcessRecordDescriptions"
+  },
+  {
+    "name": "JournalSetupProfiles"
+  },
+  {
+    "name": "Temp_AccountCode"
+  },
+  {
+    "name": "SurveySurveyQuestion"
+  },
+  {
+    "name": "LPRDOCUMENTINSURANCE"
+  },
+  {
+    "name": "FoundationDistributingList"
+  },
+  {
+    "name": "QuotationAggrementCustomerType"
+  },
+  {
+    "name": "LeasePurchaseLetterOfCredit"
+  },
+  {
+    "name": "GUARANTEE_OWNER_TYPE_DEF"
+  },
+  {
+    "name": "LedgerTransaction_TakipHesaplari"
+  },
+  {
+    "name": "CrmMeetingWeeklyPlanRecordNotes"
+  },
+  {
+    "name": "InventoryStockCodeUnitAmounts"
+  },
+  {
+    "name": "TRDFIX_AMR_LOG"
+  },
+  {
+    "name": "FoundationRequiredFieldRecordDescriptions"
+  },
+  {
+    "name": "InventoryPartPropertyRecordDescriptions"
+  },
+  {
+    "name": "FoundationRoleMenuFieldRestrictions"
+  },
+  {
+    "name": "CrmMembershipCheckListResultProcessRecordNotes"
+  },
+  {
+    "name": "RealPropertySaleStatusDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeAccountBanksApprovalState"
+  },
+  {
+    "name": "CrmCompanyGroup"
+  },
+  {
+    "name": "CrmCommunicationGroupDefinitionRecordNotes"
+  },
+  {
+    "name": "GeneralCurrencyRecordNotes"
+  },
+  {
+    "name": "TradeRiskSubsidizedOperations"
+  },
+  {
+    "name": "InventoryItemDetail"
+  },
+  {
+    "name": "TempVoucher"
+  },
+  {
+    "name": "PurchaseRequisitionLineRecordDescriptions"
+  },
+  {
+    "name": "CrmActivityRecordNotes"
+  },
+  {
+    "name": "RPR_APARTMENT_TYPE_DEFINITION"
+  },
+  {
+    "name": "CrmMeetingActivityDefinition"
+  },
+  {
+    "name": "QuotationAggrementCommissionType"
+  },
+  {
+    "name": "InventoryDemoMember"
+  },
+  {
+    "name": "TradeItemEntry"
+  },
+  {
+    "name": "CreditFinancialAnaylsisEntryRecordNotes"
+  },
+  {
+    "name": "FndOptionRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchasePrefinanceDetail"
+  },
+  {
+    "name": "CrmMembershipDocumentCheckList"
+  },
+  {
+    "name": "GeneralDimensionRecordNotes"
+  },
+  {
+    "name": "FND_STATUTE_WRNG_DEF"
+  },
+  {
+    "name": "BudgetAllocateKeyTrans"
+  },
+  {
+    "name": "InventoryInstructionGroup"
+  },
+  {
+    "name": "CrmInstitutionalCustomerDescription"
+  },
+  {
+    "name": "InventoryItemGroupParentGroups"
+  },
+  {
+    "name": "HelpFilePathDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TaskTasksTemplate"
+  },
+  {
+    "name": "CrmMeetingWeeklyPlanRecordDescriptions"
+  },
+  {
+    "name": "TradeAgreementStatus"
+  },
+  {
+    "name": "FoundationMenuListDefaultColumnSortOfUser"
+  },
+  {
+    "name": "CrmOccupation"
+  },
+  {
+    "name": "ReporterPrintDocumentsRecordNotes"
+  },
+  {
+    "name": "FoundationDocumentRequiredGroupHeaderRecordNotes"
+  },
+  {
+    "name": "TradeGuaranteeAssociation"
+  },
+  {
+    "name": "CrmMembershipHistory"
+  },
+  {
+    "name": "CrmActivityAttendTypeDefinition"
+  },
+  {
+    "name": "RealPropertySaleStatusDefinitionRecordDescriptions"
+  },
+  {
+    "name": "LedgerJournalGroup"
+  },
+  {
+    "name": "CrmProductTree"
+  },
+  {
+    "name": "CrmCommunicationGroupDefinitionRecordDescriptions"
+  },
+  {
+    "name": "GeneralCurrencyRecordDescriptions"
+  },
+  {
+    "name": "InsuranceSupplementType"
+  },
+  {
+    "name": "MKKAsset"
+  },
+  {
+    "name": "T_KULLANICI"
+  },
+  {
+    "name": "CrmInstitutionalCustomerUdtDenemeTABLOCAGRI"
+  },
+  {
+    "name": "PurchaseDocumentLineRecordNotes"
+  },
+  {
+    "name": "CrmActivityRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseDocumentHeader"
+  },
+  {
+    "name": "CrmMeetingActivity"
+  },
+  {
+    "name": "LeasePurchaseCustomsLoad"
+  },
+  {
+    "name": "FoundationDelegationRolesForUsers"
+  },
+  {
+    "name": "TradeVendorEntry"
+  },
+  {
+    "name": "CreditFinancialAnaylsisEntryRecordDescriptions"
+  },
+  {
+    "name": "JournalSetupPostingTypesRecordNotes"
+  },
+  {
+    "name": "InventoryPurchaseRequestType"
+  },
+  {
+    "name": "LeasePurchaseEncouragementLine"
+  },
+  {
+    "name": "GeneralDeleteControl"
+  },
+  {
+    "name": "InventoryPurchasePurpose"
+  },
+  {
+    "name": "ContractMKKRegistration"
+  },
+  {
+    "name": "InvTransferStatus"
+  },
+  {
+    "name": "TradeFixedAssetGroupSetup"
+  },
+  {
+    "name": "CLA_ProjectLeasingType"
+  },
+  {
+    "name": "CrmMembershipLeavingReasonDefinition"
+  },
+  {
+    "name": "JournalSetupPostingTypes"
+  },
+  {
+    "name": "GeneralDimensionRecordDescriptions"
+  },
+  {
+    "name": "QUO_ASSET_GRP_PAYMENT_TERM"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_temp"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_20250813"
+  },
+  {
+    "name": "InventoryEquipmentEntryGeneratedBarcodes"
+  },
+  {
+    "name": "TradeInterestLine"
+  },
+  {
+    "name": "InventoryInstruction"
+  },
+  {
+    "name": "FoundationMenuExcelExportRolePermissions"
+  },
+  {
+    "name": "FoundationMakerCheckerTransactions"
+  },
+  {
+    "name": "QuotationRealDaysSubStatute"
+  },
+  {
+    "name": "FND_USER_PWD_ACTIONS"
+  },
+  {
+    "name": "HelpFilePathDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationDelegationTargetTypes"
+  },
+  {
+    "name": "APP_RETURN_REASON"
+  },
+  {
+    "name": "CRM_ADR_FIELDS"
+  },
+  {
+    "name": "ReporterPrintDocumentsRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentRequiredGroupHeaderRecordDescriptions"
+  },
+  {
+    "name": "TradeAgreementResponsibility"
+  },
+  {
+    "name": "CrmMembershipLeavingReasonDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FoundationDuplicateControl"
+  },
+  {
+    "name": "CrmActivityBudgetTypeDefinition"
+  },
+  {
+    "name": "RealPropertyLegalProblemTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "OCCompanyRecordNotes"
+  },
+  {
+    "name": "RealPropertyPropertyRestrictionsRecordNotes"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_20220429"
+  },
+  {
+    "name": "LeasePurchaseGtipDocOrder"
+  },
+  {
+    "name": "EInvoiceHistory"
+  },
+  {
+    "name": "CrmCity"
+  },
+  {
+    "name": "PurchaseDocumentLineRecordDescriptions"
+  },
+  {
+    "name": "QuotationRivalFirmChoiceReason"
+  },
+  {
+    "name": "CrmActivityInvitees"
+  },
+  {
+    "name": "FoundationMenuExcelExportUserPermissions"
+  },
+  {
+    "name": "FoundationMakerCheckerDefinitionsRecordDescriptions"
+  },
+  {
+    "name": "FndOptionDisabled"
+  },
+  {
+    "name": "CrmInstitutionalCustomerStatus"
+  },
+  {
+    "name": "LeasePurchaseOrderLineTemp"
+  },
+  {
+    "name": "FoundationDelegationTargetTypesForUsers"
+  },
+  {
+    "name": "TradeCustomerEntry"
+  },
+  {
+    "name": "JournalSetupPostingTypesRecordDescriptions"
+  },
+  {
+    "name": "InventoryPurchaseRequestUrgencyDegree"
+  },
+  {
+    "name": "BDG_GENERALSETTINGS"
+  },
+  {
+    "name": "FoundationControlVariations"
+  },
+  {
+    "name": "QUO_PRM_EURO_NORM"
+  },
+  {
+    "name": "BudgetModelUserRoles"
+  },
+  {
+    "name": "TradeAgreementResponsibilityType"
+  },
+  {
+    "name": "BDG_READYAMOUNTS"
+  },
+  {
+    "name": "CrmMembershipLeavingReasonDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationDocumentBookmark"
+  },
+  {
+    "name": "QuoRepaymentType"
+  },
+  {
+    "name": "CreditGuarantorProposed"
+  },
+  {
+    "name": "CrmInstitutionalCustomerProductGroupRelations"
+  },
+  {
+    "name": "JournalMenuRelation"
+  },
+  {
+    "name": "LPVendorPaymentImportLine"
+  },
+  {
+    "name": "EInvoiceLine"
+  },
+  {
+    "name": "RealEstateTypeRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseDocumentLine"
+  },
+  {
+    "name": "QuotationRealDaysMainStatute"
+  },
+  {
+    "name": "CrmIndividualCustomerRecordHistory"
+  },
+  {
+    "name": "TradeGuaranteeStatute"
+  },
+  {
+    "name": "TaskSchedulerScheduleDefinitions"
+  },
+  {
+    "name": "PurchaseParameterDocumentKind"
+  },
+  {
+    "name": "FoundationDelegations"
+  },
+  {
+    "name": "FND_WARNING_SCHEDULE"
+  },
+  {
+    "name": "FoundationWarningCriteria"
+  },
+  {
+    "name": "RCIKKBQuery"
+  },
+  {
+    "name": "TradeFixedAssetGroup"
+  },
+  {
+    "name": "CRM_ADR_MKR_CHCKR"
+  },
+  {
+    "name": "CrmMeetingSubjectDefinitionRecordDescriptions"
+  },
+  {
+    "name": "GeneralBankTypeRecordNotes"
+  },
+  {
+    "name": "TradeAgreementTopGroup"
+  },
+  {
+    "name": "CrmMembershipOpeningPurchaseConditionDefinition"
+  },
+  {
+    "name": "RealPropertyLegalProblemTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "OCCompanyRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyRestrictionsRecordDescriptions"
+  },
+  {
+    "name": "CreditGuarantorBailContent"
+  },
+  {
+    "name": "FoundationUserTypeRecordNotes"
+  },
+  {
+    "name": "CalendarItem"
+  },
+  {
+    "name": "TrdEquipmentSell"
+  },
+  {
+    "name": "QuotationRivalFirms"
+  },
+  {
+    "name": "CrmBankAccountType"
+  },
+  {
+    "name": "TradeGuaranteeAssociationRecordDescriptions"
+  },
+  {
+    "name": "PurchaseParameterDocumentStatus"
+  },
+  {
+    "name": "TradeJournalLine"
+  },
+  {
+    "name": "InventoryStockCodeVendorDefinition"
+  },
+  {
+    "name": "LedgerCompanyExpenses"
+  },
+  {
+    "name": "Akt_Log"
+  },
+  {
+    "name": "QUO_PRM_HORSE_POWER"
+  },
+  {
+    "name": "CrmAcademicBackground"
+  },
+  {
+    "name": "CrmMembershipOpeningPurchaseConditionDefinitionRecordDescriptions"
+  },
+  {
+    "name": "QuoDrawdownPeriod"
+  },
+  {
+    "name": "IdentitySequenceLG"
+  },
+  {
+    "name": "EInvoiceTradeTable"
+  },
+  {
+    "name": "RealEstateTypeRecordDescriptions"
+  },
+  {
+    "name": "BudgetAllocateKeyRecordNotes"
+  },
+  {
+    "name": "CrmMeetingResultDefinitionRecordDescriptions"
+  },
+  {
+    "name": "CrmMeetingActivityDefinitionRecordNotes"
+  },
+  {
+    "name": "QuotationPaymentTypeDefinition"
+  },
+  {
+    "name": "CrmInstitutionalCustomerPersonnelRelationship"
+  },
+  {
+    "name": "PurchaseParameterDocumentType"
+  },
+  {
+    "name": "ApprovalApprovals"
+  },
+  {
+    "name": "TradeSalesLine"
+  },
+  {
+    "name": "InventoryStatuteRecordNotes"
+  },
+  {
+    "name": "CHKCHECKERTESTRESULTRecordDescriptions"
+  },
+  {
+    "name": "JournalSetupProfilesMainAccDim"
+  },
+  {
+    "name": "CrmMeetingTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "GeneralBankTypeRecordDescriptions"
+  },
+  {
+    "name": "CrmMembershipOpeningPurchaseConditionDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeAccountTypeUniqueSequences"
+  },
+  {
+    "name": "RealPropertyTaxReleaseStatusDefinitionRecordNotes"
+  },
+  {
+    "name": "LedgerAccountTrnOld"
+  },
+  {
+    "name": "OCEmployeeGroupRecordNotes"
+  },
+  {
+    "name": "PurchaseOrderLine"
+  },
+  {
+    "name": "FND_WORK_ITEMS_HTM"
+  },
+  {
+    "name": "TradeGuaranteeAssociationRecordNotes"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevels"
+  },
+  {
+    "name": "PurchaseParameterFileFormat"
+  },
+  {
+    "name": "InventoryStockCodeVendor"
+  },
+  {
+    "name": "CreditIEResults"
+  },
+  {
+    "name": "LeasePurchaseProjectLineRecordNotes"
+  },
+  {
+    "name": "CrmAddressType"
+  },
+  {
+    "name": "InventoryPurchaseWayRecordNotes"
+  },
+  {
+    "name": "GeneralCurrencyExchangeType"
+  },
+  {
+    "name": "QUO_PRM_VEHICLE_TYPE"
+  },
+  {
+    "name": "CrmRelationship44_11UserDefinedPropertyTable"
+  },
+  {
+    "name": "ContractPaymentPlan"
+  },
+  {
+    "name": "TradeAccountTypeUniqueSequenceDefinitions"
+  },
+  {
+    "name": "CrmActivityCategoryDefinition"
+  },
+  {
+    "name": "LGAccountsBalancesTemp"
+  },
+  {
+    "name": "CreditProjectRecordNotes"
+  },
+  {
+    "name": "CreditBuyBackRecordNotes"
+  },
+  {
+    "name": "PurchasePaymentPlan"
+  },
+  {
+    "name": "FoundationTableUpdatesCompanyValuesBackup"
+  },
+  {
+    "name": "ProcessFlowWorkSheetUsers"
+  },
+  {
+    "name": "Calendar"
+  },
+  {
+    "name": "CONTROL_TRADELEDGER_EXCLUDING"
+  },
+  {
+    "name": "ProductRequestReasonRecordNotes"
+  },
+  {
+    "name": "EInvParty"
+  },
+  {
+    "name": "FREEPART_TEMP"
+  },
+  {
+    "name": "BudgetAllocateKeyRecordDescriptions"
+  },
+  {
+    "name": "FoundationSms"
+  },
+  {
+    "name": "FoundationMessagesRelatedUsers"
+  },
+  {
+    "name": "BudgetTemplateLine"
+  },
+  {
+    "name": "QuotationAggrementHeaderRecordDescriptions"
+  },
+  {
+    "name": "QuotationApplicationOfFunds"
+  },
+  {
+    "name": "TRDREPORTHISTORIES"
+  },
+  {
+    "name": "ApprovalApprovalsAppliedInstallationsToRecords"
+  },
+  {
+    "name": "TradeFixedAssetTransType"
+  },
+  {
+    "name": "RprInterest"
+  },
+  {
+    "name": "CHKCHECKERTESTRESULTRecordNotes"
+  },
+  {
+    "name": "FoundationNumeratorRecordNotes"
+  },
+  {
+    "name": "ContractPaymentPlanRecordDescriptions"
+  },
+  {
+    "name": "FoundationFileBrowser"
+  },
+  {
+    "name": "RealPropertyTaxReleaseStatusDefinitionRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentBookmarkRecordNotes"
+  },
+  {
+    "name": "LedgerTransactionTrnOld"
+  },
+  {
+    "name": "OCEmployeeGroupRecordDescriptions"
+  },
+  {
+    "name": "FoundationMultiPageTabRestrictionCommon"
+  },
+  {
+    "name": "TradeRiskDocumentRecordNotes"
+  },
+  {
+    "name": "AdjudicationCommitteeDefinitionRecordNotes"
+  },
+  {
+    "name": "QuotationPaymentPlanPaymentDateType"
+  },
+  {
+    "name": "JournalSetupPostingTypeGroupsRecordNotes"
+  },
+  {
+    "name": "TradeGuaranteeGroupRecordDescriptions"
+  },
+  {
+    "name": "GeneralTax"
+  },
+  {
+    "name": "CrmInstitutionalCustomerPartnershipInstitutional"
+  },
+  {
+    "name": "PurchaseParameterOrderStatus"
+  },
+  {
+    "name": "ApprovalApprovalsMenuToMenuRelationBreakPoints"
+  },
+  {
+    "name": "DM_APP_CONFIRM_REASON"
+  },
+  {
+    "name": "CreditIETypes"
+  },
+  {
+    "name": "LeasePurchaseProjectLineRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseDocumentHeaderRecordHistory"
+  },
+  {
+    "name": "FoundationControlVariationsDet"
+  },
+  {
+    "name": "CrmTaxDepartment"
+  },
+  {
+    "name": "TaskCancelReason"
+  },
+  {
+    "name": "QUO_PRM_WHEEL_BASE"
+  },
+  {
+    "name": "CrmRelationship44_22UserDefinedPropertyTable"
+  },
+  {
+    "name": "GeneralDimensionMapping"
+  },
+  {
+    "name": "ContractPaymentPlanRecordNotes"
+  },
+  {
+    "name": "TradeGuaranteeTypeRisk"
+  },
+  {
+    "name": "BDG_READYAMOUNTACCOUNTS"
+  },
+  {
+    "name": "CrmActivityInvitationMethodDefinition"
+  },
+  {
+    "name": "CreditProjectRecordDescriptions"
+  },
+  {
+    "name": "CreditBuyBackRecordDescriptions"
+  },
+  {
+    "name": "FoundationHelpFilePathDefinition"
+  },
+  {
+    "name": "ContractNotaryPublicEntryRecordNotes"
+  },
+  {
+    "name": "TradeTaskParameters"
+  },
+  {
+    "name": "ProductRequestReasonRecordDescriptions"
+  },
+  {
+    "name": "CrmIndividualCustomerBusinessRelationship"
+  },
+  {
+    "name": "QuotationHeader"
+  },
+  {
+    "name": "TradeSalesHeader"
+  },
+  {
+    "name": "TradeBankAccountEntry"
+  },
+  {
+    "name": "QuotationAggrementHeaderRecordNotes"
+  },
+  {
+    "name": "PurchaseParameterOperationStatus"
+  },
+  {
+    "name": "CreditCommittee"
+  },
+  {
+    "name": "TradePurchaseHeader"
+  },
+  {
+    "name": "DM_APP_DECLINE_REASON"
+  },
+  {
+    "name": "LedgerAccountGuaranteeCodes"
+  },
+  {
+    "name": "CRD_FA_QUE_ANSWER_DEF"
+  },
+  {
+    "name": "InventoryPurchaseRequest"
+  },
+  {
+    "name": "FoundationNumeratorRecordDescriptions"
+  },
+  {
+    "name": "ContractPrintDocuments"
+  },
+  {
+    "name": "LeasingStatusDefinition"
+  },
+  {
+    "name": "RealPropertyPolicyTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "FoundationDocumentBookmarkRecordDescriptions"
+  },
+  {
+    "name": "JournalLinesRecordNotes"
+  },
+  {
+    "name": "CreditGuarantorBailType"
+  },
+  {
+    "name": "TradeRiskDocumentRecordDescriptions"
+  },
+  {
+    "name": "InsuranceUmbrellaContract"
+  },
+  {
+    "name": "CalendarItemDisabledUser"
+  },
+  {
+    "name": "InventoryItemCodeChangingShortHistory"
+  },
+  {
+    "name": "EInvPartyIdentification"
+  },
+  {
+    "name": "QuotationPaymentPlanPaymentType"
+  },
+  {
+    "name": "InventoryModelRecordDescriptions"
+  },
+  {
+    "name": "BudgetPurchaseLineRecordNotes"
+  },
+  {
+    "name": "JournalSetupPostingTypeGroupsRecordDescriptions"
+  },
+  {
+    "name": "TradeGuaranteeGroupRecordNotes"
+  },
+  {
+    "name": "FND_SYSTEM_WARNINGSRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalCustomerPartnershipIndividual"
+  },
+  {
+    "name": "ApprovalApprovalsMenuToMenuRelations"
+  },
+  {
+    "name": "DM_APP_GUAR_TYPE_DEF"
+  },
+  {
+    "name": "CreditIEMeetingTypes"
+  },
+  {
+    "name": "RprInterestLine"
+  },
+  {
+    "name": "FoundationMessagesRecordDescriptions"
+  },
+  {
+    "name": "CRD_FA_QUE_ANSWER_TYPE_DEF"
+  },
+  {
+    "name": "JournalSetupProfilesSubAccDim"
+  },
+  {
+    "name": "CreditGuaranteeProposedRecordDescriptions"
+  },
+  {
+    "name": "TradePaymentTerm"
+  },
+  {
+    "name": "GeneralTemplate"
+  },
+  {
+    "name": "CrmActivityInvitationResponseTypeDefinition"
+  },
+  {
+    "name": "TradeModExpenseInvoice"
+  },
+  {
+    "name": "CreditLeasingProjectRecordNotes"
+  },
+  {
+    "name": "OCVirtualCompanyDetail"
+  },
+  {
+    "name": "CrmProductTreeUserDefinedFields"
+  },
+  {
+    "name": "TaskTasksX"
+  },
+  {
+    "name": "CrmRelationshipType"
+  },
+  {
+    "name": "ContractNotaryPublicEntryRecordDescriptions"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationshipHistory"
+  },
+  {
+    "name": "GeneralTaxGroupLineRecordNotes"
+  },
+  {
+    "name": "CreditMeetingItemType"
+  },
+  {
+    "name": "PurchaseParameterPaymentStatus"
+  },
+  {
+    "name": "CrmNewsCategoryDefinitionRecordDescriptions"
+  },
+  {
+    "name": "QuotationAmount"
+  },
+  {
+    "name": "InventoryEntStatus"
+  },
+  {
+    "name": "CreditGuaPropRecDesc"
+  },
+  {
+    "name": "TradePriceDiscount"
+  },
+  {
+    "name": "CreditGuaranteeProposedRecordNotes"
+  },
+  {
+    "name": "OpLeasing"
+  },
+  {
+    "name": "RealPropertyPolicyTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TaskTasksGroupX"
+  },
+  {
+    "name": "FoundationMenuListColumnWidthsOfUser"
+  },
+  {
+    "name": "InsuranceUmbrellaContractDuration"
+  },
+  {
+    "name": "EInvPartyIdentificationScheme"
+  },
+  {
+    "name": "OPERATING_EXPENSES_DEFINITION"
+  },
+  {
+    "name": "InventoryShelfCategoryRecordNotes"
+  },
+  {
+    "name": "CreditIERequirementDefinition"
+  },
+  {
+    "name": "FND_USER_ACCESS_CONTROL"
+  },
+  {
+    "name": "BudgetPurchaseLineRecordDescriptions"
+  },
+  {
+    "name": "TradeGuaranteeRecordDescriptions"
+  },
+  {
+    "name": "FND_SYSTEM_WARNINGSRecordDescriptions"
+  },
+  {
+    "name": "PurchaseParameterPaymentType"
+  },
+  {
+    "name": "ApprovalApprovalsRecordDescriptions"
+  },
+  {
+    "name": "DM_APP_MONEY_TRANSFER"
+  },
+  {
+    "name": "FoundationDocumentChecklistMenuRecordDescriptions"
+  },
+  {
+    "name": "CRM_MEETING_ATTENDANCE_STATUTE_DEF"
+  },
+  {
+    "name": "CreditGuarantor"
+  },
+  {
+    "name": "CrmCityDistrictMKK"
+  },
+  {
+    "name": "CrmMeetingPlanHistory"
+  },
+  {
+    "name": "PurchaseDocumentRequest"
+  },
+  {
+    "name": "CreditLeasingProjectRecordDescriptions"
+  },
+  {
+    "name": "LOPAGAINSTSEPANDSECHANDVAL"
+  },
+  {
+    "name": "ProcessFlowProcessWorkSheets"
+  },
+  {
+    "name": "CRM_RESIDENT_STATUS"
+  },
+  {
+    "name": "FoundationUsersOwnParameters"
+  },
+  {
+    "name": "InventoryPurchaseOrderDetail"
+  },
+  {
+    "name": "CrmContactCommunicationPreferences"
+  },
+  {
+    "name": "InventoryStockEntryTypeRecordNotes"
+  },
+  {
+    "name": "CrmRelationship47UserDefinedProperties"
+  },
+  {
+    "name": "TaskTasksTemplateRecordNotes"
+  },
+  {
+    "name": "CrmMeetingAttendance"
+  },
+  {
+    "name": "InventoryEquipmentEntryType"
+  },
+  {
+    "name": "GeneralTemplateDocumentRecordNotes"
+  },
+  {
+    "name": "LopSubStatuteChangeViaTradeReport"
+  },
+  {
+    "name": "InventoryInvoice"
+  },
+  {
+    "name": "CreditGuarantorLine"
+  },
+  {
+    "name": "OpLeasingAccountingStatus"
+  },
+  {
+    "name": "SurveyQuestionAnswers"
+  },
+  {
+    "name": "GeneralCurrencyExchangeSetupRecordNotes"
+  },
+  {
+    "name": "LedgerEBookPeriodHistory"
+  },
+  {
+    "name": "CrmRelationshipDefinitionRecordNotes"
+  },
+  {
+    "name": "InsuranceWarranty"
+  },
+  {
+    "name": "InventoryItemFiles"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE"
+  },
+  {
+    "name": "CreditFARequirementDefinition"
+  },
+  {
+    "name": "TradeGuaranteeRecordNotes"
+  },
+  {
+    "name": "ApprovalApprovalsRecordHistory"
+  },
+  {
+    "name": "BudgetForecastSalesLine"
+  },
+  {
+    "name": "DM_APP_PROP_TYPE_DEF"
+  },
+  {
+    "name": "BudgetPurchaseHeader"
+  },
+  {
+    "name": "LeasePurchaseCostingHeaderRecordNotes"
+  },
+  {
+    "name": "TradePurchaseLine"
+  },
+  {
+    "name": "FND_SERVER"
+  },
+  {
+    "name": "LedgerAccountDimensionHierarchyRecordDescriptions"
+  },
+  {
+    "name": "InsuranceGuaranteeLine"
+  },
+  {
+    "name": "CrmAutoTypeDefinition"
+  },
+  {
+    "name": "TaskCancelReasonRecordNotes"
+  },
+  {
+    "name": "RealEstateBuildingExpenseRecordNotes"
+  },
+  {
+    "name": "CreditGuarantorRecordDescriptions"
+  },
+  {
+    "name": "CrmCityDistrict"
+  },
+  {
+    "name": "FoundationValidationField"
+  },
+  {
+    "name": "CrmActivityStatusDefinition"
+  },
+  {
+    "name": "AriBarkodFiltre"
+  },
+  {
+    "name": "QUO_LNDTL_EXTRAFIELDS"
+  },
+  {
+    "name": "CRM_NATIONALITY"
+  },
+  {
+    "name": "CreditRiskProvisionTypes"
+  },
+  {
+    "name": "EInvPaymentMeans"
+  },
+  {
+    "name": "ServiceManagementContractTypesRecordNotes"
+  },
+  {
+    "name": "QuotationProject"
+  },
+  {
+    "name": "TrdCostCntrPhoneFirms"
+  },
+  {
+    "name": "InventoryStockCodeCriticalLevelsWarningUsers"
+  },
+  {
+    "name": "TaskTasksTemplateRecordDescriptions"
+  },
+  {
+    "name": "ApprovalApprovalsRecordNotes"
+  },
+  {
+    "name": "GeneralTemplateDocumentRecordDescriptions"
+  },
+  {
+    "name": "FND_FROM_TO"
+  },
+  {
+    "name": "InventoryInvoiceDetail"
+  },
+  {
+    "name": "CreditGuarantorRecordNotes"
+  },
+  {
+    "name": "Temp_Ledger"
+  },
+  {
+    "name": "BDG_OTHERCOLLECTING"
+  },
+  {
+    "name": "OpLeasingExpenseMatching"
+  },
+  {
+    "name": "GeneralCurrencyExchangeSetupRecordDescriptions"
+  },
+  {
+    "name": "MBL_DEVICE"
+  },
+  {
+    "name": "InventoryInstructionUpKeepRelationInstruction"
+  },
+  {
+    "name": "CrmActivityBudgetTemplate"
+  },
+  {
+    "name": "ProcessFlowProcessWorkBooks"
+  },
+  {
+    "name": "CrmRelationshipDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TaskSchedulerTasks"
+  },
+  {
+    "name": "TradeJournal"
+  },
+  {
+    "name": "InventoryPurchaseOrder"
+  },
+  {
+    "name": "OPERATING_EXPENSES_LINE_PAYMENT"
+  },
+  {
+    "name": "InventoryItemTreeOfAssociations"
+  },
+  {
+    "name": "RPR_PROJECT_TYPE_DEFINITION"
+  },
+  {
+    "name": "TradeGuaranteeStatusRecordDescriptions"
+  },
+  {
+    "name": "GeneralTaxGroupRecordNotes"
+  },
+  {
+    "name": "CrmRelationship48UserDefinedProperties"
+  },
+  {
+    "name": "CRMCUSTOMERSUPPINFOS"
+  },
+  {
+    "name": "DM_APPLICATION"
+  },
+  {
+    "name": "RealPropertyPropertyGroupDefinitionRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseCostingHeaderRecordDescriptions"
+  },
+  {
+    "name": "FND_SESSION"
+  },
+  {
+    "name": "DM_TCMB_NEGATIVE_CREDITS"
+  },
+  {
+    "name": "LedgerAccountDimensionHierarchyRecordNotes"
+  },
+  {
+    "name": "FinanceFloatingIndexRecordDescriptions"
+  },
+  {
+    "name": "TaskCancelReasonRecordDescriptions"
+  },
+  {
+    "name": "RealEstateBuildingExpenseRecordDescriptions"
+  },
+  {
+    "name": "CreditProject"
+  },
+  {
+    "name": "CrmProductGroupUserDefinedFields"
+  },
+  {
+    "name": "RPR_PROJECT_EXCEL"
+  },
+  {
+    "name": "CrmRelationship61UserDefinedProperties"
+  },
+  {
+    "name": "ServiceManagementContractTypesRecordDescriptions"
+  },
+  {
+    "name": "PurchaseApprovalDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryInstructionProcess"
+  },
+  {
+    "name": "TrdCostCntrPhoneMerge"
+  },
+  {
+    "name": "PaymentTermRecordNotes"
+  },
+  {
+    "name": "CrmPersonnelCustomerRelationTypeDefinition"
+  },
+  {
+    "name": "ApprovalCategory"
+  },
+  {
+    "name": "ddl_log"
+  },
+  {
+    "name": "InventoryWayBillDetail"
+  },
+  {
+    "name": "CreditStatuteDefinition"
+  },
+  {
+    "name": "CrmLegalStructureDefinition"
+  },
+  {
+    "name": "OpLeasingExpenseStatus"
+  },
+  {
+    "name": "CrmMeetingRecordHistory"
+  },
+  {
+    "name": "TradeTransactionUsing"
+  },
+  {
+    "name": "QuotationProjectStatuteDefinition"
+  },
+  {
+    "name": "CrmInstitutionalCustomerProductGroupRelationTypeDefinition"
+  },
+  {
+    "name": "FoundationColumnDefaultValues"
+  },
+  {
+    "name": "CrmCheckListRecordNotes"
+  },
+  {
+    "name": "BaselGuaranteeType"
+  },
+  {
+    "name": "InventoryItemStockCodes"
+  },
+  {
+    "name": "InventoryPurchaseOrderRecordNotes"
+  },
+  {
+    "name": "OPERATING_EXPENSES_SECONDARY_CODE"
+  },
+  {
+    "name": "LeasingContractCusProfitabRptTemp"
+  },
+  {
+    "name": "FoundationValidationDefinition"
+  },
+  {
+    "name": "TradeGuaranteeStatusRecordNotes"
+  },
+  {
+    "name": "CrmRelationship48_6UserDefinedPropertyTable"
+  },
+  {
+    "name": "PurchaseParameterRequisitionOfferStatus"
+  },
+  {
+    "name": "DM_APPLICATION_COEFF_PAYMENT"
+  },
+  {
+    "name": "RealPropertyPropertyGroupDefinitionRecordDescriptions"
+  },
+  {
+    "name": "DM_TCMB_MEMZUC_LIST"
+  },
+  {
+    "name": "LedgerAccountRecordDescriptions"
+  },
+  {
+    "name": "RPR_PROJECT_STAGE"
+  },
+  {
+    "name": "FinanceFloatingIndexRecordNotes"
+  },
+  {
+    "name": "ServiceManagementCallReasonRecordNotes"
+  },
+  {
+    "name": "CrmActivityInvitees64UserDefinedActivities"
+  },
+  {
+    "name": "CrmCompanyDepartmentRecordDescriptions"
+  },
+  {
+    "name": "ProcessFlowProcesses"
+  },
+  {
+    "name": "TradeAgreement"
+  },
+  {
+    "name": "RealPropertyRentIncreaseEstimateTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "EInvTax"
+  },
+  {
+    "name": "PurchaseApprovalDefinitionRecordDescriptions"
+  },
+  {
+    "name": "PaymentTermRecordDescriptions"
+  },
+  {
+    "name": "TaskSchedulerScheduleTypes"
+  },
+  {
+    "name": "BudgetPeriodQueryType"
+  },
+  {
+    "name": "FoundationUserDetailMenuPermission"
+  },
+  {
+    "name": "PurchaseParameterRequisitionStatus"
+  },
+  {
+    "name": "ApprovalCategoryExtensions"
+  },
+  {
+    "name": "Logtable"
+  },
+  {
+    "name": "InventoryInvoiceType"
+  },
+  {
+    "name": "CrmActivityInvitees65UserDefinedActivities"
+  },
+  {
+    "name": "CrmInstitutionalCustomerLegalStructure"
+  },
+  {
+    "name": "OpLeasingInvoice"
+  },
+  {
+    "name": "InventoryItemUpKeepResponsibleUsers"
+  },
+  {
+    "name": "FoundationUsersOwnParametersRecordNotes"
+  },
+  {
+    "name": "SurveyQuestionTypeDefinition"
+  },
+  {
+    "name": "OPERATING_EXPENSES_MAIN_CODE"
+  },
+  {
+    "name": "InventoryPurchaseRequestPool"
+  },
+  {
+    "name": "CrmRelationship86UserDefinedProperties"
+  },
+  {
+    "name": "TradeGuaranteeTypeRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship48_19UserDefinedPropertyTable"
+  },
+  {
+    "name": "PurchaseParameterRequisitionType"
+  },
+  {
+    "name": "ApprovalCategoryRecordDescriptions"
+  },
+  {
+    "name": "CrmMeetingSubjectDefinition"
+  },
+  {
+    "name": "DM_APPLICATION_CONTRACT"
+  },
+  {
+    "name": "InventoryPurchaseRequestStatute"
+  },
+  {
+    "name": "InventoryStockCodeYearlyLimits"
+  },
+  {
+    "name": "DM_TCMB_PROTESTED_BILLS"
+  },
+  {
+    "name": "TradeFixedAssetCalculationPeriod"
+  },
+  {
+    "name": "LedgerAccountRecordNotes"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART_14042021"
+  },
+  {
+    "name": "FinanceFloatingInterestRecordDescriptions"
+  },
+  {
+    "name": "ServiceManagementCallReasonRecordDescriptions"
+  },
+  {
+    "name": "FND_FROM_TORecordNotes"
+  },
+  {
+    "name": "RealEstateBuildingExpenseSource"
+  },
+  {
+    "name": "CrmActivityListRecordNotes"
+  },
+  {
+    "name": "CrmRelationshipVendorType"
+  },
+  {
+    "name": "TradeCostCenter"
+  },
+  {
+    "name": "CalendarOutlookSyncType"
+  },
+  {
+    "name": "CRM_KEP_IMPORT_HEADER"
+  },
+  {
+    "name": "InventoryItemDetailControl"
+  },
+  {
+    "name": "CrmMeetingRecordNotes"
+  },
+  {
+    "name": "CRM_LEGAL_PROSECUTION_STATU"
+  },
+  {
+    "name": "OCLocationTemp"
+  },
+  {
+    "name": "RealPropertyRentIncreaseEstimateTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "LedgerPeriodDaily"
+  },
+  {
+    "name": "QuotationLine"
+  },
+  {
+    "name": "LeasingOperationEarlyCloseReason"
+  },
+  {
+    "name": "OCPositionDefaultRoles"
+  },
+  {
+    "name": "TradeCustomerEntryClosing"
+  },
+  {
+    "name": "PurchaseParameterSendType"
+  },
+  {
+    "name": "InventoryDemoMemberRecordNotes"
+  },
+  {
+    "name": "FoundationDataFilterForRole"
+  },
+  {
+    "name": "ApprovalCategoryRecordNotes"
+  },
+  {
+    "name": "LeasingContractCusProfitabRpt"
+  },
+  {
+    "name": "LOG_BASAR"
+  },
+  {
+    "name": "InventoryWillBillType"
+  },
+  {
+    "name": "CrmActivityListRecordDescriptions"
+  },
+  {
+    "name": "OpLeasingInvoiceDetail"
+  },
+  {
+    "name": "TradePaymentTypes"
+  },
+  {
+    "name": "CrmProductUserDefinedFields"
+  },
+  {
+    "name": "CrmLanguage"
+  },
+  {
+    "name": "MBL_PUSH_NOTIFICATIONS"
+  },
+  {
+    "name": "LeasePurchaseEncouragement"
+  },
+  {
+    "name": "ssRecordNotes"
+  },
+  {
+    "name": "FoundationUsersOwnParametersRecordDescriptions"
+  },
+  {
+    "name": "FoundationMultiPageTabDefinition"
+  },
+  {
+    "name": "QuoLimitCategory"
+  },
+  {
+    "name": "TradeGuaranteeTypeRecordNotes"
+  },
+  {
+    "name": "QuoConsentTypeId"
+  },
+  {
+    "name": "CrmRelationship48_18UserDefinedPropertyTable"
+  },
+  {
+    "name": "GeneralParameters"
+  },
+  {
+    "name": "FoundationDataFilterForUser"
+  },
+  {
+    "name": "ApprovalCategorySpecifications"
+  },
+  {
+    "name": "DM_APPLICATION_CREDIT"
+  },
+  {
+    "name": "DM_TCMB_RETURNED_CHEQUES"
+  },
+  {
+    "name": "LedgerLGBalanceTemplateRecordDescriptions"
+  },
+  {
+    "name": "InsurancePolicyCommission"
+  },
+  {
+    "name": "FinanceFloatingInterestRecordNotes"
+  },
+  {
+    "name": "FoundationValidationDefinitionRecordDescriptions"
+  },
+  {
+    "name": "PaymentScheduleHeaderRecordNotes"
+  },
+  {
+    "name": "FND_FROM_TORecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipVendor1"
+  },
+  {
+    "name": "FoundationSearchPanelQueryDesignRows"
+  },
+  {
+    "name": "CalendarOutlookSync"
+  },
+  {
+    "name": "TradeSweepPostingLine"
+  },
+  {
+    "name": "CrmActivityTemplateRecordNotes"
+  },
+  {
+    "name": "QUO_REF_COMM_CALC"
+  },
+  {
+    "name": "GlobalAssetType"
+  },
+  {
+    "name": "OCLocationRecordNotes"
+  },
+  {
+    "name": "InventoryPurchaseRequestPoolLines"
+  },
+  {
+    "name": "FoundationDistributingListExcludedEmployees"
+  },
+  {
+    "name": "CrmRouteScheduleRecordNotes"
+  },
+  {
+    "name": "LeasingOperationPostingStatute"
+  },
+  {
+    "name": "TradeChequePositionRule"
+  },
+  {
+    "name": "InventoryDemoMemberRecordDescriptions"
+  },
+  {
+    "name": "SurveyQuestionDependantQuestionsRecordNotes"
+  },
+  {
+    "name": "RealEstateBuildingExpenseBase"
+  },
+  {
+    "name": "CrmInstitutionalCustomerUdtMasraflar"
+  },
+  {
+    "name": "CrmDocumentRecordNotes"
+  },
+  {
+    "name": "GeneralTemplateDocumentField"
+  },
+  {
+    "name": "OpLeasingInvoiceStatus"
+  },
+  {
+    "name": "GeneralCurrencyExchangeTypeRecordNotes"
+  },
+  {
+    "name": "CRM_KEP_IMPORT_DETAIL_DATA"
+  },
+  {
+    "name": "RPR_PROJECT_EXCEL_LINE"
+  },
+  {
+    "name": "ssRecordDescriptions"
+  },
+  {
+    "name": "InventoryUpKeep"
+  },
+  {
+    "name": "EInvTaxSub"
+  },
+  {
+    "name": "InventoryItemTreeAssociations"
+  },
+  {
+    "name": "RealPropertyPropertyPolicysRecordNotes"
+  },
+  {
+    "name": "TradeGuaranteeUsageRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship48_16UserDefinedPropertyTable"
+  },
+  {
+    "name": "ApprovalCategoryStartUpLocationTypes"
+  },
+  {
+    "name": "DM_APPLICATION_GUARANTEE"
+  },
+  {
+    "name": "TradeOverdueInterestRate"
+  },
+  {
+    "name": "LedgerLGBalanceTemplateRecordNotes"
+  },
+  {
+    "name": "FinanceInvestmentForexRecordDescriptions"
+  },
+  {
+    "name": "InventoryParametersRecordDescriptions"
+  },
+  {
+    "name": "PaymentScheduleHeaderRecordDescriptions"
+  },
+  {
+    "name": "TaskTasksGroup"
+  },
+  {
+    "name": "CrmMeetingRelation"
+  },
+  {
+    "name": "CrmRelationshipVendor2"
+  },
+  {
+    "name": "FoundationWarningMessage"
+  },
+  {
+    "name": "CrmActivityTemplateRecordDescriptions"
+  },
+  {
+    "name": "LedgerAccountDimensionHierarchy"
+  },
+  {
+    "name": "FoundationChecklistQuestionEntry"
+  },
+  {
+    "name": "OCLocationRecordDescriptions"
+  },
+  {
+    "name": "ContractGuarantorPersonalList"
+  },
+  {
+    "name": "RealPropertyUsageStateDefinitionRecordNotes"
+  },
+  {
+    "name": "QuotationSmallPaymentRecordNotes"
+  },
+  {
+    "name": "CRM_MARK_ACT_TYPE_DEF"
+  },
+  {
+    "name": "CrmRouteScheduleRecordDescriptions"
+  },
+  {
+    "name": "TradeGuaranteeUsageRecordNotes"
+  },
+  {
+    "name": "ApprovalCategoryStepRelations"
+  },
+  {
+    "name": "TRADE_COLLECTION_BANK"
+  },
+  {
+    "name": "SurveyQuestionDependantQuestionsRecordDescriptions"
+  },
+  {
+    "name": "RealEstateBuildingExpenseResolutionParticipation"
+  },
+  {
+    "name": "CrmMeetingRelationRecordDescriptions"
+  },
+  {
+    "name": "CrmDocumentRecordDescriptions"
+  },
+  {
+    "name": "OpLeasingInvoiceType"
+  },
+  {
+    "name": "GeneralCurrencyExchangeTypeRecordDescriptions"
+  },
+  {
+    "name": "LimitProduct"
+  },
+  {
+    "name": "TradeSweepTransaction"
+  },
+  {
+    "name": "CrmContactCommunicationLanguage"
+  },
+  {
+    "name": "TradeChequePayrollOutFileDetail"
+  },
+  {
+    "name": "FoundationUserDefinedPropertiesRecordDescriptions"
+  },
+  {
+    "name": "LedgerAccountDimensionHierarchyLine"
+  },
+  {
+    "name": "FoundationUserDefinedTable"
+  },
+  {
+    "name": "FoundationStatute"
+  },
+  {
+    "name": "RealPropertyPropertyPolicysRecordDescriptions"
+  },
+  {
+    "name": "TradeInsuranceRecordDescriptions"
+  },
+  {
+    "name": "FoundationRoleDetailMenuPermission"
+  },
+  {
+    "name": "CrmRelationship48_17UserDefinedPropertyTable"
+  },
+  {
+    "name": "ApprovalCategorySteps"
+  },
+  {
+    "name": "DM_APPLICATION_ITEM"
+  },
+  {
+    "name": "LedgerParametersRecordDescriptions"
+  },
+  {
+    "name": "FinanceInvestmentForexRecordNotes"
+  },
+  {
+    "name": "InventoryUpKeepRecordDescriptions"
+  },
+  {
+    "name": "TaskPriorityDegree"
+  },
+  {
+    "name": "FoundationMenuExcelExportUserPermissionsRecordNotes"
+  },
+  {
+    "name": "CrmMeetingRelationRecordNotes"
+  },
+  {
+    "name": "CrmRelationship58UserDefinedProperties"
+  },
+  {
+    "name": "CRM_RATING_DEFRecordNotes"
+  },
+  {
+    "name": "CrmActivityTasks"
+  },
+  {
+    "name": "FoundationChecklistEntry"
+  },
+  {
+    "name": "QuotationPaymentDueDateType"
+  },
+  {
+    "name": "RealPropertyUsageStateDefinitionRecordDescriptions"
+  },
+  {
+    "name": "QuotationSmallPaymentRecordDescriptions"
+  },
+  {
+    "name": "FoundationGridColumnWidthOfUser"
+  },
+  {
+    "name": "ProductRequestSendingGroupsRecordNotes"
+  },
+  {
+    "name": "QuotationLineDetail_EquipmentBackup"
+  },
+  {
+    "name": "InventoryStockCodeAssociationRelation"
+  },
+  {
+    "name": "InventoryItemRequest"
+  },
+  {
+    "name": "CrmInstitutionClass"
+  },
+  {
+    "name": "FndMenuEx"
+  },
+  {
+    "name": "FoundationWarningTaskLine"
+  },
+  {
+    "name": "RPR_QUO"
+  },
+  {
+    "name": "CrmRelationship11UserDefinedProperties"
+  },
+  {
+    "name": "CrmContactImportanceLevelDefinitionRecordDescriptions"
+  },
+  {
+    "name": "OpLeasingProduct"
+  },
+  {
+    "name": "QuotationLineDetail_17864"
+  },
+  {
+    "name": "TradeChequePayrollOutFileHeader"
+  },
+  {
+    "name": "InventoryInstructionUpKeepRelationReplacingItemGroup"
+  },
+  {
+    "name": "FinanceBankToBankTransferRecordDescriptions"
+  },
+  {
+    "name": "FoundationChecklistRecordDescriptions"
+  },
+  {
+    "name": "QuotationReferenceRecordNotes"
+  },
+  {
+    "name": "InventoryModel"
+  },
+  {
+    "name": "LG_FOLLOWCRD_TEMP"
+  },
+  {
+    "name": "FINANCECREDITALLOCATION$"
+  },
+  {
+    "name": "QuotationPayment_1178"
+  },
+  {
+    "name": "TradeInsuranceRecordNotes"
+  },
+  {
+    "name": "CrmRelationship49UserDefinedProperties"
+  },
+  {
+    "name": "CreditCommitteeRecordNotes"
+  },
+  {
+    "name": "ApprovalCategoryStepsParts"
+  },
+  {
+    "name": "CrmCustomerEInvoiceQueryDate"
+  },
+  {
+    "name": "DM_BUSINESS_AREA"
+  },
+  {
+    "name": "QuotationInsuranceOwnerType"
+  },
+  {
+    "name": "LedgerParametersRecordNotes"
+  },
+  {
+    "name": "FoundationUserCompanyPermissions"
+  },
+  {
+    "name": "FinanceInvestmentRepurchaseRecordDescriptions"
+  },
+  {
+    "name": "InventoryUpKeepRelationProposingDateRecordDescriptions"
+  },
+  {
+    "name": "FoundationMenuExcelExportUserPermissionsRecordDescriptions"
+  },
+  {
+    "name": "CrmReligionTypeDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeRiskHeader"
+  },
+  {
+    "name": "InventoryItemTemplate"
+  },
+  {
+    "name": "FoundationMenuFavorite"
+  },
+  {
+    "name": "CRM_RATING_DEFRecordDescriptions"
+  },
+  {
+    "name": "CrmIMSBrick"
+  },
+  {
+    "name": "InventoryUpKeepRelationInstruction"
+  },
+  {
+    "name": "CrmInstitutionalCustomerNews"
+  },
+  {
+    "name": "ServiceManagementServiceTypesRecordNotes"
+  },
+  {
+    "name": "InventoryItemTreeAssociationRelation"
+  },
+  {
+    "name": "FINANCECREDITDEFINITION$"
+  },
+  {
+    "name": "ProductRequestSendingGroupsRecordDescriptions"
+  },
+  {
+    "name": "QuotationRevisionAmount"
+  },
+  {
+    "name": "CrmInstitutionSubClass"
+  },
+  {
+    "name": "ApprovalCategoryStepsRecordDescriptions"
+  },
+  {
+    "name": "CrmIMSBrickHistory"
+  },
+  {
+    "name": "FoundationRoleCompanyPermissions"
+  },
+  {
+    "name": "FoundationDocumentGroupRecordDescriptions"
+  },
+  {
+    "name": "CrmReligionTypeDefinitionRecordNotes"
+  },
+  {
+    "name": "InventoryParameters"
+  },
+  {
+    "name": "InventoryUpKeepPeriodRecordDescriptions"
+  },
+  {
+    "name": "FoundationDetailPageButtons"
+  },
+  {
+    "name": "OpLeasingProductUtilization"
+  },
+  {
+    "name": "ServiceManagementCallWorkFlowRecordNotes"
+  },
+  {
+    "name": "RealEstateRestoreRequestIsUrgent"
+  },
+  {
+    "name": "TradePosting"
+  },
+  {
+    "name": "RealPropertyPropertyUsageDetailsRecordNotes"
+  },
+  {
+    "name": "CrmSectorDefinition"
+  },
+  {
+    "name": "CrmCertificateType"
+  },
+  {
+    "name": "RealPropertyPropertyRecordNotes"
+  },
+  {
+    "name": "QuotationReferenceRecordDescriptions"
+  },
+  {
+    "name": "InventoryPurchaseWay"
+  },
+  {
+    "name": "BudgetRequestRecordNotes"
+  },
+  {
+    "name": "FINANCECREDITTRANSACTION$"
+  },
+  {
+    "name": "TradeInterestFloatingLineRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship49_19UserDefinedPropertyTable"
+  },
+  {
+    "name": "CreditCommitteeRecordDescriptions"
+  },
+  {
+    "name": "ApprovalCategoryStepsRecordNotes"
+  },
+  {
+    "name": "DM_CHANGE_REQUEST"
+  },
+  {
+    "name": "LedgerPeriodOperationDetail"
+  },
+  {
+    "name": "FoundationWarningTaskGroup"
+  },
+  {
+    "name": "LedgerPeriodOperationRecordDescriptions"
+  },
+  {
+    "name": "RPR_PROJECT_FREE_PART"
+  },
+  {
+    "name": "FinanceInvestmentRepurchaseRecordNotes"
+  },
+  {
+    "name": "InventoryInstructionGroupRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorType"
+  },
+  {
+    "name": "ServiceManagementCallLateCloseReasonRecordNotes"
+  },
+  {
+    "name": "GeneralUnit"
+  },
+  {
+    "name": "LG_FOLLOWCRD_ACCOUNTS"
+  },
+  {
+    "name": "BaselReportFileControl"
+  },
+  {
+    "name": "InventoryUpKeepRelationInstructionProcess"
+  },
+  {
+    "name": "ServiceManagementServiceTypesRecordDescriptions"
+  },
+  {
+    "name": "CrmMarketingActivityTransaction"
+  },
+  {
+    "name": "QuotationRevisionLine"
+  },
+  {
+    "name": "SurveyQuestionRecordDescriptions"
+  },
+  {
+    "name": "TradeInsuranceEntry"
+  },
+  {
+    "name": "ApprovalCategoryStepsRoles"
+  },
+  {
+    "name": "QuotationOccasionContact"
+  },
+  {
+    "name": "FoundationAssociationParameterRecordDescriptions"
+  },
+  {
+    "name": "JournalParameterCheque"
+  },
+  {
+    "name": "OpLeasingRetrieveReasonCode"
+  },
+  {
+    "name": "InsuranceGuarantee"
+  },
+  {
+    "name": "ServiceManagementCallWorkFlowRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyUsageDetailsRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyRecordDescriptions"
+  },
+  {
+    "name": "GeneralCompanyRecordDescriptions"
+  },
+  {
+    "name": "FoundationUserRolesPreInit"
+  },
+  {
+    "name": "InventoryStatute"
+  },
+  {
+    "name": "BudgetRequestRecordDescriptions"
+  },
+  {
+    "name": "OCLocationTitlesRecordNotes"
+  },
+  {
+    "name": "QuotationRevisionLineDetail"
+  },
+  {
+    "name": "TradeInterestFloatingLineRecordNotes"
+  },
+  {
+    "name": "MeetingType"
+  },
+  {
+    "name": "CrmRelationship49_15UserDefinedPropertyTable"
+  },
+  {
+    "name": "ProjectManagementProject"
+  },
+  {
+    "name": "ApprovalCategoryStepsSystemType"
+  },
+  {
+    "name": "MersisQueryCommunicationInfo"
+  },
+  {
+    "name": "DM_CONVERT_PARAMETER"
+  },
+  {
+    "name": "LedgerPeriodOperationRecordNotes"
+  },
+  {
+    "name": "FoundationDysCategory"
+  },
+  {
+    "name": "InventoryInstructionUpKeepRecordDescriptions"
+  },
+  {
+    "name": "FoundationAssociationParameterRecordNotes"
+  },
+  {
+    "name": "CrmRelationshipDistrubutor1"
+  },
+  {
+    "name": "ServiceManagementCallLateCloseReasonRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentGroupEntry"
+  },
+  {
+    "name": "QuotationProjectLeasingType"
+  },
+  {
+    "name": "OCEmployeeGroupEmployees"
+  },
+  {
+    "name": "QuotationRevisionPayment"
+  },
+  {
+    "name": "TradeInsuranceGroup"
+  },
+  {
+    "name": "ProjectManagementProjectBudget"
+  },
+  {
+    "name": "ApprovalCategoryStepsUsers"
+  },
+  {
+    "name": "CrmMeetingSurvey"
+  },
+  {
+    "name": "InventoryStockCodeYearlyLimitsRecordNotes"
+  },
+  {
+    "name": "LedgerBalanceSheetAssetsParameters"
+  },
+  {
+    "name": "FoundationDysIndex"
+  },
+  {
+    "name": "InventoryInvoiceRecordNotes"
+  },
+  {
+    "name": "RPR_QUO_ITEM"
+  },
+  {
+    "name": "FoundationAssociationParameterValueRecordNotes"
+  },
+  {
+    "name": "OpLeasingServiceStatus"
+  },
+  {
+    "name": "InsuranceDamage"
+  },
+  {
+    "name": "InsurancePolicyGuarantee"
+  },
+  {
+    "name": "INV_PROPERTY_VALUE"
+  },
+  {
+    "name": "FoundationDocumentEntry"
+  },
+  {
+    "name": "CrmRelationship1"
+  },
+  {
+    "name": "OCLocationTitlesRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentGroupRules"
+  },
+  {
+    "name": "TRDCOSTTYPE"
+  },
+  {
+    "name": "ledgeracc278"
+  },
+  {
+    "name": "ContractGuarantorEntryRecordNotes"
+  },
+  {
+    "name": "CrmMarketingActivity"
+  },
+  {
+    "name": "TradeInterestFloatingRecordDescriptions"
+  },
+  {
+    "name": "FND_BACKGROUND_WORKSRecordNotes"
+  },
+  {
+    "name": "CrmCheckListRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship49_18UserDefinedPropertyTable"
+  },
+  {
+    "name": "ProjectManagementProjectBudgetTypeDefinition"
+  },
+  {
+    "name": "InventoryItemFilesShares"
+  },
+  {
+    "name": "ApprovalChildApprovals"
+  },
+  {
+    "name": "MersisQueryAddress"
+  },
+  {
+    "name": "DM_CORPORATE_FINANCIAL"
+  },
+  {
+    "name": "QuotationInsuranceEntry"
+  },
+  {
+    "name": "LedgerTransactionRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyPaymentsOrganizerRecordNotes"
+  },
+  {
+    "name": "LedgerBalanceSheetAssets"
+  },
+  {
+    "name": "FoundationSystemLock"
+  },
+  {
+    "name": "InventoryCollectsRecordDescriptions"
+  },
+  {
+    "name": "FoundationRoleRecordDescriptions"
+  },
+  {
+    "name": "AK_KIRA_SAHIPLIK"
+  },
+  {
+    "name": "FoundationAssociationParameterValueRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipDistrubutor2"
+  },
+  {
+    "name": "CrmRelationship54UserDefinedProperties"
+  },
+  {
+    "name": "RealEstateFloor"
+  },
+  {
+    "name": "FoundationDocumentGroup"
+  },
+  {
+    "name": "CreditLimitAllocationStatus"
+  },
+  {
+    "name": "QuotationPaymentPlan"
+  },
+  {
+    "name": "InsuranceTrackingRecordNotes"
+  },
+  {
+    "name": "BudgetPurchaseLineEntry"
+  },
+  {
+    "name": "FinanceInvestmentType"
+  },
+  {
+    "name": "QuotationRevisionProject"
+  },
+  {
+    "name": "TradeInsurancePeriod"
+  },
+  {
+    "name": "ProjectManagementProjectCategory"
+  },
+  {
+    "name": "ApprovalInstallation"
+  },
+  {
+    "name": "LedgerAccountTrn"
+  },
+  {
+    "name": "AK_KIRA_SAHIPLIK_DETAY"
+  },
+  {
+    "name": "FoundationDocumentTypeRecordDescriptions"
+  },
+  {
+    "name": "GeneralTemplateColumnPrivateProperty"
+  },
+  {
+    "name": "InventoryDemoPartProperties"
+  },
+  {
+    "name": "GeneralBankBranch"
+  },
+  {
+    "name": "OpLeasingVehicleOperationStatus"
+  },
+  {
+    "name": "InsuranceDamageLine"
+  },
+  {
+    "name": "CrmContactRecordDescriptions"
+  },
+  {
+    "name": "OCVirtualCompanyDetailRecordNotes"
+  },
+  {
+    "name": "FoundationTableLookUpRelationshipFailedDeleteAttempts"
+  },
+  {
+    "name": "InventoryUpKeepReplacingItem"
+  },
+  {
+    "name": "QuotationFTPUsageType"
+  },
+  {
+    "name": "QuotationIEFAStatuteDefinition"
+  },
+  {
+    "name": "InventoryItemTreeAssociationRelationRecordNotes"
+  },
+  {
+    "name": "InsurancePolicyProduct"
+  },
+  {
+    "name": "TradeInterestFloatingRecordNotes"
+  },
+  {
+    "name": "FND_BACKGROUND_WORKSRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationship49_10UserDefinedPropertyTable"
+  },
+  {
+    "name": "CreditCommitteeUser"
+  },
+  {
+    "name": "ProjectManagementProjectState"
+  },
+  {
+    "name": "TradeCustomerInvoice"
+  },
+  {
+    "name": "MERSIS_CUSTOMER"
+  },
+  {
+    "name": "DM_CORPORATE_INTELLIGENCE"
+  },
+  {
+    "name": "TradeChecquAccountImport"
+  },
+  {
+    "name": "InventoryItemGroupVendors"
+  },
+  {
+    "name": "LedgerTransactionRecordNotes"
+  },
+  {
+    "name": "CreditLimitAllocationGuaranteeType"
+  },
+  {
+    "name": "RealPropertyPropertyPaymentsOrganizerRecordDescriptions"
+  },
+  {
+    "name": "InventoryCollectsRecordNotes"
+  },
+  {
+    "name": "FoundationUsersRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentTypeRecordNotes"
+  },
+  {
+    "name": "InventoryUpKeepReplacingItemChangedForWhy"
+  },
+  {
+    "name": "LeasePurchaseVendorPaymentTemp"
+  },
+  {
+    "name": "CrmInstitutionalCustomerProductGroupRelationsWithOthers"
+  },
+  {
+    "name": "OCEmployeeRecordNotes"
+  },
+  {
+    "name": "PurchaseLineIdentity"
+  },
+  {
+    "name": "FoundationRuleDefinition"
+  },
+  {
+    "name": "GeneralDimensionValue"
+  },
+  {
+    "name": "InventoryInstructionUpKeep"
+  },
+  {
+    "name": "InsuranceTrackingRecordDescriptions"
+  },
+  {
+    "name": "TempLedgerTrn"
+  },
+  {
+    "name": "QuotationSmallPayment"
+  },
+  {
+    "name": "ApprovalStates"
+  },
+  {
+    "name": "LedgerTransactionTrn"
+  },
+  {
+    "name": "FoundationComments"
+  },
+  {
+    "name": "FoundationUsersUserDefinedFields"
+  },
+  {
+    "name": "LeasePurchaseVendorPayment"
+  },
+  {
+    "name": "GeneralDimensionFieldRestrictionRecordNotes"
+  },
+  {
+    "name": "LeasingOperationProjectRecordHistory"
+  },
+  {
+    "name": "OCVirtualCompanyDetailRecordDescriptions"
+  },
+  {
+    "name": "FoundationUserRolesRecordHistory"
+  },
+  {
+    "name": "InventoryInstructionUpKeepRelationGauge"
+  },
+  {
+    "name": "EInvDocStatus"
+  },
+  {
+    "name": "TRDAUTOMATIONDEBIT"
+  },
+  {
+    "name": "CreditIEFAStatuteDefinition"
+  },
+  {
+    "name": "InventoryItemTreeAssociationRelationRecordDescriptions"
+  },
+  {
+    "name": "GeneralTaxRecordDescriptions"
+  },
+  {
+    "name": "KIRA_SOZDURUM"
+  },
+  {
+    "name": "TradeInterestRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseGtipDocRel"
+  },
+  {
+    "name": "ProcessFlowStatuteDefinition"
+  },
+  {
+    "name": "CreditCommitteeType"
+  },
+  {
+    "name": "MERSIS_CUSTOMER_ADDRESS"
+  },
+  {
+    "name": "DM_CREDIT"
+  },
+  {
+    "name": "LedgerVoucherTypesRecordDescriptions"
+  },
+  {
+    "name": "FoundationDocumentGroupRecordNotes"
+  },
+  {
+    "name": "FND_USER_MOBILE_DEVICES"
+  },
+  {
+    "name": "RealEstateRentingEconomyProportionsRecordNotes"
+  },
+  {
+    "name": "InventoryItemDetailRecordDescriptions"
+  },
+  {
+    "name": "FoundationTechnicalPartsRecordDescriptions"
+  },
+  {
+    "name": "BudgetModelLine"
+  },
+  {
+    "name": "ContractProjectRecordNotes"
+  },
+  {
+    "name": "InventoryStockEntryTypeRecordDescriptions"
+  },
+  {
+    "name": "CRM_MARITAL_STATUS_DEFINITION"
+  },
+  {
+    "name": "FoundationDocumentGroupDocument"
+  },
+  {
+    "name": "OCLocationDefinitionType"
+  },
+  {
+    "name": "OCEmployeeRecordDescriptions"
+  },
+  {
+    "name": "TRD_BANK_AUTOMATION_PARAMETERS"
+  },
+  {
+    "name": "FoundationSchemaUpgraderExcludedTests"
+  },
+  {
+    "name": "InventoryModelRecordNotes"
+  },
+  {
+    "name": "LeasePurchaseGtipDocDef"
+  },
+  {
+    "name": "DocumentHeader"
+  },
+  {
+    "name": "ApprovalTableRelationship"
+  },
+  {
+    "name": "TradeAgreementFiles"
+  },
+  {
+    "name": "FoundationChecklistQuestionRecordNotes"
+  },
+  {
+    "name": "TCCPMAccount"
+  },
+  {
+    "name": "FoundationCommentStatus"
+  },
+  {
+    "name": "RPR_QUO_PAYMENT_PLAN"
+  },
+  {
+    "name": "InventoryUpKeepRecordHistory"
+  },
+  {
+    "name": "FoundationDetailPageButtonsRecordNotes"
+  },
+  {
+    "name": "GeneralDimensionFieldRestrictionRecordDescriptions"
+  },
+  {
+    "name": "CrmMeeting"
+  },
+  {
+    "name": "CreditHeaderRecordNotes"
+  },
+  {
+    "name": "CreditGuaranteeProposed"
+  },
+  {
+    "name": "PurchaseOrderRequest"
+  },
+  {
+    "name": "EInvDocType"
+  },
+  {
+    "name": "FoundationUsers"
+  },
+  {
+    "name": "TradeChequeProcessType"
+  },
+  {
+    "name": "MERSIS_SERVICE_KEY"
+  },
+  {
+    "name": "TradeInterestRecordNotes"
+  },
+  {
+    "name": "CreditCommitteePart"
+  },
+  {
+    "name": "APR_CATEGORY_OF_RUNTIME"
+  },
+  {
+    "name": "MERSIS_CUSTOMER_COMMUNICATION"
+  },
+  {
+    "name": "DM_CREDIT_CAMPAIGN"
+  },
+  {
+    "name": "LedgerVoucherTypesRecordNotes"
+  },
+  {
+    "name": "LOP_CORPORATES"
+  },
+  {
+    "name": "RealEstateRentingEconomyProportionsRecordDescriptions"
+  },
+  {
+    "name": "InventoryItemDetailRecordNotes"
+  },
+  {
+    "name": "FoundationFieldHeaderRecordDescriptions"
+  },
+  {
+    "name": "BudgetTemplate"
+  },
+  {
+    "name": "ContractProjectRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseProjectHeaderRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorProductType"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationType"
+  },
+  {
+    "name": "CrmSectorProductRelationship"
+  },
+  {
+    "name": "InventoryItemRequestBagRecordNotes"
+  },
+  {
+    "name": "RUNNING_SCRIPT"
+  },
+  {
+    "name": "PurchaseMenuItemResource"
+  },
+  {
+    "name": "GeneralNumberSequenceRecordNotes"
+  },
+  {
+    "name": "SurveyQuestionAskingMethodDefinition"
+  },
+  {
+    "name": "TaskSchedulerScheduleActionParameterDefinitions"
+  },
+  {
+    "name": "ReporterDesignTree"
+  },
+  {
+    "name": "InventoryGauge"
+  },
+  {
+    "name": "InventoryPurchaseRequestPoolStatute"
+  },
+  {
+    "name": "BudgetAllocateKey"
+  },
+  {
+    "name": "FinanceInvestmentForex"
+  },
+  {
+    "name": "GeneralCompanyRecordNotes"
+  },
+  {
+    "name": "GeneralTimeUnit"
+  },
+  {
+    "name": "GeneralBank"
+  },
+  {
+    "name": "DemoCustomers"
+  },
+  {
+    "name": "InvUsrDefStatus"
+  },
+  {
+    "name": "LeasePurchaseProjectHeaderRecordNotes"
+  },
+  {
+    "name": "FoundationDetailPageButtonsRecordDescriptions"
+  },
+  {
+    "name": "RealEstateLandOffice"
+  },
+  {
+    "name": "GeneralDimensionFieldRelationRecordNotes"
+  },
+  {
+    "name": "QUO_INTEREST_RATE_LIMITSRecordNotes"
+  },
+  {
+    "name": "FoundationMakerCheckerTransactionsRecordNotes"
+  },
+  {
+    "name": "CalendarWorkingDayLine"
+  },
+  {
+    "name": "CreditHeaderRecordDescriptions"
+  },
+  {
+    "name": "CrmCustomerOperationsDefinition"
+  },
+  {
+    "name": "FoundationTableRelationship"
+  },
+  {
+    "name": "InventoryInstructionUpKeepGauge"
+  },
+  {
+    "name": "EInvInvoicedQuantityUnit"
+  },
+  {
+    "name": "CrmStatuteDefinition"
+  },
+  {
+    "name": "TradeItemGroupRecordDescriptions"
+  },
+  {
+    "name": "RealPropertyPropertyPaymentsOrganizerRecordHistory"
+  },
+  {
+    "name": "GeneralDimensionValueCombinationRecordNotes"
+  },
+  {
+    "name": "MERSIS_CUSTOMER_NACE_CODE"
+  },
+  {
+    "name": "CrmContactImportanceLevelDefinition"
+  },
+  {
+    "name": "FoundationMenuListColumnPositionsOfUser"
+  },
+  {
+    "name": "DM_CREDIT_CONTRIBUTION"
+  },
+  {
+    "name": "PurchaseDocumentCurrencyTable"
+  },
+  {
+    "name": "InventoryProductTemplateTypes"
+  },
+  {
+    "name": "QuoLineDetailInsType"
+  },
+  {
+    "name": "ServiceManagementCallImportanceRecordNotes"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorProduct1"
+  },
+  {
+    "name": "LimitCustomerSegment"
+  },
+  {
+    "name": "InventoryCollectLines"
+  },
+  {
+    "name": "InsurancePolicyWarrantyProducts"
+  },
+  {
+    "name": "ReporterDesign"
+  },
+  {
+    "name": "FoundationUsersRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalCustomerRecordHistory"
+  },
+  {
+    "name": "FoundationRole"
+  },
+  {
+    "name": "CreditEnvironmentalSocialAssessment"
+  },
+  {
+    "name": "DemoCustomerTypes"
+  },
+  {
+    "name": "FoundationChecklistRecordNotes"
+  },
+  {
+    "name": "InsurancePolicyTransferStatus"
+  },
+  {
+    "name": "APP_APPROVAL"
+  },
+  {
+    "name": "RealEstateType"
+  },
+  {
+    "name": "TradeUnpaidInvoice"
+  },
+  {
+    "name": "GeneralDimensionFieldRelationRecordDescriptions"
+  },
+  {
+    "name": "FoundationStatuteDefinition"
+  },
+  {
+    "name": "FoundationRecordHistoryFieldDefinitionRecordNotes"
+  },
+  {
+    "name": "CrmProhibitedCustomerReasonType"
+  },
+  {
+    "name": "QUO_INTEREST_RATE_LIMITSRecordDescriptions"
+  },
+  {
+    "name": "InventoryCollectResponsibleEmployees"
+  },
+  {
+    "name": "LedgerAccountDimension"
+  },
+  {
+    "name": "CRM_EINVOICE_TYPE_DEF"
+  },
+  {
+    "name": "CrmTaskGroupRecordDescriptions"
+  },
+  {
+    "name": "EInvoiceDocMenuType"
+  },
+  {
+    "name": "CrmInstitutionalCustomerStatute"
+  },
+  {
+    "name": "InventoryPurchaseRequestPoolLineStatute"
+  },
+  {
+    "name": "TradeItemGroupRecordNotes"
+  },
+  {
+    "name": "InventoryStockCodeKitStuructureRecordNotes"
+  },
+  {
+    "name": "CrmCommercialRegistrationDepartment"
+  },
+  {
+    "name": "MERSIS_QUERY_REQUEST_RESPONSE"
+  },
+  {
+    "name": "DM_CREDIT_CUSTOMER"
+  },
+  {
+    "name": "TradeTransaction"
+  },
+  {
+    "name": "QuotationProjectVendorType"
+  },
+  {
+    "name": "QuotationLineDetailRecordNotes"
+  },
+  {
+    "name": "QUOTATIONDEPRECIATIONTYPE"
+  },
+  {
+    "name": "TradeBankCashManagement"
+  },
+  {
+    "name": "ServiceManagementCallImportanceRecordDescriptions"
+  },
+  {
+    "name": "CrmRelationshipDistrubutorProduct2"
+  },
+  {
+    "name": "InventoryPurchaseRequestRecordNotes"
+  },
+  {
+    "name": "InventoryCollectStockCodeProperties"
+  },
+  {
+    "name": "PaymentHolidayTypes"
+  },
+  {
+    "name": "FinanceCreditPaymentRecordNotes"
+  },
+  {
+    "name": "InsuranceSupplementStatute"
+  },
+  {
+    "name": "ReporterDesignFields"
+  },
+  {
+    "name": "PurchaseRequisitionCondition"
+  },
+  {
+    "name": "CreditLimitAllocationItemGroup"
+  },
+  {
+    "name": "FndOption20130717"
+  },
+  {
+    "name": "TaskTasks"
+  },
+  {
+    "name": "RealEstateToRent"
+  },
+  {
+    "name": "InventoryExcStatus"
+  },
+  {
+    "name": "GeneralBankBranchRecordNotes"
+  },
+  {
+    "name": "RPR_QUO_DISCOUNT"
+  },
+  {
+    "name": "CrmMeetingWeeklyPlanDetail"
+  },
+  {
+    "name": "APP_APPROVAL_LINE"
+  },
+  {
+    "name": "FoundationChecklistCheckListQuestion"
+  },
+  {
+    "name": "FoundationRecordHistoryFieldDefinitionRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseCustomsLoadRecordNotes"
+  },
+  {
+    "name": "FinanceCreditTypeRecordNotes"
+  },
+  {
+    "name": "InventoryUpKeepRelationReplatedItem"
+  },
+  {
+    "name": "InventoryCollectStockCodePropertiesRecordDescriptions"
+  },
+  {
+    "name": "CrmIMSBrickRecordNotes"
+  },
+  {
+    "name": "GUARANTEE_LINE"
+  },
+  {
+    "name": "ReporterDesignFieldCriterias"
+  },
+  {
+    "name": "EInvPartyType"
+  },
+  {
+    "name": "TRADE_REVENUE_PROCESS_FILE"
+  },
+  {
+    "name": "CreditCustomerDesicion"
+  },
+  {
+    "name": "FoundationRoleRecordNotes"
+  },
+  {
+    "name": "FndOption"
+  },
+  {
+    "name": "DocumentGroup"
+  },
+  {
+    "name": "TradeItemRecordDescriptions"
+  },
+  {
+    "name": "InventoryStockCodeKitStuructureRecordDescriptions"
+  },
+  {
+    "name": "DM_CREDIT_ITEM"
+  },
+  {
+    "name": "LeasePurchaseRegistrationRecordNotes"
+  },
+  {
+    "name": "FoundationSystemLanguages"
+  },
+  {
+    "name": "QuotationLineDetailRecordDescriptions"
+  },
+  {
+    "name": "TradeAccountGroupsRecordDescriptions"
+  },
+  {
+    "name": "TB_MGR_DOC"
+  },
+  {
+    "name": "InventoryStockCodeKitSturucture"
+  },
+  {
+    "name": "FoundationMenuNewRecordCompanies"
+  },
+  {
+    "name": "CrmActivityUserDefinedFields"
+  },
+  {
+    "name": "InventoryCollectStockCodePropertiesRecordNotes"
+  },
+  {
+    "name": "PaymentHolidayDayTypes"
+  },
+  {
+    "name": "FinanceCreditPaymentRecordDescriptions"
+  },
+  {
+    "name": "PurchaseRequisitionHeader"
+  },
+  {
+    "name": "SurveyQuestionWhoCanAskDefinition"
+  },
+  {
+    "name": "InventoryEquipmentEntryRecordDescriptions"
+  },
+  {
+    "name": "ReporterDesignRepx"
+  },
+  {
+    "name": "InvOpMeasuredKMTransaction"
+  },
+  {
+    "name": "CrmCommercialRegistrationDepartmentRecordNotes"
+  },
+  {
+    "name": "RequisitionLineRequest"
+  },
+  {
+    "name": "sysdiagrams"
+  },
+  {
+    "name": "GeneralBankBranchRecordDescriptions"
+  },
+  {
+    "name": "kategori"
+  },
+  {
+    "name": "FoundationTableUpdateTemporaryRuns"
+  },
+  {
+    "name": "APP_APPROVAL_MAIL"
+  },
+  {
+    "name": "InventoryWareHouseUsers"
+  },
+  {
+    "name": "LeasePurchaseCustomsLoadRecordDescriptions"
+  },
+  {
+    "name": "FinanceCreditTypeRecordDescriptions"
+  },
+  {
+    "name": "GeneralTaxRecordNotes"
+  },
+  {
+    "name": "InventoryCollects"
+  },
+  {
+    "name": "InventoryStockCodePriceWorkUnit"
+  },
+  {
+    "name": "CrmIMSBrickRecordDescriptions"
+  },
+  {
+    "name": "FoundationChecklistQuestion"
+  },
+  {
+    "name": "PurchaseRequisitionLine"
+  },
+  {
+    "name": "GUARANTEE_MOVEMENT"
+  },
+  {
+    "name": "OCEmployeeGroup"
+  },
+  {
+    "name": "EInvPaymentMeansCode"
+  },
+  {
+    "name": "TRADE_REVENUE_PROCESS_FILE_LINE"
+  },
+  {
+    "name": "GeneralTaxEntry"
+  },
+  {
+    "name": "KIRA_SOZDURUM_HISTORY"
+  },
+  {
+    "name": "TradeItemRecordHistory"
+  },
+  {
+    "name": "InsuranceSupplementIsAccountable"
+  },
+  {
+    "name": "LeasingOperationPayment"
+  },
+  {
+    "name": "DM_CREDIT_PAYMENT_PLAN"
+  },
+  {
+    "name": "LeasePurchaseRegistrationRecordDescriptions"
+  },
+  {
+    "name": "TradeAccountGroupsRecordNotes"
+  },
+  {
+    "name": "CreditGuarantorProposedRecordNotes"
+  },
+  {
+    "name": "BudgetType"
+  },
+  {
+    "name": "PurchaseOrderLineRecordDescriptions"
+  },
+  {
+    "name": "InventoryUpKeepRelationGauge"
+  },
+  {
+    "name": "FoundationChecklist"
+  },
+  {
+    "name": "PurchaseRequisitionOffer"
+  },
+  {
+    "name": "SurveyQuestionWhoCanReplyDefinition"
+  },
+  {
+    "name": "CrmInstitutionalCustomerGroupDefinition"
+  },
+  {
+    "name": "QUO_SECOND_HAND_SALE_CHANNEL"
+  },
+  {
+    "name": "_MGR_SAHIS_FIRMASI"
+  },
+  {
+    "name": "TradeItemRecordNotes"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationshipStatute"
+  },
+  {
+    "name": "TradeAgreementGroup"
+  },
+  {
+    "name": "CrmCommercialRegistrationDepartmentRecordDescriptions"
+  },
+  {
+    "name": "GeneralBankRecordNotes"
+  },
+  {
+    "name": "FoundationLookUpRelationshipRecordNotes"
+  },
+  {
+    "name": "InventoryStockCodeConfigurationRecordNotes"
+  },
+  {
+    "name": "PurchaseOrderLineRecordNotes"
+  },
+  {
+    "name": "QuotationCollectingTypeDefinition"
+  },
+  {
+    "name": "APP_CATEGORY"
+  },
+  {
+    "name": "OCLocationTitles"
+  },
+  {
+    "name": "PurchaseRequisitionRequest"
+  },
+  {
+    "name": "EInvTaxCategoryTaxTypeCode"
+  },
+  {
+    "name": "_MGR_KAYNAKLAR"
+  },
+  {
+    "name": "CrmActivityAttendees"
+  },
+  {
+    "name": "IncomingRequest"
+  },
+  {
+    "name": "CrmContactResponsibilityToUsDefinition"
+  },
+  {
+    "name": "FinanceInvestmentRepurchase"
+  },
+  {
+    "name": "ServiceManagementCallsRecordDescriptions"
+  },
+  {
+    "name": "KIRA_SOZ_ACIKLAMA"
+  },
+  {
+    "name": "DM_CREDIT_SUPP_ITEM"
+  },
+  {
+    "name": "TradeAccountRecordDescriptions"
+  },
+  {
+    "name": "CreditGuarantorProposedRecordDescriptions"
+  },
+  {
+    "name": "TradeFixedAssetLogForAmortization"
+  },
+  {
+    "name": "FoundationUserDefinedFieldRecordDescriptions"
+  },
+  {
+    "name": "PurchaseRequisitionOfferRecordDescriptions"
+  },
+  {
+    "name": "CrmActivitySubCategoryDefinition"
+  },
+  {
+    "name": "TradeAccount"
+  },
+  {
+    "name": "FoundationRecordHistoryCommon"
+  },
+  {
+    "name": "dtproperties"
+  },
+  {
+    "name": "TradeFixedAsset"
+  },
+  {
+    "name": "PurchaseRequisitionVendor"
+  },
+  {
+    "name": "TradeInterestFloating"
+  },
+  {
+    "name": "TradeOverdueInterestRateRecordDescriptions"
+  },
+  {
+    "name": "CrmInstitutionalCustomerBusinessRelationshipImportanceLevel"
+  },
+  {
+    "name": "RealEstateRestoreSubject"
+  },
+  {
+    "name": "GeneralBankRecordDescriptions"
+  },
+  {
+    "name": "FoundationMakerCheckerDefinitionsRecordNotes"
+  },
+  {
+    "name": "RPR_QUO_PAYMENT_PARAM"
+  },
+  {
+    "name": "PurchaseRequisitionOfferRecordNotes"
+  },
+  {
+    "name": "APP_CATEGORY_PROPERTY"
+  },
+  {
+    "name": "Bireysel_MBB"
+  },
+  {
+    "name": "FoundationCommonMenuFieldRestrictions"
+  },
+  {
+    "name": "CrmIMSBrickType"
+  },
+  {
+    "name": "TradeChequeAccountBarcodeFileDetail"
+  },
+  {
+    "name": "TRADE_LEDGER_CONTROL"
+  },
+  {
+    "name": "OCPosition"
+  },
+  {
+    "name": "TradeMakeProvisionOrder"
+  },
+  {
+    "name": "InventoryUpKeepOnDutyUsers"
+  },
+  {
+    "name": "_MGR_EKIPMAN_MARKA_ESLESTIR"
+  },
+  {
+    "name": "FoundationValidationDefinitionRecordNotes"
+  },
+  {
+    "name": "DocumentTypeDefinition"
+  },
+  {
+    "name": "CrmContactResponsibilityToCompanyDefinition"
+  },
+  {
+    "name": "ServiceManagementProductsRecordDescriptions"
+  },
+  {
+    "name": "TradeSector"
+  },
+  {
+    "name": "CrmMonthlyIncomeGroup"
+  },
+  {
+    "name": "DM_CREDIT_VENDOR"
+  },
+  {
+    "name": "OCCompany"
+  },
+  {
+    "name": "TradeTransactionClosed"
+  },
+  {
+    "name": "TradeAccountRecordNotes"
+  },
+  {
+    "name": "PurchaseVendorDefinitionRecordDescriptions"
+  },
+  {
+    "name": "tempAccCode"
+  },
+  {
+    "name": "Kurumsal_MBB"
+  },
+  {
+    "name": "TradeFixedAssetTrans"
+  },
+  {
+    "name": "GUARANTEE_DESCRIPTION_DEF"
+  },
+  {
+    "name": "SurveyQuestionWhoCanReplyDefinitionRecordNotes"
+  },
+  {
+    "name": "CreditLimitAllocation"
+  },
+  {
+    "name": "TradeOverdueInterestRateRecordNotes"
+  },
+  {
+    "name": "FinanceCreditInterest"
+  },
+  {
+    "name": "CrmInformationTypesTargetLocationRelationEmployees"
+  },
+  {
+    "name": "LeasePurchaseCustomsDirectorateRecordNotes"
+  },
+  {
+    "name": "InventoryItemRecordHistory"
+  },
+  {
+    "name": "RealEstatePaymentRequestResult"
+  },
+  {
+    "name": "PurchaseVendorDefinitionRecordNotes"
+  },
+  {
+    "name": "LgAccX"
+  },
+  {
+    "name": "APP_CATEGORY_STEP"
+  },
+  {
+    "name": "ProcessFlowWorkSheetDefinitions"
+  },
+  {
+    "name": "InsuranceIntegrationFileStatus"
+  },
+  {
+    "name": "CrmRelationshipPropertyDefinition"
+  },
+  {
+    "name": "FinanceCreditGroupRecordNotes"
+  },
+  {
+    "name": "FoundationUserPermissionRecordNotes"
+  },
+  {
+    "name": "OldTcNo"
+  },
+  {
+    "name": "TRADE_LEDGER_CONTROL_LINE"
+  },
+  {
+    "name": "OCType"
+  },
+  {
+    "name": "TradeResFMVProbabitly"
+  },
+  {
+    "name": "RequestTypeDefinition"
+  },
+  {
+    "name": "CrmInstitutionalCustomerContact"
+  },
+  {
+    "name": "LPDocumentsTemporary"
+  },
+  {
+    "name": "CrmContactResponsibilityToUs"
+  },
+  {
+    "name": "RealEstateOwnerShipStates"
+  },
+  {
+    "name": "ServiceManagementProjectsRecordDescriptions"
+  },
+  {
+    "name": "DM_CUST_BASE_TYPE_DEF"
+  },
+  {
+    "name": "TRADETRANSSETTLEMENT"
+  },
+  {
+    "name": "RealPropertyOwnerShipDefinitionRecordNotes"
+  },
+  {
+    "name": "TradeChequeAccountRecordDescriptions"
+  },
+  {
+    "name": "SurveyQuestionAnswerTypes"
+  },
+  {
+    "name": "PurchaseVendorLogRecordDescriptions"
+  },
+  {
+    "name": "QuotationLineRefLine"
+  },
+  {
+    "name": "FoundationMenuTableRecordNotes"
+  },
+  {
+    "name": "TradeAccountGroups"
+  },
+  {
+    "name": "CrmIndividualCustomerChildSector"
+  },
+  {
+    "name": "TradeFixedAssetValuation"
+  },
+  {
+    "name": "rpr_pr"
+  },
+  {
+    "name": "TradeEInvoice"
+  },
+  {
+    "name": "GUARANTEE_MOV_OPR_TYPE_DEF"
+  },
+  {
+    "name": "SurveyQuestionWhoCanReplyDefinitionRecordDescriptions"
+  },
+  {
+    "name": "EInvoiceex"
+  },
+  {
+    "name": "GeneralParametersRecordNotes"
+  },
+  {
+    "name": "FoundationUserDefinedFieldRecordNotes"
+  },
+  {
+    "name": "CRD_COMMITTEE_TYPE_LINE"
+  },
+  {
+    "name": "FoundationStatuteMenu"
+  },
+  {
+    "name": "TradeParametersRecordDescriptions"
+  },
+  {
+    "name": "LeasePurchaseCustomsDirectorateRecordDescriptions"
+  },
+  {
+    "name": "InventoryParametersStockConditionStatus"
+  },
+  {
+    "name": "FoundationSystemLockRecordNotes"
+  },
+  {
+    "name": "RealEstateBuildingExpense"
+  },
+  {
+    "name": "PurchaseVendorLogRecordHistory"
+  },
+  {
+    "name": "TradeGuaranteeStatus"
+  },
+  {
+    "name": "APP_CATEGORY_STEP_LINE"
+  },
+  {
+    "name": "InsuranceIntegrationHeader"
+  },
+  {
+    "name": "PurchaseOrderHeader"
+  },
+  {
+    "name": "CRM_RATING_DEF_LINE"
+  },
+  {
+    "name": "FinanceCreditGroupRecordDescriptions"
+  },
+  {
+    "name": "FoundationUserPermissionRecordDescriptions"
+  },
+  {
+    "name": "TrdAccVoucherCancelType"
+  },
+  {
+    "name": "FoundationAssociationParameter"
+  },
+  {
+    "name": "CreditLimitAllocationLine"
+  },
+  {
+    "name": "CrmContactResponsibilityToCompany"
+  },
+  {
+    "name": "CrmRelationship74UserDefinedProperties"
+  },
+  {
+    "name": "RealEstateBuildingTypes"
+  },
+  {
+    "name": "ServiceManagementCallWorkOrdersRecordDescriptions"
+  },
+  {
+    "name": "FoundationMenuItem_BckUp"
+  },
+  {
+    "name": "DM_CUST_CONCERN_AREA_DEF"
+  },
+  {
+    "name": "LedgerTransaction"
+  },
+  {
+    "name": "RPR_PROJECT_CODE_DEFINITION"
+  },
+  {
+    "name": "FoundationMessageTypes"
+  },
+  {
+    "name": "RealPropertyOwnerShipDefinitionRecordDescriptions"
+  },
+  {
+    "name": "TradeChequeAccountRecordNotes"
+  },
+  {
+    "name": "InvParamResaleRate"
+  },
+  {
+    "name": "PurchaseVendorLogRecordNotes"
+  },
+  {
+    "name": "FoundationMenuTableRecordDescriptions"
+  },
+  {
+    "name": "InventoryStockCodeUnits"
+  },
+  {
+    "name": "TradeFixedAssetValueModel"
+  },
+  {
+    "name": "MetricUnitRecordDescriptions"
+  },
+  {
+    "name": "FoundationUsersPreInit"
+  },
+  {
+    "name": "GUARANTEE_MOV_OWNER_TYPE_DEF"
+  },
+  {
+    "name": "CrmCertificateTypeRecordNotes"
+  },
+  {
+    "name": "OCLocationTypeRecordNotes"
+  },
+  {
+    "name": "GeneralParametersRecordDescriptions"
+  },
+  {
+    "name": "FoundationAssociationParameterValue"
+  },
+  {
+    "name": "LgFollowUpOtherAccounts"
+  },
+  {
+    "name": "FoundationFeatureManagement"
+  },
+  {
+    "name": "InventoryInstructionFiles"
+  },
+  {
+    "name": "TradeParametersRecordNotes"
+  },
+  {
+    "name": "MersisAccessToken"
+  },
+  {
+    "name": "InventoryParametersRegistrationStatus"
+  },
+  {
+    "name": "SurveyQuestionRecurrenceTypeDefinition"
+  },
+  {
+    "name": "FoundationSystemLockRecordDescriptions"
+  },
+  {
+    "name": "RPR_QUO_VENDOR_PAYMENT"
+  },
+  {
+    "name": "QuotationHeaderRecordHistory"
+  },
+  {
+    "name": "TradeGuaranteeGroup"
+  },
+  {
+    "name": "KP"
+  },
+  {
+    "name": "InsuranceIntegrationLine"
+  },
+  {
+    "name": "CrmMeetingTargetContact"
+  },
+  {
+    "name": "InventoryItemQuarantyFinishWarningUsers"
+  },
+  {
+    "name": "FoundationPartRecordNotes"
+  },
+  {
+    "name": "RealEstateRestoreRequest"
+  },
+  {
+    "name": "CrmMap"
+  },
+  {
+    "name": "CrmCommericialOfficeStatus"
+  },
+  {
+    "name": "DM_CUST_VERFCTN_RESULT_DEF"
+  },
+  {
+    "name": "TradeChequePayrollInRecordDescriptions"
+  },
+  {
+    "name": "InvParamRetrievalAbility"
+  },
+  {
+    "name": "SPK"
+  },
+  {
+    "name": "TradeAccountBanks"
+  },
+  {
+    "name": "EmptyRecordNotes"
+  },
+  {
+    "name": "FoundationPartPermission"
+  },
+  {
+    "name": "FoundationCommentsRecordNotes"
+  },
+  {
+    "name": "GUARANTEE_NEW_OLD_TYPE_DEF"
+  },
+  {
+    "name": "CrmCertificateTypeRecordDescriptions"
+  },
+  {
+    "name": "CrmGroupCompany"
+  },
+  {
+    "name": "OCLocationTypeRecordDescriptions"
+  },
+  {
+    "name": "TradePaymentTypesRecordDescriptions"
+  },
+  {
+    "name": "TradeItem209UserDefinedProperties"
+  },
+  {
+    "name": "MERSIS_CUSTOMER_AUTHORITIES"
+  },
+  {
+    "name": "JournalHeaders"
+  },
+  {
+    "name": "InventoryParametersVehicleStatus"
+  },
+  {
+    "name": "CONTRACT_CUSTOMERID_HISTORY"
+  },
+  {
+    "name": "InventoryStockCodeUnitCycles"
+  },
+  {
+    "name": "RPR_QUO_CPI_RENTS"
+  },
+  {
+    "name": "ARecordHistory"
+  },
+  {
+    "name": "CrmIndividualCustomer"
+  },
+  {
+    "name": "Teblıgat"
+  },
+  {
+    "name": "CrmInstitutionalCustomerChildSector"
+  },
+  {
+    "name": "FoundationDocumentChecklistMenuItemGroupRecordDescriptions"
+  },
+  {
+    "name": "FoundationPartRecordDescriptions"
+  },
+  {
+    "name": "_TGroup"
+  },
+  {
+    "name": "FoundationUsersUdtDeneme"
+  },
+  {
+    "name": "TradePaymentTypesRecordNotes"
+  },
+  {
+    "name": "CrmRelationshipDefinition"
+  },
+  {
+    "name": "CreditFinancialAnalysisEntry"
+  },
+  {
+    "name": "CrmSalariedBusinessAreaCode"
+  },
+  {
+    "name": "DM_CUSTOMER"
+  },
+  {
+    "name": "InventoryMarkRecordNotes"
+  },
+  {
+    "name": "FoundationMenu"
+  },
+  {
+    "name": "tempTradeRiskDocument"
+  },
+  {
+    "name": "TradeChequePayrollInRecordNotes"
+  },
+  {
+    "name": "TradeUnpaidInvoiceStatusDefinitionRecordDescriptions"
+  },
+  {
+    "name": "SurveyQuestionsCallStart"
+  },
+  {
+    "name": "InventoryShelf"
+  },
+  {
+    "name": "ReporterPrintDocMergeFld"
+  },
+  {
+    "name": "EmptyRecordDescriptions"
+  },
+  {
+    "name": "InventoryProductTemplate"
+  },
+  {
+    "name": "OCTypeRecordNotes"
+  },
+  {
+    "name": "FoundationCommentsRecordDescriptions"
+  },
+  {
+    "name": "GUARANTEE_PROPONENTS"
+  },
+  {
+    "name": "Test_Company"
+  },
+  {
+    "name": "TaskSchedulerScheduleActionParameterEntryTypeDefinitions"
+  },
+  {
+    "name": "LeasingOperationPaymentRecordHistory"
+  },
+  {
+    "name": "Akt_MergeBankLedger"
+  },
+  {
+    "name": "CreditLimitAllocationType"
+  },
+  {
+    "name": "_TTree"
+  },
+  {
+    "name": "FoundationMonth"
+  },
+  {
+    "name": "TradePriceDiscountRecordDescriptions"
+  },
+  {
+    "name": "TradeItem184UserDefinedProperties"
+  },
+  {
+    "name": "MERSIS_CUSTOMER_CAPITAL"
+  },
+  {
+    "name": "TableUM"
+  }
+]

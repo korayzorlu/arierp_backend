@@ -28,6 +28,7 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "item", "class" : ["default"], "label" : "Sözleşmeler", "icon" : "description", "route" : "/contracts"},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Kira Planı", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
+                {"type" : "item", "class" : ["default"], "label" : "Yürürlükteki Kira Planları", "icon" : "description", "route" : "/active-leases"},
                 {"type" : "item", "class" : ["default"], "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
             ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Gayrimenkul", "icon" : "in_home_mode", "items" : [

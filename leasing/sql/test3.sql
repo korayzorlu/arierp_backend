@@ -1,0 +1,4 @@
+SELECT TOP 1000 *
+FROM 
+    LOP_QUO_LIST
+WHERE OperationProjectCode ='62463.1.1'
