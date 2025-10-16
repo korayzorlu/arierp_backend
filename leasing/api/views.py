@@ -295,7 +295,7 @@ class PortfolioSummaryList(ModelViewSet, QueryListAPIView):
         result = []
 
         for month in months:
-            print(f"start date: {datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")} | end date: {(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01")}")
+            # print(f"start date: {datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")} | end date: {(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01")}")
             queryset = Lease.objects.filter(
                 Q(company=active_company.company if active_company else None) &
                 (
@@ -317,7 +317,7 @@ class PortfolioSummaryList(ModelViewSet, QueryListAPIView):
                 'month': month,
                 'total': queryset['total_amount'] or Decimal('0.00')
             })
-        print(result)
+        
         return Response(result)
 
 class TerminatedSummaryList(ModelViewSet, QueryListAPIView):
