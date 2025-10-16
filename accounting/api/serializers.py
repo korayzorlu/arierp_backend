@@ -172,7 +172,7 @@ class TrialBalanceListSerializer(serializers.Serializer):
         return obj.currency.code if obj.currency else ''
 
     def get_total_tl(self, obj):
-        return obj.total_debit - obj.total_credit
+        return obj.balance_debit - obj.balance_credit
 
     def get_total_currency(self, obj):
-        return obj.total_debit_alternate - obj.total_credit_alternate
+        return obj.balance_debit_alternate - obj.balance_credit_alternate

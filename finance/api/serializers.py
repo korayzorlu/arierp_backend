@@ -118,5 +118,10 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
             return False
         
     def get_trial_balance_amount(self, obj):
-        return obj.partner_trial_balances.aggregate(total=Sum(models.F('total_debit_alternate') - models.F('total_credit_alternate')))['total'] or Decimal('0.00')
+        return obj.partner_trial_balances.filter(
+            Q(account_code__startswith='392.99.2.00') |
+            Q(account_code__startswith='393.99.2.01')
+        ).aggregate(
+            total=Sum(models.F('balance_debit') - models.F('balance_credit'))
+        )['total'] or Decimal('0.00')
     

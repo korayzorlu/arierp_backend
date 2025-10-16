@@ -239,6 +239,11 @@ class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = []
 
+        balance_diff = ExpressionWrapper(
+            F('partner_trial_balances__balance_debit') - F('partner_trial_balances__balance_credit'),
+            output_field=DecimalField()
+        )
+
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
             (
@@ -246,7 +251,15 @@ class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
                 Q(advance_amount__lt=0)
             )
         ).annotate(
-            trial_balance_amount=Sum(F('partner_trial_balances__total_debit_alternate') - F('partner_trial_balances__total_credit_alternate')) or Decimal('0.00')
+            trial_balance_amount=Sum(
+                Case(
+                    When(partner_trial_balances__account_code__startswith='392.99.2.00', then=balance_diff),
+                    When(partner_trial_balances__account_code__startswith='393.99.2.01', then=balance_diff),
+                    default=Value(Decimal('0.00')),
+                    output_field=DecimalField()
+                )
+            )
+            # trial_balance_amount=Sum(F('partner_trial_balances__balance_debit') - F('partner_trial_balances__balance_credit')) or Decimal('0.00')
         )
 
         query = self.request.query_params.get('search[value]', None)
