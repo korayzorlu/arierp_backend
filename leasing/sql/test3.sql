@@ -1,4 +1,5 @@
 SELECT TOP 1000 *
 FROM 
-    LOP_QUO_LIST
-WHERE OperationProjectCode ='62463.1.1'
+    LopPaymentList
+WHERE 
+    OperationProjectcode = '46089.1.0'

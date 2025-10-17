@@ -28,7 +28,26 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        response = get_turatel_send_sms()
+        phone_numbers = ["05542663970"]
+        messageParameters = [
+            {
+                "parameter": [
+                    "Koray Zorlu",
+                    "100 TL"
+                ]
+            },
+        ]
+
+        if len(phone_numbers) != len(messageParameters):
+            return "Telefon listesi ile mesaj listesi uyuşmuyor."
+
+        params = {
+            "messageText" : "Sayın[##parameter1##], Test mesajıdır. Lütfen dikkate almayınız. Tutar: [##parameter2##]. İyi günler dileriz.",
+            "receiverList" : phone_numbers,
+            "personalMessages" : messageParameters
+        }
+
+        response = get_turatel_status()
         print(response)
         
         print("done!")

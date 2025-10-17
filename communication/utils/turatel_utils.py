@@ -49,7 +49,7 @@ def get_turatel_originator():
 def get_turatel_status():
     url = "https://api.turatel.com/AllInOneWebService/json-api/api/SmsProxy/getStatus"
     payload = {
-        "packetId": "478958290",
+        "packetId": "723514524",
         "username": "otparileasing",
         "password": "3k9kW6hU4",
         "userCode": 2678,
@@ -63,7 +63,7 @@ def get_turatel_status():
     else:
         return {"status": "error", "status_code": response.status_code, "message": response.text}
     
-def get_turatel_send_sms():
+def get_turatel_send_sms(params=None):
     url = "https://api.turatel.com/AllInOneWebService/json-api/api/SmsProxy/sendSMS"
     payload = {
         "username": "otparileasing",
@@ -73,20 +73,12 @@ def get_turatel_send_sms():
         "originator": "ARIFINANSAL",
         "validityPeriod": 0,
         "isCheckBlackList": True,
-        "isEncryptedParameter": False,
+        "isEncryptedParameter": True,
         "referenceId":"1",
         "sendDate": "",
-        "messageText": "Test mesajıdır. Lütfen dikkate almayınız.",
-        "receiverList": [
-            "905542663970",
-        ],
-        "personalMessages": [
-            {
-                "parameter": [
-                    "Bu bir test mesajıdır.",
-                ]
-            },
-        ],
+        "messageText": params["messageText"],
+        "receiverList": params["receiverList"],
+        "personalMessages": params["personalMessages"],
     }
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, json=payload, headers=headers)
