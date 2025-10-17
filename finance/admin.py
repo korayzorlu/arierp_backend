@@ -26,9 +26,9 @@ class FinmaksBankAccountAdmin(admin.ModelAdmin):
 
 @admin.register(FinmaksTransaction)
 class FinmaksTransactionAdmin(admin.ModelAdmin):
-    list_display = ["company","bank_account","transaction_id","transaction_date"]
+    list_display = ["company","bank_account","transaction_id","explanation_field","transaction_date"]
     list_display_links = ["transaction_id"]
-    search_fields = ["company__name","bank_account__bank_name","transaction_id","transaction_date"]
+    search_fields = ["company__name","bank_account__bank_name","transaction_id","explanation_field","transaction_date"]
     list_filter = []
     inlines = []
     ordering = ["-transaction_date"]

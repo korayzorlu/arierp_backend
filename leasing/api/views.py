@@ -232,7 +232,13 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
         active_company_uuid = request.query_params.get('ac')
         active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
 
-        queryset = Lease.objects.filter(
+        today = date.today()
+
+        latest_payment_date_sq = Installment.objects.select_related("lease").filter(
+            lease=OuterRef('pk')
+        ).order_by('-sequency').values('payment_date')[:1]
+
+        queryset = Lease.objects.select_related().prefetch_related().filter(
             Q(company=active_company.company if active_company else None) &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -244,10 +250,26 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             Q(is_last_project=True)
         )
 
+        queryset1 = queryset.annotate(
+            latest_installment_payment_date=Subquery(latest_payment_date_sq)
+        ).exclude(
+            Q(lease_status='aktiflestirildi') &
+            Q(latest_installment_payment_date__gte=today)
+        )
+
         status_counts = (
-            queryset
+            queryset1
             .values('lease_status')
             .annotate(count=Count('id'))
+        )
+
+        queryset2 = queryset.annotate(
+            latest_installment_payment_date=Subquery(latest_payment_date_sq)
+        ).filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lease_status='aktiflestirildi') &
+            Q(is_last_project=True) &
+            Q(latest_installment_payment_date__gte=today)
         )
 
         # Prepare result as dict for each status
@@ -255,10 +277,15 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             'aktiflestirildi': 0,
             'planlandi': 0,
             'durduruldu': 0,
-            'feshedildi': 0
+            'feshedildi': 0,
+            'devredilecek': 0,
+            'devredildi': 0
         }
         for item in status_counts:
             result[item['lease_status']] = item['count']
+        
+        if queryset2:
+            result['devredilecek'] = queryset2.count()
 
         return Response(result)
     

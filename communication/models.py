@@ -31,6 +31,27 @@ class SMS(models.Model):
     packet_id = models.CharField(_("Packet ID"), max_length=50, null=True, blank=True)
     message_id = models.CharField(_("Message ID"), max_length=50, null=True, blank=True)
     reference_id = models.CharField(_("Reference ID"), max_length=50, null=True, blank=True)
+    error_code = models.CharField(_("Error Code"), max_length=25, null=True, blank=True)
+    size = models.CharField(_("Size"), max_length=25, null=True, blank=True)
+    STATUS_CHOICES = (
+        ('0', ('İletildi')),
+        ('1', ('İletilemedi')),
+        ('2', ('Beklemede')),
+    )
+    status = models.CharField(_("Status"), max_length=25, default='0', choices=STATUS_CHOICES, blank=True, null=True)
+    reason = models.CharField(_("Reason"), max_length=250, null=True, blank=True)
+
+    CATEGORY_CHOICES = (
+        ('default', ('Standart')),
+        ('risk', ('Vadesi Geçmiş')),
+        ('to_warned', ('İhtar Çekilecek')),
+        ('warned', ('İhtar Çekilen')),
+        ('to_terminated', ('Fesih Edilecek')),
+        ('today_payment', ('Bugün Ödemesi Olan')),
+        ('tomorrow_payment', ('Yarın Ödemesi Olan')),
+    )
+    category = models.CharField(_("Category"), max_length=25, default='0', choices=CATEGORY_CHOICES, blank=True, null=True)
+
     send_date = models.DateTimeField(_("Send Date"), blank=True, null=True)
     delivery_date = models.DateTimeField(_("Delivery Date"), blank=True, null=True)
     text = models.CharField(_("Text"), max_length=500, null=True, blank=True)

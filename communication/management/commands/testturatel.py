@@ -28,11 +28,17 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        phone_numbers = ["05542663970"]
+        phone_numbers = ["05542663970","05542663970"]
         messageParameters = [
             {
                 "parameter": [
                     "Koray Zorlu",
+                    "100 TL"
+                ]
+            },
+            {
+                "parameter": [
+                    "Koray Zorluu",
                     "100 TL"
                 ]
             },
@@ -47,7 +53,7 @@ class Command(BaseCommand):
             "personalMessages" : messageParameters
         }
 
-        response = get_turatel_status()
+        response = get_turatel_send_sms(params)
         print(response)
         
         print("done!")
