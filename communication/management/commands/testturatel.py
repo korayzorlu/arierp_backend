@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        phone_numbers = ["05542663970","05542663970"]
+        phone_numbers = ["05542663970"]
         messageParameters = [
             {
                 "parameter": [
@@ -36,24 +36,20 @@ class Command(BaseCommand):
                     "100 TL"
                 ]
             },
-            {
-                "parameter": [
-                    "Koray Zorluu",
-                    "100 TL"
-                ]
-            },
         ]
+
+        name = "Koray Zorlu"
+        amount = "1000 TL"
 
         if len(phone_numbers) != len(messageParameters):
             return "Telefon listesi ile mesaj listesi uyuşmuyor."
 
-        params = {
-            "messageText" : "Sayın[##parameter1##], Test mesajıdır. Lütfen dikkate almayınız. Tutar: [##parameter2##]. İyi günler dileriz.",
+        data = {
+            "messageText" : f"Sayın {name}, Test mesajıdır. Lütfen dikkate almayınız. Tutar: {amount}. İyi günler dileriz.",
             "receiverList" : phone_numbers,
-            "personalMessages" : messageParameters
         }
 
-        response = get_turatel_send_sms(params)
+        response = send_turatel_sms(data)
         print(response)
         
         print("done!")

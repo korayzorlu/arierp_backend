@@ -866,8 +866,6 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
-    max_overdue_days = serializers.SerializerMethodField()
-    total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
@@ -894,66 +892,11 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
         else:
             return ""
     
-    def get_max_overdue_days(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
-            Q(overdue_amount__gt=1000)
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-        ).filter(warning_notice_count__gt=0)
-
-        overdue_days = 0
-        for lease in leases:
-            if lease.overdue_days > overdue_days:
-                overdue_days = lease.overdue_days
-        return overdue_days
-    
-    def get_total_overdue_amount(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
-            Q(overdue_amount__gt=1000)
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0)
-
-        overdue_amount = 0
-        for lease in leases:
-            overdue_amount += lease.overdue_amount
-        return overdue_amount
-    
     def get_leases(self, obj):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
-        leases = Lease.objects.select_related().filter(
+        leases = Lease.objects.select_related("contract","contract__partner").filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
             (
@@ -969,34 +912,19 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0)
+        ).filter(warning_notice_count__gt=0).order_by("overdue_days")
 
-        latest_lease = leases.filter(
-            contract__code=OuterRef('contract__code')
-        ).order_by('-activation_date')
+        # latest_lease = leases.filter(
+        #     contract__code=OuterRef('contract__code')
+        # ).order_by('-activation_date')
 
-        leases = leases.filter(
-            id=Subquery(latest_lease.values('id')[:1])
-        )
+        # leases = leases.filter(
+        #     id=Subquery(latest_lease.values('id')[:1])
+        # )
 
-        lease_list = []
+        lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
-                total_overdue_amount = Decimal("0")
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
-
-                overdue_days = -1
-                for installment in installments:
-                    if installment.overdue_amount > 0:
-                        today = date.today()
-                        diff = (today - installment.payment_date).days
-                        if diff > overdue_days:
-                            overdue_days = diff
-
                 if lease.contract.contract_warning_notices.all():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
@@ -1006,7 +934,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                 else:
                     status = "SMS"
 
-                lease_list.append({
+                lease_dict["leases"].append({
                     "id" : lease.uuid,
                     "code" : lease.code,
                     "contract" : lease.contract.code if lease.contract else "",
@@ -1037,7 +965,8 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
                         }
                     ]
                 })
-        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        # return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        return lease_dict
 
 
 class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):

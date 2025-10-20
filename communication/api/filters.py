@@ -7,6 +7,7 @@ from communication.models import *
     
 class SMSFilter(FilterSet):
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    partner_id = CharFilter(field_name='partner__uuid', lookup_expr='exact')
     phone_number = CharFilter(field_name='phone_number', lookup_expr='icontains')
 
     class Meta:

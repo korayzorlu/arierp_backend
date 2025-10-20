@@ -14,6 +14,7 @@ class SMSListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     partner = serializers.SerializerMethodField()
+    partner_id = serializers.SerializerMethodField()
     packet_id = serializers.CharField()
     message_id = serializers.CharField()
     reference_id = serializers.CharField()
@@ -21,9 +22,21 @@ class SMSListSerializer(serializers.Serializer):
     delivery_date = serializers.DateTimeField()
     text = serializers.CharField()
     phone_number = serializers.CharField()
+    error_code = serializers.CharField()
+    size = serializers.CharField()
+    status = serializers.CharField()
+    status_display = serializers.SerializerMethodField()
+    reason = serializers.CharField()
+    category = serializers.CharField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
     
     def get_partner(self, obj):
         return obj.partner.name if obj.partner else ''
+    
+    def get_partner_id(self, obj):
+        return str(obj.partner.uuid) if obj.partner else ''
+    
+    def get_status_display(self, obj):
+        return obj.get_status_display()
