@@ -9,11 +9,15 @@ import pyodbc
 from decimal import Decimal
 from datetime import datetime,date
 from collections import defaultdict
+import time
 
 from .models import *
-from .utils.sms_utils import send_sms_with_turatel
+from .utils.sms_utils import send_sms_with_turatel,check_sms_status
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 
 @shared_task()
 def send_sms(params):
-    send_sms_with_turatel(params)
+    message_result = send_sms_with_turatel(params)
+    if message_result.get("message_id_list"):
+        check_sms_status({"message_id_list": message_result.get("message_id_list")})
+

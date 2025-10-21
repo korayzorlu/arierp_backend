@@ -104,7 +104,7 @@ class SMSList(ModelViewSet, QueryListAPIView):
     filterset_class = SMSFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = [f.name for f in SMS._meta.get_fields() if hasattr(f, 'name')]
-    ordering = ['delivery_date']
+    ordering = ['-delivery_date']
     pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]   

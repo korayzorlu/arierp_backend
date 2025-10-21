@@ -478,7 +478,8 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_kdv_diff = False) &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False)
         ).order_by("-overdue_days")
@@ -728,6 +729,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
@@ -761,6 +763,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
@@ -793,6 +796,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
@@ -912,7 +916,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).order_by("overdue_days")
+        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("overdue_days")
 
         # latest_lease = leases.filter(
         #     contract__code=OuterRef('contract__code')
@@ -1018,6 +1022,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(contract__contract_warning_notices__state='Yeni') |
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
@@ -1070,6 +1075,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(contract__contract_warning_notices__state='Yeni') |
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
@@ -1121,6 +1127,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 Q(contract__contract_warning_notices__state='Yeni') |
                 Q(contract__contract_warning_notices__state='Geçerli')
             ) &
+            Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &

@@ -24,6 +24,7 @@ from purchasing.models import PurchasePayment
 from leasing.models import BankActivity
 
 import json
+from django.utils.timezone import localtime
 
 # Create your views here.
 
@@ -45,7 +46,7 @@ class AddBankActivityView(LoginRequiredMixin,View):
             process_code = finmaks_transaction.transaction_id,
             credit_or_debit = "C" if finmaks_transaction.debit == "+" else "D",
             kontrat_no = finmaks_transaction.receipt_number,
-            process_date_date = finmaks_transaction.transaction_date.date(),
+            process_date_date = localtime(finmaks_transaction.transaction_date).date(),
             #process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
             amount = finmaks_transaction.amount,
             currency = finmaks_transaction.bank_account.currency,

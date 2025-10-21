@@ -6,6 +6,7 @@ app_name = "communication"
 
 urlpatterns = [
     path('send_sms/', SendSMSView.as_view(), name="send_sms"),
+    path('check_sms/', CheckSMSView.as_view(), name="check_sms"),
 
     path('', include("communication.api.urls")),
 ]

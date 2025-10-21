@@ -16,7 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.pagination import LimitOffsetPagination
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
-
+from dateutil.relativedelta import relativedelta
 from .serializers import *
 from .filters import *
 from datetime import datetime, timedelta
@@ -185,6 +185,52 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
 
         return Response(result)
     
+class ContractSummaryListt(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractListSerializer
+    filterset_class = ContractFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+
+        active_company_uuid = request.query_params.get('active_company')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today()
+        months = []
+        for i in range(12):
+            date = today - relativedelta(months=i)
+            months.append(date.strftime("%m/%Y"))
+
+        months.reverse()
+        
+        result = []
+
+        for month in months:
+            queryset = Contract.objects.filter(
+                Q(company=active_company.company if active_company else None) &
+                Q(activation_date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
+                Q(activation_date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
+            )
+            result.append({
+                'month': month,
+                'count': queryset.count() or 0
+            })
+
+        return Response(result)
+    
 class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
     serializer_class = ContractPaymentListSerializer
     filterset_class = ContractPaymentFilter
@@ -232,6 +278,8 @@ class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
             result.append({'day': day, 'amount': amount})
 
         return Response(result)
+    
+
     
 class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
     serializer_class = WarningNoticeListSerializer

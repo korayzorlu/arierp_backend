@@ -16,6 +16,6 @@ FROM ContractHeaderLightList c
 LEFT JOIN QuotationLine q ON c.QuotationHeaderId = q.QuotationHeaderId
 WHERE  
     q.Deleted = 0
-    --AND c.ContractHeaderCode = '642'
+    --AND c.ContractHeaderCode = '32164'
 AND q.ItemType = 0
 ORDER BY CreatedDate DESC

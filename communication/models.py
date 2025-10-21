@@ -34,8 +34,8 @@ class SMS(models.Model):
     error_code = models.CharField(_("Error Code"), max_length=25, null=True, blank=True)
     size = models.CharField(_("Size"), max_length=25, null=True, blank=True)
     STATUS_CHOICES = (
-        ('0', ('İletildi')),
-        ('1', ('İletilemedi')),
+        ('0', ('İletilemedi')),
+        ('1', ('İletildi')),
         ('2', ('Beklemede')),
     )
     status = models.CharField(_("Status"), max_length=25, default='0', choices=STATUS_CHOICES, blank=True, null=True)

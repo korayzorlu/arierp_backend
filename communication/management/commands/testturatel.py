@@ -49,7 +49,11 @@ class Command(BaseCommand):
             "receiverList" : phone_numbers,
         }
 
-        response = send_turatel_sms(data)
+        data = {
+            "messageIdList" : ["5110129749"],
+        }
+
+        response = get_turatel_status_with_message(data)
         print(response)
         
         print("done!")

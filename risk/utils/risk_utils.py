@@ -108,3 +108,5 @@ def export_amount_debit_transactions(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+
+    

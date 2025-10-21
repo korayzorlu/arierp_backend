@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
 
 import pyodbc
 import os
@@ -6,6 +7,7 @@ import traceback
 import logging
 
 from common.utils.common_utils import normalize,safe_decimal
+from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
 
 def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
@@ -408,3 +410,4 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
         print("--------")
     except Exception as e:
         traceback.print_exc()
+

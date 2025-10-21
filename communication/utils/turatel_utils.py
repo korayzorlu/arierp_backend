@@ -46,10 +46,27 @@ def get_turatel_originator():
     else:
         return {"status": "error", "status_code": response.status_code, "message": response.text}
     
-def get_turatel_status(data=None):
+def get_turatel_status_with_package(data=None):
     url = "https://api.turatel.com/AllInOneWebService/json-api/api/SmsProxy/getStatus"
     payload = {
         "packetId": data.get("packetId", ""),
+        "username": "otparileasing",
+        "password": "3k9kW6hU4",
+        "userCode": 2678,
+        "accountId": 2093
+    }
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, json=payload, headers=headers)
+    
+    if response.status_code == 200:
+        return {"status": "success", "status_code": 200, "message": response.json()}
+    else:
+        return {"status": "error", "status_code": response.status_code, "message": response.text}
+    
+def get_turatel_status_with_message(data=None):
+    url = "https://api.turatel.com/AllInOneWebService/json-api/api/SmsProxy/getStatus"
+    payload = {
+        "messageIdList": data.get("messageIdList", []),
         "username": "otparileasing",
         "password": "3k9kW6hU4",
         "userCode": 2678,
