@@ -13,6 +13,7 @@ class ContractFilter(FilterSet):
     quotation = CharFilter(field_name='quotation_obj__code', lookup_expr='exact')
     vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
     is_commercial = CharFilter(method='filter_is_commercial')
+    quotation = CharFilter(method='quotation_obj__code', lookup_expr='exact')
 
     class Meta:
         model = Contract
@@ -26,6 +27,8 @@ class ContractFilter(FilterSet):
         elif value == "all":
             return queryset
         return queryset.filter(partner__is_commercial = value)
+    
+
 
 class ContractPaymentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')

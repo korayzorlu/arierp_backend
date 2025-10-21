@@ -14,14 +14,15 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.pagination import LimitOffsetPagination
+from django.db.models.functions import TruncDate
+from django.db.models import Count
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 from dateutil.relativedelta import relativedelta
 from .serializers import *
 from .filters import *
 from datetime import datetime, timedelta
-from django.db.models.functions import TruncDate
-from django.db.models import Count
+from decimal import Decimal
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -231,7 +232,7 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
 
         return Response(result)
     
-class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
+class ContractPaymentSummaryListt(ModelViewSet, QueryListAPIView):
     serializer_class = ContractPaymentListSerializer
     filterset_class = ContractPaymentFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
@@ -279,9 +280,58 @@ class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
 
         return Response(result)
     
+class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = ContractPaymentListSerializer
+    filterset_class = ContractPaymentFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        month_count = request.query_params.get('month', 12)
+
+        today = datetime.today()
+        months = []
+        for i in range(int(month_count)):
+            date = today - relativedelta(months=i)
+            months.append(date.strftime("%m/%Y"))
+
+        months.reverse()
+        
+        result = []
+
+        for month in months:
+            queryset = ContractPayment.objects.filter(
+                Q(company=active_company.company if active_company else None) &
+                Q(date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
+                Q(date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
+            ).aggregate(
+                total_amount=Sum('credit_amount')
+            )
+            result.append({
+                'month': month,
+                'amount': queryset.get('total_amount', Decimal('0.00'))
+            })
+
+        return Response(result)
+    
 
     
-class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
+class WarningNoticeSummaryListt(ModelViewSet, QueryListAPIView):
     serializer_class = WarningNoticeListSerializer
     filterset_class = WarningNoticeFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
@@ -348,6 +398,53 @@ class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
         #     result.append({'day': day, 'count': count})
 
         # return Response(result)
+
+class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = WarningNoticeListSerializer
+    filterset_class = WarningNoticeFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        today = datetime.today()
+        months = []
+        for i in range(12):
+            date = today - relativedelta(months=i)
+            months.append(date.strftime("%m/%Y"))
+
+        months.reverse()
+        
+        result = []
+
+        for month in months:
+            queryset = WarningNotice.objects.filter(
+                Q(company=active_company.company if active_company else None) &
+                Q(process_start_date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
+                Q(process_start_date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
+            ).aggregate(
+                total_amount=Sum('debit_amount')
+            )
+            result.append({
+                'month': month,
+                'amount': queryset.get('total_amount', Decimal('0.00'))
+            })
+
+        return Response(result)
 
 class ContractPaymentList(ModelViewSet, QueryListAPIView):
     serializer_class = ContractPaymentListSerializer

@@ -26,6 +26,8 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from risk.api.filters import RiskPartnerFilter
+from risk.api.serializers.risk_partners_serializers import *
 from leasing.utils.common_utils import vendor_filter_for_views,project_filter_for_views
 
 class QueryListAPIView(generics.ListAPIView):
@@ -396,7 +398,7 @@ class TerminatedSummaryList(ModelViewSet, QueryListAPIView):
 
         return Response(result)
 
-class InstallmentsSummaryList(ModelViewSet, QueryListAPIView):
+class InstallmentsSummaryListt(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseListSerializer
     filterset_class = LeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
@@ -446,6 +448,60 @@ class InstallmentsSummaryList(ModelViewSet, QueryListAPIView):
             day = start_date + timedelta(days=i)
             amount = next((item['amount'] for item in installment_daily_amounts if item['day'] == day), 0)
             result.append({'day': day, 'amount': amount})
+
+        return Response(result)
+    
+class InstallmentsSummaryList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        month_count = request.query_params.get('month', 12)
+
+        today = datetime.today()
+        months = []
+        for i in range(int(month_count)):
+            date = today - relativedelta(months=i)
+            months.append(date.strftime("%m/%Y"))
+
+        months.reverse()
+        
+        result = []
+
+        for month in months:
+            queryset = Installment.objects.filter(
+                Q(company=active_company.company if active_company else None) &
+                (
+                    Q(lease__lease_status='aktiflestirildi') |
+                    Q(lease__lease_status='planlandi') |
+                    Q(lease__lease_status='durduruldu')
+                ) &
+                Q(payment_date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
+                Q(payment_date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
+            ).aggregate(
+                total_amount=Sum('amount')
+            )
+            result.append({
+                'month': month,
+                'amount': queryset.get('total_amount', Decimal('0.00'))
+            })
 
         return Response(result)
 
@@ -604,94 +660,7 @@ class BankActivityLeaseList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
-    
-class RiskPartnerList(ModelViewSet, QueryListAPIView):
-    serializer_class = RiskPartnerListSerializer
-    filterset_class = RiskPartnerFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
-    ordering = ['-max_overdue_days']
-    # pagination_class = DatatablesPagination
-    def get_pagination_class(self):
-        paginate = self.request.query_params.get('paginate')
-        if paginate == 'false':
-            return None
-        return DatatablesPagination
-
-    @property
-    def pagination_class(self):
-        return self.get_pagination_class()
-    required_subscription = "free"
-    permission_classes = [AllowAny]
-    
-    def get_queryset(self):
-        user = self.request.user
-        active_company_uuid = self.request.query_params.get('ac')
-        if user.is_authenticated:
-            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        else:
-            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
-        is_kdv = self.request.query_params.get('kdv')
-
-        # Use prefetch_related for partner_contracts to reduce DB hits
-        custom_related_fields = []
-        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__contract_warning_notices", "partner_contracts__vendor"]
-
-        supplier = self.request.query_params.get('supplier')
-
-        if supplier:
-            queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-                Q(company=active_company.company if active_company else None) &
-                vendor_filter_for_views(self.request.query_params) &
-                (
-                    Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                    Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                    Q(partner_contracts__contract_leases__lease_status='durduruldu')
-                ) &
-                Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-                Q(partner_contracts__contract_leases__is_credit=False) &
-                Q(partner_contracts__contract_leases__is_under_review=False) &
-                Q(partner_contracts__contract_warning_notices__isnull=True) &
-                Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-                Q(partner_contracts__contract_leases__overdue_days__lte=30) &
-                Q(partner_contracts__contract_leases__overdue_amount__gt=100)
-            ).annotate(
-                max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-                total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-            ).exclude(types__contains=["special"]).distinct()
-        else:
-            queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-                Q(company=active_company.company if active_company else None) &
-                vendor_filter_for_views(self.request.query_params) &
-                (
-                    Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                    Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                    Q(partner_contracts__contract_leases__lease_status='durduruldu')
-                ) &
-                Q(partner_contracts__contract_leases__is_last_project=True) &
-                Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-                Q(partner_contracts__contract_leases__is_credit=False) &
-                Q(partner_contracts__contract_leases__is_under_review=False) &
-                Q(partner_contracts__contract_warning_notices__isnull=True) &
-                Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-                Q(partner_contracts__contract_leases__overdue_days__lte=30) &
-                Q(partner_contracts__contract_leases__overdue_amount__gt=100)
-            ).annotate(
-                max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-                total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-            ).exclude(types__contains=["special"]).distinct()
-
-        query = self.request.query_params.get('search[value]', None)
-        if query:
-            search_fields = ["country__name","billing__country"]
-            
-            q_objects = Q()
-            for field in search_fields:
-                q_objects |= Q(**{f"{field}__icontains": query})
-            
-            queryset = queryset.filter(q_objects)
-        return queryset
-    
+      
 class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
     serializer_class = RiskPartnerKDVListSerializer
     filterset_class = RiskPartnerKDVFilter
@@ -742,271 +711,6 @@ class RiskPartnerKDVList(ModelViewSet, QueryListAPIView):
         query = self.request.query_params.get('search[value]', None)
         if query:
             search_fields = ["name","tc_vkn_no","crm_code"]
-            
-            q_objects = Q()
-            for field in search_fields:
-                q_objects |= Q(**{f"{field}__icontains": query})
-            
-            queryset = queryset.filter(q_objects)
-        return queryset
-
-
-class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
-    serializer_class = ToWarnedRiskPartnerListSerializer
-    filterset_class = ToWarnedRiskPartnerFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
-    ordering = ['-max_overdue_days']
-    # pagination_class = DatatablesPagination
-    def get_pagination_class(self):
-        paginate = self.request.query_params.get('paginate')
-        if paginate == 'false':
-            return None
-        return DatatablesPagination
-
-    @property
-    def pagination_class(self):
-        return self.get_pagination_class()
-    required_subscription = "free"
-    permission_classes = [AllowAny]
-    
-    def get_queryset(self):
-        user = self.request.user
-        active_company_uuid = self.request.query_params.get('ac')
-        if user.is_authenticated:
-            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        else:
-            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
-        is_kdv = self.request.query_params.get('kdv')
-
-        custom_related_fields = []
-        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
-
-        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company = active_company.company if active_company else None) &
-            vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            (
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True)
-        ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-        ).exclude(types__contains=["special"])
-
-        query = self.request.query_params.get('search[value]', None)
-        if query:
-            search_fields = ["country__name","billing__country"]
-            
-            q_objects = Q()
-            for field in search_fields:
-                q_objects |= Q(**{f"{field}__icontains": query})
-            
-            queryset = queryset.filter(q_objects)
-        return queryset
-
-class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
-    serializer_class = WarnedRiskPartnerListSerializer
-    filterset_class = WarnedRiskPartnerFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
-    ordering = ['-max_overdue_days']
-    # pagination_class = DatatablesPagination
-    def get_pagination_class(self):
-        paginate = self.request.query_params.get('paginate')
-        if paginate == 'false':
-            return None
-        return DatatablesPagination
-
-    @property
-    def pagination_class(self):
-        return self.get_pagination_class()
-    required_subscription = "free"
-    permission_classes = [AllowAny]
-    
-    def get_queryset(self):
-        user = self.request.user
-        active_company_uuid = self.request.query_params.get('ac')
-        if user.is_authenticated:
-            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        else:
-            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
-        is_kdv = self.request.query_params.get('kdv')
-
-        custom_related_fields = []
-        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
-
-        max_overdue_days = Lease.objects.select_related("contract__partner").prefetch_related().filter(
-            Q(contract__partner=OuterRef('pk')) &
-            vendor_filter_for_serializers(self.request.query_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
-            Q(overdue_amount__gt=1000)
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
-        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("-overdue_days").annotate(max_overdue_days=Max('overdue_days')).values('max_overdue_days')[:1]
-
-        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company = active_company.company if active_company else None) &
-            vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
-        ).annotate(
-            max_overdue_days=Subquery(max_overdue_days),
-            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
-            # overdue_check=Case(
-            #     When(
-            #         customer_type='individual',
-            #         then=Case(
-            #             When(partner_contracts__contract_leases__overdue_days__lte=60, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     When(
-            #         customer_type='institutional',
-            #         then=Case(
-            #             When(partner_contracts__contract_leases__overdue_days__lte=90, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     default=Value(False),
-            #     output_field=BooleanField()
-            # )
-        ).filter(warning_notice_count__gt=0).exclude(types__contains=["special"])
-
-        query = self.request.query_params.get('search[value]', None)
-        if query:
-            search_fields = ["country__name","billing__country"]
-            
-            q_objects = Q()
-            for field in search_fields:
-                q_objects |= Q(**{f"{field}__icontains": query})
-            
-            queryset = queryset.filter(q_objects)
-        return queryset
-
-
-class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
-    serializer_class = ToTerminatedRiskPartnerListSerializer
-    filterset_class = ToTerminatedRiskPartnerFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
-    ordering = ['-max_overdue_days']
-    # pagination_class = DatatablesPagination
-    def get_pagination_class(self):
-        paginate = self.request.query_params.get('paginate')
-        if paginate == 'false':
-            return None
-        return DatatablesPagination
-
-    @property
-    def pagination_class(self):
-        return self.get_pagination_class()
-    required_subscription = "free"
-    permission_classes = [AllowAny]
-    
-    def get_queryset(self):
-        user = self.request.user
-        active_company_uuid = self.request.query_params.get('ac')
-        if user.is_authenticated:
-            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        else:
-            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
-        is_kdv = self.request.query_params.get('kdv')
-
-        custom_related_fields = []
-        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
-
-        #after_60_days = datetime.today() + timedelta(days=60)
-        #after_30_days = datetime.today() + timedelta(days=30)
-
-        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company = active_company.company if active_company else None) &
-            vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            (
-                Q(partner_contracts__contract_warning_notices__state='Yeni') |
-                Q(partner_contracts__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
-            
-            #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
-            
-        ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    customer_type='individual',
-                    then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    customer_type='institutional',
-                    then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
-
-        query = self.request.query_params.get('search[value]', None)
-        if query:
-            search_fields = ["country__name","billing__country"]
             
             q_objects = Q()
             for field in search_fields:
