@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from datetime import datetime,date,timedelta
 import logging
+import traceback
 
 from .turatel_utils import send_turatel_sms,get_turatel_status_with_package,get_turatel_status_with_message
 from communication.models import SMS
@@ -43,59 +44,63 @@ def send_sms_with_turatel(params):
 
     send_turatel_sms_for_check(params)
 
-    for obj in objs:
-        leases = leases_for_project({**params, "partner_id": obj.uuid})
+    try:
+        for obj in objs:
+            leases = leases_for_project({**params, "partner_id": obj.uuid})
 
-        total_overdue_amount = 0
-        max_overdue_days = 0
-        if leases:
-            for lease in leases:
-                total_overdue_amount += lease.overdue_amount
-                if lease.overdue_days > max_overdue_days:
-                    max_overdue_days = lease.overdue_days
-            if max_overdue_days > 0:
-                overdue_start_date = date.today() - timedelta(days=max_overdue_days)
+            total_overdue_amount = 0
+            max_overdue_days = 0
+            if leases:
+                for lease in leases:
+                    total_overdue_amount += lease.overdue_amount
+                    if lease.overdue_days > max_overdue_days:
+                        max_overdue_days = lease.overdue_days
+                if max_overdue_days > 0:
+                    overdue_start_date = date.today() - timedelta(days=max_overdue_days)
 
-            SMS_TEXT = sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date)
-            
-            data = {
-                "messageText" : SMS_TEXT,
-                "receiverList" : [obj.phone_number],
-            }
-
-        if obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
-            now = timezone.now()
-            turatel_response = send_turatel_sms(data)
-
-            sms_result = turatel_response.get("message", {}).get("sendSmsResult", {})
-            if sms_result.get("ErrorCode", "") != "0":
-                continue
-            if sms_result.get("MessageIdList", {}).get("MessageId", "") != "-19":
-                sms_status = get_turatel_status_with_message({"messageIdList": [sms_result.get("MessageIdList", {}).get("MessageId", "")]})
-                message_result = sms_status.get("message", {}).get("data", {}).get("messageStatusList", {})[0] if sms_status.get("message", {}) else None
+                SMS_TEXT = sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date)
                 
-                if message_result and str(sms_result.get("MessageIdList", {}).get("MessageId", "")) == str(message_result.get("messageId", "")):
-                    
-                    create_objs.append(SMS(
-                        company = obj.company,
-                        partner = obj,
-                        packet_id = str(message_result.get("packetId", "")),
-                        message_id = str(message_result.get("messageId", "")),
-                        error_code = sms_result.get("ErrorCode", ""),
-                        size = sms_result.get("messageSize", ""),
-                        status = message_result.get("status", ""),
-                        reason = message_result.get("reason", ""),
-                        category = 'risk',
-                        send_date = now,
-                        delivery_date = now,
-                        text = SMS_TEXT,
-                        phone_number = message_result.get("receiver", ""),
-                    ))
-                    message_id_list.append(str(message_result.get("messageId", "")))
-    if create_objs:
-        SMS.objects.bulk_create(create_objs)
+                data = {
+                    "messageText" : SMS_TEXT,
+                    "receiverList" : [obj.phone_number],
+                }
 
-    return {"message_id_list": message_id_list}
+            if obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
+                now = timezone.now()
+                turatel_response = send_turatel_sms(data)
+
+                sms_result = turatel_response.get("message", {}).get("sendSmsResult", {})
+                if sms_result.get("ErrorCode", "") != "0":
+                    continue
+                if sms_result.get("MessageIdList", {}).get("MessageId", "") != "-19":
+                    sms_status = get_turatel_status_with_message({"messageIdList": [sms_result.get("MessageIdList", {}).get("MessageId", "")]})
+                    message_result = sms_status.get("message", {}).get("data", {}).get("messageStatusList", {})[0] if sms_status.get("message", {}) else None
+                    
+                    if message_result and str(sms_result.get("MessageIdList", {}).get("MessageId", "")) == str(message_result.get("messageId", "")):
+                        
+                        create_objs.append(SMS(
+                            company = obj.company,
+                            partner = obj,
+                            packet_id = str(message_result.get("packetId", "")),
+                            message_id = str(message_result.get("messageId", "")),
+                            error_code = sms_result.get("ErrorCode", ""),
+                            size = sms_result.get("messageSize", ""),
+                            status = message_result.get("status", ""),
+                            reason = message_result.get("reason", ""),
+                            category = 'risk',
+                            send_date = now,
+                            delivery_date = now,
+                            text = SMS_TEXT,
+                            phone_number = message_result.get("receiver", ""),
+                        ))
+                        message_id_list.append(str(message_result.get("messageId", "")))
+        if create_objs:
+            SMS.objects.bulk_create(create_objs)
+
+        return {"message_id_list": message_id_list}
+    except Exception as e:
+        traceback.print_exc()
+        return {"message_id_list": []}
 
 def check_sms_status(params):
     messages = params.get("message_id_list", [])
