@@ -43,7 +43,7 @@ def send_sms_with_turatel(params):
     message_id_list = []
     print(objs)
     #send_turatel_sms_for_check(params)
-
+    return {"message_id_list": []}
     try:
         for obj in objs:
             leases = leases_for_project({**params, "partner_id": obj.uuid})
