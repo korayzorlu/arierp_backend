@@ -41,8 +41,8 @@ def send_sms_with_turatel(params):
 
     create_objs = []
     message_id_list = []
-
-    send_turatel_sms_for_check(params)
+    print(objs)
+    #send_turatel_sms_for_check(params)
 
     try:
         for obj in objs:
