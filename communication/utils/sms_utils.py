@@ -68,6 +68,7 @@ def send_sms_with_turatel(params):
             if obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
                 now = timezone.now()
                 turatel_response = send_turatel_sms(data)
+                print(turatel_response)
 
                 sms_result = turatel_response.get("message", {}).get("sendSmsResult", {})
                 if sms_result.get("ErrorCode", "") != "0":
