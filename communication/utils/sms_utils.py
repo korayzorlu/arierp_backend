@@ -63,7 +63,7 @@ def send_sms_with_turatel(params):
                 "receiverList" : [obj.phone_number],
             }
 
-        if obj.phone_number == "0(554) 266 39 70" and not obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
+        if obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
             now = timezone.now()
             turatel_response = send_turatel_sms(data)
 

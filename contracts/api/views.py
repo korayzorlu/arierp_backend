@@ -132,7 +132,7 @@ class ContractList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
     
-class ContractSummaryList(ModelViewSet, QueryListAPIView):
+class ContractSummaryListt(ModelViewSet, QueryListAPIView):
     serializer_class = ContractListSerializer
     filterset_class = ContractFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
@@ -185,7 +185,7 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
 
         return Response(result)
     
-class ContractSummaryListt(ModelViewSet, QueryListAPIView):
+class ContractSummaryList(ModelViewSet, QueryListAPIView):
     serializer_class = ContractListSerializer
     filterset_class = ContractFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
@@ -221,8 +221,8 @@ class ContractSummaryListt(ModelViewSet, QueryListAPIView):
         for month in months:
             queryset = Contract.objects.filter(
                 Q(company=active_company.company if active_company else None) &
-                Q(activation_date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
-                Q(activation_date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
+                Q(created_date_leaseflex__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
+                Q(created_date_leaseflex__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
             )
             result.append({
                 'month': month,
