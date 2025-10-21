@@ -41,13 +41,13 @@ def send_sms_with_turatel(params):
 
     create_objs = []
     message_id_list = []
-    print(objs)
-    #send_turatel_sms_for_check(params)
-    return {"message_id_list": []}
+    
+    send_turatel_sms_for_check(params)
+    
     try:
         for obj in objs:
             leases = leases_for_project({**params, "partner_id": obj.uuid})
-
+            
             total_overdue_amount = 0
             max_overdue_days = 0
             if leases:
@@ -65,7 +65,8 @@ def send_sms_with_turatel(params):
                     "receiverList" : [obj.phone_number],
                 }
 
-            if obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
+            if not obj.partner_smss.filter(delivery_date__date=timezone.localdate(),status__in=["1","2"]).exists():
+               
                 now = timezone.now()
                 turatel_response = send_turatel_sms(data)
                 print(turatel_response)
@@ -95,6 +96,7 @@ def send_sms_with_turatel(params):
                             phone_number = message_result.get("receiver", ""),
                         ))
                         message_id_list.append(str(message_result.get("messageId", "")))
+
         if create_objs:
             SMS.objects.bulk_create(create_objs)
 
