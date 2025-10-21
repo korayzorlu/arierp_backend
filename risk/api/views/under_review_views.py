@@ -27,8 +27,8 @@ from leasing.api.serializers import LeaseListSerializer
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 from leasing.utils.common_utils import vendor_filter_for_views,project_filter_for_views
 
-from .serializers import *
-from .filters import *
+from risk.api.serializers.under_review_serializers import *
+from risk.api.filters import *
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -108,48 +108,6 @@ class DatatablesPagination(LimitOffsetPagination):
             'recordsFiltered': self.count,
             'data': data
         })
-    
-
-class AmountDebitTransactionList(ModelViewSet, QueryListAPIView):
-    serializer_class = AmountDebitTransactionListSerializer
-    filterset_class = AmountDebitTransactionFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
-    # pagination_class = DatatablesPagination
-    def get_pagination_class(self):
-        paginate = self.request.query_params.get('paginate')
-        if paginate == 'false':
-            return None
-        return DatatablesPagination
-
-    @property
-    def pagination_class(self):
-        return self.get_pagination_class()
-    required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
-    
-    def get_queryset(self):
-        if hasattr(self, '_cached_queryset'):
-            return self._cached_queryset
-        active_company_uuid = self.request.query_params.get('active_company')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        ordering = self.request.query_params.get('ordering')
-        
-        custom_related_fields = ["company","lease"]
-
-        queryset = AmountDebitTransaction.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("-lease__code","id")
-
-        query = self.request.query_params.get('search[value]', None)
-        if query:
-            search_fields = ["lease__code"]
-            
-            q_objects = Q()
-            for field in search_fields:
-                q_objects |= Q(**{f"{field}__icontains": query})
-            
-            queryset = queryset.filter(q_objects)
-        self._cached_queryset = queryset
-        return queryset
 
 class UnderReviewList(ModelViewSet, QueryListAPIView):
     serializer_class = UnderReviewListSerializer
@@ -214,3 +172,4 @@ class UnderReviewList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+

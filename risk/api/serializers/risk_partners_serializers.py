@@ -8,43 +8,9 @@ from django.utils import timezone
 
 from risk.models import *
 from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
-from companies.models import Company,UserCompany
-from partners.models import Partner
 from contracts.models import WarningNotice
-from .filters import AmountDebitTransaction
-    
-class AmountDebitTransactionListSerializer(serializers.Serializer):
-    uuid = serializers.CharField()
-    companyId = serializers.SerializerMethodField()
-    lease = serializers.SerializerMethodField()
-    partner = serializers.SerializerMethodField()
-    currency = serializers.SerializerMethodField()
-    process_group = serializers.CharField()
-    due_date = serializers.DateField()
-    process_type = serializers.CharField()
-    debit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    credit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    real_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    for_default_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    adat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    default_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    interest_rate = serializers.DecimalField(max_digits=5,decimal_places=2)
-    overdue_interest_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
-    day = serializers.IntegerField()
-    
-    def get_companyId(self, obj):
-        return obj.company.id if obj.company else ''
-    
-    def get_lease(self, obj):
-        return obj.lease.code if obj.lease else ""
-    
-    def get_partner(self, obj):
-        return obj.lease.contract.partner.name if obj.lease.contract.partner and obj.lease.contract and obj.lease else ""
-    
-    def get_currency(self, obj):
-        return obj.lease.currency.code if obj.lease.currency else ""
-    
-class UnderReviewListSerializer(serializers.Serializer):
+
+class RiskPartnerListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     crm_code = serializers.CharField()
     name = serializers.CharField()
@@ -82,8 +48,28 @@ class UnderReviewListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            Q(is_under_review = True)
+            Q(overdue_amount__gt=100) &
+            Q(overdue_days__gt=0) &
+            Q(overdue_days__lte=30) &
+            Q(contract__contract_warning_notices__isnull=True) &
+            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False)
         ).order_by("-overdue_days")
+
+        # if str(filter_params.get('project')) == "diger":
+        #     leases = leases.exclude(contract__vendor__crm_code__in=["11802","20559","1202","28974","6548"])
+        # elif str(filter_params.get('project')) == "kizilbuk":
+        #     leases = leases.filter(contract__vendor__crm_code__in=["11802","20559"])
+        # else:
+        #     leases = leases.filter(contract__vendor__crm_code=str(filter_params.get('project')))
 
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:

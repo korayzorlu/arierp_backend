@@ -10,7 +10,9 @@ from django.utils import timezone
 from datetime import datetime,timedelta
 from decimal import Decimal
 
-from .serializers import *
+from risk.api.serializers.risk_partners_serializers import *
+from risk.api.serializers.amount_debit_serializers import *
+from risk.api.serializers.under_review_serializers import *
 
 class AmountDebitTransactionFilter(FilterSet):
     lease = CharFilter(field_name='lease_code', lookup_expr='icontains')
