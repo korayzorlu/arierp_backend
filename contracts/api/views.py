@@ -209,9 +209,11 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
         active_company_uuid = request.query_params.get('active_company')
         active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
 
+        month_count = request.query_params.get('month', 12)
+
         today = datetime.today()
         months = []
-        for i in range(12):
+        for i in range(int(month_count)):
             date = today - relativedelta(months=i)
             months.append(date.strftime("%m/%Y"))
 
@@ -437,11 +439,11 @@ class WarningNoticeSummaryList(ModelViewSet, QueryListAPIView):
                 Q(process_start_date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
                 Q(process_start_date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
             ).aggregate(
-                total_amount=Sum('debit_amount')
+                total_count=Count('id')
             )
             result.append({
                 'month': month,
-                'amount': queryset.get('total_amount', Decimal('0.00'))
+                'count': queryset.get('total_count', 0)
             })
 
         return Response(result)
