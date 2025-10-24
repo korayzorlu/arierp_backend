@@ -50,7 +50,7 @@ class Command(BaseCommand):
         }
 
         data = {
-            "messageIdList" : ["5110129749"],
+            "receiverList" : ["905542663970"],
         }
 
         response = get_turatel_status_with_message(data)
