@@ -5,6 +5,8 @@ from risk.api.views.to_terminated_risk_partners_views import ToTerminatedRiskPar
 from risk.api.views.warned_risk_partners_views import WarnedRiskPartnerList
 from risk.api.views.risk_partners_views import RiskPartnerList
 from risk.api.views.to_warned_risk_partnes_views import ToWarnedRiskPartnerList
+from risk.api.views.today_partners_views import TodayPartnerList
+from risk.api.views.tomorrow_partners_views import TomorrowPartnerList
 from .views.amount_debit_views import *
 from .views.under_review_views import *
 
@@ -15,6 +17,8 @@ router.register(r'risk_partners',RiskPartnerList, "risk_partners_api")
 router.register(r'to_warned_risk_partners',ToWarnedRiskPartnerList, "to_warned_risk_partners_api")
 router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_partners_api")
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
+router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
+router.register(r'today_partners',TodayPartnerList, "today_partners_api")
 
 urlpatterns = [
     path('',include(router.urls)),

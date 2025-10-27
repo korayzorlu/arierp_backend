@@ -224,76 +224,7 @@ class RiskPartnerKDVFilter(FilterSet):
             return queryset.exclude(types__contains=["virman"])
         
 
-class TomorrowPartnerFilter(FilterSet):
-    name = CharFilter(method = 'filter_name')
-    special = CharFilter(method = 'filter_special')
-    barter = CharFilter(method = 'filter_barter')
-    virman = CharFilter(method = 'filter_virman')
-    overdue_amount = CharFilter(method = 'filter_overdue_amount')
-    tomorrow = CharFilter(method = 'filter_tomorrow')
-    class Meta:
-        model = Partner
-        fields = ['uuid','name','tc_vkn_no','is_commercial']
-
-    def filter_name(self, queryset, name, value):
-        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-            Q(lowercase__icontains = value) |
-            Q(uppercase__icontains = value)
-        )
-    
-    def filter_special(self, queryset, special, value):
-        if value == "true":
-            return queryset.filter(types__contains=["special"])
-        else:
-            return queryset.exclude(types__contains=["special"])
-        
-    def filter_barter(self, queryset, barter, value):
-        if value == "true":
-            return queryset.filter(types__contains=["barter"])
-        else:
-            return queryset.exclude(types__contains=["barter"])
-        
-    def filter_virman(self, queryset, virman, value):
-        if value == "true":
-            return queryset.filter(types__contains=["virman"])
-        else:
-            return queryset.exclude(types__contains=["virman"])
-        
-class TodayPartnerFilter(FilterSet):
-    name = CharFilter(method = 'filter_name')
-    special = CharFilter(method = 'filter_special')
-    barter = CharFilter(method = 'filter_barter')
-    virman = CharFilter(method = 'filter_virman')
-    overdue_amount = CharFilter(method = 'filter_overdue_amount')
-    today = CharFilter(method = 'filter_today')
-    class Meta:
-        model = Partner
-        fields = ['uuid','name','tc_vkn_no','is_commercial']
-
-    def filter_name(self, queryset, name, value):
-        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
-            Q(lowercase__icontains = value) |
-            Q(uppercase__icontains = value)
-        )
-    
-    def filter_special(self, queryset, special, value):
-        if value == "true":
-            return queryset.filter(types__contains=["special"])
-        else:
-            return queryset.exclude(types__contains=["special"])
-        
-    def filter_barter(self, queryset, barter, value):
-        if value == "true":
-            return queryset.filter(types__contains=["barter"])
-        else:
-            return queryset.exclude(types__contains=["barter"])
-        
-    def filter_virman(self, queryset, virman, value):
-        if value == "true":
-            return queryset.filter(types__contains=["virman"])
-        else:
-            return queryset.exclude(types__contains=["virman"])
-        
+   
 class DeliveryConfirmFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
