@@ -155,6 +155,8 @@ class PartnerFilter(FilterSet):
     types = CharFilter(method = 'filter_types')
     name = CharFilter(method = 'filter_name')
     country_name = CharFilter(method = 'filter_country')
+    kep = CharFilter(field_name = 'kep', lookup_expr = 'contains')
+    is_turkkep = CharFilter(method='filter_is_turkkep')
 
     class Meta:
         model = Partner
@@ -183,6 +185,15 @@ class PartnerFilter(FilterSet):
     
     def filter_customer_type(self, queryset, customer_type, value):
         return queryset.filter(customer_type = value)
+    
+    def filter_is_turkkep(self, queryset, is_turkkep, value):
+        if value == "true":
+            value = True
+        elif value == "false":
+            value = False
+        elif value == "all":
+            return queryset
+        return queryset.filter(is_turkkep = value)
 
     
 class PartnerList(ModelViewSet, QueryListAPIView):

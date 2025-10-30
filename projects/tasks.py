@@ -1,4 +1,7 @@
 from celery import shared_task
+
+from .utils.real_estate_utils import fetch_real_estates_from_leaseflex
+from .utils.parcel_utils import fetch_parcels_from_leaseflex
 from core.celery import app
 from django.http import JsonResponse
 from django.db.models import Q
@@ -22,3 +25,11 @@ from .utils.project_utils import fetch_projects_from_leaseflex
 @shared_task()
 def fetch_projects(company):
     fetch_projects_from_leaseflex(company)
+
+@shared_task()
+def fetch_parcels(company):
+    fetch_parcels_from_leaseflex(company)
+
+@shared_task()
+def fetch_real_estates(company):
+    fetch_real_estates_from_leaseflex(company)

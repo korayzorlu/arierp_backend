@@ -27,3 +27,31 @@ class ProjectListSerializer(serializers.Serializer):
     
     def get_partner_name(self, obj):
         return obj.partner.name if obj.partner else ""
+    
+class ParcelListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    project = serializers.SerializerMethodField()
+    parcel_id = serializers.CharField()
+    no = serializers.CharField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+    def get_project(self, obj):
+        return obj.project.name if obj.project else ''
+
+class RealEstateListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    project = serializers.SerializerMethodField()
+    parcel = serializers.CharField()
+    block = serializers.CharField()
+    unit = serializers.CharField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+    def get_project(self, obj):
+        return obj.project.name if obj.project else ''
+    

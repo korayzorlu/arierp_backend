@@ -71,6 +71,8 @@ class PartnerListSerializer(serializers.Serializer):
     about = serializers.CharField()
     is_reliable_person = serializers.BooleanField()
     is_commercial = serializers.BooleanField()
+    is_turkkep = serializers.BooleanField()
+    kep = serializers.CharField()
     
     def get_customer(self, obj):
         return True if "customer" in obj.types else False

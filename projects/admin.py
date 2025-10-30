@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Project
+from .models import Project,Parcel,RealEstate
 
 # Register your models here.
 
@@ -23,3 +23,41 @@ class ProjectAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Project
+
+@admin.register(Parcel)
+class ParcelAdmin(admin.ModelAdmin):
+    list_display = ["company","project","parcel_id","no"]
+    list_display_links = ["no"]
+    search_fields = ["company__name","project__name","parcel_id","no"]
+    list_filter = []
+    inlines = []
+    ordering = ["id"]
+    autocomplete_fields = ["project","company"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def project(self,obj):
+        return obj.project.name if obj.project else ""
+    
+    class Meta:
+        model = Parcel
+
+@admin.register(RealEstate)
+class RealEstateAdmin(admin.ModelAdmin):
+    list_display = ["company","project","real_estate_id","parcel","block","unit"]
+    list_display_links = ["block"]
+    search_fields = ["company__name","project__name","real_estate_id","parcel","block","unit"]
+    list_filter = []
+    inlines = []
+    ordering = ["id"]
+    autocomplete_fields = ["project","company"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def project(self,obj):
+        return obj.project.name if obj.project else ""
+    
+    class Meta:
+        model = RealEstate

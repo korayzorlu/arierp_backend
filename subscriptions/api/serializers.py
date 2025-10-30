@@ -20,7 +20,11 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Ticari Müşteriler", "icon" : "handshake", "route" : "/ticari-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
             ]},
-            {"type" : "item", "class" : ["default"], "label" : "Projeler", "icon" : "home_work", "route" : "/projects"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Gayrimenkul", "icon" : "home_work", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Projeler", "icon" : "article", "route" : "/projects"},
+                {"type" : "item", "class" : ["default"], "label" : "Parseller", "icon" : "article", "route" : "/parcels"},
+                {"type" : "item", "class" : ["default"], "label" : "Taşınmazlar", "icon" : "article", "route" : "/real-estates"},
+            ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Teklif", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
                 {"type" : "item", "class" : ["default"], "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},

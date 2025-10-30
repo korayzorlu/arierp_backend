@@ -239,6 +239,8 @@ class PartnerInformationView(LoginRequiredMixin,View):
                 'address':obj.address,
                 'city':obj.city.name if obj.city else "",
                 'country':obj.country.name if obj.country else "",
+                'kep':obj.kep,
+                'is_turkkep':obj.is_turkkep
         }
 
         return JsonResponse({'partner':partner_data}, status=200)

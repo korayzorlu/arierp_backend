@@ -26,3 +26,23 @@ class ProjectFilter(FilterSet):
     def filter_partner_crm_code(self, queryset, partner_crm_code, value):
         return queryset.filter(partner_crm_code = value)
     
+class ParcelFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    project = CharFilter(field_name='project__name', lookup_expr='icontains')
+    parcel_id = CharFilter(field_name='parcel_id', lookup_expr='icontains')
+    no = CharFilter(field_name='no', lookup_expr='icontains')
+
+    class Meta:
+        model = Parcel
+        fields = ['uuid',]
+
+class RealEstateFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    project = CharFilter(field_name='project__name', lookup_expr='icontains')
+    block = CharFilter(field_name='block', lookup_expr='icontains')
+    unit = CharFilter(field_name='unit', lookup_expr='icontains')
+
+    class Meta:
+        model = RealEstate
+        fields = ['uuid',]
+
