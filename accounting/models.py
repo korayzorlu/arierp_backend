@@ -344,6 +344,7 @@ class TrialBalance(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="trial_balances")
     
     account_id = models.CharField(_("Account ID"), max_length=50, null=True, blank=True)
+    main_account_code = models.CharField(_("Main Account Code"), max_length=50, null=True, blank=True)
     account_code = models.CharField(_("Account Code"), max_length=50, null=True, blank=True)
     account_code_trim = models.CharField(_("Account Code Trim"), max_length=50, null=True, blank=True)
     account_name = models.CharField(_("Account Name"), max_length=500, null=True, blank=True)

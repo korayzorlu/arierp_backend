@@ -134,13 +134,13 @@ class Installment(models.Model):
     
 
     
-class PartnerOverdueView(models.Model):
-    partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
-    max_overdue_days = models.IntegerField()
+# class PartnerOverdueView(models.Model):
+#     partner = models.OneToOneField(Partner, on_delete=models.DO_NOTHING, primary_key=True, db_column='partner_id')
+#     max_overdue_days = models.IntegerField()
 
-    class Meta:
-        managed = False
-        db_table = 'partner_max_overdue_days'
+#     class Meta:
+#         managed = False
+#         db_table = 'partner_max_overdue_days'
     
 class BankActivity(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)

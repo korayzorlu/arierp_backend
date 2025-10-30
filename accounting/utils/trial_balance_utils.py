@@ -55,6 +55,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
 
                 if obj:
                     obj.account_id = str(data.AccountId) or ""
+                    obj.main_account_code = str(data.AccountCode).split(".")[0] or ""
                     obj.account_code = str(data.AccountCode) or ""
                     obj.account_code_trim = str(data.AccountCodeTrim) or ""
                     obj.account_name = str(data.AccountName) or ""  
@@ -75,6 +76,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
                     create_objs.append(TrialBalance(
                         company = company_obj,
                         account_id = str(data.AccountId) or "",
+                        main_account_code = str(data.AccountCode).split(".")[0] or "",
                         account_code = str(data.AccountCode) or "",
                         account_code_trim = str(data.AccountCodeTrim) or "",
                         account_name = str(data.AccountName) or "",
@@ -93,7 +95,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
                     create_progress += 1
             if update_objs:
                 TrialBalance.objects.bulk_update(update_objs, [
-                    "account_id","account_code","account_code_trim","account_name","partner",
+                    "account_id","main_account_code","account_code","account_code_trim","account_name","partner",
                     "balance_account_type","currency","balance_debit","balance_credit",
                     "total_debit","total_credit","balance_debit_alternate","balance_credit_alternate",
                     "total_debit_alternate","total_credit_alternate"

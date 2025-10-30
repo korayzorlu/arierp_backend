@@ -147,6 +147,8 @@ class TrialBalanceListSerializer(serializers.Serializer):
     partner = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
     account_id = serializers.CharField()
+    main_account_code = serializers.CharField()
+    main_account_code_list = serializers.SerializerMethodField()
     account_code = serializers.CharField()
     account_code_trim = serializers.CharField()
     account_name = serializers.CharField()
@@ -176,3 +178,8 @@ class TrialBalanceListSerializer(serializers.Serializer):
 
     def get_total_currency(self, obj):
         return obj.balance_debit_alternate - obj.balance_credit_alternate
+    
+    def get_main_account_code_list(self, obj):
+        main_account_codes = TrialBalance.objects.values_list('main_account_code', flat=True).distinct()
+
+        return main_account_codes
