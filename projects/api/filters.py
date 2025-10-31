@@ -46,3 +46,21 @@ class RealEstateFilter(FilterSet):
         model = RealEstate
         fields = ['uuid',]
 
+class TitleDeedFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    project = CharFilter(field_name='project__name', lookup_expr='icontains')
+    tasinmaz_no = CharFilter(field_name='tasinmaz_no', lookup_expr='icontains')
+    nitelik = CharFilter(field_name='nitelik', lookup_expr='icontains')
+    il = CharFilter(field_name='il', lookup_expr='icontains')
+    ilce = CharFilter(field_name='ilce', lookup_expr='icontains')
+    mahalle = CharFilter(field_name='mahalle', lookup_expr='icontains')
+    ada = CharFilter(field_name='ada', lookup_expr='icontains')
+    parsel = CharFilter(field_name='parsel', lookup_expr='icontains')
+    unit = CharFilter(field_name='unit', lookup_expr='icontains')
+    zemin_hisse_id = CharFilter(field_name='zemin_hisse_id', lookup_expr='icontains')
+    zemin_tipi = CharFilter(field_name='zemin_tipi', lookup_expr='icontains')
+
+    class Meta:
+        model = TitleDeed
+        fields = ['uuid',]
+

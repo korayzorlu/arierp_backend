@@ -54,4 +54,22 @@ class RealEstateListSerializer(serializers.Serializer):
 
     def get_project(self, obj):
         return obj.project.name if obj.project else ''
+
+class TitleDeedListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    tasinmaz_no = serializers.CharField()
+    nitelik = serializers.CharField()
+    il = serializers.CharField()
+    ilce = serializers.CharField()
+    mahalle = serializers.CharField()
+    yuzolcum = serializers.DecimalField(max_digits=14,decimal_places=2)
+    ada = serializers.CharField()
+    parsel = serializers.CharField()
+    unit = serializers.CharField()
+    zemin_hisse_id = serializers.CharField()
+    zemin_tipi = serializers.CharField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
     

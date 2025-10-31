@@ -221,3 +221,46 @@ class RealEstateList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+    
+class TitleDeedList(ModelViewSet, QueryListAPIView):
+    serializer_class = TitleDeedListSerializer
+    filterset_class = TitleDeedFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = TitleDeed.objects.select_related(*custom_related_fields).filter(
+            company = active_company.company if active_company else None
+        ).order_by("il","ilce","mahalle")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["tasinmaz_no","nitelik","il","ilce","mahalle"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset

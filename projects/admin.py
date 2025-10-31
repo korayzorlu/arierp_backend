@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Project,Parcel,RealEstate
+from .models import Project,Parcel,RealEstate,TitleDeed
 
 # Register your models here.
 
@@ -61,3 +61,19 @@ class RealEstateAdmin(admin.ModelAdmin):
     
     class Meta:
         model = RealEstate
+
+@admin.register(TitleDeed)
+class TitleDeedAdmin(admin.ModelAdmin):
+    list_display = ["company","tasinmaz_no","nitelik","il","ilce","mahalle","ada","parsel"]
+    list_display_links = ["tasinmaz_no"]
+    search_fields = ["company__name","tasinmaz_no","nitelik","il","ilce","mahalle","ada","parsel"]
+    list_filter = []
+    inlines = []
+    ordering = ["id"]
+    autocomplete_fields = ["company"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    class Meta:
+        model = TitleDeed

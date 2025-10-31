@@ -54,3 +54,25 @@ class RealEstate(models.Model):
 
     def __str__(self):
         return f"{self.block} - {self.unit}"
+    
+class TitleDeed(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="title_deads")
+
+    tasinmaz_no = models.CharField(_("Taşınmaz No"), max_length=25, null=True, blank=True)
+    nitelik = models.CharField(_("Nitelik"), max_length=50, null=True, blank=True)
+    il = models.CharField(_("İl"), max_length=25, null=True, blank=True)
+    ilce = models.CharField(_("İlçe"), max_length=50, null=True, blank=True)
+    mahalle = models.CharField(_("Mahalle"), max_length=50, null=True, blank=True)
+    yuzolcum = models.DecimalField(_("Yüzölçüm"), default=0.00, max_digits=14, decimal_places=2)
+    ada = models.CharField(_("Ada"), max_length=25, null=True, blank=True)
+    parsel = models.CharField(_("Parsel"), max_length=25, null=True, blank=True)
+    unit = models.CharField(_("Unit"), max_length=25, null=True, blank=True)
+    zemin_hisse_id = models.CharField(_("Zemin Hisse ID"), max_length=50, null=True, blank=True)
+    zemin_tipi = models.CharField(_("Zemin Tipi"), max_length=50, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.tasinmaz_no} - {self.nitelik}"

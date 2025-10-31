@@ -21,6 +21,7 @@ from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from .utils.project_utils import fetch_projects_from_leaseflex
+from .utils.title_deed_utils import import_title_deeds_from_excel
 
 @shared_task()
 def fetch_projects(company):
@@ -33,3 +34,7 @@ def fetch_parcels(company):
 @shared_task()
 def fetch_real_estates(company):
     fetch_real_estates_from_leaseflex(company)
+
+@shared_task()
+def import_title_deeds(company):
+    import_title_deeds_from_excel(company)

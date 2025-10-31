@@ -24,6 +24,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Projeler", "icon" : "article", "route" : "/projects"},
                 {"type" : "item", "class" : ["default"], "label" : "Parseller", "icon" : "article", "route" : "/parcels"},
                 {"type" : "item", "class" : ["default"], "label" : "Taşınmazlar", "icon" : "article", "route" : "/real-estates"},
+                {"type" : "item", "class" : ["default"], "label" : "Arı Leasing Tapular", "icon" : "article", "route" : "/title-deeds"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Teklif", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
