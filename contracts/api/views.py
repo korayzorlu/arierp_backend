@@ -313,7 +313,7 @@ class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
             months.append(date.strftime("%m/%Y"))
 
         months.reverse()
-        
+
         result = []
 
         for month in months:
@@ -322,13 +322,13 @@ class ContractPaymentSummaryList(ModelViewSet, QueryListAPIView):
                 Q(date__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
                 Q(date__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
             ).aggregate(
-                total_amount=Sum('credit_amount')
+                total_amount=Sum('local_credit_amount')
             )
             result.append({
                 'month': month,
-                'amount': queryset.get('total_amount', Decimal('0.00'))
+                'amount': queryset.get('total_amount') or Decimal('0.00')
             })
-
+        
         return Response(result)
     
 

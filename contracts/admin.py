@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Contract
+from .models import Contract,ContractPayment
 
 # Register your models here.
 
@@ -31,3 +31,21 @@ class ContractAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Contract
+
+@admin.register(ContractPayment)
+class ContractPaymentAdmin(admin.ModelAdmin):
+    list_display = ["company","trn_id","group_name","account_code","account_name","date","due_date","debit_amount","credit_amount","currency","local_debit_amount","local_credit_amount"]
+    list_display_links = ["trn_id"]
+    search_fields = ["company__name","trn_id","group_name","account_code","account_name","date","due_date","debit_amount","credit_amount","currency__code","local_debit_amount","local_credit_amount"]
+    list_filter = []
+    inlines = []
+    ordering = ["-date"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def currency(self,obj):
+        return obj.currency.code if obj.currency else ""
+    
+    class Meta:
+        model = ContractPayment

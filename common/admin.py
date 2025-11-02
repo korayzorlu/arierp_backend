@@ -47,6 +47,25 @@ class CurrencyAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Currency
+
+@admin.register(ExchangeRate)
+class ExchangeRateAdmin(admin.ModelAdmin):
+    list_display = ["base_currency","target_currency","date","forex_buying","forex_selling"]
+    list_display_links = ["date"]
+    search_fields = ["base_currency__code","target_currency__code","date","forex_buying","forex_selling"]
+    list_filter = []
+    inlines = []
+    ordering = ["-date"]
+    autocomplete_fields = ["base_currency"]
+
+    def base_currency(self, obj):
+        return obj.base_currency.code if obj.base_currency else "-"
+    
+    def target_currency(self, obj):
+        return obj.target_currency.code if obj.target_currency else "-"
+
+    class Meta:
+        model = ExchangeRate
         
 @admin.register(ImportProcess)
 class ImportProcessAdmin(admin.ModelAdmin):

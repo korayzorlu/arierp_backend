@@ -5,6 +5,7 @@ from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,
 from decimal import Decimal
 from datetime import date,timedelta,datetime
 from django.utils import timezone
+import logging
 
 from risk.models import *
 from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount

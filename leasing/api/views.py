@@ -420,6 +420,8 @@ class InstallmentsSummaryListt(ModelViewSet, QueryListAPIView):
         active_company_uuid = request.query_params.get('ac')
         active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
 
+        
+
         today = datetime.today().date()
         start_date = today - timedelta(days=29)
 
@@ -472,6 +474,8 @@ class InstallmentsSummaryList(ModelViewSet, QueryListAPIView):
     def list(self, request):
         active_company_uuid = request.query_params.get('ac')
         active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        #get_exhange_rate_for_date()
 
         month_count = request.query_params.get('month', 12)
 

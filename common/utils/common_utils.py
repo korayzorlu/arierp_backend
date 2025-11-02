@@ -1,6 +1,12 @@
 from unidecode import unidecode
 from decimal import Decimal,InvalidOperation
 from datetime import timedelta
+import requests
+import json
+from datetime import datetime, timedelta
+import xml.etree.ElementTree as ET
+import traceback
+import time
 
 def normalize(name):
     return unidecode(name or "").strip().lower()
@@ -51,3 +57,76 @@ def add_business_days(start_date, business_days):
             days_added += 1
 
     return current_date
+
+def get_exchange_rate_for_date(target_currency=None, date=None):
+    try:
+        start_date = datetime.now() - timedelta(days=365*10)
+        end_date = datetime.now()
+
+        current_date = start_date
+        # while current_date <= end_date:
+        #     # Burada current_date kullanılabilir
+        #     #print(f"{current_date.strftime("%Y%m")} - {current_date.strftime("%d%m%Y")}")
+        #     current_date += timedelta(days=1)
+        
+        # date örneği: "11-09-2025"
+        # URL formatı: https://www.tcmb.gov.tr/kurlar/YYYYMM/DDMMYYYY.xml
+        if date:
+            dt = datetime.strptime(date, "%d-%m-%Y")
+        else:
+            dt = datetime.now()
+
+        if dt.day == 1 and dt.month == 1:  # Yeni yılın ilk günü
+            dt -= timedelta(days=1)
+            time.sleep(0.1)
+        elif dt.weekday() == 5:  # Cumartesi
+            dt -= timedelta(days=1)
+            if dt.day == 1 and dt.month == 1:
+                dt -= timedelta(days=1)
+            time.sleep(0.1)
+        elif dt.weekday() == 6:  # Pazar
+            dt -= timedelta(days=2)
+            if dt.day == 1 and dt.month == 1:
+                dt -= timedelta(days=1)
+            time.sleep(0.1)
+
+        url = f"https://www.tcmb.gov.tr/kurlar/{dt.strftime('%Y%m')}/{dt.strftime('%d%m%Y')}.xml"
+        response = requests.get(url)
+        
+        root = ET.fromstring(response.content)
+
+        currencies = []
+        for currency in root.findall("Currency"):
+            data = {
+                # "CrossOrder": currency.get("CrossOrder"),
+                "Kod": currency.get("Kod"),
+                # "CurrencyCode": currency.get("CurrencyCode"),
+                # "Unit": currency.findtext("Unit"),
+                # "Isim": currency.findtext("Isim"),
+                # "CurrencyName": currency.findtext("CurrencyName"),
+                "ForexBuying": currency.findtext("ForexBuying"),
+                "ForexSelling": currency.findtext("ForexSelling"),
+                # "BanknoteBuying": currency.findtext("BanknoteBuying"),
+                # "BanknoteSelling": currency.findtext("BanknoteSelling"),
+                # "CrossRateUSD": currency.findtext("CrossRateUSD"),
+                # "CrossRateOther": currency.findtext("CrossRateOther"),
+            }
+            currencies.append(data)
+
+        # data_json = json.dumps(currencies, ensure_ascii=False, indent=2)
+
+        result = next((item for item in currencies if item["Kod"] == target_currency), None)
+
+        return {
+            "date": date,
+            "forex_buying": Decimal(str(result["ForexBuying"])) if result else Decimal('0.00'),
+            "forex_selling": Decimal(str(result["ForexSelling"])) if result else Decimal('0.00'),
+        }
+    except Exception as e:
+        print("Error in get_exhange_rate_for_date:", str(e))
+        traceback.print_exc()
+        return {
+            "date": date,
+            "forex_buying": Decimal('0.00'),
+            "forex_selling": Decimal('0.00'),
+        }

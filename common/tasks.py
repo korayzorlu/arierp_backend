@@ -4,10 +4,16 @@ from django.http import JsonResponse
 
 import pandas as pd
 import io
+from datetime import datetime, timedelta
+from decimal import Decimal
+import json
+import traceback
+import time
 
-from .models import ImportProcess
+from .models import ExchangeRate, ImportProcess, Currency
 from .utils.import_utils import BaseImporter
 from .utils.export_utils import BaseExporter
+from .utils.common_utils import get_exchange_rate_for_date
 from users.models import User
 from partners.utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex
 from projects.utils.project_utils import fetch_projects_from_leaseflex
@@ -54,3 +60,43 @@ def fetch_big_data_from_leaseflex(company):
     fetch_contract_payments_from_leaseflex(company)
     fetch_installments_from_leaseflex(company)
     # fetch_trade_transactions_from_leaseflex(company)
+
+@shared_task()
+def fetch_exchange_rates(target_currency,date):
+    start_date = datetime.now() - timedelta(days=365*10)
+    end_date = datetime.now()
+
+    current_date = start_date
+    while current_date <= end_date:
+        response = get_exchange_rate_for_date(target_currency=target_currency, date=current_date.strftime('%d-%m-%Y'))
+        print(response)
+
+        obj = ExchangeRate.objects.filter(base_currency__code='TRY', target_currency__code=target_currency, date=current_date).first()
+        if obj:
+            prev_obj = ExchangeRate.objects.filter(id = obj.id - 1).first()
+            obj.date = current_date
+            if response.get('forex_buying', Decimal('0.00')) == Decimal('0.00') and prev_obj:
+                obj.forex_buying = prev_obj.forex_buying
+            else:
+                obj.forex_buying = response.get('forex_buying', Decimal('0.00'))
+            if response.get('forex_selling', Decimal('0.00')) == Decimal('0.00') and prev_obj:
+                obj.forex_selling = prev_obj.forex_selling
+            else:
+                obj.forex_selling = response.get('forex_selling', Decimal('0.00'))
+            obj.save()
+        else:
+            new_obj =ExchangeRate.objects.create(
+                base_currency = Currency.objects.get(code='TRY'),
+                target_currency = Currency.objects.get(code=target_currency),
+                date = current_date,
+                forex_buying = response.get('forex_buying', Decimal('0.00')),
+                forex_selling = response.get('forex_selling', Decimal('0.00'))
+            )
+            prev_obj = ExchangeRate.objects.filter(id = new_obj.id - 1).first()
+            if response.get('forex_buying', Decimal('0.00')) == Decimal('0.00') and prev_obj:
+                new_obj.forex_buying = prev_obj.forex_buying
+            if response.get('forex_selling', Decimal('0.00')) == Decimal('0.00') and prev_obj:
+                new_obj.forex_selling = prev_obj.forex_selling
+            new_obj.save()
+
+        current_date += timedelta(days=1)

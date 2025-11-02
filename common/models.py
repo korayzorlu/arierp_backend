@@ -92,6 +92,20 @@ class Currency(models.Model):
 
     def __str__(self):
         return str(self.code)
+    
+class ExchangeRate(models.Model):
+    base_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name="base_currency_exchange_rates", null=True, blank=True)
+    target_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name="target_currency_exchange_rates", null=True, blank=True)
+
+    date = models.DateField(_("Date"), blank=True, null=True)
+    forex_buying = models.DecimalField(_("Forex Buying"), default = 0.00, max_digits=14, decimal_places=2)
+    forex_selling = models.DecimalField(_("Forex Selling"), default = 0.00, max_digits=14, decimal_places=2)
+
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return str(f"{self.base_currency.code} - {self.target_currency.code} - {self.date}")
 
 class MainStatus(models.Model):
     name = models.CharField(_("Name"), max_length=25)
