@@ -31,6 +31,8 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
+        Installment.objects.select_related().filter(sequency = 0).delete()
+
         installments = Installment.objects.select_related("lease").filter(company__id=int(company))
         leases = Lease.objects.select_related().filter(company__id=int(company))
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
