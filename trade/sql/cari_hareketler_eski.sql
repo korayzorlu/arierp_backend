@@ -1,18 +1,48 @@
-SELECT 
+SELECT TOP 10
+    0 AS TrnConsolideId,
+    '' AS TrnConsolideInfo,
     TrnId,
+    TrnSourceType,
+    TrnIsDeleted,
+    PART_ID,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
+    CrmCustomerWithTypesLightTradeRisk.CustomerName AS viewTrnAccountId,
+    RATING,
+    TrnAccountId,
+    TrnLedgerCode,
     TrnDescription,
+    TrnOffsetInfo,
     TrnCurrencyCode,
+    TrnContractBlock = CASE
+        WHEN ISNULL(lopStatu.OperationProjectId, 0) <> 0 THEN lopStatu.OperationProjectCode
+        WHEN ISNULL(cp.ContractProjectId, 0) <> 0 THEN cp.ContractProjectCode
+        ELSE CAST(TrnOprContractId AS VARCHAR(100))
+    END,
+    substatu.DefinitionName,
+    CASE WHEN ISNULL(lopStatu.HasGuarantor, 0) = 1 THEN 'Evet' ELSE 'Hayır' END AS HasGuarantor,
     TrnPostingGroupId,
     JrnStpPstGrpName AS JrnStpPstGrpName,
+    TrnTemplateType,
+    TrnPostingType,
+    TrnPostingTypeDetail,
+    e1.JrnStpEnumDescription AS viewTrnPostingType,
     TrnReturnDocumentNo,
     TrnDueDate,
+    TrnDate AS LedgeredDate,
+    TrnReturnDocumentDate AS TrnReturnDocumentDate,
     TrnExchangeRateLocal,
+    TrnJournalHeaderId,
+    TrnOprContractId,
+    TrnOprProjectId,
     ISNULL(TrnOprLeasingOperationPrjId, 0) AS TrnOprLeasingOperationPrjId,
     TrnCreateDate,
     TrnAmountType,
     TrnAmount,
-    TrnAmountLocal
+    TrnAmountLocal,
+    0 AS VoucherCode,
+    rprData.PROJECT_NAME,
+    rprData.BLOCK_NO,
+    rprData.FREE_PART_NO
 FROM
     TradeTransaction (NOLOCK)
     LEFT JOIN LOPRevisionJoinMainList lopStatu (NOLOCK)
@@ -24,10 +54,17 @@ FROM
         ON AccCrmId = CrmCustomerWithTypesLightTradeRisk.CustomerId
     LEFT JOIN JournalSetupPostingTypeGroups (NOLOCK)
         ON TrnPostingGroupId = JournalSetupPostingTypeGroups.JrnStpPstGrpId
+    LEFT JOIN JournalSetupEnums e1 (NOLOCK)
+        ON TrnPostingType = e1.JrnStpEnumValue
+        AND e1.JrnStpEnumType = 50
+    LEFT JOIN FoundationStatuteMenu substatu (NOLOCK)
+        ON lopStatu.LastSubStatuId = substatu.DefinitionId
     LEFT JOIN ContractProject cp (NOLOCK)
         ON TrnOprProjectId = cp.ContractProjectId
     LEFT JOIN QuotationProject qp (NOLOCK)
         ON cp.QuotationProjectId = qp.ProjectId
+    LEFT JOIN RPR_PROJECT_VGKA_REPORT_DATA rprData (NOLOCK)
+        ON TrnOprLeasingOperationPrjId = rprData.OPERATION_PROJECT_ID
 WHERE
     TrnDummy = 0
     AND (
@@ -80,4 +117,4 @@ WHERE
     AND TrnAccountType = 11
     AND TrnPostingTypeDetail <> 80 
 ORDER BY
-    TrnCreateDate DESC
+    TrnCreateDate
