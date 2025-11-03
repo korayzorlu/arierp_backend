@@ -1,4 +1,4 @@
-SELECT 
+SELECT
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,

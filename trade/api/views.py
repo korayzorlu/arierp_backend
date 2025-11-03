@@ -134,7 +134,7 @@ class TradeTransactionList(ModelViewSet, QueryListAPIView):
     ordering_fields = '__all__'
     #ordering_fields = list(TradeTransaction._meta.get_fields()) + ['total_tl']
     ordering_fields = [f.name for f in TradeTransaction._meta.get_fields() if hasattr(f, 'name')]
-    ordering = ['posting_group_id','due_date','record_date','trade_transaction_id']
+    ordering = ['record_date']
     pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
