@@ -225,7 +225,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                     Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
                 ) &
                 Q(partner_contracts__contract_warning_notices__isnull=True) &
-                Q(partner_contracts__contract_contract_payments__isnull=True) &
+                Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
                 Q(is_turkkep=False)
             ).annotate(
                 max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
