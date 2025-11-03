@@ -122,9 +122,20 @@ class Installment(models.Model):
     paid = models.DecimalField(_("Paid"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_amount = models.DecimalField(_("Overdue Amount"), default = 0.00, max_digits=14, decimal_places=2)
     principal = models.DecimalField(_("Principal"), default = 0.00, max_digits=14, decimal_places=2)
+    balance = models.DecimalField(_("Balance"), default = 0.00, max_digits=14, decimal_places=2)
     interest = models.DecimalField(_("Interest"), default = 0.00, max_digits=14, decimal_places=2)
     sequency = models.PositiveIntegerField(_("Sequency"), default=0)
     lease_type = models.CharField(_("Lease Type"), max_length=50, blank=True, null=True)
+    TYPE_CHOICES = (
+        ('1', ('Kira')),
+        ('2', ('Peşinat')),
+        ('3', ('Küçük Kira')),
+        ('4', ('Ödemesiz')),
+        ('5', ('Devir Bedeli')),
+        ('6', ('Reeskont')),
+        ('7', ('Sadece Faiz')),
+    )
+    type = models.CharField(_("Payment Type"), max_length=25, default='1', choices=TYPE_CHOICES, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

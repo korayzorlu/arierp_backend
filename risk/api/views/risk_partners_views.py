@@ -159,7 +159,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__is_under_review=False) &
                 Q(partner_contracts__contract_warning_notices__isnull=True) &
                 Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-                Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+                Q(partner_contracts__contract_leases__overdue_days__lte=25) &
                 Q(partner_contracts__contract_leases__overdue_amount__gt=100)
             ).annotate(
                 max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
@@ -180,7 +180,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__is_under_review=False) &
                 Q(partner_contracts__contract_warning_notices__isnull=True) &
                 Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-                Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+                Q(partner_contracts__contract_leases__overdue_days__lte=25) &
                 Q(partner_contracts__contract_leases__overdue_amount__gt=100)
             ).annotate(
                 max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),

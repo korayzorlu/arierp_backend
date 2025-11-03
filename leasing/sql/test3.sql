@@ -1,5 +1,3 @@
-SELECT TOP 1000 *
+SELECT *
 FROM 
     LopPaymentList
-WHERE 
-    OperationProjectcode = '46089.1.0'

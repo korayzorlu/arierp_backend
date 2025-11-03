@@ -169,14 +169,13 @@ class InstallmentInformationView(LoginRequiredMixin,View):
                 'lease':obj.lease.code if obj.lease else "",
                 'sequency': obj.sequency,
                 'vat': obj.vat,
+                'vat_amount': obj.vat_amount,
+                'payment': obj.payment,
                 'amount' : obj.amount,
-                'paid':obj.paid,
-                'overdue_amount':obj.overdue_amount,
                 'payment_date':obj.payment_date,
-                'principal':obj.principal,
-                'interest':obj.interest,
-                'overdue_days':(date.today() - obj.payment_date).days,
-                'currency':obj.lease.currency.code if obj.lease.currency else ""
+                'currency':obj.lease.currency.code if obj.lease.currency else "",
+                'type': obj.type,
+                'type_display': obj.get_type_display() if obj.type else "",
             }
             for obj in objs
         ]

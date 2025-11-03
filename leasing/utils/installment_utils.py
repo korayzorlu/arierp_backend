@@ -8,6 +8,7 @@ import pyodbc
 from decimal import Decimal
 from datetime import datetime,date
 from collections import defaultdict
+import traceback
 
 from leasing.models import *
 from leasing.utils.common_utils import get_lease_status_value
@@ -15,7 +16,7 @@ from users.models import User
 from leasing.models import *
 from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency
-from common.utils.common_utils import normalize,safe_decimal
+from common.utils.common_utils import normalize,safe_decimal,has_more_than_two_decimal_places
 from partners.models import Partner
 
 def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
@@ -49,37 +50,39 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
             update_objs = []
             create_objs = []
             for index,data in enumerate(records):
-                if str(data.OPERATIONPROJECTID) and int(data.SequenceNo):
-                    obj = (installment_by_code.get((str(data.OPERATIONPROJECTID),int(data.SequenceNo))))
+                if str(data.OperationProjectId) and int(data.SequenceNo):
+                    obj = (installment_by_code.get((str(data.OperationProjectId),int(data.SequenceNo))))
                 else:
                     obj = None
 
                 if obj:
-                    obj.lease = leases_dict.get(str(data.OPERATIONPROJECTID))
-                    obj.payment_date = data.PAYMENTDATE.date() if data.PAYMENTDATE else None
-                    obj.vat = safe_decimal(data.VATRATE)
-                    obj.vat_amount = safe_decimal(data.VATAMOUNT)
-                    obj.payment = safe_decimal(data.PAYMENT)
-                    obj.amount = safe_decimal(data.TOTALPAYMENTAMOUNT)
-                    obj.principal = safe_decimal(data.PRINCIPALDISPLAY)
-                    obj.interest = safe_decimal(data.INTERESTDISPLAY)
+                    obj.lease = leases_dict.get(str(data.OperationProjectId))
+                    obj.payment_date = data.PaymentDate.date() if data.PaymentDate else None
+                    obj.vat = safe_decimal(data.VATRate)
+                    obj.vat_amount = safe_decimal(data.VATAmount)
+                    obj.payment = safe_decimal(data.Payment)
+                    obj.amount = safe_decimal(data.TotalPaymentAmount)
+                    # obj.principal = safe_decimal(data.PrincipalDisplay)
+                    # obj.balance = safe_decimal(data.Balance)
+                    # obj.interest = safe_decimal(data.InterestDisplay)
                     obj.sequency = int(data.SequenceNo)
-                    obj.lease_type = data.LeaseType or ""
+                    obj.type = str(data.PaymentTypeId) or "1"
                     update_objs.append(obj)
                     update_progress += 1
                 else:
                     create_objs.append(Installment(
                         company = company_obj,
-                        lease = leases_dict.get(str(data.OPERATIONPROJECTID)),
-                        payment_date = data.PAYMENTDATE.date() if data.PAYMENTDATE else None,
-                        vat = safe_decimal(data.VATRATE),
-                        vat_amount = safe_decimal(data.VATAMOUNT),
-                        payment = safe_decimal(data.PAYMENT),
-                        amount = safe_decimal(data.TOTALPAYMENTAMOUNT),
-                        principal = safe_decimal(data.PRINCIPALDISPLAY),
-                        interest = safe_decimal(data.INTERESTDISPLAY),
+                        lease = leases_dict.get(str(data.OperationProjectId)),
+                        payment_date = data.PaymentDate.date() if data.PaymentDate else None,
+                        vat = safe_decimal(data.VATRate),
+                        vat_amount = safe_decimal(data.VATAmount),
+                        payment = safe_decimal(data.Payment),
+                        amount = safe_decimal(data.TotalPaymentAmount),
+                        # principal = safe_decimal(data.PrincipalDisplay),
+                        # balance = safe_decimal(data.Balance),
+                        # interest = safe_decimal(data.InterestDisplay),
                         sequency = int(data.SequenceNo),
-                        lease_type = data.LeaseType or ""
+                        type = str(data.PaymentTypeId) or "1"
                     ))
                     create_progress += 1
             if update_objs:
@@ -91,9 +94,10 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
                     "payment",
                     "amount",
                     "principal",
+                    "balance",
                     "interest",
                     "sequency",
-                    "lease_type"
+                    "type"
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Installment.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
@@ -103,3 +107,4 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
 
     except Exception as e:
         print(e)
+        traceback.print_exc()

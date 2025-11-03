@@ -50,7 +50,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
             vendor_filter_for_serializers(filter_params) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
-            Q(overdue_days__lte=30) &
+            Q(overdue_days__lte=25) &
             Q(contract__contract_warning_notices__isnull=True) &
             #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (

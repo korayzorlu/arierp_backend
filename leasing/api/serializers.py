@@ -215,9 +215,9 @@ class InstallmentListSerializer(serializers.Serializer):
     currency = serializers.SerializerMethodField()
     payment_date = serializers.DateField()
     vat = serializers.DecimalField(max_digits=5,decimal_places=2)
+    vat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    payment = serializers.DecimalField(max_digits=14,decimal_places=2)
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
-    overdue_days = serializers.SerializerMethodField()
     paid = serializers.DecimalField(max_digits=14,decimal_places=2)
     principal = serializers.DecimalField(max_digits=14,decimal_places=2)
     interest = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -225,6 +225,8 @@ class InstallmentListSerializer(serializers.Serializer):
     project = serializers.SerializerMethodField()
     block = serializers.SerializerMethodField()
     unit = serializers.SerializerMethodField()
+    type = serializers.CharField()
+    type_display = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -259,10 +261,10 @@ class InstallmentListSerializer(serializers.Serializer):
     def get_unit(self, obj):
         return obj.lease.contract.quotation_obj.quick_quotation.unit if obj.lease.contract.quotation_obj.quick_quotation else ""
     
-    def get_overdue_days(self, obj):
-        today = date.today()
-        diff = (today - obj.payment_date).days
-        return diff
+    def get_type_display(self, obj):
+        return obj.get_type_display() if obj.type else ""
+    
+
     
 class BankActivityListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")

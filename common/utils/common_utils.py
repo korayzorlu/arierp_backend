@@ -16,6 +16,11 @@ def safe_decimal(val, default="0"):
         return Decimal(str(val).strip())
     except (InvalidOperation, TypeError, ValueError):
         return Decimal(default)
+
+def has_more_than_two_decimal_places(val):
+    dec = safe_decimal(val)
+    # dec.as_tuple().exponent negatifse, ondalık basamak sayısı -exponent olur
+    return abs(dec.as_tuple().exponent) > 2
     
 def parse_amount(amount_str):
     """

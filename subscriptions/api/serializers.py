@@ -71,7 +71,7 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : ["default","operasyon"], "label" : "Risk", "icon" : "report", "items" : [
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Vadesi Geçmişler", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Vadesi Geçmişler(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
-                    {"type" : "item", "class" : ["default"], "label" : "Gecikmede Olanlar(0-30)", "icon" : "policy", "route" : "/risk-partners"},
+                    {"type" : "item", "class" : ["default"], "label" : "Gecikmede Olanlar(0-25)", "icon" : "policy", "route" : "/risk-partners"},
                     #{"type" : "item", "class" : ["default"], "label" : "İhtar Çekilecekler", "icon" : "policy", "route" : "/to-warned-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "İhtar Çekilecekler(Kapora)", "icon" : "policy", "route" : "/deposit-to-warned-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "İhtar Çekilecekler(Kep)", "icon" : "policy", "route" : "/kep-to-warned-risk-partners"},

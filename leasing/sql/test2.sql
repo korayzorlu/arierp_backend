@@ -1,5 +1,5 @@
 SELECT TOP 1000 *
 FROM
     LeasingOperationPrintPaymentPlan
--- WHERE ContractProjectId = '62463'
+--WHERE ContractProjectId = '46089'
 
