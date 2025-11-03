@@ -60,7 +60,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             (
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
@@ -94,7 +94,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             (
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
@@ -127,7 +127,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             (
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
@@ -154,7 +154,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
-                elif lease.overdue_amount > 1000 and lease.overdue_days > 30:
+                elif lease.overdue_amount > 1000 and lease.overdue_days > 25:
                     status = "İhtar Çek"
                 else:
                     status = "SMS"
