@@ -37,8 +37,8 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
         installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency is not None}
         leases_dict = {l.lease_id: l for l in leases}
 
-        installments_zeros = Installment.objects.select_related().filter(sequency = 0)
-        installments_zeros.delete()
+        # installments_zeros = Installment.objects.select_related().filter(sequency = 0)
+        # installments_zeros.delete()
 
         update_progress = 0
         create_progress = 0
