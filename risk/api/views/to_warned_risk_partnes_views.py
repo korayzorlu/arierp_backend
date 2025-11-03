@@ -165,13 +165,13 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                     Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
                     Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
                 ) &
-                Q(partner_contracts__contract_warning_notices__isnull=True)
+                Q(partner_contracts__contract_warning_notices__isnull=True) &
+                ~Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0)
             ).annotate(
                 max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
                 total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
             ).exclude(
-                Q(types__contains=["special"]) &
-                Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0)
+                Q(types__contains=["special"])
             )
         elif type == "kep":
             queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
