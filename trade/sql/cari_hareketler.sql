@@ -1,4 +1,4 @@
-SELECT
+SELECT TOP 10000
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,
