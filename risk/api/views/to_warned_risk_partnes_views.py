@@ -180,6 +180,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ).exclude(
                 Q(types__contains=["special"])
             )
+            # Get only the payment_date of the installment with sequency=0 for filtering
             queryset = queryset.annotate(
                 overdue_days_int=Cast(
                     F('partner_contracts__contract_leases__overdue_days'),
@@ -189,10 +190,13 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 expected_payment_date=ExpressionWrapper(
                     today - (F('overdue_days_int') * timedelta(days=1)),
                     output_field=DateField()
+                ),
+                first_installment_payment_date=Max(
+                    'partner_contracts__contract_leases__lease_installments__payment_date',
+                    filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
                 )
             ).filter(
-                partner_contracts__contract_leases__lease_installments__sequency=0,
-                partner_contracts__contract_leases__lease_installments__payment_date=F('expected_payment_date')
+                first_installment_payment_date=F('expected_payment_date')
             )
         elif type == "kep":
             queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
