@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,F, ExpressionWrapper, DateField
-from django.db.models.functions import Lower,Upper
+from django.db.models import QuerySet, Q,Max,F, ExpressionWrapper, DateField,IntegerField
+from django.db.models.functions import Lower,Upper,Cast
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -20,6 +20,8 @@ from rest_framework.permissions import AllowAny
 
 import traceback
 from datetime import datetime,timedelta
+
+
 
 from leasing.models import Installment
 from leasing.api.filters import LeaseFilter
@@ -139,8 +141,8 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
-        date_38_days_ago = (now() - timedelta(days=38)).date()
-        print("38 gün önceki tarih:", date_38_days_ago)
+        # date_38_days_ago = (now() - timedelta(days=38)).date()
+        # print("38 gün önceki tarih:", date_38_days_ago)
 
         today = now().date()
 
@@ -178,12 +180,19 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ).exclude(
                 Q(types__contains=["special"])
             )
-            queryset = queryset.filter(
-                partner_contracts__contract_leases__lease_installments__sequency=0,
-                partner_contracts__contract_leases__lease_installments__payment_date=ExpressionWrapper(
-                    today - F('partner_contracts__contract_leases__overdue_days'),
+            queryset = queryset.annotate(
+                overdue_days_int=Cast(
+                    F('partner_contracts__contract_leases__overdue_days'),
+                    output_field=IntegerField()
+                )
+            ).annotate(
+                expected_payment_date=ExpressionWrapper(
+                    today - F('overdue_days_int'),
                     output_field=DateField()
                 )
+            ).filter(
+                partner_contracts__contract_leases__lease_installments__sequency=0,
+                partner_contracts__contract_leases__lease_installments__payment_date=F('expected_payment_date')
             )
         elif type == "kep":
             queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
