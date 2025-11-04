@@ -187,7 +187,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 )
             ).annotate(
                 expected_payment_date=ExpressionWrapper(
-                    today - F('overdue_days_int'),
+                    today - (F('overdue_days_int') * timedelta(days=1)),
                     output_field=DateField()
                 )
             ).filter(
