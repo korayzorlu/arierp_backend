@@ -14,6 +14,7 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
@@ -134,8 +135,19 @@ class TradeTransactionList(ModelViewSet, QueryListAPIView):
     ordering_fields = '__all__'
     #ordering_fields = list(TradeTransaction._meta.get_fields()) + ['total_tl']
     ordering_fields = [f.name for f in TradeTransaction._meta.get_fields() if hasattr(f, 'name')]
-    ordering = ['record_date']
-    pagination_class = DatatablesPagination
+    ordering = ['-record_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [AllowAny]
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
