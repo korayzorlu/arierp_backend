@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
+from risk.api.views.to_be_transferred_views import ToBeTransferredList
 from risk.api.views.to_terminated_risk_partners_views import ToTerminatedRiskPartnerList
 from risk.api.views.warned_risk_partners_views import WarnedRiskPartnerList
 from risk.api.views.risk_partners_views import RiskPartnerList
@@ -19,6 +20,7 @@ router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_part
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
+router.register(r'to_be_transferred',ToBeTransferredList, "to_be_transferred_api")
 
 urlpatterns = [
     path('',include(router.urls)),

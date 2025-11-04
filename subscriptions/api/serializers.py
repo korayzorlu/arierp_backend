@@ -88,12 +88,15 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "sub_menu", "class" : ["default"], "label" : "SMS", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Gönderilen SMS'ler", "icon" : "policy", "route" : "/sent-sms"},
                 ]},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Teslim", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
+                    {"type" : "item", "class" : ["default"], "label" : "Devredilecekler", "icon" : "policy", "route" : "/to-be-transferred"},
+                ]},
                 {"type" : "item", "class" : ["default"], "label" : "Kaporalar", "icon" : "policy", "route" : "/deposit-partners"},
                 #{"type" : "item", "class" : ["default"], "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "İhtarlar", "icon" : "policy", "route" : "/warning-notices"},
                 {"type" : "item", "class" : ["default"], "label" : "Anlaşmalı Fesihler", "icon" : "policy", "route" : "/agreed-terminated-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Bakiye Temerrüt Raporu", "icon" : "policy", "route" : "/amount-debit-transaction"},
-                {"type" : "item", "class" : ["default"], "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
                 {"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "policy", "route" : "/manager-summary"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
