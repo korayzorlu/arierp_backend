@@ -105,7 +105,23 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
                 Installment.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
         print(f"Toplam {update_progress} taksit güncellendi.")
         print(f"Toplam {create_progress} taksit oluşturuldu.")
-        print("--------")     
+        print("--------")
+
+        # Bir lease_id için birden fazla sequency=0 olan kayıtları teke düşür
+        duplicates = (
+            Installment.objects
+            .filter(sequency=0)
+            .values('lease__lease_id')
+            .annotate(count_id=models.Count('id'))
+            .filter(count_id__gt=1)
+        )
+        for dup in duplicates:
+            lease_id = dup['lease__lease_id']
+            installments = Installment.objects.filter(sequency=0, lease__lease_id=lease_id).order_by('id')
+            # İlk kaydı bırak, diğerlerini sil
+            to_delete = installments[1:]
+            if to_delete:
+                Installment.objects.filter(id__in=[i.id for i in to_delete]).delete()
 
     except Exception as e:
         print(e)
