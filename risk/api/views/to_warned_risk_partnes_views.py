@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists
+from django.db.models import QuerySet, Q,Max,F, ExpressionWrapper, DateField
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -138,8 +138,12 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         else:
             active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
+
         date_38_days_ago = (now() - timedelta(days=38)).date()
         print("38 gün önceki tarih:", date_38_days_ago)
+
+        today = now().date()
+
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
@@ -166,13 +170,20 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                     Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
                     Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
                 ) &
-                Q(partner_contracts__contract_warning_notices__isnull=True) &
-                ~Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0)
+                Q(partner_contracts__contract_warning_notices__isnull=True)
+                #~Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0)
             ).annotate(
                 max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
                 total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
             ).exclude(
                 Q(types__contains=["special"])
+            )
+            queryset = queryset.filter(
+                partner_contracts__contract_leases__lease_installments__sequency=0,
+                partner_contracts__contract_leases__lease_installments__payment_date=ExpressionWrapper(
+                    today - F('partner_contracts__contract_leases__overdue_days'),
+                    output_field=DateField()
+                )
             )
         elif type == "kep":
             queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
