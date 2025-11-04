@@ -52,7 +52,7 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
             update_objs = []
             create_objs = []
             for index,data in enumerate(records):
-                if str(data.OperationProjectId) and int(data.SequenceNo):
+                if str(data.OperationProjectId):
                     obj = (installment_by_code.get((str(data.OperationProjectId),int(data.SequenceNo))))
                 else:
                     obj = None
