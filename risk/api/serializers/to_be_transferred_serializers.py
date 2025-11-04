@@ -47,6 +47,8 @@ class ToBeTransferredListSerializer(serializers.Serializer):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
+        today = date.today()
+
         leases = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation","currency").filter(
             Q(contract__partner = obj) &
             project_filter_for_serializers(filter_params) &
@@ -55,7 +57,11 @@ class ToBeTransferredListSerializer(serializers.Serializer):
             ) &
             Q(is_kdv_diff=False) &
             Q(paid_rate__gte=30) &
-            Q(overdue_amount__lte=100)
+            Q(overdue_amount__lte=100) &
+            Q(
+                lease_installments__type=5,
+                lease_installments__payment_date__lt=today
+            )
         )
 
         excluded_leases = Lease.objects.select_related("contract__partner").filter(

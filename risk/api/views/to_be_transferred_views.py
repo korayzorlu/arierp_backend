@@ -139,6 +139,8 @@ class ToBeTransferredList(ModelViewSet, QueryListAPIView):
             active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
+        today = date.today()
+
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
@@ -150,8 +152,11 @@ class ToBeTransferredList(ModelViewSet, QueryListAPIView):
             ) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__paid_rate__gte=30) &
-            Q(partner_contracts__contract_leases__overdue_amount__lte=100)
-            
+            Q(partner_contracts__contract_leases__overdue_amount__lte=100) &
+            Q(
+                partner_contracts__contract_leases__lease_installments__type=5,
+                partner_contracts__contract_leases__lease_installments__payment_date__lt=today
+            )
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
