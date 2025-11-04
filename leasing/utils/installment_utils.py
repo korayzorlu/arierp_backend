@@ -31,13 +31,13 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        Installment.objects.select_related().filter(sequency = 0).delete()
+        # Installment.objects.select_related().filter(sequency = 0).delete()
 
         installments = Installment.objects.select_related("lease").filter(company__id=int(company))
         leases = Lease.objects.select_related().filter(company__id=int(company))
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id and i.sequency}
+        installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id}
         leases_dict = {l.lease_id: l for l in leases}
 
         # installments_zeros = Installment.objects.select_related().filter(sequency = 0)
