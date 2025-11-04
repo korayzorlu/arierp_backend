@@ -132,10 +132,10 @@ class TradeTransactionList(ModelViewSet, QueryListAPIView):
     serializer_class = TradeTransactionListSerializer
     filterset_class = TradeTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    #ordering_fields = '__all__'
     #ordering_fields = list(TradeTransaction._meta.get_fields()) + ['total_tl']
     ordering_fields = [f.name for f in TradeTransaction._meta.get_fields() if hasattr(f, 'name')]
-    ordering = ['-record_date']
+    ordering = ['posting_group_id','due_date','record_date','trade_transaction_id']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
