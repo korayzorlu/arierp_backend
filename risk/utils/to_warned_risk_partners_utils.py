@@ -24,8 +24,11 @@ def export_to_warned_risk_partners_for_sms(self):
             Q(partner_contracts__contract_leases__lease_status='planlandi') |
             Q(partner_contracts__contract_leases__lease_status='durduruldu')
         ) &
+        Q(partner_contracts__contract_leases__is_last_project=True) &
         Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        Q(partner_contracts__contract_leases__is_credit=False) &
+        Q(partner_contracts__contract_leases__is_under_review=False) &
+        Q(partner_contracts__contract_leases__overdue_days__gt=25) &
         (
             Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
             Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
@@ -193,8 +196,11 @@ def export_to_warned_risk_partners(self):
             Q(lease_status='durduruldu')
         ) &
         Q(contract__currency__code="TRY") &
+        Q(is_last_project=True) &
         Q(is_kdv_diff=False) &
-        Q(overdue_days__gt=30) &
+        Q(is_credit=False) &
+        Q(is_under_review=False) &
+        Q(overdue_days__gt=25) &
         (
             Q(overdue_31_60__gt=0) |
             Q(overdue_61_90__gt=0) |
