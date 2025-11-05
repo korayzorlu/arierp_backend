@@ -19,7 +19,7 @@ from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from .utils.lease_utils import fetch_leases_from_leaseflex
-from .utils.installment_utils import fetch_installments_from_leaseflex
+from .utils.installment_utils import fetch_installments_from_leaseflex,update_first_installment_date
 
 @shared_task()
 def fetch_leases(company):
@@ -102,6 +102,7 @@ def fetch_interest_rates(company):
 @shared_task()
 def fetch_installments(company):
     fetch_installments_from_leaseflex(company)
+    update_first_installment_date(company)
 
 
 @shared_task()

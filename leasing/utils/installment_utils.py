@@ -133,3 +133,16 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
     except Exception as e:
         print(e)
         traceback.print_exc()
+
+def update_first_installment_date(company):
+    try:
+        objs = Installment.objects.select_related("lease").filter(sequency=0, company__id=int(company))
+        update_leases = []
+        for obj in objs:
+            lease = obj.lease
+            lease.first_installment_date = obj.payment_date
+            update_leases.append(lease)
+        Lease.objects.bulk_update(update_leases, ["first_installment_date"])
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
