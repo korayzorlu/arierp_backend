@@ -198,8 +198,6 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ).filter(
                 first_installment_payment_date=F('expected_payment_date')
             )
-
-            queryset = queryset.distinct()
         elif type == "kep":
             queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
                 Q(company = active_company.company if active_company else None) &
