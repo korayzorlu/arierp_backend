@@ -61,7 +61,7 @@ def fetch_big_data_from_leaseflex(company):
     fetch_installments_from_leaseflex(company)
 
 @shared_task()
-def fetch_ver_big_data_from_leaseflex(company):
+def fetch_very_big_data_from_leaseflex(company):
     fetch_trade_transactions_from_leaseflex(company)
 
 @shared_task()
