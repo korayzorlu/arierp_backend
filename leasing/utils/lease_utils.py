@@ -12,6 +12,7 @@ from datetime import datetime,date
 from collections import defaultdict
 import os
 import traceback
+import gc
 
 from leasing.models import *
 from leasing.utils.common_utils import get_lease_status_value
@@ -41,6 +42,9 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         lease_by_code = {l.lease_id: l for l in leases if l.lease_id}
+        del leases
+        gc.collect()
+
         contracts_dict = {c.code: c for c in contracts}
         statuses_dict = {s.name: s for s in statuses}
         currencies_dict = {c.code: c for c in currencies}
@@ -126,6 +130,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Lease.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        del lease_by_code
+        gc.collect()
         print(f"Toplam {update_progress} kira planı güncellendi.")
         print(f"Toplam {create_progress} kira planı oluşturuldu.")
         print("--------")

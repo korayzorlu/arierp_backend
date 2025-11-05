@@ -12,6 +12,7 @@ import io
 import os
 import random
 import string
+import gc
 
 from contracts.models import *
 from common.models import Status
@@ -196,6 +197,9 @@ def fetch_contracts_from_leaseflex(company,BATCH_SIZE=1000):
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         contract_by_code = {c.contract_id: c for c in contracts if c.contract_id}
+        del contracts
+        gc.collect()
+
         statuses_dict = {s.name: s for s in statuses}
         partners_dict = {p.crm_code: p for p in partners}
         quotations_dict = {q.code: q for q in quotations}
@@ -271,6 +275,8 @@ def fetch_contracts_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Contract.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        del contract_by_code
+        gc.collect()
         print(f"Toplam {update_progress} sözleşme güncellendi.")
         print(f"Toplam {create_progress} sözleşme oluşturuldu.")
         print("--------")
@@ -296,6 +302,9 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         contract_payment_by_code = {c.trn_id: c for c in contract_payments if c.trn_id}
+        del contract_payments
+        gc.collect()
+
         contracts_dict = {c.code: c for c in contracts}
         currencies_dict = {c.code: c for c in currencies}
 
@@ -390,6 +399,8 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 ContractPayment.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        del contract_payment_by_code
+        gc.collect()
         print(f"Toplam {update_progress} tahsilat güncellendi.")
         print(f"Toplam {create_progress} tahsilat oluşturuldu.")
         print("--------")      

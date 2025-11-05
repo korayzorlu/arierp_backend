@@ -28,3 +28,17 @@ class BlackListPerson(models.Model):
 
     def __str__(self):
         return str(self.uuid)
+    
+class ThirdPerson(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="third_persons")
+
+    name = models.CharField(_("Name"), max_length=250, null=True, blank=True)
+    tc_vkn_no = models.CharField(_("TC/VKN No"), max_length=500, null=True, blank=True)
+    is_reliable_person = models.BooleanField(default=False)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.name} - {self.tc_vkn_no}")
