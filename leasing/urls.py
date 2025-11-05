@@ -1,6 +1,7 @@
 from django.urls import path, include
 
 from .views.lease_views import *
+from .views.manager_summary_views import *
 from .views.installments_views import *
 from .views.bank_activity_views import *
 from .tests import *

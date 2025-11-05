@@ -210,8 +210,8 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         is_kdv = self.request.query_params.get('kdv')
 
-        # date_36_days_ago = (now() - timedelta(days=36)).date()
-        # print("36 gün önceki tarih:", date_36_days_ago)
+        # date_ago = (now() - timedelta(days=67)).date()
+        # print("67 gün önceki tarih:", date_ago)
 
         today = now().date()
 

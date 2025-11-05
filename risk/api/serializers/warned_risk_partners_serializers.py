@@ -57,7 +57,7 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True)

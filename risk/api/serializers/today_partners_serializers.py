@@ -55,8 +55,10 @@ class TodayPartnerListSerializer(serializers.Serializer):
                 Q(lease_status='planlandi') |
                 Q(lease_status='durduruldu')
             ) &
-            Q(is_credit=False) &
             Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False) &
             Q(lease_installments__payment_date=today) &
             ~Q(lease_installments__sequency=Subquery(latest_sequency_subquery))
         ).order_by("-overdue_days")
