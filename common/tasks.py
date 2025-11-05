@@ -59,6 +59,9 @@ def fetch_data_from_leaseflex(company):
 def fetch_big_data_from_leaseflex(company):
     fetch_contract_payments_from_leaseflex(company)
     fetch_installments_from_leaseflex(company)
+
+@shared_task()
+def fetch_ver_big_data_from_leaseflex(company):
     fetch_trade_transactions_from_leaseflex(company)
 
 @shared_task()

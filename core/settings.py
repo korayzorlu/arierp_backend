@@ -352,7 +352,12 @@ if not DEBUG:
         },
         "fetch-big-data-from-leaseflex-task": {
             "task": "common.tasks.fetch_big_data_from_leaseflex",
-            "schedule": crontab(minute=0, hour='*/2'),
+            "schedule": crontab(minute=0, hour='0,2,4,6,8,10,12,14,16,18,20,22'),
+            "args": [2],
+        },
+        "fetch-very-big-data-from-leaseflex-task": {
+            "task": "common.tasks.fetch_very_big_data_from_leaseflex",
+            "schedule": crontab(minute=0, hour='1,3,5,7,9,11,13,15,17,19,21,23'),
             "args": [2],
         },
     }
