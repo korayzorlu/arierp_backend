@@ -5,6 +5,7 @@ import pyodbc
 import os
 import traceback
 import logging
+import gc
 
 from common.utils.common_utils import normalize,safe_decimal
 from trade.models import *
@@ -27,6 +28,9 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
         currencies = Currency.objects.select_related().all()
 
         trade_transaction_by_crm = {t.trade_transaction_id: t for t in trade_transactions if t.trade_transaction_id}
+        del trade_transactions
+        gc.collect()
+
         partners_dict = {p.crm_code: p for p in partners}
         leases_dict = {l.lease_id: l for l in leases}
         currencies_dict = {c.code: c for c in currencies}
@@ -102,6 +106,9 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 TradeTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        
+        del trade_transaction_by_crm
+        gc.collect()
         print(f"Toplam {update_progress} cari hesap hareketi güncellendi.")
         print(f"Toplam {create_progress} cari hesap hareketi oluşturuldu.")
         print("--------")

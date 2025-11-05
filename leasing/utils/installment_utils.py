@@ -9,6 +9,7 @@ from decimal import Decimal
 from datetime import datetime,date
 from collections import defaultdict
 import traceback
+import gc
 
 from leasing.models import *
 from leasing.utils.common_utils import get_lease_status_value
@@ -38,6 +39,9 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id}
+        del installments
+        gc.collect()
+
         leases_dict = {l.lease_id: l for l in leases}
 
         # installments_zeros = Installment.objects.select_related().filter(sequency = 0)
@@ -103,6 +107,9 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Installment.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        
+        del installment_by_code
+        gc.collect()
         print(f"Toplam {update_progress} taksit güncellendi.")
         print(f"Toplam {create_progress} taksit oluşturuldu.")
         print("--------")

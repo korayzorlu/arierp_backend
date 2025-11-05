@@ -81,6 +81,7 @@ class Lease(models.Model):
     overdue_121_150 = models.DecimalField(_("Overdue 121 - 150"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_151_180 = models.DecimalField(_("Overdue 151 - 180"), default = 0.00, max_digits=14, decimal_places=2)
     overdue_181_gte = models.DecimalField(_("Overdue 181 >"), default = 0.00, max_digits=14, decimal_places=2)
+    first_installment_date = models.DateField(_("First Installment Date"), blank=True, null=True)
 
     project_no = models.CharField(_("Project No"), max_length=25, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_rents", null=True, blank=True)
