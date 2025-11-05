@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery, F, ExpressionWrapper, DateField,IntegerField
+from django.db.models.functions import Lower,Upper,Cast
+from django.utils.timezone import now
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
-from django.utils import timezone
 import logging
 
 from risk.models import *
@@ -48,6 +49,8 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
+        today = now().date()
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
@@ -70,6 +73,24 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(overdue_181_gte__gt=0)
             ) &
             Q(contract__contract_warning_notices__isnull=True)
+        )
+
+        leases = leases.annotate(
+            overdue_days_int=Cast(
+                F('overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'lease_installments__payment_date',
+                filter=Q(lease_installments__sequency=0)
+            )
+        ).filter(
+            first_installment_payment_date=F('expected_payment_date')
         )
 
         overdue_days = 0
@@ -82,38 +103,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=25) &
-            (
-                Q(overdue_31_60__gt=0) |
-                Q(overdue_61_90__gt=0) |
-                Q(overdue_91_120__gt=0) |
-                Q(overdue_121_150__gt=0) |
-                Q(overdue_151_180__gt=0) |
-                Q(overdue_181_gte__gt=0)
-            ) &
-            Q(contract__contract_warning_notices__isnull=True)
-        )
-        
-        overdue_amount = 0
-        for lease in leases:
-            overdue_amount += lease.overdue_amount
-        return overdue_amount
-    
-    def get_leases(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
+        today = now().date()
 
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
@@ -137,6 +127,77 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 Q(overdue_181_gte__gt=0)
             ) &
             Q(contract__contract_warning_notices__isnull=True)
+        )
+
+        leases = leases.annotate(
+            overdue_days_int=Cast(
+                F('overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'lease_installments__payment_date',
+                filter=Q(lease_installments__sequency=0)
+            )
+        ).filter(
+            first_installment_payment_date=F('expected_payment_date')
+        )
+        
+        overdue_amount = 0
+        for lease in leases:
+            overdue_amount += lease.overdue_amount
+        return overdue_amount
+    
+    def get_leases(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        today = now().date()
+
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            vendor_filter_for_serializers(filter_params) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False) &
+            Q(overdue_days__gt=25) &
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        )
+
+        leases = leases.annotate(
+            overdue_days_int=Cast(
+                F('overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'lease_installments__payment_date',
+                filter=Q(lease_installments__sequency=0)
+            )
+        ).filter(
+            first_installment_payment_date=F('expected_payment_date')
         )
 
         latest_lease = leases.filter(
