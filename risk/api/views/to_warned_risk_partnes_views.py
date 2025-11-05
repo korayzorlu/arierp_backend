@@ -163,7 +163,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__is_kdv_diff=False) &
                 Q(partner_contracts__contract_leases__is_credit=False) &
                 Q(partner_contracts__contract_leases__is_under_review=False) &
-                Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+                Q(partner_contracts__contract_leases__overdue_days__gt=25) &
                 (
                     Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
                     Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
