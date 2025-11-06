@@ -165,7 +165,8 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
     serializer_class = BankAccountTransactionListSerializer
     filterset_class = BankAccountTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    ordering_fields = ['transaction_date','transaction_id','explanation_field']
+    ordering = ['-transaction_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
