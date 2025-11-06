@@ -106,8 +106,14 @@ class BaseExporter():
     def export_towarnedriskpartnerforsms(self):
         export_to_warned_risk_partners_for_sms(self)
 
-    def export_towarnedriskpartner(self):
-        export_to_warned_risk_partners(self)
+    def export_depositetowarnedriskpartner(self):
+        export_deposite_to_warned_risk_partners(self)
+
+    def export_keptowarnedriskpartner(self):
+        export_kep_to_warned_risk_partners(self)
+
+    def export_postatowarnedriskpartner(self):
+        export_posta_to_warned_risk_partners(self)
 
     def export_warnedriskpartnerforsms(self):
         export_warned_risk_partners_for_sms(self)

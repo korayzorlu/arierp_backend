@@ -224,13 +224,13 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment_date=F('expected_payment_date')
         )
 
-        latest_lease = leases.filter(
-            contract__code=OuterRef('contract__code')
-        ).order_by('-activation_date')
+        # latest_lease = leases.filter(
+        #     contract__code=OuterRef('contract__code')
+        # ).order_by('-activation_date')
 
-        leases = leases.filter(
-            id=Subquery(latest_lease.values('id')[:1])
-        )
+        # leases = leases.filter(
+        #     id=Subquery(latest_lease.values('id')[:1])
+        # )
 
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
@@ -359,13 +359,13 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment_date=F('expected_payment_date')
         )
 
-        latest_lease = leases.filter(
-            contract__code=OuterRef('contract__code')
-        ).order_by('-activation_date')
+        # latest_lease = leases.filter(
+        #     contract__code=OuterRef('contract__code')
+        # ).order_by('-activation_date')
 
-        leases = leases.filter(
-            id=Subquery(latest_lease.values('id')[:1])
-        )
+        # leases = leases.filter(
+        #     id=Subquery(latest_lease.values('id')[:1])
+        # )
 
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
@@ -495,13 +495,13 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
         )
 
 
-        latest_lease = leases.filter(
-            contract__code=OuterRef('contract__code')
-        ).order_by('-activation_date')
+        # latest_lease = leases.filter(
+        #     contract__code=OuterRef('contract__code')
+        # ).order_by('-activation_date')
 
-        leases = leases.filter(
-            id=Subquery(latest_lease.values('id')[:1])
-        )
+        # leases = leases.filter(
+        #     id=Subquery(latest_lease.values('id')[:1])
+        # )
 
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
