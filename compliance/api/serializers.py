@@ -36,3 +36,12 @@ class ScanPartnerListSerializer(serializers.Serializer):
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
+class ThirdPersonListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.CharField()
+    is_reliable_person = serializers.BooleanField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''

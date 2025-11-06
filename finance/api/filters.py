@@ -33,3 +33,33 @@ class BankAccountTransactionFilter(FilterSet):
     class Meta:
         model = FinmaksTransaction
         fields = ['uuid']
+
+class BankAccountTransactionFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    transaction_date = CharFilter(method='filter_transaction_date')
+    transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
+    explanation_field = CharFilter(field_name='explanation_field', lookup_expr='icontains')
+    bank_name = CharFilter(field_name='bank_account__name', lookup_expr='icontains')
+    bank_account_no = CharFilter(field_name='bank_account__account_no', lookup_expr='icontains')
+
+    class Meta:
+        model = FinmaksTransaction
+        fields = ['uuid']
+
+    def filter_transaction_date(self, queryset, transaction_date, value):
+        if not value:
+            return queryset
+        # Tarih parçalarını ayır (örn: "05.11.2025", "05.11.", "05")
+        parts = value.split('.')
+        q = Q()
+        if len(parts) > 0 and parts[0]:
+            # Gün filtresi
+            q &= Q(transaction_date__day=parts[0])
+        if len(parts) > 1 and parts[1]:
+            # Ay filtresi
+            q &= Q(transaction_date__month=parts[1])
+        if len(parts) > 2 and parts[2]:
+            # Yıl filtresi
+            q &= Q(transaction_date__year=parts[2])
+        return queryset.filter(q)
+

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import BlackListPerson
+from .models import BlackListPerson,ThirdPerson
 
 # Register your models here.
 
@@ -19,3 +19,18 @@ class BlackListPersonAdmin(admin.ModelAdmin):
     
     class Meta:
         model = BlackListPerson
+
+@admin.register(ThirdPerson)
+class ThirdPersonAdmin(admin.ModelAdmin):
+    list_display = ["company","name","tc_vkn_no","is_reliable_person"]
+    list_display_links = ["name"]
+    search_fields = ["company__name","name","tc_vkn_no","is_reliable_person"]
+    list_filter = []
+    inlines = []
+    ordering = ["name"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    class Meta:
+        model = ThirdPerson

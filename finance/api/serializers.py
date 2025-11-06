@@ -96,6 +96,7 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
         else:
             return False
         
+        
 
 class PartnerAdvanceListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
