@@ -37,7 +37,7 @@ class ScanPartnerListSerializer(serializers.Serializer):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
 class ThirdPersonListSerializer(serializers.Serializer):
-    uuid = serializers.CharField()
+    id = serializers.CharField(source = "uuid")
     companyId = serializers.SerializerMethodField()
     name = serializers.CharField()
     tc_vkn_no = serializers.CharField()

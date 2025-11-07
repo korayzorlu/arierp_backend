@@ -22,6 +22,7 @@ from common.utils.ai_utils import EXAMPLE_DEF,EXAMPLE_LIST
 from contracts.models import Contract
 from partners.models import Partner
 from finance.models import FinmaksTransaction
+from compliance.utils.third_person_utils import create_third_person
 from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
 from .utils.bank_activity_utils import (
     match_bank_activity_from_iban,
@@ -274,6 +275,11 @@ class BankActivity(models.Model):
                         "total_amount": self.amount
                     })
                     #print(f"remaining_amount: {remaining_amount}")
+                else:
+                    #check_third_person_status(self)
+                    create_third_person(self)
+                    self.is_third_person = True
+                    super().save(update_fields=['is_third_person'])
                 ####NEW MATCHING SYSTEM END####
 
                 # current_sender_bank_activites = match_bank_activity_from_iban({
