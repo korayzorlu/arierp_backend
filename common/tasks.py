@@ -40,24 +40,26 @@ def exportData(self,user_id,app,model_name,file_name,export_url,params):
 
 @shared_task()
 def fetch_data_from_leaseflex(company):
-    fetch_partners_from_leaseflex(company)
-    fetch_partnersi_from_leaseflex(company)
-    fetch_phone_numbers_from_leaseflex(company)
-    fetch_phone_numbersi_from_leaseflex(company)
-    fetch_projects_from_leaseflex(company)
-    fetch_parcels_from_leaseflex(company)
-    fetch_real_estates_from_leaseflex(company)
-    fetch_quick_quotations_from_leaseflex(company)
-    fetch_quotations_from_leaseflex(company)
-    fetch_contracts_from_leaseflex(company)
-    fetch_warning_notices_from_leaseflex(company)
-    fetch_leases_from_leaseflex(company)
-    fetch_purchase_documents_from_leaseflex(company)
-    fetch_trial_balances_from_leaseflex(company)
+    pass
+    # fetch_partners_from_leaseflex(company)
+    # fetch_partnersi_from_leaseflex(company)
+    # fetch_phone_numbers_from_leaseflex(company)
+    # fetch_phone_numbersi_from_leaseflex(company)
+    # fetch_projects_from_leaseflex(company)
+    # fetch_parcels_from_leaseflex(company)
+    # fetch_real_estates_from_leaseflex(company)
+    # fetch_quick_quotations_from_leaseflex(company)
+    # fetch_quotations_from_leaseflex(company)
+    # fetch_contracts_from_leaseflex(company)
+    # fetch_warning_notices_from_leaseflex(company)
+    # fetch_leases_from_leaseflex(company)
+    # fetch_purchase_documents_from_leaseflex(company)
+    # fetch_trial_balances_from_leaseflex(company)
 
 @shared_task()
 def fetch_big_data_from_leaseflex(company):
-    fetch_contract_payments_from_leaseflex(company)
+    pass
+    # fetch_contract_payments_from_leaseflex(company)
     # fetch_installments_from_leaseflex(company)
 
 @shared_task()
