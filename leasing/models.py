@@ -253,6 +253,16 @@ class BankActivity(models.Model):
 
                 if matched_partner:
                     matched_contract_numbers = extract_contract_numbers(self.description)
+                    if matched_contract_numbers == "kapora":
+                        bank_activity_leases = add_bank_activity_leases({
+                            "company": self.company,
+                            "partner": matched_partner,
+                            "bank_activity": self,
+                        })
+                        
+                        self.is_certain = False
+                        super().save(update_fields=['is_certain'])
+                        return
                     if matched_contract_numbers:
                         self.is_certain = True
                         super().save(update_fields=['is_certain'])
@@ -285,7 +295,7 @@ class BankActivity(models.Model):
                     else:
                         remaining_amount = distribude_amount_with_leases({
                             "is_certain": self.is_certain,
-                            "bank_activity_leases": matched_bank_activity_leases,
+                            "bank_activity_leases": bank_activity_leases,
                             "total_amount": self.amount
                         })
                         

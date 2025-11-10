@@ -204,7 +204,7 @@ def distribude_amount_with_leases(params):
     #overdue_181_gte
     for obj in objs:
         if obj.lease.overdue_181_gte > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_181_gte)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_181_gte)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -212,7 +212,7 @@ def distribude_amount_with_leases(params):
     #overdue_151_180
     for obj in objs:
         if obj.lease.overdue_151_180 > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_151_180)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_151_180)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -220,7 +220,7 @@ def distribude_amount_with_leases(params):
     #overdue_121_150
     for obj in objs:
         if obj.lease.overdue_121_150 > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_121_150)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_121_150)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -228,7 +228,7 @@ def distribude_amount_with_leases(params):
     #overdue_91_120
     for obj in objs:
         if obj.lease.overdue_91_120 > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_91_120)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_91_120)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -236,7 +236,7 @@ def distribude_amount_with_leases(params):
     #overdue_61_90
     for obj in objs:
         if obj.lease.overdue_61_90 > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_61_90)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_61_90)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -244,7 +244,7 @@ def distribude_amount_with_leases(params):
     #overdue_31_60
     for obj in objs:
         if obj.lease.overdue_31_60 > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_31_60)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_31_60)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -252,7 +252,7 @@ def distribude_amount_with_leases(params):
     #overdue_0_30
     for obj in objs:
         if obj.lease.overdue_0_30 > 0 and remaining_amount > 0:
-            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_0_30)))
+            obj.processed_amount += min(remaining_amount, obj.lease.overdue_0_30)
             obj.leaseflex_automation = True
             obj.save()
             remaining_amount -= obj.processed_amount
@@ -263,13 +263,13 @@ def distribude_amount_with_leases(params):
         last_installment = obj.lease.lease_installments.filter(type = '5').first()
         if next_installment:
             if next_installment.amount > 0 and remaining_amount > 0 and next_installment != last_installment:
-                obj.processed_amount += min(remaining_amount, Decimal(str(next_installment.amount)))
+                obj.processed_amount += min(remaining_amount, next_installment.amount)
                 obj.leaseflex_automation = True
                 obj.save()
             remaining_amount -= obj.processed_amount
         elif last_installment:
             if last_installment.amount > 0 and remaining_amount > 0 and next_installment == last_installment:
-                obj.processed_amount += min(remaining_amount, Decimal(str(last_installment.amount)))
+                obj.processed_amount += min(remaining_amount, last_installment.amount)
                 obj.leaseflex_automation = True
                 obj.save()
                 remaining_amount -= obj.processed_amount

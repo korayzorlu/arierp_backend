@@ -509,5 +509,10 @@ def extract_contract_numbers(description):
             result.append(match)
             seen.add(match)
 
+    has_kapora = "kapora" in description.lower()
+
+    if has_kapora:
+        return "kapora"
+
     return result
     

@@ -18,7 +18,7 @@ def create_third_person(self,scan_result):
             status = 'cleared'
         else:
             status = 'pending'
-            send_email_for_third_person(name)
+            # send_email_for_third_person(name)
 
         old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
         if not old_obj:
