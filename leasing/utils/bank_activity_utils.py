@@ -55,7 +55,7 @@ def matched_leases_with_amount(params):
         if lease.overdue_days > 0:
             pass
         next_installment = lease.lease_installments.filter(payment_date__gte=timezone.now().date()).order_by('payment_date').first()
-        last_installment = lease.lease_installments.filter().order_by('sequency').last()
+        last_installment = lease.lease_installments.filter(type = '5').first()
         if next_installment and next_installment != last_installment:
             print(f"lease: {lease.code}, amount: {next_installment.amount}")
             installments.append(next_installment)
@@ -150,7 +150,7 @@ def distribute_amount(params):
             break
         
         next_installment = bank_activity_lease.lease.lease_installments.filter(payment_date__gte=timezone.now().date()).order_by('payment_date').first()
-        last_installment = bank_activity_lease.lease.lease_installments.filter().order_by('sequency').last()
+        last_installment = bank_activity_lease.lease.lease_installments.filter(type = '5').first()
         
         if not params["is_certain"] and bank_activity_lease.lease.overdue_days > 0:
             bank_activity_lease.processed_amount += min(remaining_amount, bank_activity_lease.lease.overdue_amount)
@@ -176,3 +176,103 @@ def distribute_amount(params):
         remaining_amount = Decimal("0")
 
     return remaining_amount
+
+def distribude_amount_with_leases(params):
+    # for lease in leases:
+    #     payment_table.append({
+    #         "lease": lease,
+    #         "overdue_181_gte" : lease.overdue_181_gte,
+    #         "overdue_151_180" : lease.overdue_151_180,
+    #         "overdue_121_150" : lease.overdue_121_150,
+    #         "overdue_91_120" : lease.overdue_91_120,
+    #         "overdue_61_90" : lease.overdue_61_90,
+    #         "overdue_31_60" : lease.overdue_31_60,
+    #         "overdue_0_30" : lease.overdue_0_30,
+    #         "next_installment": lease.lease_installments.filter(payment_date__gte=timezone.now().date()).order_by('payment_date').first().amount
+    #     })
+
+    objs = sorted(
+        params["bank_activity_leases"],
+        key=lambda x: (
+            -x.lease.overdue_days,
+            -(x.lease.lease_installments.filter(payment_date__gte=timezone.now().date()).order_by('payment_date').values_list('amount', flat=True).first() or 0),
+        ),
+    )
+
+    remaining_amount = Decimal(str(params["total_amount"]))
+
+    #overdue_181_gte
+    for obj in objs:
+        if obj.lease.overdue_181_gte > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_181_gte)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #overdue_151_180
+    for obj in objs:
+        if obj.lease.overdue_151_180 > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_151_180)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #overdue_121_150
+    for obj in objs:
+        if obj.lease.overdue_121_150 > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_121_150)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #overdue_91_120
+    for obj in objs:
+        if obj.lease.overdue_91_120 > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_91_120)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #overdue_61_90
+    for obj in objs:
+        if obj.lease.overdue_61_90 > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_61_90)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #overdue_31_60
+    for obj in objs:
+        if obj.lease.overdue_31_60 > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_31_60)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #overdue_0_30
+    for obj in objs:
+        if obj.lease.overdue_0_30 > 0 and remaining_amount > 0:
+            obj.processed_amount += min(remaining_amount, Decimal(str(obj.lease.overdue_0_30)))
+            obj.leaseflex_automation = True
+            obj.save()
+            remaining_amount -= obj.processed_amount
+
+    #next_installment
+    for obj in objs:
+        next_installment = obj.lease.lease_installments.filter(payment_date__gte=timezone.now().date()).order_by('payment_date').first()
+        last_installment = obj.lease.lease_installments.filter(type = '5').first()
+        if next_installment:
+            if next_installment.amount > 0 and remaining_amount > 0 and next_installment != last_installment:
+                obj.processed_amount += min(remaining_amount, Decimal(str(next_installment.amount)))
+                obj.leaseflex_automation = True
+                obj.save()
+            remaining_amount -= obj.processed_amount
+        elif last_installment:
+            if last_installment.amount > 0 and remaining_amount > 0 and next_installment == last_installment:
+                obj.processed_amount += min(remaining_amount, Decimal(str(last_installment.amount)))
+                obj.leaseflex_automation = True
+                obj.save()
+                remaining_amount -= obj.processed_amount
+
+
+            

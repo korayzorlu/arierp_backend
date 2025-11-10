@@ -41,7 +41,7 @@ class ThirdPersonListSerializer(serializers.Serializer):
     companyId = serializers.SerializerMethodField()
     name = serializers.CharField()
     tc_vkn_no = serializers.CharField()
-    is_reliable_person = serializers.BooleanField()
+    status = serializers.CharField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

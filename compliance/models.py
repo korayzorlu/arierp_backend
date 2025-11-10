@@ -35,7 +35,15 @@ class ThirdPerson(models.Model):
 
     name = models.CharField(_("Name"), max_length=250, null=True, blank=True)
     tc_vkn_no = models.CharField(_("TC/VKN No"), max_length=500, null=True, blank=True)
-    is_reliable_person = models.BooleanField(default=False)
+
+    STATUS_CHOICES = (
+        ('pending', ('Pending')),
+        ('cleared', ('Cleared')),
+        ('flagged', ('Flagged')),
+    )
+    status = models.CharField(_("Status"), max_length=25, default='pending', choices=STATUS_CHOICES, blank=True, null=True)
+
+    bank_activities = models.ManyToManyField('leasing.BankActivity',related_name='bank_activities_third_persons', blank = True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

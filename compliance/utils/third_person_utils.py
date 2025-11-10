@@ -1,9 +1,65 @@
 from compliance.models import ThirdPerson
+from django.core.mail import EmailMessage, send_mail
+from django.conf import settings
 
-def create_third_person(self):
-    if self.finmaks_transaction.sender_account_name or self.finmaks_transaction.sender_account_name != "":
-        ThirdPerson.objects.create(
-            company=self.company,
-            name=self.finmaks_transaction.sender_account_name,
-            tc_vkn_no=self.tc_vkn_no
+import re
+
+def create_third_person(self,scan_result):
+        if self.name is not None and self.name != "" and self.name != "None":
+            name = self.name
+        else:
+            catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
+            if catched_name:
+                name = catched_name.group(1)
+            else:
+                name = ""
+
+        if scan_result == 'cleared':
+            status = 'cleared'
+        else:
+            status = 'pending'
+            send_email_for_third_person(name)
+
+        old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
+        if not old_obj:
+            new_obj = ThirdPerson.objects.create(
+                company=self.company,
+                name=name,
+                tc_vkn_no=self.tc_vkn_no,
+                status=status
+            )
+
+            new_obj.bank_activities.add(self)
+            new_obj.save()
+        else:
+            old_obj.bank_activities.add(self)
+            old_obj.save()
+
+def send_email_for_third_person(name):       
+    def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+        email = EmailMessage(
+            subject,
+            message,
+            from_email,
+            recipient_list,
         )
+        if attachments:
+            for attachment in attachments:
+                email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+        email.send(fail_silently=False)
+        #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            
+    subject = '3. ŞAHIS ÖDEMESİ - KONTROL GEREKİYOR'
+    message = f'''
+        Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerekmektedir. Lütfen kontrol ediniz.
+
+        İsim: {name}
+
+        Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/compliance/third-persons
+
+        Bu e-posta test amaçlıdır, lütfen cevap vermeyiniz.
+    '''
+    from_email = 'Arınet <noreply@arileasing.com.tr>'
+    recipient_list = settings.THIRD_PERSON_EMAIL_LIST
+
+    send_outlook_email(subject, message, from_email, recipient_list)

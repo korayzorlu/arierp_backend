@@ -1,16 +1,23 @@
+from django.conf import settings
+
 import requests
 from requests.auth import HTTPBasicAuth
+import re
 
 def check_third_person_status(self):
-    USERNAME = "960ed49f-7588-467e-9c3c-58a4f32acc2b"
-    PASSWORD = "hZu8zUJfwF"
+    if self.name is not None and self.name != "" and self.name != "None":
+            name = self.name
+    else:
+        catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
+        if catched_name:
+            name = catched_name.group(1)
+        else:
+            name = ""
 
-    self.is_third_person = True
-
-    if self.name:
+    if name and name != "":
         # Aranacak isim ve isteğe bağlı parametreler
         params = {
-            "name": str(self.name),     # en az 3 karakter
+            "name": str(name),     # en az 3 karakter
             "searchType": 1,            # 0: Any, 1: Individual (varsayılan)
             "start": 0,                 # sayfalama başlangıcı
             "limit": 20,                # maksimum 50
@@ -20,16 +27,16 @@ def check_third_person_status(self):
         }
 
         response = requests.get(
-            "https://sandbox-api.sanctionscanner.com/api/Search/SearchByName",
+            "https://api.sanctionscanner.com/api/Search/SearchByName",
             params=params,
-            auth=HTTPBasicAuth(USERNAME, PASSWORD)
+            auth=HTTPBasicAuth(settings.SANCTION_SCANNER_USERNAME, settings.SANCTION_SCANNER_PASSWORD)
         ).json()
 
         print(response["Result"])
     
         if len(response["Result"]["Result"]) == 0:
-            self.is_reliable_person = True
+           return 'cleared'
         else:
-            self.is_reliable_person = False
+            return 'matched'
     else:
-        self.is_reliable_person = False
+        return 'matched'

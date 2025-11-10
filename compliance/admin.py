@@ -22,9 +22,9 @@ class BlackListPersonAdmin(admin.ModelAdmin):
 
 @admin.register(ThirdPerson)
 class ThirdPersonAdmin(admin.ModelAdmin):
-    list_display = ["company","name","tc_vkn_no","is_reliable_person"]
+    list_display = ["company","name","tc_vkn_no","status"]
     list_display_links = ["name"]
-    search_fields = ["company__name","name","tc_vkn_no","is_reliable_person"]
+    search_fields = ["company__name","name","tc_vkn_no","status"]
     list_filter = []
     inlines = []
     ordering = ["name"]

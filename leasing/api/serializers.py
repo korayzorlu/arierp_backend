@@ -289,6 +289,7 @@ class BankActivityListSerializer(serializers.Serializer):
     is_processed = serializers.BooleanField()
     is_third_person = serializers.BooleanField()
     is_reliable_person = serializers.BooleanField()
+    third_person_status = serializers.CharField()
     created_date = serializers.SerializerMethodField()
 
     def get_currency(self, obj):

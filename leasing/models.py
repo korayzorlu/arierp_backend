@@ -25,6 +25,7 @@ from finance.models import FinmaksTransaction
 from compliance.utils.third_person_utils import create_third_person
 from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
 from .utils.bank_activity_utils import (
+    distribude_amount_with_leases,
     match_bank_activity_from_iban,
     matched_leases_with_contract_numbers,
     matched_partner_with_tc_vkn_no,
@@ -194,6 +195,12 @@ class BankActivity(models.Model):
     is_processed = models.BooleanField(default=False)
     is_third_person = models.BooleanField(default=False)
     is_reliable_person = models.BooleanField(default=False)
+    THIRD_PERSON_STATUS_CHOICES = (
+        ('pending', ('Pending')),
+        ('cleared', ('Cleared')),
+        ('flagged', ('Flagged')),
+    )
+    third_person_status = models.CharField(_("Third Person Status"), max_length=25, default='pending', choices=THIRD_PERSON_STATUS_CHOICES, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -269,17 +276,30 @@ class BankActivity(models.Model):
                         "leases": matched_leases
                     })
                     #print(f"matched_bank_activity_leases: {matched_bank_activity_leases}")
-                    remaining_amount = distribute_amount({
-                        "is_certain": self.is_certain,
-                        "bank_activity_leases": matched_bank_activity_leases,
-                        "total_amount": self.amount
-                    })
+                    if matched_contract_numbers:
+                        remaining_amount = distribute_amount({
+                            "is_certain": self.is_certain,
+                            "bank_activity_leases": matched_bank_activity_leases,
+                            "total_amount": self.amount
+                        })
+                    else:
+                        remaining_amount = distribude_amount_with_leases({
+                            "is_certain": self.is_certain,
+                            "bank_activity_leases": matched_bank_activity_leases,
+                            "total_amount": self.amount
+                        })
+                        
                     #print(f"remaining_amount: {remaining_amount}")
+
                 else:
-                    #check_third_person_status(self)
-                    create_third_person(self)
+                    scan_result = check_third_person_status(self)
+                    create_third_person(self,scan_result)
+                    if scan_result == 'cleared':
+                        self.third_person_status = scan_result
+                    else:
+                        self.third_person_status = 'pending'
                     self.is_third_person = True
-                    super().save(update_fields=['is_third_person'])
+                    super().save(update_fields=['is_third_person', 'third_person_status'])
                 ####NEW MATCHING SYSTEM END####
 
                 # current_sender_bank_activites = match_bank_activity_from_iban({

@@ -41,17 +41,13 @@ class ThirdPersonFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     name = CharFilter(field_name='name', lookup_expr='icontains')
     tc_vkn_no = CharFilter(field_name='tc_vkn_no', lookup_expr='icontains')
-    is_reliable_person = CharFilter(method='filter_is_reliable_person')
+    status = CharFilter(method='filter_status')
 
     class Meta:
         model = ThirdPerson
         fields = ['uuid']
 
-    def filter_is_reliable_person(self, queryset, is_reliable_person, value):
-        if value == "true":
-            value = True
-        elif value == "false":
-            value = False
-        elif value == "all":
+    def filter_status(self, queryset, status, value):
+        if value == "all":
             return queryset
-        return queryset.filter(is_reliable_person = value)
+        return queryset.filter(status = value)

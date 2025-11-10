@@ -592,5 +592,15 @@ FINMAKS_PASSWORD = os.getenv('FINMAKS_PASSWORD','')
 FINMAKS_INSTITUTION_CODE = os.getenv('FINMAKS_INSTITUTION_CODE','')
 FINMAKS_INSTITUTION_ID = os.getenv('FINMAKS_INSTITUTION_ID',0)
 
+# Sanction Scanner
+if not DEBUG:
+    SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_USERNAME','')
+    SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_PASSWORD','')
+    THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
+else:
+    SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_TEST_USERNAME','')
+    SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_TEST_PASSWORD','')
+    THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
+
 # AI
 AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")

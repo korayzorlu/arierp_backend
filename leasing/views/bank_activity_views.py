@@ -216,3 +216,4 @@ class UpdateBankActivityLeasesView(LoginRequiredMixin,View):
                 lease.save()
 
         return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)
+    
