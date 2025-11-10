@@ -53,7 +53,7 @@ def send_email_for_third_person(name):
     message = f'''
         Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerekmektedir. Lütfen kontrol ediniz.
 
-        İsim: {name}
+        {name}
 
         Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/compliance/third-persons
 
