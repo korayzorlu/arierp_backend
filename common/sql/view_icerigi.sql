@@ -1,3 +1,3 @@
-SELECT definition AS QuotationPaymentTypeDefinition
+SELECT definition AS LeasingOperationProjectList
 FROM sys.sql_modules
-WHERE object_id = OBJECT_ID('QuotationPaymentTypeDefinition');
+WHERE object_id = OBJECT_ID('LeasingOperationProjectList');

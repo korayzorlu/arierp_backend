@@ -50,6 +50,7 @@ class LeaseListSerializer(serializers.Serializer):
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    lease_status_update_date = serializers.DateTimeField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -144,6 +145,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    lease_status_update_date = serializers.DateTimeField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

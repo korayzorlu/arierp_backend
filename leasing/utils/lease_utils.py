@@ -13,9 +13,11 @@ from collections import defaultdict
 import os
 import traceback
 import gc
+import string
+import random
 
 from leasing.models import *
-from leasing.utils.common_utils import get_lease_status_value
+from leasing.utils.common_utils import get_lease_status_value,status_filter_for_leases
 from users.models import User
 from leasing.models import *
 from leasing.sqls import OVERDUE_INSTALLMENTS
@@ -141,3 +143,4 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
 
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass
+

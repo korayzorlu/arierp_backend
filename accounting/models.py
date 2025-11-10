@@ -9,6 +9,7 @@ from .utils.common_utils import get_or_create_account,create_transaction
 from partners.models import Partner
 from common.models import Currency
 from companies.models import Company
+from contracts.models import Contract
 
 # Create your models here.
 
@@ -360,6 +361,8 @@ class TrialBalance(models.Model):
     balance_credit_alternate = models.DecimalField(_("Balance Credit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
     total_debit_alternate = models.DecimalField(_("Total Debit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
     total_credit_alternate = models.DecimalField(_("Total Credit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_trial_balances", null=True, blank=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

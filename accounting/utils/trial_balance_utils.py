@@ -32,11 +32,13 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
 
         trial_balances = TrialBalance.objects.select_related("company","currency","partner").filter(company__id=int(company))
         partners = Partner.objects.select_related().filter(company__id=int(company))
+        contracts = Contract.objects.select_related().filter(company__id=int(company))
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         trial_balance_by_code = {t.account_id: t for t in trial_balances if t.account_id}
         partners_dict = {p.crm_code: p for p in partners}
+        contracts_dict = {c.contract_id: c for c in contracts}
         currencies_dict = {c.code: c for c in currencies}
 
         update_progress = 0
@@ -70,6 +72,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.balance_credit_alternate = safe_decimal(data.BalanceCreditAlternate)
                     obj.total_debit_alternate = safe_decimal(data.TotalDebitAlternate)
                     obj.total_credit_alternate = safe_decimal(data.TotalCreditAlternate)
+                    obj.contract = contracts_dict.get(str(data.ContractId))
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -90,7 +93,8 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
                         balance_debit_alternate = safe_decimal(data.BalanceDebitAlternate),
                         balance_credit_alternate = safe_decimal(data.BalanceCreditAlternate),
                         total_debit_alternate = safe_decimal(data.TotalDebitAlternate),
-                        total_credit_alternate = safe_decimal(data.TotalCreditAlternate)
+                        total_credit_alternate = safe_decimal(data.TotalCreditAlternate),
+                        contract = contracts_dict.get(str(data.ContractId))
                     ))
                     create_progress += 1
             if update_objs:
@@ -98,7 +102,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
                     "account_id","main_account_code","account_code","account_code_trim","account_name","partner",
                     "balance_account_type","currency","balance_debit","balance_credit",
                     "total_debit","total_credit","balance_debit_alternate","balance_credit_alternate",
-                    "total_debit_alternate","total_credit_alternate"
+                    "total_debit_alternate","total_credit_alternate","contract"
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 TrialBalance.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)

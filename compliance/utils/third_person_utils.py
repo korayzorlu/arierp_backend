@@ -18,7 +18,7 @@ def create_third_person(self,scan_result):
             status = 'cleared'
         else:
             status = 'pending'
-            send_email_for_third_person(name)
+            send_email_for_third_person(name,self.tc_vkn_no)
 
         old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
         if not old_obj:
@@ -35,7 +35,7 @@ def create_third_person(self,scan_result):
             old_obj.bank_activities.add(self)
             old_obj.save()
 
-def send_email_for_third_person(name):       
+def send_email_for_third_person(name,tc_vkn_no):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
         email = EmailMessage(
             subject,
@@ -53,9 +53,9 @@ def send_email_for_third_person(name):
     message = f'''
         Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerekmektedir. Lütfen kontrol ediniz.
 
-        {name}
+        {name} - {tc_vkn_no}
 
-        Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/compliance/third-persons
+        Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/third-persons
 
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'

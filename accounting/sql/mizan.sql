@@ -1,8 +1,10 @@
 SELECT TOP 99999999
+--SELECT TOP 100
     AccountId,
     LedgerAccount.AccountCode AS AccountCode,
     LedgerAccount.AccountCode AS AccountCodeTrim,
     LedgerAccount.AccountName AS AccountName,
+    LedgerAccount.Dimension8 AS ContractId,
     AccountType AS BalanceAccountType,
     LedgerAccount.AccountCurrencyCode AS CurrencyCode,
     CRMCode AS CRMCode,
@@ -70,7 +72,8 @@ GROUP BY
     LedgerAccount.AccountName,
     AccountType,
     LedgerAccount.AccountCurrencyCode,
-    CRMCode
+    CRMCode,
+    LedgerAccount.Dimension8
 HAVING
     SUM(AmountLocal) <> 0
 ORDER BY

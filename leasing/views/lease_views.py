@@ -224,6 +224,39 @@ class LeaseInformationView(LoginRequiredMixin,View):
 
         return JsonResponse({'leases':lease_data}, status=200)
     
+class ExportActiveLeasesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="ActiveLease",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-kira-planlari.xlsx",
+            export_url="/leasing/active_leases_excel",
+            params={"status":data.get('status')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class ActiveLeasesExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "active_leases", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-kira-planlari.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+    
 
 
 

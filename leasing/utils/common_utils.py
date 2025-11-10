@@ -183,6 +183,11 @@ def vendor_filter_for_crm(filter_params):
     else:
         return Q(partner_contracts__vendor__crm_code=filter_params.get('supplier'))
 
+def status_filter_for_leases(filter_params):
+    if filter_params.get('status') == "all":
+        return Q()
+    return Q(lease_status=filter_params.get('status'))
+
 def project_filter_for_views(filter_params):
     if filter_params.get('project') == "all":
         return Q()

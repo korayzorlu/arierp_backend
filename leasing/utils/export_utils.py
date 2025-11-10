@@ -888,3 +888,91 @@ def export_delivery_confirms(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+
+def export_active_leases(self):
+    objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
+        status_filter_for_leases(self.params) &
+        Q(is_last_project=True)
+    ).order_by("-activation_date")
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Sözleşme": [],
+        "Kira Planı": [],
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Satıcı": [],
+        "Proje": [],
+        "Blok": [],
+        "Bağımsız Bölüm": [],
+        "Alt Statü": [],
+        "Statü": [],
+        "Statü Değişme Tarihi": []
+    }
+
+    previous_progress = 0
+    metin = ""
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+
+
+        data["Sözleşme"].append(obj.contract.code)
+        data["Kira Planı"].append(obj.code)
+        data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
+        data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
+        data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
+        data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
+        data["Proje"].append(obj.contract.project if obj.contract else "")
+        data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
+        data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
+        data["Alt Statü"].append(obj.status.name if obj.status else "")
+        data["Statü"].append(obj.lease_status if obj.lease_status else "")
+        data["Statü Değişme Tarihi"].append(obj.lease_status_update_date)
+
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    if "Statü Değişme Tarihi" in df.columns:
+        df["Statü Değişme Tarihi"] = pd.to_datetime(df["Statü Değişme Tarihi"]).dt.tz_localize(None)
+
+    numeric_columns = [
+
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "active_leases", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-kira-planlari.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+            # Workbook'u al
+            workbook = writer.book
+            worksheet = writer.sheets['Sayfa']
+
+            # Kolon isimlerine göre format uygula
+            for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+                if col in numeric_columns:
+                    for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                        for c in cell:
+                            c.number_format = '#,##0.00'   # İstediğin format
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+

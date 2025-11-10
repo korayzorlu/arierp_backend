@@ -163,6 +163,7 @@ class TrialBalanceListSerializer(serializers.Serializer):
     total_debit_alternate = serializers.DecimalField(max_digits=14,decimal_places=2)
     total_credit_alternate = serializers.DecimalField(max_digits=14,decimal_places=2)
     total_currency = serializers.SerializerMethodField()
+    contract = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -183,3 +184,48 @@ class TrialBalanceListSerializer(serializers.Serializer):
         main_account_codes = TrialBalance.objects.values_list('main_account_code', flat=True).distinct()
 
         return main_account_codes
+    
+    def get_contract(self, obj):
+        return obj.contract.code if obj.contract else ''
+    
+class TrialBalanceContractListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    code = serializers.CharField()
+    contract_id = serializers.CharField()
+    partner = serializers.SerializerMethodField()
+    partner_tc = serializers.SerializerMethodField()
+    kof = serializers.CharField()
+    quotation = serializers.SerializerMethodField()
+    committe = serializers.CharField()
+    credit_type = serializers.CharField()
+    customer_representative = serializers.CharField()
+    supplier = serializers.CharField()
+    vendor = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    mkk_tesciline_gonderilecek_mi = serializers.BooleanField()
+    kof_tan_sozlesmeye_aktarim_tarihi = serializers.DateTimeField()
+    lop_open_date = serializers.DateTimeField()
+    created_date_leaseflex = serializers.DateTimeField()
+    is_commercial = serializers.SerializerMethodField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_quotation(self, obj):
+        return obj.quotation_obj.code if obj.quotation_obj else ""
+        
+    def get_partner(self, obj):
+        return obj.partner.name if obj.partner else ""
+    
+    def get_is_commercial(self, obj):
+        return obj.partner.is_commercial if obj.partner else False
+    
+    def get_partner_tc(self, obj):
+        return obj.partner.tc_vkn_no if obj.partner else ""
+    
+    def get_vendor(self, obj):
+        return obj.vendor.name if obj.vendor else ""
+    
+    def get_status(self, obj):
+        return obj.status.name if obj.status else ""
