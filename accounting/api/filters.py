@@ -27,6 +27,7 @@ class TrialBalanceFilter(FilterSet):
     currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
     account_code = CharFilter(field_name='account_code', lookup_expr='icontains')
     main_account_code = CharFilter(method = 'filter_main_account_code')
+    account_name = CharFilter(field_name='account_name', lookup_expr='icontains')
 
     class Meta:
         model = TrialBalance
