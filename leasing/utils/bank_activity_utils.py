@@ -199,11 +199,11 @@ def distribude_amount_with_leases(params):
         ),
     )
 
-    remaining_amount = Decimal(str(params["total_amount"]))
+    remaining_amount = Decimal(str(params["total_amount"])) or Decimal("0")
 
     #overdue_181_gte
     for obj in objs:
-        if obj.lease.overdue_181_gte > 0 and remaining_amount > 0:
+        if obj.lease.overdue_181_gte > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_181_gte)
             obj.leaseflex_automation = True
             obj.save()
@@ -211,7 +211,7 @@ def distribude_amount_with_leases(params):
 
     #overdue_151_180
     for obj in objs:
-        if obj.lease.overdue_151_180 > 0 and remaining_amount > 0:
+        if obj.lease.overdue_151_180 > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_151_180)
             obj.leaseflex_automation = True
             obj.save()
@@ -219,7 +219,7 @@ def distribude_amount_with_leases(params):
 
     #overdue_121_150
     for obj in objs:
-        if obj.lease.overdue_121_150 > 0 and remaining_amount > 0:
+        if obj.lease.overdue_121_150 > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_121_150)
             obj.leaseflex_automation = True
             obj.save()
@@ -227,7 +227,7 @@ def distribude_amount_with_leases(params):
 
     #overdue_91_120
     for obj in objs:
-        if obj.lease.overdue_91_120 > 0 and remaining_amount > 0:
+        if obj.lease.overdue_91_120 > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_91_120)
             obj.leaseflex_automation = True
             obj.save()
@@ -235,7 +235,7 @@ def distribude_amount_with_leases(params):
 
     #overdue_61_90
     for obj in objs:
-        if obj.lease.overdue_61_90 > 0 and remaining_amount > 0:
+        if obj.lease.overdue_61_90 > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_61_90)
             obj.leaseflex_automation = True
             obj.save()
@@ -243,7 +243,7 @@ def distribude_amount_with_leases(params):
 
     #overdue_31_60
     for obj in objs:
-        if obj.lease.overdue_31_60 > 0 and remaining_amount > 0:
+        if obj.lease.overdue_31_60 > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_31_60)
             obj.leaseflex_automation = True
             obj.save()
@@ -251,7 +251,7 @@ def distribude_amount_with_leases(params):
 
     #overdue_0_30
     for obj in objs:
-        if obj.lease.overdue_0_30 > 0 and remaining_amount > 0:
+        if obj.lease.overdue_0_30 > 0.4 and remaining_amount > 0:
             obj.processed_amount += min(remaining_amount, obj.lease.overdue_0_30)
             obj.leaseflex_automation = True
             obj.save()

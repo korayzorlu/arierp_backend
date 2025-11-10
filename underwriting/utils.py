@@ -5,6 +5,7 @@ from requests.auth import HTTPBasicAuth
 import re
 
 def check_third_person_status(self):
+    print(settings.SANCTION_SCANNER_PASSWORD)
     if self.name is not None and self.name != "" and self.name != "None":
             name = self.name
     else:
@@ -27,7 +28,7 @@ def check_third_person_status(self):
         }
 
         response = requests.get(
-            "https://api.sanctionscanner.com/api/Search/SearchByName",
+            f"{settings.SANCTION_SCANNER_URL}/api/Search/SearchByName",
             params=params,
             auth=HTTPBasicAuth(settings.SANCTION_SCANNER_USERNAME, settings.SANCTION_SCANNER_PASSWORD)
         ).json()

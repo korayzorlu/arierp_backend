@@ -18,7 +18,7 @@ def create_third_person(self,scan_result):
             status = 'cleared'
         else:
             status = 'pending'
-            # send_email_for_third_person(name)
+            send_email_for_third_person(name)
 
         old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
         if not old_obj:
@@ -57,7 +57,6 @@ def send_email_for_third_person(name):
 
         Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/compliance/third-persons
 
-        Bu e-posta test amaçlıdır, lütfen cevap vermeyiniz.
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
     recipient_list = settings.THIRD_PERSON_EMAIL_LIST
