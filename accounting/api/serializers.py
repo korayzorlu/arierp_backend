@@ -197,50 +197,31 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
     kof = serializers.CharField()
-    quotation = serializers.SerializerMethodField()
     committe = serializers.CharField()
     credit_type = serializers.CharField()
     customer_representative = serializers.CharField()
     supplier = serializers.CharField()
-    vendor = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     mkk_tesciline_gonderilecek_mi = serializers.BooleanField()
     kof_tan_sozlesmeye_aktarim_tarihi = serializers.DateTimeField()
     lop_open_date = serializers.DateTimeField()
     created_date_leaseflex = serializers.DateTimeField()
-    is_commercial = serializers.SerializerMethodField()
     trial_balances = serializers.SerializerMethodField()
     lease_status = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
-    
-    def get_quotation(self, obj):
-        return obj.quotation_obj.code if obj.quotation_obj else ""
         
     def get_partner(self, obj):
         return obj.partner.name if obj.partner else ""
     
-    def get_is_commercial(self, obj):
-        return obj.partner.is_commercial if obj.partner else False
-    
     def get_partner_tc(self, obj):
         return obj.partner.tc_vkn_no if obj.partner else ""
-    
-    def get_vendor(self, obj):
-        return obj.vendor.name if obj.vendor else ""
-    
-    def get_status(self, obj):
-        return obj.status.name if obj.status else ""
     
     def get_lease_status(self, obj):
         lease = obj.contract_leases.filter(is_last_project = True).first()
         return lease.get_lease_status_display() if lease else ""
     
     def get_trial_balances(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-        
         trial_balances = obj.contract_trial_balances.select_related("currency").all()
 
         trial_balance_dict = {"trial_balances": [],"total_overdue_amount": "", "max_overdue_days": "" }
