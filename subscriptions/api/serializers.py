@@ -104,6 +104,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 # {"type" : "item", "class" : ["default"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
                 {"type" : "item", "class" : ["default"], "label" : "Genel Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
                 {"type" : "item", "class" : ["default"], "label" : "Genel Mizan Sözleşmeler", "icon" : "checkbook", "route" : "/trial-balance-contracts"},
+                {"type" : "item", "class" : ["default"], "label" : "Genel Mizan İncelenecekler", "icon" : "checkbook", "route" : "/accounting-under-reviews"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},

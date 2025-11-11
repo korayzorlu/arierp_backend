@@ -377,3 +377,41 @@ class TrialBalanceContractList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class UnderReviewList(ModelViewSet, QueryListAPIView):
+    serializer_class = UnderReviewListSerializer
+    filterset_class = UnderReviewFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in TrialBalance._meta.get_fields() if hasattr(f, 'name')]
+    ordering = ['-lop_open_date']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","status"]
+        
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(contract_trial_balances__isnull=False)
+        ).annotate(
+            trial_balance_count=models.Count('contract_trial_balances')
+        ).filter(
+            trial_balance_count__gt=4
+        ).distinct()
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["code","partner__name","kof","quotation","committe","credit_type","customer_representative","supplier","project","status__name","mkk_tesciline_gonderilecek_mi","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
