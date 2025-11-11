@@ -199,8 +199,8 @@ class ThirdPersonList(ModelViewSet, QueryListAPIView):
     serializer_class = ThirdPersonListSerializer
     filterset_class = ThirdPersonFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['name','tc_vkn_no']
-    ordering = ['name']
+    ordering_fields = ['created_date','name','tc_vkn_no']
+    ordering = ['-created_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')

@@ -45,6 +45,7 @@ class TrialBalanceContractFilter(FilterSet):
     vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
     is_commercial = CharFilter(method='filter_is_commercial')
     quotation = CharFilter(method='quotation_obj__code', lookup_expr='exact')
+    lease_status = CharFilter(method='filter_lease_status')
 
     class Meta:
         model = Contract
@@ -58,6 +59,65 @@ class TrialBalanceContractFilter(FilterSet):
         elif value == "all":
             return queryset
         return queryset.filter(partner__is_commercial = value)
+    
+    def filter_lease_status(self, queryset, lease_status, value):
+        is_correct = self.data.get('is_correct')
+        if value == "all" and is_correct == "true":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"],
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979"]
+            )
+        elif value == "all" and is_correct == "false":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
+            ).exclude(
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979"]
+            )
+        elif value == "planlandi" and is_correct == "true":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "planlandi",
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279"]
+            )
+        elif value == "planlandi" and is_correct == "false":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "planlandi"
+            ).exclude(
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279"]
+            )
+        elif value == "aktiflestirildi" and is_correct == "true":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "aktiflestirildi",
+                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979"]
+            )
+        elif value == "aktiflestirildi" and is_correct == "false":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "aktiflestirildi"
+            ).exclude(
+                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979"]
+            )
+        elif value == "durduruldu" and is_correct == "true":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "durduruldu"
+            )
+        elif value == "durduruldu" and is_correct == "false":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "durduruldu"
+            )
+        elif value == "inactive":
+            return queryset.filter(
+                contract_leases__is_last_project = True
+            ).exclude(
+                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
+            )
+        return queryset
     
 class UnderReviewFilter(FilterSet):
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')

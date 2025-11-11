@@ -42,6 +42,7 @@ class ThirdPersonListSerializer(serializers.Serializer):
     name = serializers.CharField()
     tc_vkn_no = serializers.CharField()
     status = serializers.CharField()
+    created_date = serializers.DateTimeField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

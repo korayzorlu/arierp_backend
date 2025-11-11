@@ -103,8 +103,15 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : ["default"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 # {"type" : "item", "class" : ["default"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
                 {"type" : "item", "class" : ["default"], "label" : "Genel Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
-                {"type" : "item", "class" : ["default"], "label" : "Genel Mizan Sözleşmeler", "icon" : "checkbook", "route" : "/trial-balance-contracts"},
-                {"type" : "item", "class" : ["default"], "label" : "Genel Mizan İncelenecekler", "icon" : "checkbook", "route" : "/accounting-under-reviews"},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Yürürlükteki Sözleşmeler", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Sözleşme Mizanları", "icon" : "checkbook", "route" : "/trial-balance-contracts"},
+                    {"type" : "item", "class" : ["default"], "label" : "Hatalı Mizanlar", "icon" : "checkbook", "route" : "/trial-balance-contract-under-reviews"},
+                    #{"type" : "item", "class" : ["default"], "label" : "Eski Versiyonlar", "icon" : "checkbook", "route" : "/dhgffedftrial-balance-contracts"},
+                ]},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Yürürlükte Olmayan Söz.", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Sözleşme Mizanları", "icon" : "checkbook", "route" : "/trial-balance-contract-inactives"},
+                ]},
+                # {"type" : "item", "class" : ["default"], "label" : "Genel Mizan İncelenecekler", "icon" : "checkbook", "route" : "/accounting-under-reviews"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},

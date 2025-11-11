@@ -210,6 +210,7 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
     created_date_leaseflex = serializers.DateTimeField()
     is_commercial = serializers.SerializerMethodField()
     trial_balances = serializers.SerializerMethodField()
+    lease_status = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -231,6 +232,10 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
     
     def get_status(self, obj):
         return obj.status.name if obj.status else ""
+    
+    def get_lease_status(self, obj):
+        lease = obj.contract_leases.filter(is_last_project = True).first()
+        return lease.get_lease_status_display() if lease else ""
     
     def get_trial_balances(self, obj):
         request = self.context.get('request')
@@ -265,7 +270,11 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
                 })
         #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
         return trial_balance_dict
-    
+
+
+
+
+
 class UnderReviewListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
