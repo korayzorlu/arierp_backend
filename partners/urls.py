@@ -23,6 +23,7 @@ urlpatterns = [
     path('partners_template/', PartnersTemplateView.as_view(), name="partners_template"),
     path('import_partners/', ImportPartnersView.as_view(), name="import_partners"),
     path('partner_information/', PartnerInformationView.as_view(), name="partner_information"),
+    path('ignore_partner/', IgnoePartnerView.as_view(), name="ignore_partner"),
 
     path('test/', ExampleView.as_view(), name="test"),
     

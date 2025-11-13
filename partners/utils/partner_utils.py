@@ -443,8 +443,6 @@ def send_warning_email_for_ignored_partners(params):
             İsim: {params.get('request_user_full_name','')}
             Email: {params.get('request_user_email','')}
 
-        Bu e-posta test amaçlıdır, lütfen cevap vermeyiniz.
-
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
     recipient_list = settings.IGNORED_PARTNER_EMAIL_LIST

@@ -165,7 +165,18 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+
+class IgnoePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Partner
     
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = Partner.objects.filter(uuid = data.get('uuid')).first()
+        obj.is_reliable_person = False
+        obj.save()
+
+        return JsonResponse({'message': 'İlgili kişi/kurum yasaklı listesine eklenmiştir ve Leaseflex tarafında güncellenmiştir!','status':'success'}, status=200)
 class DeletePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Partner
 
