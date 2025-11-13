@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
+from django.core.mail import EmailMessage, send_mail
 
 import pyodbc
 import os
 import traceback
 import logging
+from datetime import datetime
 
 from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
@@ -411,3 +413,40 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
     except Exception as e:
         traceback.print_exc()
 
+def send_warning_email_for_ignored_partners(params):
+    today = datetime.today().date().strftime("%d.%m.%Y")
+
+    def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+        email = EmailMessage(
+            subject,
+            message,
+            from_email,
+            recipient_list,
+        )
+        if attachments:
+            for attachment in attachments:
+                email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+        email.send(fail_silently=False)
+        #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            
+    subject = 'YASAKLI MÜŞTERİ İÇİN İŞLEM BİLDİRİMİ'
+    message = f'''
+        Aşağıdaki kişi/kurum için sistem üzerinde işlem yapılmak istendi ancak bu kişi/kurum yasaklı listesinde bulunduğu için işlemleri kısıtlanmıştır.
+
+        Kişi/Kurum Bilgileri:
+            Tarih: {today}
+            İsim: {params.get('name','')}
+            TC/VKN No: {params.get('tc_vkn_no','')}
+            CRM Kodu: {params.get('crm_code','')}
+
+        İşlemi yapan kullanıcı:
+            İsim: {params.get('request_user_full_name','')}
+            Email: {params.get('request_user_email','')}
+
+        Bu e-posta test amaçlıdır, lütfen cevap vermeyiniz.
+
+    '''
+    from_email = 'Arınet <noreply@arileasing.com.tr>'
+    recipient_list = settings.IGNORED_PARTNER_EMAIL_LIST
+
+    send_outlook_email(subject, message, from_email, recipient_list)

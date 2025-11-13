@@ -20,6 +20,7 @@ from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from common.utils.common_utils import parse_amount
 from partners.models import Partner
+from partners.utils.partner_utils import send_warning_email_for_ignored_partners
 from contracts.models import Contract
 from companies.models import UserCompany
 from common.models import ExportProcess
@@ -97,6 +98,18 @@ class UpdateLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         status = Status.objects.filter(uuid = data.get('status')).first()
 
         obj = Lease.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj.contract.partner.is_reliable_person:
+            send_warning_email_for_ignored_partners({
+                'name': obj.contract.partner.name,
+                'tc_vkn_no': obj.contract.partner.tc_vkn_no,
+                'crm_code': obj.contract.partner.crm_code,
+                'request_user_full_name': request.user.get_full_name(),
+                'request_user_email': request.user.email
+            })
+            return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
+        
+
         obj.code = data.get('code'),
         obj.contract = contract,
         obj.type = data.get('kof'),

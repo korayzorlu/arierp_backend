@@ -15,6 +15,7 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 from partners.models import *
 from partners.tasks import importPartners
 from partners.utils.common_utils import is_valid_partner_data, get_partner_types
+from partners.utils.partner_utils import *
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
@@ -96,6 +97,13 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         obj = Partner.objects.filter(uuid = data.get('uuid')).first()
 
         if not obj.is_reliable_person:
+            send_warning_email_for_ignored_partners({
+                'name': obj.name,
+                'tc_vkn_no': obj.tc_vkn_no,
+                'crm_code': obj.crm_code,
+                'request_user_full_name': request.user.get_full_name(),
+                'request_user_email': request.user.email
+            })
             # today = datetime.today().date().strftime("%d.%m.%Y")
                 
             # def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
