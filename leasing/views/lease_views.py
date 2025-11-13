@@ -89,13 +89,13 @@ class UpdateLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        valid, response = is_valid_lease_data(data)
-        if not valid:
-            return response
+        # valid, response = is_valid_lease_data(data)
+        # if not valid:
+        #     return response
 
-        contract = Contract.objects.filter(uuid = data.get('contract')).first()
-        currency = Currency.objects.filter(uuid = data.get('currency')).first()
-        status = Status.objects.filter(uuid = data.get('status')).first()
+        # contract = Contract.objects.filter(uuid = data.get('contract')).first()
+        # currency = Currency.objects.filter(uuid = data.get('currency')).first()
+        # status = Status.objects.filter(uuid = data.get('status')).first()
 
         obj = Lease.objects.filter(uuid = data.get('uuid')).first()
 
@@ -111,26 +111,26 @@ class UpdateLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         
 
         obj.code = data.get('code'),
-        obj.contract = contract,
-        obj.type = data.get('kof'),
-        obj.vat = Decimal(str(data.get('quotation'))),
-        obj.activation_date = data.get('activation_date'),
-        obj.lease_status = data.get('lease_status'),
-        obj.currency = currency,
-        obj.musteri_baz_maliyet = Decimal(str(data.get('musteri_baz_maliyet'))),    
-        obj.vade =int( data.get('vade')),
-        obj.leasing_rate = Decimal(str(data.get('leasing_rate'))),
-        obj.irr = Decimal(str(data.get('irr'))),
-        obj.project_no = data.get('project_no'),
-        obj.status = status,
-        obj.leasing_type = data.get('leasing_type'),
-        obj.application_no = data.get('application_no'),
-        obj.is_last_project = data.get('is_last_project'),
-        obj.current_request = data.get('current_request'),
-        obj.finansman_kurum = data.get('finansman_kurum'),
-        obj.is_tufe = data.get('is_tufe'),
-        obj.is_musterek = data.get('is_musterek'),
-        obj.bbsn = data.get('bbsn'),
+        # obj.contract = contract,
+        # obj.type = data.get('kof'),
+        # obj.vat = Decimal(str(data.get('quotation'))),
+        # obj.activation_date = data.get('activation_date'),
+        # obj.lease_status = data.get('lease_status'),
+        # obj.currency = currency,
+        # obj.musteri_baz_maliyet = Decimal(str(data.get('musteri_baz_maliyet'))),    
+        # obj.vade =int( data.get('vade')),
+        # obj.leasing_rate = Decimal(str(data.get('leasing_rate'))),
+        # obj.irr = Decimal(str(data.get('irr'))),
+        # obj.project_no = data.get('project_no'),
+        # obj.status = status,
+        # obj.leasing_type = data.get('leasing_type'),
+        # obj.application_no = data.get('application_no'),
+        # obj.is_last_project = data.get('is_last_project'),
+        # obj.current_request = data.get('current_request'),
+        # obj.finansman_kurum = data.get('finansman_kurum'),
+        # obj.is_tufe = data.get('is_tufe'),
+        # obj.is_musterek = data.get('is_musterek'),
+        # obj.bbsn = data.get('bbsn'),
         obj.save()
 
         return JsonResponse({'message': 'Saved successfully!','status':'success'}, status=200)
