@@ -62,7 +62,7 @@ FROM
     ) lt ON AccountCodeTransaction = LedgerAccount.AccountCode
 WHERE
     ISNULL(MZ110UFAccountCode, '') = ''
-    -- AND CRMCode = '23919'
+    -- AND CRMCode = '6638'
     -- AND LedgerAccount.AccountCode >= '392'
     -- AND LedgerAccount.AccountCode <= '393999'
     -- AND (LedgerAccount.AccountCode LIKE '392.99.2.00%' OR LedgerAccount.AccountCode LIKE '393.99.2.01%')

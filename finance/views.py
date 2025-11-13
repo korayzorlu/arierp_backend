@@ -14,7 +14,7 @@ from django.utils.timezone import make_aware
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from .models import *
-from .utils import vendor_filter_for_serializers
+from .utils import vendor_filter_for_serializers, is_valid_finmaks_transaction_data
 from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
@@ -56,7 +56,69 @@ class AddBankActivityView(LoginRequiredMixin,View):
         )
 
         return JsonResponse({'message': 'Başarıyla Gönderildi!','status':'success'}, status=200)
-    
+
+class AddFinmaksTransactionView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if not request.user.is_authenticated:
+            return JsonResponse({'message': 'Auth failed!.','status':'error'}, status=401)
+        
+        valid, response = is_valid_finmaks_transaction_data(data)
+        if not valid:
+            return response
+        
+        company = Company.objects.filter(id = data.get('companyId')).first()
+        active_company = request.user.user_companies.filter(is_active = True, company = company).first()
+
+        if not company or not active_company:
+            return JsonResponse({'message': 'Sorry, something went wrong!','status':'error'}, status=400)
+        
+        bank_account = FinmaksBankAccount.objects.filter(uuid = data.get('bank_account')).first()
+
+        obj = FinmaksTransaction.objects.create(
+            company = company,
+            bank_account = bank_account,
+            transaction_id = data.get('transaction_id'),
+            transaction_date = make_aware(data.get('transaction_date')) if data.get('transaction_date') else None,
+            explanation_field = data.get('explanation_field'),
+            description = data.get('description'),
+            amount = Decimal(str(data.get('amount'))),
+            sender_vkn = data.get('sender_vkn'),
+            sender_iban = data.get('sender_iban'),
+            sender_account_name = data.get('sender_account_name'),
+            receiver_vkn = data.get('receiver_vkn'),
+            receiver_iban = data.get('receiver_iban'),
+            receipt_number = data.get('receipt_number'),
+            value_date = make_aware(data.get('value_date')) if data.get('value_date') else None,
+            transaction_type = data.get('transaction_type'),
+            bank_code = data.get('bank_code'),
+            balance = Decimal(str(data.get('balance'))),
+            firm_id = data.get('firm_id'),
+            firm_name = data.get('firm_name'),
+            firm_merchantId = data.get('firm_merchantId'),
+            firm_externalCode = data.get('firm_externalCode'),
+            firm_externalId = data.get('firm_externalId'),
+            transaction_branch_code = data.get('transaction_branch_code'),
+            transaction_branch_name = data.get('transaction_branch_name'),
+            firm_code = data.get('firm_code'),
+            currency_type = data.get('currency_type'),
+            debit = data.get('debit'),
+            branch_code = data.get('branch_code'),
+            transaction_external_id = data.get('transaction_external_id'),
+            external_id_used = data.get('external_id_used'),
+            external_bank_id = data.get('external_bank_id'),
+            reference_no = data.get('reference_no'),
+            finmaks_process_type =data.get('finmaks_process_type'),
+            category_name = data.get('category_name'),
+            integration_field_value = data.get('integration_field_value'),
+            transaction_status = data.get('transaction_status')
+        )
+        obj.save()
+
+        return JsonResponse({'message': 'Created successfully!','status':'success'}, status=200)
+ 
+
 class FinanceSummaryView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)

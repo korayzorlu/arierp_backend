@@ -1,5 +1,6 @@
 from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
 from django.conf import settings
+from django.http import JsonResponse
 
 import requests
 from datetime import datetime,date,timedelta
@@ -13,6 +14,11 @@ import string
 import logging
 
 from .models import *
+
+def is_valid_finmaks_transaction_data(data):
+    if not data.get('code') or not data.get('lease'):
+        return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)
+    return True, None
 
 def vendor_filter_for_serializers(filter_params):
     if filter_params.get('project') == "all":

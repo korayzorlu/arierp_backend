@@ -1,3 +1,4 @@
+import json
 from compliance.models import ThirdPerson
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
@@ -14,21 +15,22 @@ def create_third_person(self,scan_result):
             else:
                 name = ""
 
-        if scan_result == 'cleared':
+        if scan_result["status"] == 'cleared':
             status = 'cleared'
         else:
             status = 'pending'
             
         if name and name != "" and status == 'pending':
             send_email_for_third_person(name,self.tc_vkn_no)
-
+        
         old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
         if not old_obj:
             new_obj = ThirdPerson.objects.create(
                 company=self.company,
                 name=name,
                 tc_vkn_no=self.tc_vkn_no,
-                status=status
+                status=status,
+                results=scan_result["details"] if scan_result["details"] else None
             )
 
             new_obj.bank_activities.add(self)

@@ -44,6 +44,7 @@ class ThirdPerson(models.Model):
     status = models.CharField(_("Status"), max_length=25, default='pending', choices=STATUS_CHOICES, blank=True, null=True)
 
     bank_activities = models.ManyToManyField('leasing.BankActivity',related_name='bank_activities_third_persons', blank = True)
+    results = models.JSONField(_("Results"), null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

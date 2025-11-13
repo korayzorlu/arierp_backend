@@ -1,3 +1,5 @@
+import ast
+import json
 from django.conf import settings
 
 import requests
@@ -23,7 +25,7 @@ def check_third_person_status(self):
             "start": 0,                 # sayfalama başlangıcı
             "limit": 20,                # maksimum 50
             #"birthYear": "1980",
-            "minMatchRate": 95,
+            "minMatchRate": 100,
             "isDeepSearch": True
         }
 
@@ -36,8 +38,8 @@ def check_third_person_status(self):
         print(response["Result"])
     
         if len(response["Result"]["Result"]) == 0:
-           return 'cleared'
+           return {"status": "cleared", "details": None}
         else:
-            return 'matched'
+            return {"status": "matched", "details": ast.literal_eval(str(response["Result"]["Result"]).replace("'", '"'))}
     else:
-        return 'matched'
+        return {"status": "matched", "details": None}

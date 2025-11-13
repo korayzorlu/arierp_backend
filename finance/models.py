@@ -59,7 +59,7 @@ class FinmaksTransaction(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="finmaks_transactions")
 
-    bank_account = models.ForeignKey(FinmaksBankAccount, on_delete=models.CASCADE, related_name="finmaks_bank_account_finmaks_transactions")
+    bank_account = models.ForeignKey(FinmaksBankAccount, on_delete=models.CASCADE, related_name="finmaks_bank_account_finmaks_transactions", null=True, blank=True)
 
     transaction_id = models.CharField(_("Transaction Id"), max_length=25, null=True, blank=True)
     transaction_date = models.DateTimeField(_("Transaction Date"), blank=True, null=True)

@@ -66,40 +66,40 @@ class TrialBalanceContractFilter(FilterSet):
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"],
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979"]
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979","980","981","936","934"]
             )
         elif value == "all" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
             ).exclude(
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979"]
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979","980","981","936","934"]
             )
         elif value == "planlandi" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = "planlandi",
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279"]
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","980","981","936","934"]
             )
         elif value == "planlandi" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = "planlandi"
             ).exclude(
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279"]
+                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","980","981","936","934"]
             )
         elif value == "aktiflestirildi" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = "aktiflestirildi",
-                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979"]
+                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979","980","981","936","934"]
             )
         elif value == "aktiflestirildi" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = "aktiflestirildi"
             ).exclude(
-                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979"]
+                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979","980","981","936","934"]
             )
         elif value == "durduruldu" and is_correct == "true":
             return queryset.filter(
