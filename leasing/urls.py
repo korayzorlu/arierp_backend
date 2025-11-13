@@ -22,6 +22,7 @@ urlpatterns = [
     path('update_lease_processed_amount/', UpdateLeaseProcessedAmountView.as_view(), name="update_lease_processed_amount"),
     path('overdue_information/', OverdueInformationView.as_view(), name="overdue_information"),
     path('lease_information/', LeaseInformationView.as_view(), name="lease_information"),
+    path('change_partner/', ChangePartnerView.as_view(), name="change_partner"),
 
     path('add_installment/', AddInstallmentView.as_view(), name="add_installment"),
     path('update_installment/', UpdateInstallmentView.as_view(), name="update_installment"),

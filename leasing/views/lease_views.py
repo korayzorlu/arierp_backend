@@ -110,7 +110,7 @@ class UpdateLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
             return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
         
 
-        obj.code = data.get('code'),
+        # obj.code = data.get('code'),
         # obj.contract = contract,
         # obj.type = data.get('kof'),
         # obj.vat = Decimal(str(data.get('quotation'))),
@@ -133,8 +133,29 @@ class UpdateLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         # obj.bbsn = data.get('bbsn'),
         obj.save()
 
-        return JsonResponse({'message': 'Saved successfully!','status':'success'}, status=200)
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+
+class ChangePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
     
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = Lease.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj.contract.partner.is_reliable_person:
+            send_warning_email_for_ignored_partners({
+                'name': obj.contract.partner.name,
+                'tc_vkn_no': obj.contract.partner.tc_vkn_no,
+                'crm_code': obj.contract.partner.crm_code,
+                'request_user_full_name': request.user.get_full_name(),
+                'request_user_email': request.user.email
+            })
+            return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
+        
+
+        return JsonResponse({'message': 'Yönetici onayı için Leaseflex tarafına talep gönderildi!','status':'success'}, status=200)
+
 class DeleteLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Lease
 
@@ -142,6 +163,17 @@ class DeleteLeaseView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
         data = json.loads(request.body)
 
         obj = Lease.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj.contract.partner.is_reliable_person:
+            send_warning_email_for_ignored_partners({
+                'name': obj.contract.partner.name,
+                'tc_vkn_no': obj.contract.partner.tc_vkn_no,
+                'crm_code': obj.contract.partner.crm_code,
+                'request_user_full_name': request.user.get_full_name(),
+                'request_user_email': request.user.email
+            })
+            return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
+        
         obj.delete()
 
         return JsonResponse({'message': 'Removed successfully!','status':'success'}, status=200)
@@ -155,6 +187,17 @@ class DeleteLeasesView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
 
         for uuid in uuids:
             obj = Lease.objects.filter(uuid = uuid).first()
+
+            if not obj.contract.partner.is_reliable_person:
+                send_warning_email_for_ignored_partners({
+                    'name': obj.contract.partner.name,
+                    'tc_vkn_no': obj.contract.partner.tc_vkn_no,
+                    'crm_code': obj.contract.partner.crm_code,
+                    'request_user_full_name': request.user.get_full_name(),
+                    'request_user_email': request.user.email
+                })
+                return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
+        
             obj.delete()
 
         return JsonResponse({'message': 'Removed successfully!','status':'success'}, status=200)
