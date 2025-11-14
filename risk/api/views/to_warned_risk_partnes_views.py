@@ -262,13 +262,13 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             ),
-            first_installment_amount=F(
-                'partner_contracts__contract_leases__lease_installments__amount',
+            first_installment_payment=F(
+                'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )
         ).filter(
             first_installment_payment_date=F('expected_payment_date'),
-            first_installment_amount__lte=20000
+            first_installment_payment__lte=20000
         )
 
         query = self.request.query_params.get('search[value]', None)
@@ -357,9 +357,14 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             first_installment_payment_date=Max(
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            first_installment_payment=F(
+                'partner_contracts__contract_leases__lease_installments__payment',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )
         ).exclude(
-            first_installment_payment_date=F('expected_payment_date')
+            first_installment_payment_date=F('expected_payment_date'),
+            first_installment_payment__gt=20000
         )
 
         query = self.request.query_params.get('search[value]', None)
@@ -448,9 +453,14 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             first_installment_payment_date=Max(
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            first_installment_payment=F(
+                'partner_contracts__contract_leases__lease_installments__payment',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )
         ).exclude(
-            first_installment_payment_date=F('expected_payment_date')
+            first_installment_payment_date=F('expected_payment_date'),
+            first_installment_payment__gt=20000
         )
 
         query = self.request.query_params.get('search[value]', None)

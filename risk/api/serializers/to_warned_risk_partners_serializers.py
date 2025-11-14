@@ -220,13 +220,13 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
             ),
-            first_installment_amount=F(
-                'lease_installments__amount',
+            first_installment_payment=F(
+                'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
             )
         ).filter(
             first_installment_payment_date=F('expected_payment_date'),
-            first_installment_amount__lte=20000
+            first_installment_payment__lte=20000
         )
 
         # latest_lease = leases.filter(
@@ -359,9 +359,14 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment_date=Max(
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
+            ),
+            first_installment_payment=F(
+                'lease_installments__payment',
+                filter=Q(lease_installments__sequency=0)
             )
         ).exclude(
-            first_installment_payment_date=F('expected_payment_date')
+            first_installment_payment_date=F('expected_payment_date'),
+            first_installment_payment__lte=20000
         )
 
         # latest_lease = leases.filter(
@@ -494,9 +499,14 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment_date=Max(
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
+            ),
+            first_installment_payment=F(
+                'lease_installments__payment',
+                filter=Q(lease_installments__sequency=0)
             )
         ).exclude(
-            first_installment_payment_date=F('expected_payment_date')
+            first_installment_payment_date=F('expected_payment_date'),
+            first_installment_payment__lte=20000
         )
 
 
