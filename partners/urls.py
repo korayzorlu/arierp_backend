@@ -24,6 +24,7 @@ urlpatterns = [
     path('import_partners/', ImportPartnersView.as_view(), name="import_partners"),
     path('partner_information/', PartnerInformationView.as_view(), name="partner_information"),
     path('ignore_partner/', IgnoePartnerView.as_view(), name="ignore_partner"),
+    path('confirm_partner/', ConfirmPartnerView.as_view(), name="confirm_partner"),
 
     path('test/', ExampleView.as_view(), name="test"),
     

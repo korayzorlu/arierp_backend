@@ -166,6 +166,27 @@ class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
 
+class ConfirmPartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Partner
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = Partner.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj.is_reliable_person:
+            send_warning_email_for_ignored_partners({
+                'name': obj.name,
+                'tc_vkn_no': obj.tc_vkn_no,
+                'crm_code': obj.crm_code,
+                'request_user_full_name': request.user.get_full_name(),
+                'request_user_email': request.user.email
+            })
+            return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
+        
+
+        return JsonResponse({'message': 'Yönetici onayı için Leaseflex tarafına talep gönderildi!','status':'success'}, status=200)
+
 class IgnoePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Partner
     
