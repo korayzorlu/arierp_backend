@@ -44,8 +44,8 @@ class MenuItemListSerializer(serializers.Serializer):
             #     {"type" : "item", "class" : ["admin"], "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
             # ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Uyum", "icon" : "policy", "items" : [
-                {"type" : "item", "class" : ["default"], "label" : "Sakıncalı Müşteri Listesi", "icon" : "paid", "route" : "/black-list-persons"},
-                {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama", "icon" : "paid", "route" : "/scan-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Yasaklı Listesi", "icon" : "paid", "route" : "/black-list-persons"},
+                {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Şahıs Ödemeleri", "icon" : "paid", "route" : "/third-persons"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Operasyon", "icon" : "hub", "items" : [
