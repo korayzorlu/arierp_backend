@@ -219,9 +219,14 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment_date=Max(
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
+            ),
+            first_installment_amount=F(
+                'lease_installments__amount',
+                filter=Q(lease_installments__sequency=0)
             )
         ).filter(
-            first_installment_payment_date=F('expected_payment_date')
+            first_installment_payment_date=F('expected_payment_date'),
+            first_installment_amount__lte=20000
         )
 
         # latest_lease = leases.filter(

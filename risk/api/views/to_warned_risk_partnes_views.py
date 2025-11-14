@@ -261,9 +261,14 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             first_installment_payment_date=Max(
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            first_installment_amount=F(
+                'partner_contracts__contract_leases__lease_installments__amount',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )
         ).filter(
-            first_installment_payment_date=F('expected_payment_date')
+            first_installment_payment_date=F('expected_payment_date'),
+            first_installment_amount__lte=20000
         )
 
         query = self.request.query_params.get('search[value]', None)
