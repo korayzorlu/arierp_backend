@@ -262,7 +262,7 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             ),
-            first_installment_payment=F(
+            first_installment_payment=Max(
                 'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )
@@ -358,7 +358,7 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             ),
-            first_installment_payment=F(
+            first_installment_payment=Max(
                 'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )
@@ -454,7 +454,7 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_leases__lease_installments__payment_date',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             ),
-            first_installment_payment=F(
+            first_installment_payment=Max(
                 'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             )

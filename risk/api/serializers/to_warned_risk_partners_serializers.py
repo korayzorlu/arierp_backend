@@ -220,7 +220,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
             ),
-            first_installment_payment=F(
+            first_installment_payment=Max(
                 'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
             )
@@ -360,7 +360,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
             ),
-            first_installment_payment=F(
+            first_installment_payment=Max(
                 'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
             )
@@ -500,7 +500,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
             ),
-            first_installment_payment=F(
+            first_installment_payment=Max(
                 'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
             )
