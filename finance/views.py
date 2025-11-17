@@ -76,47 +76,52 @@ class AddFinmaksTransactionView(LoginRequiredMixin,View):
         
         bank_account = FinmaksBankAccount.objects.filter(uuid = data.get('bank_account')).first()
 
+        print(data.get('transaction_date'))
+        print(datetime.strptime(data.get('transaction_date'), '%Y-%m-%d %H:%M'))
+        # return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+
         obj = FinmaksTransaction.objects.create(
             company = company,
             bank_account = bank_account,
-            transaction_id = data.get('transaction_id'),
-            transaction_date = make_aware(data.get('transaction_date')) if data.get('transaction_date') else None,
-            explanation_field = data.get('explanation_field'),
-            description = data.get('description'),
+            transaction_id = f"T{get_random_string(length=6, allowed_chars='0123456789')}",
+            transaction_date = datetime.strptime(data.get('transaction_date'), '%Y-%m-%d %H:%M') if data.get('transaction_date') else None,
+            explanation_field = data.get('description'),
+            # description = data.get('description'),
             amount = Decimal(str(data.get('amount'))),
             sender_vkn = data.get('sender_vkn'),
-            sender_iban = data.get('sender_iban'),
+            # sender_iban = data.get('sender_iban'),
             sender_account_name = data.get('sender_account_name'),
-            receiver_vkn = data.get('receiver_vkn'),
-            receiver_iban = data.get('receiver_iban'),
-            receipt_number = data.get('receipt_number'),
-            value_date = make_aware(data.get('value_date')) if data.get('value_date') else None,
-            transaction_type = data.get('transaction_type'),
-            bank_code = data.get('bank_code'),
-            balance = Decimal(str(data.get('balance'))),
-            firm_id = data.get('firm_id'),
-            firm_name = data.get('firm_name'),
-            firm_merchantId = data.get('firm_merchantId'),
-            firm_externalCode = data.get('firm_externalCode'),
-            firm_externalId = data.get('firm_externalId'),
-            transaction_branch_code = data.get('transaction_branch_code'),
-            transaction_branch_name = data.get('transaction_branch_name'),
-            firm_code = data.get('firm_code'),
-            currency_type = data.get('currency_type'),
+            # receiver_vkn = data.get('receiver_vkn'),
+            # receiver_iban = data.get('receiver_iban'),
+            # receipt_number = data.get('receipt_number'),
+            # value_date = make_aware(data.get('value_date')) if data.get('value_date') else None,
+            # transaction_type = data.get('transaction_type'),
+            # bank_code = data.get('bank_code'),
+            # balance = Decimal(str(data.get('balance'))),
+            # firm_id = data.get('firm_id'),
+            # firm_name = data.get('firm_name'),
+            # firm_merchantId = data.get('firm_merchantId'),
+            # firm_externalCode = data.get('firm_externalCode'),
+            # firm_externalId = data.get('firm_externalId'),
+            # transaction_branch_code = data.get('transaction_branch_code'),
+            # transaction_branch_name = data.get('transaction_branch_name'),
+            # firm_code = data.get('firm_code'),
+            # currency_type = data.get('currency_type'),
             debit = data.get('debit'),
-            branch_code = data.get('branch_code'),
-            transaction_external_id = data.get('transaction_external_id'),
-            external_id_used = data.get('external_id_used'),
-            external_bank_id = data.get('external_bank_id'),
-            reference_no = data.get('reference_no'),
-            finmaks_process_type =data.get('finmaks_process_type'),
-            category_name = data.get('category_name'),
-            integration_field_value = data.get('integration_field_value'),
-            transaction_status = data.get('transaction_status')
+            # branch_code = data.get('branch_code'),
+            # transaction_external_id = data.get('transaction_external_id'),
+            # external_id_used = data.get('external_id_used'),
+            # external_bank_id = data.get('external_bank_id'),
+            # reference_no = data.get('reference_no'),
+            # finmaks_process_type =data.get('finmaks_process_type'),
+            # category_name = data.get('category_name'),
+            # integration_field_value = data.get('integration_field_value'),
+            # transaction_status = data.get('transaction_status')
         )
+
         obj.save()
 
-        return JsonResponse({'message': 'Created successfully!','status':'success'}, status=200)
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
  
 
 class FinanceSummaryView(LoginRequiredMixin,View):

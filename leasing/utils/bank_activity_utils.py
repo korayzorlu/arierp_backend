@@ -5,7 +5,7 @@ from decimal import Decimal
 
 def matched_partner_with_tc_vkn_no(params):
     from partners.models import Partner
-    obj = Partner.objects.filter(tc_vkn_no=params["tc_vkn_no"]).first()
+    obj = Partner.objects.filter(tc_vkn_no=params["tc_vkn_no"], tc_vkn_no__isnull = False).first()
 
     return obj
 

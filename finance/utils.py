@@ -16,7 +16,7 @@ import logging
 from .models import *
 
 def is_valid_finmaks_transaction_data(data):
-    if not data.get('code') or not data.get('lease'):
+    if not data.get('bank_account') or not data.get('transaction_date'):
         return False, JsonResponse({'message': 'Fill required fields.','status':'error'}, status=400)
     return True, None
 

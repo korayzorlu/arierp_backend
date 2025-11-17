@@ -39,7 +39,7 @@ class BankAccountTransactionFilter(FilterSet):
     transaction_date = CharFilter(method='filter_transaction_date')
     transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
     explanation_field = CharFilter(field_name='explanation_field', lookup_expr='icontains')
-    bank_name = CharFilter(field_name='bank_account__name', lookup_expr='icontains')
+    bank_name = CharFilter(field_name='bank_account__bank_name', lookup_expr='icontains')
     bank_account_no = CharFilter(field_name='bank_account__account_no', lookup_expr='icontains')
 
     class Meta:
