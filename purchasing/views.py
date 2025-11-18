@@ -31,6 +31,9 @@ class ExportPurchasePaymentsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
+        if ExportProcess.objects.filter(user=request.user,model_name="PurchasePayment",status__in=["pending","in_progress"]).exists():
+            return JsonResponse({'message':'Bu tablo için başka bir dışarı aktarma işlemi devam ediyor! Lütfen bekleyin.','status':'error'}, status=400)
+
         exporter = BaseExporter(
             user_id=request.user.id,
             app="purchasing",
