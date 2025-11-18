@@ -600,9 +600,12 @@ if not DEBUG:
     THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
     IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
 else:
-    SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_TEST_USERNAME','')
-    SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_TEST_PASSWORD','')
-    SANCTION_SCANNER_URL = 'https://sandbox-api.sanctionscanner.com'
+    # SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_TEST_USERNAME','')
+    # SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_TEST_PASSWORD','')
+    # SANCTION_SCANNER_URL = 'https://sandbox-api.sanctionscanner.com'
+    SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_USERNAME','')
+    SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_PASSWORD','')
+    SANCTION_SCANNER_URL = 'https://api.sanctionscanner.com'
     THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
     IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
 
