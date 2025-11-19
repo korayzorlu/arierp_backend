@@ -15,7 +15,7 @@ from .utils.import_utils import BaseImporter
 from .utils.export_utils import BaseExporter
 from .utils.common_utils import get_exchange_rate_for_date
 from users.models import User
-from partners.utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex
+from partners.utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex,fetch_partner_advances_from_leaseflex
 from projects.utils.project_utils import fetch_projects_from_leaseflex
 from projects.utils.parcel_utils import fetch_parcels_from_leaseflex
 from projects.utils.real_estate_utils import fetch_real_estates_from_leaseflex
@@ -44,6 +44,7 @@ def fetch_data_from_leaseflex(company):
     fetch_partnersi_from_leaseflex(company)
     fetch_phone_numbers_from_leaseflex(company)
     fetch_phone_numbersi_from_leaseflex(company)
+    fetch_partner_advances_from_leaseflex(company)
     fetch_projects_from_leaseflex(company)
     fetch_parcels_from_leaseflex(company)
     fetch_real_estates_from_leaseflex(company)
