@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery, F, ExpressionWrapper, DateField,IntegerField
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery, F, ExpressionWrapper, DateField,IntegerField,Sum
 from django.db.models.functions import Lower,Upper,Cast
 from django.utils.timezone import now
 
@@ -223,10 +223,16 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment=Max(
                 'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
             )
         ).filter(
-            first_installment_payment_date=F('expected_payment_date'),
-            first_installment_payment__lte=20000
+            (
+                Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__lte=20000)
+            ) |
+            Q(total_contract_payments__lte=20000)
         )
 
         # latest_lease = leases.filter(
@@ -363,10 +369,16 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment=Max(
                 'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
-            )
-        ).exclude(
-            first_installment_payment_date=F('expected_payment_date'),
-            first_installment_payment__lte=20000
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
+            ),
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
         )
 
         # latest_lease = leases.filter(
@@ -503,10 +515,16 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment=Max(
                 'lease_installments__payment',
                 filter=Q(lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
             )
-        ).exclude(
-            first_installment_payment_date=F('expected_payment_date'),
-            first_installment_payment__lte=20000
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
         )
 
 

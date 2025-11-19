@@ -270,8 +270,11 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_contract_payments__credit_amount'
             )
         ).filter(
-            first_installment_payment_date=F('expected_payment_date'),
-            first_installment_payment__lte=20000
+            (
+                Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__lte=20000)
+            ) |
+            Q(total_contract_payments__lte=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)
@@ -364,10 +367,16 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             first_installment_payment=Max(
                 'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'partner_contracts__contract_contract_payments__credit_amount'
             )
-        ).exclude(
-            first_installment_payment_date=F('expected_payment_date'),
-            first_installment_payment__gt=20000
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)
@@ -460,10 +469,16 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             first_installment_payment=Max(
                 'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'partner_contracts__contract_contract_payments__credit_amount'
             )
-        ).exclude(
-            first_installment_payment_date=F('expected_payment_date'),
-            first_installment_payment__gt=20000
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)
