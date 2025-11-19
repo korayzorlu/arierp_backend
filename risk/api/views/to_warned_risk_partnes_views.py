@@ -266,7 +266,9 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_leases__lease_installments__payment',
                 filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
             ),
-            
+            total_contract_payments=Sum(
+                'partner_contracts__contract_contract_payments__credit_amount'
+            )
         ).filter(
             first_installment_payment_date=F('expected_payment_date'),
             first_installment_payment__lte=20000

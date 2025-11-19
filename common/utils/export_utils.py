@@ -25,6 +25,7 @@ from risk.utils.to_warned_risk_partners_utils import *
 from risk.utils.warned_risk_partners_utils import *
 from risk.utils.to_terminated_risk_partners_utils import *
 from risk.utils.risk_utils import export_amount_debit_transactions
+from risk.utils.under_reviews_utils import export_under_reviews
 from contracts.utils.contract_utils import export_contract_payments
 from operation.utils import export_partner_advance_activities,export_partner_advances
 
@@ -132,6 +133,9 @@ class BaseExporter():
 
     def export_deliveryconfirm(self):
         export_delivery_confirms(self)
+
+    def export_underreview(self):
+        export_under_reviews(self)
 
     def export_purchasepayment(self):
         export_purchase_payments(self)
