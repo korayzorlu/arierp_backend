@@ -1,7 +1,9 @@
 from django.conf import settings
-from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery, F, ExpressionWrapper, DateField,IntegerField,Sum
+from django.db.models.functions import Lower,Upper,Cast
+from django.utils.timezone import now
 
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
@@ -32,7 +34,9 @@ def partners_for_project(params):
             Q(types__contains=["barter"]) |
             Q(types__contains=["virman"])
         )
-    elif params.get("risk_status") == "to_warned":
+    elif params.get("risk_status") == "to_warned_deposit":
+        today = now().date()
+
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
             (
@@ -61,6 +65,154 @@ def partners_for_project(params):
             Q(types__contains=["special"]) |
             Q(types__contains=["barter"]) |
             Q(types__contains=["virman"])
+        )
+        objs = objs.annotate(
+            overdue_days_int=Cast(
+                F('partner_contracts__contract_leases__overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'partner_contracts__contract_leases__lease_installments__payment_date',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            first_installment_payment=Max(
+                'partner_contracts__contract_leases__lease_installments__payment',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'partner_contracts__contract_contract_payments__credit_amount'
+            )
+        ).filter(
+            (
+                Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__lte=20000)
+            ) |
+            Q(total_contract_payments__lte=20000)
+        )
+    elif params.get("risk_status") == "to_warned_kep":
+        today = now().date()
+
+        objs = Partner.objects.select_related().filter(
+            vendor_filter_for_views(params) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_last_project=True) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
+            Q(partner_contracts__contract_leases__is_under_review=False) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            (
+                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
+            ) &
+            Q(partner_contracts__contract_warning_notices__isnull=True)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(
+            Q(types__contains=["special"]) |
+            Q(types__contains=["barter"]) |
+            Q(types__contains=["virman"])
+        )
+        objs = objs.annotate(
+            overdue_days_int=Cast(
+                F('partner_contracts__contract_leases__overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'partner_contracts__contract_leases__lease_installments__payment_date',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            first_installment_payment=Max(
+                'partner_contracts__contract_leases__lease_installments__payment',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'partner_contracts__contract_contract_payments__credit_amount'
+            )
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
+        )
+    elif params.get("risk_status") == "to_warned_posta":
+        today = now().date()
+
+        objs = Partner.objects.select_related().filter(
+            vendor_filter_for_views(params) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_last_project=True) &
+            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
+            Q(partner_contracts__contract_leases__is_under_review=False) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            (
+                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
+                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
+            ) &
+            Q(partner_contracts__contract_warning_notices__isnull=True)
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(
+            Q(types__contains=["special"]) |
+            Q(types__contains=["barter"]) |
+            Q(types__contains=["virman"])
+        )
+        objs = objs.annotate(
+            overdue_days_int=Cast(
+                F('partner_contracts__contract_leases__overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'partner_contracts__contract_leases__lease_installments__payment_date',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            first_installment_payment=Max(
+                'partner_contracts__contract_leases__lease_installments__payment',
+                filter=Q(partner_contracts__contract_leases__lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'partner_contracts__contract_contract_payments__credit_amount'
+            )
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
         )
     elif params.get("risk_status") == "warned":
         objs = Partner.objects.select_related().filter(
@@ -179,7 +331,9 @@ def leases_for_project(params):
             Q(contract__partner__types__contains=["barter"]) |
             Q(contract__partner__types__contains=["virman"])
         )
-    elif params.get("risk_status") == "to_warned":
+    elif params.get("risk_status") == "to_warned_deposit":
+        today = now().date()
+
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = partner) &
             vendor_filter_for_serializers(params) &
@@ -207,6 +361,153 @@ def leases_for_project(params):
              Q(contract__partner__types__contains=["special"]) |
              Q(contract__partner__types__contains=["barter"]) |
              Q(contract__partner__types__contains=["virman"])
+        )
+
+        leases = leases.annotate(
+            overdue_days_int=Cast(
+                F('overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'lease_installments__payment_date',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            first_installment_payment=Max(
+                'lease_installments__payment',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
+            )
+        ).filter(
+            (
+                Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__lte=20000)
+            ) |
+            Q(total_contract_payments__lte=20000)
+        )
+    elif params.get("risk_status") == "to_warned_kep":
+        today = now().date()
+
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = partner) &
+            vendor_filter_for_serializers(params) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(contract__currency__code="TRY") &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False) &
+            Q(overdue_days__gt=30) &
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        ).exclude(
+             Q(contract__partner__types__contains=["special"]) |
+             Q(contract__partner__types__contains=["barter"]) |
+             Q(contract__partner__types__contains=["virman"])
+        )
+        leases = leases.annotate(
+            overdue_days_int=Cast(
+                F('overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'lease_installments__payment_date',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            first_installment_payment=Max(
+                'lease_installments__payment',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
+            ),
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
+        )
+    elif params.get("risk_status") == "to_warned_posta":
+        today = now().date()
+
+        leases = Lease.objects.select_related().filter(
+            Q(contract__partner = partner) &
+            vendor_filter_for_serializers(params) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(contract__currency__code="TRY") &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False) &
+            Q(overdue_days__gt=30) &
+            (
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            ) &
+            Q(contract__contract_warning_notices__isnull=True)
+        ).exclude(
+             Q(contract__partner__types__contains=["special"]) |
+             Q(contract__partner__types__contains=["barter"]) |
+             Q(contract__partner__types__contains=["virman"])
+        )
+        leases = leases.annotate(
+            overdue_days_int=Cast(
+                F('overdue_days'),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            expected_payment_date=ExpressionWrapper(
+                today - (F('overdue_days_int') * timedelta(days=1)),
+                output_field=DateField()
+            ),
+            first_installment_payment_date=Max(
+                'lease_installments__payment_date',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            first_installment_payment=Max(
+                'lease_installments__payment',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
+            )
+        ).filter(
+            (
+                ~Q(first_installment_payment_date=F('expected_payment_date')) &
+                Q(first_installment_payment__gt=20000)
+            ) |
+            Q(total_contract_payments__gt=20000)
         )
     elif params.get("risk_status") == "warned":
         leases = Lease.objects.select_related().filter(
