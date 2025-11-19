@@ -372,10 +372,6 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_contract_payments__credit_amount'
             )
         ).filter(
-            (
-                ~Q(first_installment_payment_date=F('expected_payment_date')) &
-                Q(first_installment_payment__gt=20000)
-            ) |
             Q(total_contract_payments__gt=20000)
         )
 
@@ -474,10 +470,6 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_contract_payments__credit_amount'
             )
         ).filter(
-            (
-                ~Q(first_installment_payment_date=F('expected_payment_date')) &
-                Q(first_installment_payment__gt=20000)
-            ) |
             Q(total_contract_payments__gt=20000)
         )
 
