@@ -22,14 +22,14 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
+        # trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
         partners = Partner.objects.select_related().filter(company__id=int(company))
         leases = Lease.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
 
-        trade_transaction_by_crm = {t.trade_transaction_id: t for t in trade_transactions if t.trade_transaction_id}
-        del trade_transactions
-        gc.collect()
+        # trade_transaction_by_crm = {t.trade_transaction_id: t for t in trade_transactions if t.trade_transaction_id}
+        # del trade_transactions
+        # gc.collect()
 
         partners_dict = {p.crm_code: p for p in partners}
         leases_dict = {l.lease_id: l for l in leases}
@@ -46,7 +46,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
             create_objs = []
             for index,data in enumerate(records):
                 if str(data.TrnId):
-                    obj = (trade_transaction_by_crm.get(str(data.TrnId)))
+                    # obj = (trade_transaction_by_crm.get(str(data.TrnId)))
+                    obj = TradeTransaction.objects.select_related().filter(company__id=int(company), trade_transaction_id=str(data.TrnId)).first()
                 else:
                     obj = None
 
@@ -107,8 +108,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
             if create_objs:
                 TradeTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
         
-        del trade_transaction_by_crm
-        gc.collect()
+        # del trade_transaction_by_crm
+        # gc.collect()
         print(f"Toplam {update_progress} cari hesap hareketi güncellendi.")
         print(f"Toplam {create_progress} cari hesap hareketi oluşturuldu.")
         print("--------")
