@@ -78,6 +78,7 @@ FROM (
         )
         AND TrnPostingGroupId = 13
         AND TrnAccountType = 11
+        --AND CrmCustomerWithTypesLightTradeRisk.CustomerName LIKE 'AYŞE KELEŞ%'
 ) X
 GROUP BY 
     TrnConsolideId,
