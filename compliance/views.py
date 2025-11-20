@@ -107,6 +107,14 @@ class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
             label = file.name,
             file = file,
         )
+
+        obj.status = 'cleared'
+        obj.save()
+
+        obj.bank_activities.update(
+            is_reliable_person = True,
+            third_person_status = 'cleared'
+        )
         
         return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
 

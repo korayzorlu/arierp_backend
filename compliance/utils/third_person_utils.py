@@ -16,12 +16,15 @@ def create_third_person(self,scan_result):
                 name = ""
 
         if scan_result["status"] == 'cleared':
-            status = 'cleared'
+            status = 'need_document'
         else:
             status = 'pending'
             
         if name and name != "" and status == 'pending':
             send_email_for_third_person(name,self.tc_vkn_no)
+
+        if name and name != "" and status == 'need_document':
+            send_email_for_third_person_document(name,self.tc_vkn_no)
         
         old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
         if not old_obj:
@@ -56,6 +59,34 @@ def send_email_for_third_person(name,tc_vkn_no):
     subject = '3. ŞAHIS ÖDEMESİ - KONTROL GEREKİYOR'
     message = f'''
         Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerekmektedir. Lütfen kontrol ediniz.
+
+        {name} - {tc_vkn_no}
+
+        Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/third-persons
+
+    '''
+    from_email = 'Arınet <noreply@arileasing.com.tr>'
+    recipient_list = settings.THIRD_PERSON_EMAIL_LIST
+
+    send_outlook_email(subject, message, from_email, recipient_list)
+
+def send_email_for_third_person_document(name,tc_vkn_no):       
+    def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+        email = EmailMessage(
+            subject,
+            message,
+            from_email,
+            recipient_list,
+        )
+        if attachments:
+            for attachment in attachments:
+                email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+        email.send(fail_silently=False)
+        #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            
+    subject = '3. ŞAHIS ÖDEMESİ - BELGE/KİMLİK GEREKİYOR'
+    message = f'''
+        Aşağıdaki kişi/kurum için belge/kimlik yüklenmesi gerekmektedir. Lütfen kontrol ediniz.
 
         {name} - {tc_vkn_no}
 

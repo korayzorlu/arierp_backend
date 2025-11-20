@@ -200,6 +200,7 @@ class BankActivity(models.Model):
         ('pending', ('Pending')),
         ('cleared', ('Cleared')),
         ('flagged', ('Flagged')),
+        ('need_document', ('Need Document')),
     )
     third_person_status = models.CharField(_("Third Person Status"), max_length=25, default='pending', choices=THIRD_PERSON_STATUS_CHOICES, blank=True, null=True)
 
@@ -307,7 +308,7 @@ class BankActivity(models.Model):
                     #print(scan_result)
                     create_third_person(self,scan_result)
                     if scan_result["status"] == 'cleared':
-                        self.third_person_status = scan_result["status"]
+                        self.third_person_status = 'need_document'
                     else:
                         self.third_person_status = 'pending'
                     self.is_third_person = True
