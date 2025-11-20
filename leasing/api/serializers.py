@@ -380,6 +380,8 @@ class BankActivityListSerializer(serializers.Serializer):
     def get_created_date(self, obj):
         return obj.created_date.date()
     
+
+    
 class BankActivityLeaseListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     uuid = serializers.CharField()

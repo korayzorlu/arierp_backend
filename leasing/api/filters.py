@@ -168,6 +168,7 @@ class BankActivityFilter(FilterSet):
 class BankActivityLeaseFilter(FilterSet):
     bank_activity = CharFilter(method = 'filter_bank_activity')
     lease = CharFilter(method = 'filter_lease')
+    account_no = CharFilter(method = 'filter_account_no')
     class Meta:
         model = BankActivityLease
         fields = ['uuid','bank_activity','lease']
@@ -177,6 +178,11 @@ class BankActivityLeaseFilter(FilterSet):
     
     def filter_lease(self, queryset, lease, value):
         return queryset.filter(lease__lease = value)
+    
+    def filter_account_no(self, queryset, account_no, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(finmaks_transaction__bank_account__account_no = value)
             
 class RiskPartnerKDVFilter(FilterSet):
     name = CharFilter(method = 'filter_name')

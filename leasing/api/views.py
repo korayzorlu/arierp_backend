@@ -621,7 +621,37 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
-    
+
+class AccountNoList(ModelViewSet, QueryListAPIView):
+    serializer_class = BankActivityListSerializer
+    filterset_class = BankActivityFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        result = BankActivity.objects.filter(
+            company=active_company.company if active_company else None
+        ).values_list(
+            'finmaks_transaction__bank_account__account_no', flat=True
+        ).distinct()
+
+        return Response(result)
+
 class BankActivityLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = BankActivityLeaseListSerializer
     filterset_class = BankActivityLeaseFilter

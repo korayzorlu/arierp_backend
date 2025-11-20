@@ -524,6 +524,15 @@ EMAIL_HOST_USER = str(os.getenv('EMAIL_HOST_USER'))
 EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_HOST_PASSWORD'))
 DEFAULT_FROM_EMAIL = str(os.getenv('DEFAULT_FROM_EMAIL'))
 
+if not DEBUG:
+    THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
+    THIRD_PERSON_DOCUMENT_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
+    IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
+else:
+    THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
+    THIRD_PERSON_DOCUMENT_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
+    IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
+
 # Domain
 
 BACKEND_URL = str(os.getenv('BACKEND_URL'))
@@ -597,14 +606,10 @@ if not DEBUG:
     SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_USERNAME','')
     SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_PASSWORD','')
     SANCTION_SCANNER_URL = 'https://api.sanctionscanner.com'
-    THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
-    IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
 else:
     SANCTION_SCANNER_USERNAME = os.getenv('SANCTION_SCANNER_TEST_USERNAME','')
     SANCTION_SCANNER_PASSWORD = os.getenv('SANCTION_SCANNER_TEST_PASSWORD','')
     SANCTION_SCANNER_URL = 'https://sandbox-api.sanctionscanner.com'
-    THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
-    IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
 
 # AI
 AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")
