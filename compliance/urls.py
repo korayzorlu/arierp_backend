@@ -7,6 +7,7 @@ urlpatterns = [
     path('add_black_list_person/', views.AddBlackListPersonView.as_view(), name="add_black_list_person"),
     
     path('update_third_person_status/', views.UpdateThirdPersonStatusView.as_view(), name="update_third_person_status"),
+    path('import_third_person_document/', views.ImportThirdPersonDocumentsView.as_view(), name="import_third_person_document"),
 
     path('', include("compliance.api.urls")),
 ]

@@ -6,16 +6,13 @@ import requests
 from requests.auth import HTTPBasicAuth
 import re
 
+from common.utils.common_utils import catch_name_from_description
+
 def check_third_person_status(self):
-    print(settings.SANCTION_SCANNER_PASSWORD)
     if self.name is not None and self.name != "" and self.name != "None":
             name = self.name
     else:
-        catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
-        if catched_name:
-            name = catched_name.group(1)
-        else:
-            name = ""
+        name = catch_name_from_description(self)
 
     if name and name != "":
         # Aranacak isim ve isteğe bağlı parametreler

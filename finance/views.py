@@ -19,7 +19,7 @@ from common.models import ImportProcess,ExportProcess
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
-from common.utils.common_utils import normalize,safe_decimal
+from common.utils.common_utils import normalize,safe_decimal,catch_name_from_finmaks_transaction
 from purchasing.models import PurchasePayment
 from leasing.models import BankActivity
 
@@ -33,6 +33,10 @@ class AddBankActivityView(LoginRequiredMixin,View):
         data = json.loads(request.body)
 
         finmaks_transaction = FinmaksTransaction.objects.select_related().filter(transaction_id = data['transaction_id']).first()
+
+        name = catch_name_from_finmaks_transaction(finmaks_transaction)
+        if finmaks_transaction.sender_account_name == "None" and not name:
+            return JsonResponse({'message': 'İsim algılanamadı! Lütfen gönderen ismini güncelleyiniz.','status':'warning'}, status=400)
 
         BankActivity.objects.create(
             company = self.request.user.user_companies.filter(is_active=True).first().company,

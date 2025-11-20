@@ -263,6 +263,7 @@ class BaseImporter():
         self.process.status = "completed"
         self.process.save()
 
+
     def import_contract(self, df_json):
         import_contracts(self, df_json)
 

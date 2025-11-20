@@ -15,6 +15,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import ollama
 
+from common.utils.common_utils import catch_name_from_description
 from underwriting.utils import check_third_person_status
 from companies.models import Company
 from common.models import Currency, Status

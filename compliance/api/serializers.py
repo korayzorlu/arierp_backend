@@ -44,7 +44,31 @@ class ThirdPersonListSerializer(serializers.Serializer):
     status = serializers.CharField()
     created_date = serializers.DateTimeField()
     results = serializers.JSONField()
+    third_person_documents = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
+    
+    def get_third_person_documents(self, obj):
+        documents = obj.third_person_third_person_documents.all()
+        documents_urls = []
+        if documents:
+            for document in documents:
+                documents_urls.append({
+                        "label" : document.label,
+                        "url" : document.file.url
+                    })
+            return documents_urls
+        else:
+            return []
+    
+class ThirdPersonDocumentListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    companyId = serializers.SerializerMethodField()
+    label = serializers.CharField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    
     

@@ -19,6 +19,8 @@ from datetime import date,datetime
 
 from .models import *
 from .utils.black_list_person_utils import is_valid_black_list_person_data
+from common.utils.import_utils import BaseImporter
+from common.utils.websocket_utils import send_alert
 
 # Create your views here.
 
@@ -77,3 +79,34 @@ class AddBlackListPersonView(LoginRequiredMixin,View):
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
     
+class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get('data', '{}'))
+        file = request.FILES.get('file')
+        
+        if not file:
+            return JsonResponse({'message': 'Yüklenecek dosya bulunamadı!','status':'error'}, status=400)
+
+        if not request.user.is_authenticated:
+            return JsonResponse({'message': 'Yetki hatası!.','status':'error'}, status=401)
+        
+        if request.user.authorization.department != 'operasyon':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        company = Company.objects.filter(id = data.get('companyId')).first()
+        active_company = request.user.user_companies.filter(is_active = True, company = company).first()
+
+        obj = ThirdPerson.objects.filter(uuid = data.get('uuid'), company = active_company.company).first()
+
+        if not obj:
+            return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+        
+        ThirdPersonDocument.objects.create(
+            company = active_company.company,
+            third_person = obj,
+            label = file.name,
+            file = file,
+        )
+        
+        return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
+

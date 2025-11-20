@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
 import traceback
 import time
+import re
 
 def normalize(name):
     return unidecode(name or "").strip().lower()
@@ -135,3 +136,54 @@ def get_exchange_rate_for_date(target_currency=None, date=None):
             "forex_buying": Decimal('0.00'),
             "forex_selling": Decimal('0.00'),
         }
+
+def catch_name_from_description(self):
+    if self.finmaks_transaction.bank_account.account_no == '00158007306261159': # vakıf try
+        if re.search(r"\bhesabından\b", self.description):
+            catched_name = re.search(r"([A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s+hesabından", self.description)
+        elif re.search(r"\btarafından\b", self.description):
+            catched_name = re.search(r"([A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s+tarafından", self.description)
+        else:
+            catched_name = None
+    # elif self.finmaks_transaction.bank_account.account_no == '00158048012388185': # vakıf usd
+    #     catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
+    elif self.finmaks_transaction.bank_account.account_no == '9626-07427880-10100981': # halk try
+        pattern = re.compile(r"^(.+?)\s+\1\b", re.IGNORECASE)
+        catched_name = pattern.match(self.description)
+    elif self.finmaks_transaction.bank_account.bank_code == '0067': # yapı kredi hepsi
+        catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
+    else:
+        catched_name = None
+
+    if catched_name:
+        name = catched_name.group(1)
+    else:
+        name = None
+
+    return name
+
+def catch_name_from_finmaks_transaction(self):
+    if self.bank_account.account_no == '00158007306261159': # vakıf try
+        if re.search(r"\bhesabından\b", self.explanation_field):
+            catched_name = re.search(r"([A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s+hesabından", self.explanation_field)
+        elif re.search(r"\btarafından\b", self.explanation_field):
+            catched_name = re.search(r"([A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s+tarafından", self.explanation_field)
+        else:
+            catched_name = None
+    # elif self.bank_account.account_no == '00158048012388185': # vakıf usd
+    #     catched_name = re.search(r"-\s*(.*?)\s*-", self.explanation_field)
+    elif self.bank_account.account_no == '9626-07427880-10100981': # halk try
+        pattern = re.compile(r"^(.+?)\s+\1\b", re.IGNORECASE)
+        catched_name = pattern.match(self.explanation_field)
+    elif self.bank_account.bank_code == '0067': # yapı kredi hepsi
+        print(re.search(r"-\s*(.*?)\s*-", self.explanation_field))
+        catched_name = re.search(r"-\s*(.*?)\s*-", self.explanation_field)
+    else:
+        catched_name = None
+
+    if catched_name:
+        name = catched_name.group(1)
+    else:
+        name = None
+    print(name)
+    return name
