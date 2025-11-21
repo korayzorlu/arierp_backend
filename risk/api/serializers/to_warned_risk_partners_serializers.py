@@ -115,6 +115,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     "id" : lease.uuid,
                     "code" : lease.code,
                     "contract" : lease.contract.code if lease.contract else "",
+                    "contract_id" : lease.contract.contract_id if lease.contract else "",
                     "partner" : lease.contract.partner.name if lease.contract.partner else "",
                     "partner_tc" : lease.contract.partner.tc_vkn_no if lease.contract else "",
                     "partner_crm_code" : lease.contract.partner.crm_code if lease.contract else "",
