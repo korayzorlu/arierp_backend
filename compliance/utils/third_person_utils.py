@@ -94,6 +94,6 @@ def send_email_for_third_person_document(name,tc_vkn_no):
 
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
-    recipient_list = settings.THIRD_PERSON_EMAIL_LIST
+    recipient_list = settings.THIRD_PERSON_DOCUMENT_EMAIL_LIST
 
     send_outlook_email(subject, message, from_email, recipient_list)
