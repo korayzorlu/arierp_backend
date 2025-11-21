@@ -35,7 +35,7 @@ class BankAccountTransactionFilter(FilterSet):
         fields = ['uuid']
 
 class BankAccountTransactionFilter(FilterSet):
-    uuid = CharFilter(method = 'filter_uuid')
+    uuid = CharFilter(field_name='uuid', lookup_expr='exact')
     transaction_date = CharFilter(method='filter_transaction_date')
     transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
     explanation_field = CharFilter(field_name='explanation_field', lookup_expr='icontains')

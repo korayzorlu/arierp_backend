@@ -45,6 +45,7 @@ class ThirdPersonListSerializer(serializers.Serializer):
     created_date = serializers.DateTimeField()
     results = serializers.JSONField()
     third_person_documents = serializers.SerializerMethodField()
+    finmaks_transaction = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -61,6 +62,23 @@ class ThirdPersonListSerializer(serializers.Serializer):
             return documents_urls
         else:
             return []
+        
+    def get_finmaks_transaction(self, obj):
+        bank_activity = obj.bank_activities.all().first()
+        if bank_activity:
+            finmaks_transaction = {
+                "id": bank_activity.finmaks_transaction.uuid,
+                "transaction_date": bank_activity.finmaks_transaction.transaction_date.strftime("%d.%m.%Y %H:%M") if bank_activity.finmaks_transaction.transaction_date else "",
+                "transaction_id": bank_activity.finmaks_transaction.transaction_id,
+                "explanation_field": bank_activity.finmaks_transaction.explanation_field,
+                "amount": bank_activity.finmaks_transaction.amount,
+                "currency": bank_activity.finmaks_transaction.bank_account.currency.code,
+                "bank_name": bank_activity.finmaks_transaction.bank_account.bank_name,
+                "bank_account_no": bank_activity.finmaks_transaction.bank_account.account_no,
+            }
+        else:
+            finmaks_transaction = None
+        return finmaks_transaction
     
 class ThirdPersonDocumentListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
