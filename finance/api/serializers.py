@@ -9,6 +9,9 @@ from django.utils import timezone
 from finance.models import *
 from companies.models import Company,UserCompany
 from partners.models import Partner
+from leasing.models import Lease
+from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
+
     
 class BankAccountListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -107,6 +110,7 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
     advance_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     partner_advance_activity = serializers.SerializerMethodField()
     trial_balance_amount = serializers.SerializerMethodField()
+    leases = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -125,4 +129,49 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
         ).aggregate(
             total=Sum(models.F('balance_debit') - models.F('balance_credit'))
         )['total'] or Decimal('0.00')
+    
+    def get_leases(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+        
+        leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
+            Q(contract__partner = obj)
+        ).order_by("-activation_date")
+
+        lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
+        if leases:
+            for lease in leases:
+                lease_dict["leases"].append({
+                    "id" : lease.uuid,
+                    "code" : lease.code,
+                    "contract" : lease.contract.code if lease.contract else "",
+                    "contract_id" : lease.contract.contract_id if lease.contract else "",
+                    "partner" : lease.contract.partner.name if lease.contract.partner else "",
+                    "partner_tc" : lease.contract.partner.tc_vkn_no if lease.contract else "",
+                    "partner_crm_code" : lease.contract.partner.crm_code if lease.contract else "",
+                    "project" : lease.contract.project if lease.contract else "",
+                    "block" : lease.contract.quotation_obj.quick_quotation.block if lease.contract.quotation_obj.quick_quotation else "",
+                    "unit" : lease.contract.quotation_obj.quick_quotation.unit if lease.contract.quotation_obj.quick_quotation else "",
+                    "overdue_amount" : lease.overdue_amount,
+                    "overdue_days" : lease.overdue_days,
+                    "currency" : lease.currency.code if lease.currency else "",
+                    "lease_status" : lease.get_lease_status_display(),
+                    "is_kdv_diff" : lease.is_kdv_diff,
+                    "paid_rate" : lease.paid_rate,
+                    "overdues" : [
+                        {   
+                            'id': lease.code,
+                            'lease': lease.code,
+                            'overdue_0_30': lease.overdue_0_30,
+                            'overdue_31_60': lease.overdue_31_60,
+                            'overdue_61_90': lease.overdue_61_90,
+                            'overdue_91_120': lease.overdue_91_120,
+                            'overdue_121_150': lease.overdue_121_150,
+                            'overdue_151_180': lease.overdue_151_180,
+                            'overdue_181_gte': lease.overdue_181_gte,
+                        }
+                    ]
+                })
+        #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
+        return lease_dict
     
