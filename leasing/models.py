@@ -204,7 +204,7 @@ class BankActivity(models.Model):
     )
     third_person_status = models.CharField(_("Third Person Status"), max_length=25, default='pending', choices=THIRD_PERSON_STATUS_CHOICES, blank=True, null=True)
 
-    created_date = models.DateTimeField(auto_now_add=True)
+    created_date = models.DateTimeField(default=timezone.now)
     updated_date = models.DateTimeField(auto_now=True)
 
 
