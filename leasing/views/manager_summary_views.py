@@ -800,16 +800,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             first_installment_payment_date=Max(
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
-            ),
-            first_installment_payment=Max(
-                'lease_installments__payment',
-                filter=Q(lease_installments__sequency=0)
-            ),
-            total_contract_payments=Sum(
-                'contract__contract_contract_payments__credit_amount'
             )
-        ).filter(
-            Q(total_contract_payments__gt=20000)
+        ).exclude(
+            first_installment_payment_date=F('expected_payment_date')
+        ).aggregate(
+            total_overdue_amount=Sum('overdue_amount'),
+            count_overdue_leases=Count('id'),
+            count_distinct_partners=Count('contract__partner', distinct=True)
         )
 
         posta_to_warned_leases_usd = Lease.objects.select_related().prefetch_related("contract__contract_warning_notices").filter(
