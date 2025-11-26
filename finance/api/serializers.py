@@ -132,7 +132,6 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
     
     def get_leases(self, obj):
         request = self.context.get('request')
-        filter_params = request.GET if request else {}
         
         leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
             Q(contract__partner = obj)
@@ -141,6 +140,15 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
+                first_future_payment = (
+                    lease.lease_installments
+                    .filter(payment_date__gte=timezone.now().date())
+                    .order_by('payment_date')
+                    .values_list('amount', flat=True)
+                    .first()
+                )
+                
+
                 lease_dict["leases"].append({
                     "id" : lease.uuid,
                     "code" : lease.code,
@@ -158,6 +166,7 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
                     "lease_status" : lease.get_lease_status_display(),
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
+                    "next_payment" : first_future_payment,
                     "overdues" : [
                         {   
                             'id': lease.code,
@@ -172,6 +181,5 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
                         }
                     ]
                 })
-        #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
         return lease_dict
     

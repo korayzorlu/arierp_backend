@@ -197,6 +197,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_under_review=False) &
             Q(overdue_days__gt=25) &
             (
+                Q(overdue_0_30__gt=0) |
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
                 Q(overdue_91_120__gt=0) |
@@ -340,7 +341,8 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_credit=False) &
             Q(is_under_review=False) &
             Q(overdue_days__gt=25) &
-            (
+            (   
+                Q(overdue_0_30__gt=0) |
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
                 Q(overdue_91_120__gt=0) |
@@ -374,8 +376,6 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
             ),
-        ).filter(
-            Q(total_contract_payments__gt=20000)
         )
 
         # latest_lease = leases.filter(
@@ -483,6 +483,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_under_review=False) &
             Q(overdue_days__gt=25) &
             (
+                Q(overdue_0_30__gt=0) |
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
                 Q(overdue_91_120__gt=0) |

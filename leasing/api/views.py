@@ -608,7 +608,7 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
         today = date.today()
 
         queryset = BankActivity.objects.select_related(*custom_related_fields).filter(
-            company = active_company.company if active_company else None
+            Q(company = active_company.company if active_company else None)
         ).order_by("-created_date")
 
         query = self.request.query_params.get('search[value]', None)

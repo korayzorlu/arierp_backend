@@ -161,7 +161,7 @@ class BankActivityFilter(FilterSet):
     created_date = DateFromToRangeFilter(field_name = 'created_date')
     class Meta:
         model = BankActivity
-        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date']
+        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date','third_person_status']
 
     
 
