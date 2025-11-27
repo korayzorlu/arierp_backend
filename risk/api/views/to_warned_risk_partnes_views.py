@@ -442,19 +442,17 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
             ) &
             Q(partner_contracts__contract_warning_notices__isnull=True) &
-            Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
-            Q(is_turkkep=False)
+            # Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
+            Q(is_turkkep=False) &
+            ~Q(types__contains=["special"])
         ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-        ).exclude(types__contains=["special"])
-
-        queryset = queryset.annotate(
             overdue_days_int=Cast(
                 F('partner_contracts__contract_leases__overdue_days'),
                 output_field=IntegerField()
             )
         ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             expected_payment_date=ExpressionWrapper(
                 today - (F('overdue_days_int') * timedelta(days=1)),
                 output_field=DateField()
