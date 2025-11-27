@@ -147,7 +147,13 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
                     .values_list('amount', flat=True)
                     .first()
                 )
-                
+                last_payment = (
+                    lease.lease_installments
+                    .filter()
+                    .order_by('sequency')
+                    .values_list('amount', flat=True)
+                    .last()
+                )
 
                 lease_dict["leases"].append({
                     "id" : lease.uuid,
@@ -167,6 +173,7 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
                     "next_payment" : first_future_payment,
+                    "last_payment" : last_payment,
                     "overdues" : [
                         {   
                             'id': lease.code,
