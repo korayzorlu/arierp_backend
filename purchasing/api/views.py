@@ -125,7 +125,8 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company"]
 
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None)
+            Q(company = active_company.company if active_company else None) &
+            ~Q(lease__contract__partner__types__contains=['special'])
         ).annotate(
             total_purchase_document=Sum('lease__lease_purchase_documents__total_amount'),
             diff=ExpressionWrapper(

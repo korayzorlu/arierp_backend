@@ -25,6 +25,7 @@ class PurchasePaymentFilter(FilterSet):
     lease_status = CharFilter(field_name='lease__lease_status', lookup_expr='icontains')
     status_control = CharFilter(method = 'filter_status_control')
     kdv = CharFilter(method = 'filter_kdv')
+    special = CharFilter(method = 'filter_special')
 
     class Meta:
         model = PurchasePayment
@@ -52,6 +53,14 @@ class PurchasePaymentFilter(FilterSet):
                     Q(lease__vat=Decimal('8.00'))
                 ) &
                 Q(lease__is_last_project=True)
+            )
+        else:
+            return queryset.filter()
+        
+    def filter_special(self, queryset, special, value):
+        if value == "true":
+            return queryset.filter(
+                ~Q(lease__contract__partner__types__contains=['special'])
             )
         else:
             return queryset.filter()
