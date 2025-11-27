@@ -86,6 +86,9 @@ class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
         
         if not file:
             return JsonResponse({'message': 'Yüklenecek dosya bulunamadı!','status':'error'}, status=400)
+        
+        if file.size > settings.MAX_UPLOAD_SIZE:
+            return JsonResponse({'message': 'Dosya boyutu fazla! Max 1MB yükleyebilirsiniz.','status':'error'}, status=400)
 
         if not request.user.is_authenticated:
             return JsonResponse({'message': 'Yetki hatası!.','status':'error'}, status=401)
