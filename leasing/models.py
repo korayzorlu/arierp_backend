@@ -190,7 +190,7 @@ class BankActivity(models.Model):
     name = models.CharField(_("Name"), max_length=500, blank=True, null=True)
     tc_vkn_no = models.CharField(_("TC/VKN No"), max_length=50, blank=True, null=True)
 
-    leases = models.ManyToManyField(Lease,related_name='lease_bank_activities', blank = True)
+    leases = models.ManyToManyField(Lease, related_name='lease_bank_activities', blank=True, editable=False)
 
     is_certain = models.BooleanField(default=False)
     is_processed = models.BooleanField(default=False)
