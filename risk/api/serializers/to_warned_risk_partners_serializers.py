@@ -521,7 +521,6 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(total_contract_payments__gt=20000)
         )
 
-
         # latest_lease = leases.filter(
         #     contract__code=OuterRef('contract__code')
         # ).order_by('-activation_date')
