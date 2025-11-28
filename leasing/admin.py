@@ -47,9 +47,9 @@ class InstallmentAdmin(admin.ModelAdmin):
 
 @admin.register(BankActivity)
 class BankActivityAdmin(admin.ModelAdmin):
-    list_display = ["company","bank","bank_account_no","process_date","process_type","amount","currency","receipt_no","description","tc_vkn_no","cross_bank_account_no","created_date"]
+    list_display = ["company","bank_account_no","third_person_status","amount","currency","description","tc_vkn_no","cross_bank_account_no","created_date"]
     list_display_links = ["amount"]
-    search_fields = ["company__name","bank","bank_account_no","process_date","process_type","amount","currency__code","receipt_no","description","tc_vkn_no","cross_bank_account_no"]
+    search_fields = ["company__name","bank_account_no","third_person_status","amount","currency__code","description","tc_vkn_no","cross_bank_account_no"]
     list_filter = []
     inlines = []
     ordering = ["-updated_date"]
