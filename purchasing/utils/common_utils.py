@@ -10,8 +10,9 @@ from decimal import Decimal
 from purchasing.models import PurchasePayment,PurchaseDocument
 
 def export_purchase_payments(self):
-    objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").exclude(
-        lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]
+    objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").filter(
+        ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]) &
+        ~Q(lease__contract__partner__types__contains=['special'])
     )
 
     self.process.status = "in_progress"
