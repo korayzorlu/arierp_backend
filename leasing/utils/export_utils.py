@@ -51,6 +51,7 @@ def export_bank_activities(self):
         "Gönderen İsmi": [],
         "Gönderen TCKN / VKN": [],
         "3. Şahıs Ödemesi": [],
+        "3. Şahıs Durumu": [],
         "Karşı Banka": [],
         "Karşı Şube": [],
         "Karşı Hesap": []
