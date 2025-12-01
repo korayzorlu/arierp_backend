@@ -18,6 +18,18 @@ from common.models import Status
 from partners.models import Partner
 from .common_utils import *
 
+def translate_third_person_status(status):
+    if status == "clear":
+        return "Temiz"
+    elif status == "pending":
+        return "Beklemede"
+    elif status == "flagged":
+        return "Yasaklı"
+    elif status == "need_document":
+        return "Belge/Kimlik Bekleniyor"
+    else:
+        return ""
+
 def export_bank_activities(self):
     bank_activities = BankActivity.objects.select_related().filter(created_date__date = date.today()).order_by("id")
     objs = BankActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("bank_activity__bank_code","bank_activity__tc_vkn_no")
@@ -77,6 +89,7 @@ def export_bank_activities(self):
                 data["Gönderen İsmi"].append(ba_lease.lease.contract.partner.name)
                 data["Gönderen TCKN / VKN"].append(ba_lease.bank_activity.tc_vkn_no)
                 data["3. Şahıs Ödemesi"].append("Evet" if ba_lease.is_third_person else "")
+                data["3. Şahıs Durumu"].append(translate_third_person_status(ba_lease.bank_activity.third_person_status))
                 data["Karşı Banka"].append(ba_lease.bank_activity.cross_bank_code)
                 data["Karşı Şube"].append(ba_lease.bank_activity.cross_bank_branch_code)
                 data["Karşı Hesap"].append(ba_lease.bank_activity.cross_bank_account_no)
@@ -93,6 +106,7 @@ def export_bank_activities(self):
             data["Gönderen İsmi"].append("")
             data["Gönderen TCKN / VKN"].append(bank_activity.tc_vkn_no)
             data["3. Şahıs Ödemesi"].append("")
+            data["3. Şahıs Durumu"].append(translate_third_person_status(bank_activity.third_person_status))
             data["Karşı Banka"].append(bank_activity.cross_bank_code)
             data["Karşı Şube"].append(bank_activity.cross_bank_branch_code)
             data["Karşı Hesap"].append(bank_activity.cross_bank_account_no)
