@@ -22,7 +22,7 @@ def translate_third_person_status(status):
     if status == "clear":
         return "Temiz"
     elif status == "pending":
-        return "Beklemede"
+        return ""
     elif status == "flagged":
         return "Yasaklı"
     elif status == "need_document":
@@ -89,7 +89,7 @@ def export_bank_activities(self):
                 data["Gönderen Ünvanı"].append(ba_lease.lease.contract.code)
                 data["Gönderen İsmi"].append(ba_lease.lease.contract.partner.name)
                 data["Gönderen TCKN / VKN"].append(ba_lease.bank_activity.tc_vkn_no)
-                data["3. Şahıs Ödemesi"].append("Evet" if ba_lease.is_third_person else "")
+                data["3. Şahıs Ödemesi"].append("Evet" if ba_lease.bank_activity.is_third_person else "")
                 data["3. Şahıs Durumu"].append(translate_third_person_status(ba_lease.bank_activity.third_person_status))
                 data["Karşı Banka"].append(ba_lease.bank_activity.cross_bank_code)
                 data["Karşı Şube"].append(ba_lease.bank_activity.cross_bank_branch_code)
@@ -106,7 +106,7 @@ def export_bank_activities(self):
             data["Gönderen Ünvanı"].append("")
             data["Gönderen İsmi"].append("")
             data["Gönderen TCKN / VKN"].append(bank_activity.tc_vkn_no)
-            data["3. Şahıs Ödemesi"].append("")
+            data["3. Şahıs Ödemesi"].append("Evet" if bank_activity.is_third_person else "")
             data["3. Şahıs Durumu"].append(translate_third_person_status(bank_activity.third_person_status))
             data["Karşı Banka"].append(bank_activity.cross_bank_code)
             data["Karşı Şube"].append(bank_activity.cross_bank_branch_code)
