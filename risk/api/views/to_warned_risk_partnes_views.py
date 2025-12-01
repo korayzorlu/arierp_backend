@@ -33,6 +33,7 @@ from leasing.utils.common_utils import vendor_filter_for_views,project_filter_fo
 from risk.api.serializers.to_warned_risk_partners_serializers import *
 from risk.api.serializers import *
 from risk.api.filters import *
+from risk.utils.filter_utils import to_warned_filters_for_views
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -221,26 +222,7 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            (
-                Q(partner_contracts__contract_leases__overdue_0_30__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True)
+            to_warned_filters_for_views()
             #~Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
@@ -271,10 +253,11 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 'partner_contracts__contract_contract_payments__credit_amount'
             )
         ).filter(
-            (
-                Q(first_installment_payment_date=F('expected_payment_date')) &
-                Q(first_installment_payment__lte=20000)
-            ) |
+            # (
+            #     Q(first_installment_payment_date=F('expected_payment_date')) |
+            #     Q(first_installment_payment__lte=20000)
+            # ) |
+            Q(first_installment_payment_date=F('expected_payment_date')) |
             Q(total_contract_payments__lte=20000)
         )
 
@@ -325,26 +308,7 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            (
-                Q(partner_contracts__contract_leases__overdue_0_30__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True) &
+            to_warned_filters_for_views() &
             #Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
             Q(is_turkkep=True) &
             ~Q(types__contains=["special"])
@@ -422,26 +386,7 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            (
-                Q(partner_contracts__contract_leases__overdue_0_30__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True) &
+            to_warned_filters_for_views() &
             # Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
             Q(is_turkkep=False) &
             ~Q(types__contains=["special"])
@@ -482,3 +427,4 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+

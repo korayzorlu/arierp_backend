@@ -9,6 +9,7 @@ from datetime import date,timedelta,datetime
 import logging
 
 from risk.models import *
+from risk.utils.filter_utils import to_warned_filters_for_serializers
 from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
 from contracts.models import WarningNotice
 
@@ -186,26 +187,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=25) &
-            (
-                Q(overdue_0_30__gt=0) |
-                Q(overdue_31_60__gt=0) |
-                Q(overdue_61_90__gt=0) |
-                Q(overdue_91_120__gt=0) |
-                Q(overdue_121_150__gt=0) |
-                Q(overdue_151_180__gt=0) |
-                Q(overdue_181_gte__gt=0)
-            ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            to_warned_filters_for_serializers()
         )
 
         leases = leases.annotate(
@@ -230,10 +212,11 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 'contract__contract_contract_payments__credit_amount'
             )
         ).filter(
-            (
-                Q(first_installment_payment_date=F('expected_payment_date')) &
-                Q(first_installment_payment__lte=20000)
-            ) |
+            # (
+            #     Q(first_installment_payment_date=F('expected_payment_date')) &
+            #     Q(first_installment_payment__lte=20000)
+            # ) |
+            Q(first_installment_payment_date=F('expected_payment_date')) |
             Q(total_contract_payments__lte=20000)
         )
 
@@ -331,26 +314,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=25) &
-            (   
-                Q(overdue_0_30__gt=0) |
-                Q(overdue_31_60__gt=0) |
-                Q(overdue_61_90__gt=0) |
-                Q(overdue_91_120__gt=0) |
-                Q(overdue_121_150__gt=0) |
-                Q(overdue_151_180__gt=0) |
-                Q(overdue_181_gte__gt=0)
-            ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            to_warned_filters_for_serializers() &
             #Q(lease_trade_transactions__amount_type=0) &
             Q(contract__partner__is_turkkep=True)
         )
@@ -472,26 +436,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=25) &
-            (
-                Q(overdue_0_30__gt=0) |
-                Q(overdue_31_60__gt=0) |
-                Q(overdue_61_90__gt=0) |
-                Q(overdue_91_120__gt=0) |
-                Q(overdue_121_150__gt=0) |
-                Q(overdue_151_180__gt=0) |
-                Q(overdue_181_gte__gt=0)
-            ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            to_warned_filters_for_serializers() &
             #Q(lease_trade_transactions__amount_type=0) &
             Q(contract__partner__is_turkkep=False)
         )
