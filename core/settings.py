@@ -528,10 +528,12 @@ DEFAULT_FROM_EMAIL = str(os.getenv('DEFAULT_FROM_EMAIL'))
 if not DEBUG:
     THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
     THIRD_PERSON_DOCUMENT_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','operasyon@arileasing.com.tr','cem.disci@arileasing.com.tr']
+    THIRD_PERSON_CLEARED_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','finansman@arileasing.com.tr','arzu.akdemir@arileasing.com.tr']
     IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
 else:
     THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
     THIRD_PERSON_DOCUMENT_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
+    THIRD_PERSON_CLEARED_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
     IGNORED_PARTNER_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr']
 
 # Domain

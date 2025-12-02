@@ -97,3 +97,31 @@ def send_email_for_third_person_document(name,tc_vkn_no):
     recipient_list = settings.THIRD_PERSON_DOCUMENT_EMAIL_LIST
 
     send_outlook_email(subject, message, from_email, recipient_list)
+
+def send_email_for_third_person_cleared(name,tc_vkn_no):       
+    def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
+        email = EmailMessage(
+            subject,
+            message,
+            from_email,
+            recipient_list,
+        )
+        if attachments:
+            for attachment in attachments:
+                email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
+        email.send(fail_silently=False)
+        #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            
+    subject = '3. ŞAHIS ÖDEMESİ - KONTROL EDİLDİ'
+    message = f'''
+        Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerçekleşmiştir. Lütfen tahsilat işleminizi kontrol ediniz.
+
+        {name} - {tc_vkn_no}
+
+        Arınet Tahsilat İşleme Ekranı: https://arinet.arileasing.com.tr/collections
+
+    '''
+    from_email = 'Arınet <noreply@arileasing.com.tr>'
+    recipient_list = settings.THIRD_PERSON_CLEARED_EMAIL_LIST
+
+    send_outlook_email(subject, message, from_email, recipient_list)

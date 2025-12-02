@@ -19,6 +19,7 @@ from datetime import date,datetime
 
 from .models import *
 from .utils.black_list_person_utils import is_valid_black_list_person_data
+from .utils.third_person_utils import send_email_for_third_person_cleared
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
 
@@ -118,6 +119,8 @@ class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
             is_reliable_person = True,
             third_person_status = 'cleared'
         )
+
+        send_email_for_third_person_cleared(obj.name,obj.tc_vkn_no)
         
         return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
 
