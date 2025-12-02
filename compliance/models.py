@@ -46,6 +46,7 @@ class ThirdPerson(models.Model):
 
     bank_activities = models.ManyToManyField('leasing.BankActivity',related_name='bank_activities_third_persons', blank = True)
     results = models.JSONField(_("Results"), null=True, blank=True)
+    is_vpos = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

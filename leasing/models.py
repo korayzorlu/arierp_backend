@@ -106,6 +106,13 @@ class Lease(models.Model):
     is_agreed_terminated = models.BooleanField(default=False)
     is_credit = models.BooleanField(default=False)
     is_under_review = models.BooleanField(default=False)
+    
+    WARNING_NOTICE_STATUS_CHOICES = (
+        ('ihtar_yok', ('İhtar Yok')),
+        ('normal_ihtar', ('Notrmal İhtar')),
+        ('kapsamli_ihtar', ('Kapsamlı İhtar')),
+    )
+    warning_notice_status = models.CharField(_("Status"), max_length=25, default='ihtar_yok', choices=WARNING_NOTICE_STATUS_CHOICES, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

@@ -46,7 +46,8 @@ class MenuItemListSerializer(serializers.Serializer):
             {"type" : "sub_menu", "class" : ["default"], "label" : "Uyum", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Yasaklı Listesi", "icon" : "paid", "route" : "/black-list-persons"},
                 {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
-                {"type" : "item", "class" : ["default"], "label" : "3. Şahıs Ödemeleri", "icon" : "paid", "route" : "/third-persons"},
+                {"type" : "item", "class" : ["default"], "label" : "3. Kişiler", "icon" : "paid", "route" : "/third-persons"},
+                {"type" : "item", "class" : ["default"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Operasyon", "icon" : "hub", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
