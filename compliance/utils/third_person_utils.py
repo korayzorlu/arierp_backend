@@ -112,9 +112,9 @@ def send_email_for_third_person_cleared(name,tc_vkn_no):
         email.send(fail_silently=False)
         #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
             
-    subject = '3. ŞAHIS ÖDEMESİ - KONTROL EDİLDİ'
+    subject = '3. ŞAHIS ÖDEMESİ - BELGE/KİMLİK EKLENDİ'
     message = f'''
-        Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerçekleşmiştir. Lütfen tahsilat işleminizi kontrol ediniz.
+        Aşağıdaki kişi/kurum için gerekli olan belge/kimlik sisteme eklenmiştir. Lütfen tahsilat işleminizi kontrol ediniz.
 
         {name} - {tc_vkn_no}
 
