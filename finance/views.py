@@ -61,6 +61,19 @@ class AddBankActivityView(LoginRequiredMixin,View):
 
         return JsonResponse({'message': 'Başarıyla Gönderildi!','status':'success'}, status=200)
 
+class UpdateFinmaksTransactionNameView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = FinmaksTransaction.objects.select_related().filter(uuid = data['id']).first()
+        print(data)
+        if obj and data.get('name') and data.get('name') != '':
+            obj.sender_account_name = data['name']
+            obj.save()
+
+        return JsonResponse({'message': 'Başarıyla Kaydedildi!','status':'success'}, status=200)
+
+
 class AddFinmaksTransactionView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
