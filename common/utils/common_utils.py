@@ -163,7 +163,7 @@ def catch_name_from_description(self):
     return name
 
 def catch_name_from_finmaks_transaction(self):
-    if self.bank_account.account_no == '00158007306261159': # vakıf try
+    if self.bank_account.account_no == '00158007306261159' or self.bank_account.account_no == '001580480123881851': # vakıf
         if re.search(r"\bhesabından\b", self.explanation_field):
             catched_name = re.search(r"([A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s+hesabından", self.explanation_field)
         elif re.search(r"\btarafından\b", self.explanation_field):

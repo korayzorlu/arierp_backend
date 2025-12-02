@@ -82,6 +82,7 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
     category_name = serializers.CharField()
     integration_field_value = serializers.CharField()
     transaction_status = serializers.CharField()
+    currency = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -98,6 +99,9 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
             return True
         else:
             return False
+        
+    def get_currency(self, obj):
+        return obj.bank_account.currency.code if obj.bank_account and obj.bank_account.currency else ''
         
         
 
