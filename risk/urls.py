@@ -32,6 +32,7 @@ urlpatterns = [
     path('warned_risk_partners_excel_for_sms/', WarnedRiskPartnersExcelForSMSView.as_view(), name="warned_risk_partners_excel_for_sms"),
     path('export_warned_risk_partners/', ExportWarnedRiskPartnersView.as_view(), name="export_warned_risk_partners"),
     path('warned_risk_partners_excel/', WarnedRiskPartnersExcelView.as_view(), name="warned_risk_partners_excel"),
+    path('update_warning_notice_status/', UpdateWarningNoticeStatusView.as_view(), name="update_warning_notice_status"),
 
     path('export_to_terminated_risk_partners_for_sms/', ExportToTerminatedRiskPartnersForSMSView.as_view(), name="export_to_terminated_risk_partners_for_sms"),
     path('to_terminated_risk_partners_excel_for_sms/', ToTerminatedRiskPartnersExcelForSMSView.as_view(), name="to_terminated_risk_partners_excel_for_sms"),

@@ -15,6 +15,7 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
+from leasing.models import Lease
 
 import os
 import json
@@ -91,21 +92,18 @@ class WarnedRiskPartnersExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
 
-class UpdateWarningStatusView(LoginRequiredMixin,View):
+class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+    
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
+        uuids = data.get('uuids')
 
-        exporter = BaseExporter(
-            user_id=request.user.id,
-            app="risk",
-            model_name="WarnedRiskPartnerForSMS",
-            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler-sms.xlsx",
-            export_url="/risk/warned_risk_partners_excel_for_sms",
-            params={"project":data.get('project')}
-        )
+        for uuid in uuids:
+            lease = Lease.objects.select_related().filter(uuid = uuid).first()
 
-        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
-            
-        exporter.start_export()
+            if lease:
+                lease.warning_notice_status = 'kapsamli_ihtar'
+                lease.save()
 
-        return HttpResponse(status=200)
+        return JsonResponse({'message': 'Başarıyla gönderildi!','status':'success'}, status=200)
