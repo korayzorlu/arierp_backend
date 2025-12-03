@@ -163,7 +163,6 @@ class BankActivityFilter(FilterSet):
         model = BankActivity
         fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date','third_person_status']
 
-    
 
 class BankActivityLeaseFilter(FilterSet):
     bank_activity = CharFilter(method = 'filter_bank_activity')
