@@ -9,9 +9,8 @@ from django.utils import timezone
 from risk.models import *
 from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
 from contracts.models import WarningNotice
-from trade.models import TradeTransaction
 
-class TerminatedLeaseListSerializer(serializers.Serializer):
+class ExchangedLeaseListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
@@ -49,9 +48,7 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
-    terminated_date = serializers.SerializerMethodField()
-    last_refund_date = serializers.SerializerMethodField()
-    refund = serializers.SerializerMethodField()
+    terminated_date = serializers.DateField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -98,23 +95,3 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
-    def get_terminated_date(self, obj):
-        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').first()
-        return trade_transaction.due_date.strftime('%d.%m.%Y') if obj and trade_transaction.due_date else ''
-    
-    def get_last_refund_date(self, obj):
-        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').first()
-        if obj and trade_transaction and trade_transaction.due_date:
-            last_refund_date = trade_transaction.due_date + timedelta(days=180)
-            return last_refund_date.strftime('%d.%m.%Y')
-        return ''
-    
-    def get_refund(self, obj):
-        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi')
-        total_refund_amount = Decimal('0.00')
-        for tt in trade_transactions:
-            total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
-        return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
-    
-
-

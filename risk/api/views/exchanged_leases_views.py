@@ -28,7 +28,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 from leasing.utils.common_utils import vendor_filter_for_views,project_filter_for_views
 
 
-from risk.api.serializers.terminated_leases_serializers import *
+from risk.api.serializers.exchanged_leases_serializers import *
 from risk.api.serializers import *
 from risk.api.filters import *
 
@@ -111,9 +111,9 @@ class DatatablesPagination(LimitOffsetPagination):
             'data': data
         })
     
-class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
-    serializer_class = TerminatedLeaseListSerializer
-    filterset_class = TerminatedLeaseFilter
+class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = ExchangedLeaseListSerializer
+    filterset_class = ExchangedLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request',
                        'finansman_kurum','bbsn','lease_status_update_date']
@@ -143,22 +143,18 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_serializers(self.request.query_params) &
-            Q(lease_status='feshedildi') &
-            Q(is_last_project=True) &
-            Q(lease_trade_transactions__posting_group_name='Fesih İadesi')
-        ).annotate(
-            refund_amount=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            )
-        ).filter(
-            Q(refund_amount__gt=0)
-        ).distinct()
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False) &
+            Q(overdue_days__gt=0) &
+            Q(overdue_amount__gt=100) &
+            Q(is_last_project=True)
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:

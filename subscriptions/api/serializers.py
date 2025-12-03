@@ -81,6 +81,7 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default","operasyon"], "label" : "Normal İhtar Çekilenler", "icon" : "policy", "route" : "/warned-risk-partners"},
                     {"type" : "item", "class" : ["default","operasyon"], "label" : "Kapsamlı İhtar Çekilenler", "icon" : "policy", "route" : "/comprehensive-warned-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
+                    {"type" : "item", "class" : ["default"], "label" : "Kur Değerleme Kayıpları", "icon" : "policy", "route" : "/exchanged-leases"},
                     {"type" : "item", "class" : ["default"], "label" : "Hatalı/Belirsiz Olanlar", "icon" : "policy", "route" : "/under-reviews"},
                     {"type" : "item", "class" : ["default"], "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
                 ]},
@@ -89,7 +90,7 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Fesih", "icon" : "description", "items" : [
-                    {"type" : "item", "class" : ["default"], "label" : "Fesih Edilenler", "icon" : "policy", "route" : "/terminated-leases"},
+                    {"type" : "item", "class" : ["default"], "label" : "Fesih İadeleri", "icon" : "policy", "route" : "/terminated-leases"},
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "SMS", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Gönderilen SMS'ler", "icon" : "policy", "route" : "/sent-sms"},
