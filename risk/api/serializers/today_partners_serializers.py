@@ -60,6 +60,7 @@ class TodayPartnerListSerializer(serializers.Serializer):
             Q(is_credit=False) &
             Q(is_under_review=False) &
             Q(lease_installments__payment_date=today) &
+            ~Q(lease_installments__type='4') &
             ~Q(lease_installments__sequency=Subquery(latest_sequency_subquery))
         ).order_by("-overdue_days")
 

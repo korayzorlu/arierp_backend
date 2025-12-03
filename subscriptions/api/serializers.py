@@ -88,6 +88,9 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Yarın Ödenecekler", "icon" : "policy", "route" : "/tomorrow-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
                 ]},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Fesih", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Fesih Edilenler", "icon" : "policy", "route" : "/terminated-leases"},
+                ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "SMS", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Gönderilen SMS'ler", "icon" : "policy", "route" : "/sent-sms"},
                 ]},

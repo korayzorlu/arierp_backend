@@ -28,7 +28,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 from leasing.utils.common_utils import vendor_filter_for_views,project_filter_for_views
 
 
-from risk.api.serializers.today_partners_serializers import *
+from risk.api.serializers.terminated_leases_serializers import *
 from risk.api.serializers import *
 from risk.api.filters import *
 
@@ -111,11 +111,12 @@ class DatatablesPagination(LimitOffsetPagination):
             'data': data
         })
     
-class TodayPartnerList(ModelViewSet, QueryListAPIView):
-    serializer_class = TodayPartnerListSerializer
-    filterset_class = TodayPartnerFilter
+class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = TerminatedLeaseListSerializer
+    filterset_class = TerminatedLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
+    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
+    ordering = ['-max_overdue_days']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -130,48 +131,30 @@ class TodayPartnerList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
-        user = self.request.user
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
         active_company_uuid = self.request.query_params.get('ac')
-        if user.is_authenticated:
-            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        else:
-            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
-            
-        custom_related_fields = []
-        prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
 
-        today = date.today()
-
-        # Get the latest sequency for each lease
-        latest_sequency_subquery = Installment.objects.filter(
-            lease=OuterRef('pk')
-        ).order_by('-sequency').values('sequency')[:1]
-
-        queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company=active_company.company if active_company else None) &
-            vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
-            ~Q(partner_contracts__contract_leases__lease_installments__type='4') &
-            ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
-        ).annotate(
-            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
-        ).exclude(types__contains=["special"]).order_by('-max_overdue_days')
+        queryset = Lease.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(lease_status='feshedildi') &
+            Q(is_last_project=True)
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["country__name","billing__country"]
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
             
             q_objects = Q()
             for field in search_fields:
                 q_objects |= Q(**{f"{field}__icontains": query})
             
             queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
         return queryset
-    
+
+

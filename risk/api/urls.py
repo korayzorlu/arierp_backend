@@ -3,6 +3,7 @@ from rest_framework import routers
 
 from risk.api.views.to_be_transferred_views import *
 from risk.api.views.to_terminated_risk_partners_views import *
+from risk.api.views.terminated_leases_views import *
 from risk.api.views.warned_risk_partners_views import *
 from risk.api.views.risk_partners_views import *
 from risk.api.views.to_warned_risk_partnes_views import *
@@ -22,6 +23,7 @@ router.register(r'posta_to_warned_risk_partners',PostaToWarnedRiskPartnerList, "
 router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_partners_api")
 router.register(r'comprehensive_warned_risk_partners',ComprehensiveWarnedRiskPartnerList, "comprehensive_warned_risk_partners_api")
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
+router.register(r'terminated_leases',TerminatedLeaseList, "terminated_leases_api")
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
 router.register(r'to_be_transferred',ToBeTransferredList, "to_be_transferred_api")
