@@ -91,3 +91,21 @@ class WarnedRiskPartnersExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
 
+class UpdateWarningStatusView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="risk",
+            model_name="WarnedRiskPartnerForSMS",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ihtar-çekilenler-sms.xlsx",
+            export_url="/risk/warned_risk_partners_excel_for_sms",
+            params={"project":data.get('project')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)

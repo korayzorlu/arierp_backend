@@ -20,6 +20,7 @@ router.register(r'deposite_to_warned_risk_partners',DepositeToWarnedRiskPartnerL
 router.register(r'kep_to_warned_risk_partners',KepToWarnedRiskPartnerList, "kep_to_warned_risk_partners_api")
 router.register(r'posta_to_warned_risk_partners',PostaToWarnedRiskPartnerList, "posta_to_warned_risk_partners_api")
 router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_partners_api")
+router.register(r'comprehensive_warned_risk_partners',ComprehensiveWarnedRiskPartnerList, "comprehensive_warned_risk_partners_api")
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
