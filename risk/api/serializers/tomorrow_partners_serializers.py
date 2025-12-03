@@ -50,7 +50,8 @@ class TomorrowPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(lease_installments__payment_date=tomorrow)
+            Q(lease_installments__payment_date=tomorrow) &
+            ~Q(lease_installments__type='4')
         ).order_by("-overdue_days")
 
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }

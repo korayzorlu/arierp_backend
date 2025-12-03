@@ -158,6 +158,7 @@ class TomorrowPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_last_project=True) &
             Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
+            ~Q(partner_contracts__contract_leases__lease_installments__type='4') &
             ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days')
