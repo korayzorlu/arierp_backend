@@ -48,6 +48,7 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
+    terminated_date = serializers.DateField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

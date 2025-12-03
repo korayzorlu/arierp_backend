@@ -115,8 +115,9 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = TerminatedLeaseListSerializer
     filterset_class = TerminatedLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['max_overdue_days','total_overdue_amount','name','tc_vkn_no','crm_code']
-    ordering = ['-max_overdue_days']
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request',
+                       'finansman_kurum','bbsn','lease_status_update_date']
+    ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -141,6 +142,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
 
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
+            vendor_filter_for_serializers(self.request.query_params) &
             Q(lease_status='feshedildi') &
             Q(is_last_project=True)
         )
