@@ -162,7 +162,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
             #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today() - timedelta(days=5)) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today().date()) &
+            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
             
@@ -172,26 +172,26 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    customer_type='individual',
-                    then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    customer_type='institutional',
-                    then=Case(
-                        When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
+            # overdue_check=Case(
+            #     When(
+            #         customer_type='individual',
+            #         then=Case(
+            #             When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
+            #             default=Value(False),
+            #             output_field=BooleanField()
+            #         )
+            #     ),
+            #     When(
+            #         customer_type='institutional',
+            #         then=Case(
+            #             When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
+            #             default=Value(False),
+            #             output_field=BooleanField()
+            #         )
+            #     ),
+            #     default=Value(False),
+            #     output_field=BooleanField()
+            # )
         ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
