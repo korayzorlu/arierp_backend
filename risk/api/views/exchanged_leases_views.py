@@ -153,7 +153,9 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(is_under_review=False) &
             Q(overdue_days__gt=0) &
             Q(overdue_amount__gt=100) &
-            Q(is_last_project=True)
+            Q(is_last_project=True) &
+            Q(is_tufe=False) &
+            Q(currency__code__in=['TRY'])
         )
 
         query = self.request.query_params.get('search[value]', None)

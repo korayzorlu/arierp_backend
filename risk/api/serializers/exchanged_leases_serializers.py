@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
@@ -9,6 +9,7 @@ from django.utils import timezone
 from risk.models import *
 from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
 from contracts.models import WarningNotice
+from leasing.models import Installment
 
 class ExchangedLeaseListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
@@ -49,6 +50,8 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
     terminated_date = serializers.DateField()
+    exchanged_amounts = serializers.SerializerMethodField()
+    paid_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -94,4 +97,14 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
     
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    
+    def get_exchanged_amounts(self, obj):
+        installments_total = Installment.objects.select_related().filter(
+            lease=obj,
+            payment_date__lte=date.today()
+        ).aggregate(amount_due_to_date_locale=Sum('amount'))
+
+        return {
+            "amount_due_to_date_locale": installments_total['amount_due_to_date_locale'] or Decimal('0.00')
+        }
     
