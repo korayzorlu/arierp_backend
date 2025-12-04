@@ -56,7 +56,7 @@ class AddBankActivityView(LoginRequiredMixin,View):
             currency = finmaks_transaction.bank_account.currency,
             name = finmaks_transaction.sender_account_name,
             description = finmaks_transaction.explanation_field,
-            tc_vkn_no = finmaks_transaction.sender_vkn,
+            tc_vkn_no = finmaks_transaction.sender_vkn if finmaks_transaction.sender_vkn and finmaks_transaction.sender_vkn != "None" else None,
         )
 
         return JsonResponse({'message': 'Başarıyla Gönderildi!','status':'success'}, status=200)
