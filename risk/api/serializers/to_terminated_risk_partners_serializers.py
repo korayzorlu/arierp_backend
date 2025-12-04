@@ -68,27 +68,27 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    contract__partner__customer_type='individual',
-                    then=Case(
-                        When(overdue_days__gt=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    contract__partner__customer_type='institutional',
-                    then=Case(
-                        When(overdue_days__gt=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
+            # overdue_check=Case(
+            #     When(
+            #         contract__partner__customer_type='individual',
+            #         then=Case(
+            #             When(overdue_days__gt=60, then=Value(True)),
+            #             default=Value(False),
+            #             output_field=BooleanField()
+            #         )
+            #     ),
+            #     When(
+            #         contract__partner__customer_type='institutional',
+            #         then=Case(
+            #             When(overdue_days__gt=90, then=Value(True)),
+            #             default=Value(False),
+            #             output_field=BooleanField()
+            #         )
+            #     ),
+            #     default=Value(False),
+            #     output_field=BooleanField()
+            # )
+        ).filter(warning_notice_count__gt=0)
 
         overdue_days = 0
         for lease in leases:
