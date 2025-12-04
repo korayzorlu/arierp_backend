@@ -37,6 +37,8 @@ class AddBankActivityView(LoginRequiredMixin,View):
         name = catch_name_from_finmaks_transaction(finmaks_transaction)
         if finmaks_transaction.sender_account_name == "None" and not name:
             return JsonResponse({'message': 'İsim algılanamadı! Lütfen gönderen ismini güncelleyiniz.','status':'warning'}, status=400)
+        elif finmaks_transaction.sender_account_name == "" and not name:
+            return JsonResponse({'message': 'İsim algılanamadı! Lütfen gönderen ismini güncelleyiniz.','status':'warning'}, status=400)
 
         BankActivity.objects.create(
             company = self.request.user.user_companies.filter(is_active=True).first().company,
