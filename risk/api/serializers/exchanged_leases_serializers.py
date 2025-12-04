@@ -10,6 +10,8 @@ from risk.models import *
 from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue_days,total_overdue_amount,total_temerrut_amount,paid_rate,project_filter_for_serializers,processed_amount
 from contracts.models import WarningNotice
 from leasing.models import Installment
+from trade.models import TradeTransaction
+from common.models import ExchangeRate
 
 class ExchangedLeaseListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
@@ -99,12 +101,36 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     def get_exchanged_amounts(self, obj):
-        installments_total = Installment.objects.select_related().filter(
+        installments = Installment.objects.select_related().filter(
             lease=obj,
             payment_date__lte=date.today()
-        ).aggregate(amount_due_to_date_locale=Sum('amount'))
+        )
+
+        installments_total = installments.aggregate(total_amount=Sum('amount'))
+
+        exchanged_amount_due_to_date = Decimal('0.00')
+        for installment in installments:
+            exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
+            exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
+        
+        trade_transactions = TradeTransaction.objects.select_related().filter(
+            lease = obj,
+            posting_group_name='Kira',
+            amount_type='0',
+            due_date__lte=date.today()
+        )
+
+        trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
+
+        exchanged_amount_paid_to_date = Decimal('0.00')
+        for transaction in trade_transactions:
+            exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
+            exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
 
         return {
-            "amount_due_to_date_locale": installments_total['amount_due_to_date_locale'] or Decimal('0.00')
+            "amount_due_to_date_locale": installments_total['total_amount'] or Decimal('0.00'),
+            "amount_due_to_date_usd": exchanged_amount_due_to_date,
+            "amount_paid_to_date_locale": trade_transactions_total['total_amount'] or Decimal('0.00'),
+            "amount_paid_to_date_usd": exchanged_amount_paid_to_date
         }
     

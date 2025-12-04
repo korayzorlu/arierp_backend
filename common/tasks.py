@@ -67,7 +67,7 @@ def fetch_very_big_data_from_leaseflex(company):
 
 @shared_task()
 def fetch_exchange_rates(target_currency,date):
-    start_date = datetime.now() - timedelta(days=365*10)
+    start_date = datetime.now() - timedelta(days=40*1)
     end_date = datetime.now()
 
     current_date = start_date
@@ -75,9 +75,9 @@ def fetch_exchange_rates(target_currency,date):
         response = get_exchange_rate_for_date(target_currency=target_currency, date=current_date.strftime('%d-%m-%Y'))
         print(response)
 
-        obj = ExchangeRate.objects.filter(base_currency__code='TRY', target_currency__code=target_currency, date=current_date).first()
+        obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(base_currency__code='TRY', target_currency__code=target_currency, date=current_date).first()
         if obj:
-            prev_obj = ExchangeRate.objects.filter(id = obj.id - 1).first()
+            prev_obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(id = obj.id - 1).first()
             obj.date = current_date
             if response.get('forex_buying', Decimal('0.00')) == Decimal('0.00') and prev_obj:
                 obj.forex_buying = prev_obj.forex_buying
@@ -96,7 +96,7 @@ def fetch_exchange_rates(target_currency,date):
                 forex_buying = response.get('forex_buying', Decimal('0.00')),
                 forex_selling = response.get('forex_selling', Decimal('0.00'))
             )
-            prev_obj = ExchangeRate.objects.filter(id = new_obj.id - 1).first()
+            prev_obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(id = new_obj.id - 1).first()
             if response.get('forex_buying', Decimal('0.00')) == Decimal('0.00') and prev_obj:
                 new_obj.forex_buying = prev_obj.forex_buying
             if response.get('forex_selling', Decimal('0.00')) == Decimal('0.00') and prev_obj:
