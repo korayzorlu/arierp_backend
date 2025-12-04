@@ -169,11 +169,15 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
+            (
+                Q(partner_contracts__contract_warning_notices__state='Yeni') |
+                Q(partner_contracts__contract_warning_notices__state='Geçerli')
+            ) &
             Q(partner_contracts__contract_leases__is_last_project=True) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
+            Q(partner_contracts__contract_warning_notices__official_cancellation_date__gt=datetime.today()) &
             Q(partner_contracts__contract_leases__overdue_days__gt=30) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             ~Q(partner_contracts__contract_leases__warning_notice_status='kapsamli_ihtar')
