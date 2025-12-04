@@ -160,9 +160,11 @@ class InstallmentFilter(FilterSet):
 class BankActivityFilter(FilterSet):
     created_date = DateFromToRangeFilter(field_name = 'created_date')
     third_person_status = CharFilter(method = 'filter_third_person_status')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
+    tc_vkn_no = CharFilter(field_name='tc_vkn_no', lookup_expr='icontains')
     class Meta:
         model = BankActivity
-        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date','third_person_status']
+        fields = ['uuid','bank','bank_account_no','process_type','receipt_no','description','created_date','third_person_status','tc_vkn_no']
 
     def filter_third_person_status(self, queryset, third_person_status, value):
         if value == "all":
