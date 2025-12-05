@@ -117,7 +117,8 @@ class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
 
         obj.bank_activities.update(
             is_reliable_person = True,
-            third_person_status = 'cleared'
+            third_person_status = 'cleared',
+            created_date = datetime.now()
         )
 
         send_email_for_third_person_cleared(obj.name,obj.tc_vkn_no)
