@@ -134,6 +134,9 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
             "amount_due_to_date_locale": installments_total['total_amount'] or Decimal('0.00'),
             "amount_due_to_date_usd": exchanged_amount_due_to_date,
             "amount_paid_to_date_locale": trade_transactions_total['total_amount'] or Decimal('0.00'),
-            "amount_paid_to_date_usd": exchanged_amount_paid_to_date
+            "amount_paid_to_date_usd": exchanged_amount_paid_to_date,
+            "overdue_amount_usd":  obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00')),
+            "due_overdue_amount_usd" : exchanged_amount_due_to_date - exchanged_amount_paid_to_date,
+            "kur_kaybi" : exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00')))
         }
     
