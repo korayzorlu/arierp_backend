@@ -22,7 +22,8 @@ def sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date):
         SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
     elif params.get("risk_status") == "to_terminated":
         SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:02123102721 Mernis No:0147005285500018"
-
+    elif params.get("risk_status") == "global_notification":
+        SMS_TEXT = F"Ödemelerinizin gecikmesiz işlenebilmesi için Eft/Havale işlemlerinizde açıklama kısmına mutlaka sözleşme numaranızı,sözleşme sahibi T.C. numarasını ve sözleşme sahibi isim-soy isim bilgisini yazmanız gerekmektedir. IBAN: TR27 0001 2009 6260 0010 1009 81 Alıcı Adı: Arı Finansal Kiralama Arı Finansal Kiralama. Mernis No: 0147005285500018"
     return SMS_TEXT or ""
 
 
