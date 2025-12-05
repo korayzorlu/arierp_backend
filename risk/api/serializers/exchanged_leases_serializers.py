@@ -12,6 +12,7 @@ from contracts.models import WarningNotice
 from leasing.models import Installment
 from trade.models import TradeTransaction
 from common.models import ExchangeRate
+from django.db.models.functions import TruncDate
 
 class ExchangedLeaseListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
@@ -113,11 +114,13 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
             exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
             exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
         
-        trade_transactions = TradeTransaction.objects.select_related().filter(
-            lease = obj,
+        trade_transactions = TradeTransaction.objects.select_related().annotate(
+            due_date_date=TruncDate('due_date')
+        ).filter(
+            lease=obj,
             posting_group_name='Kira',
             amount_type='0',
-            due_date__lte=date.today()
+            due_date_date__lte=date.today()
         )
 
         trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
