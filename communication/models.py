@@ -20,6 +20,7 @@ from companies.models import Company
 from common.models import Currency, Status
 from common.utils.ai_utils import EXAMPLE_DEF,EXAMPLE_LIST
 from partners.models import Partner
+from users.models import User
 
 # Create your models here.
 
@@ -61,4 +62,33 @@ class SMS(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(f"{self.phone_number} - {self.text}")  
+        return str(f"{self.phone_number} - {self.text}")
+
+class EmailReceiver(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="email_receivers")
+
+    email = models.CharField(_("Email"), max_length=500, null=True, blank=True)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.email}") 
+
+class Email(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="emails")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_emails", null=True, blank=True)
+    receivers = models.ManyToManyField(EmailReceiver,related_name='receivers_emails', blank = True)
+
+    send_date = models.DateTimeField(_("Send Date"), blank=True, null=True)
+    sender = models.CharField(_("Sender"), max_length=500, null=True, blank=True)
+    text = models.CharField(_("Text"), max_length=500, null=True, blank=True)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.sender} - {self.send_date}") 
