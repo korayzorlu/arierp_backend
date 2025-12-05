@@ -120,7 +120,7 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
             lease=obj,
             posting_group_name='Kira',
             amount_type='0',
-            due_date_date__lte=date.today()
+            due_date__lte=datetime.now()
         )
 
         trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
