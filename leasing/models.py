@@ -216,7 +216,6 @@ class BankActivity(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     updated_date = models.DateTimeField(auto_now=True)
 
-
     def __str__(self):
         return str(self.description)
     
