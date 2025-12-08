@@ -111,6 +111,26 @@ class TrialBalanceContractFilter(FilterSet):
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = "durduruldu"
             )
+        elif value == "devredildi" and is_correct == "true":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "devredildi"
+            )
+        elif value == "devredildi" and is_correct == "false":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "devredildi"
+            )
+        elif value == "feshedildi" and is_correct == "true":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "feshedildi"
+            )
+        elif value == "feshedildi" and is_correct == "false":
+            return queryset.filter(
+                contract_leases__is_last_project = True,
+                contract_leases__lease_status = "feshedildi"
+            )
         elif value == "inactive":
             return queryset.filter(
                 contract_leases__is_last_project = True

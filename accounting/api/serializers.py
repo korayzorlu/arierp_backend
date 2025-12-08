@@ -229,7 +229,7 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
             for trial_balance in trial_balances:
                 trial_balance_dict["trial_balances"].append({
                     "id" : trial_balance.uuid,
-                    "partner" : trial_balance.partner.name,
+                    "partner" : trial_balance.partner.name if trial_balance.partner else "",
                     "currency" : trial_balance.currency.code if trial_balance.currency else "",
                     "account_id" : trial_balance.account_id,
                     "main_account_code" : trial_balance.main_account_code,
@@ -251,10 +251,6 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
                 })
         #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
         return trial_balance_dict
-
-
-
-
 
 class UnderReviewListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
