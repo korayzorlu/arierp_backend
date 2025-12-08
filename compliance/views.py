@@ -34,7 +34,10 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
-        obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
+        if obj.status == 'need_document':
+            obj.status = data.get('status')
+        else:
+            obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
         obj.save()
 
         bank_activities = obj.bank_activities.select_related().all()
