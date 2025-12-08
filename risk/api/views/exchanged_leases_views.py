@@ -31,6 +31,7 @@ from leasing.utils.common_utils import vendor_filter_for_views,project_filter_fo
 from risk.api.serializers.exchanged_leases_serializers import *
 from risk.api.serializers import *
 from risk.api.filters import *
+from risk.utils.exchanged_leases_utils import compute_exchanged_amounts
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -130,6 +131,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
         return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [AllowAny]
+
+    
     
     def get_queryset(self):
         if hasattr(self, '_cached_queryset'):
@@ -167,6 +170,36 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
                 q_objects |= Q(**{f"{field}__icontains": query})
             
             queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+
+        return queryset
+
+        # Python-side sorting for computed exchange metrics only when paginate=false
+        exchange_order_keys = {
+            "odenmesi_gereken_yerel",
+            "odenmesi_gereken_usd",
+            "odenen_yerel",
+            "odenen_usd",
+            "geciken_usd",
+            "geciken_odenmesi_gereken_usd",
+            "kur_kaybi",
+        }
+        if ordering:
+            desc = ordering.startswith('-')
+            key_name = ordering[1:] if desc else ordering
+            if key_name in exchange_order_keys:
+                items = list(queryset)
+                metrics_cache = {}
+                def metric_for(lease):
+                    if lease.uuid in metrics_cache:
+                        return metrics_cache[lease.uuid][key_name]
+                    m = compute_exchanged_amounts(lease)
+                    metrics_cache[lease.uuid] = m
+                    return m[key_name]
+                items.sort(key=metric_for, reverse=desc)
+                self._cached_queryset = items
+                return items
+
         self._cached_queryset = queryset
         return queryset
 
