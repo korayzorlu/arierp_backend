@@ -19,7 +19,7 @@ SELECT lop.OperationProjectId,
     lop.CurrentRequest
 FROM LeasingOperationProjectList lop
 LEFT JOIN LeasingOperationProject l ON lop.OperationProjectId = l.OperationProjectId
--- WHERE lop.OperationProjectCode = '62463.1.1'
+--WHERE lop.OperationProjectCode = '67018.1.0'
 -- WHERE
 --     lop.ActivationDate > '2023-07-10'
 --     AND lop.VatRate = '18.00'

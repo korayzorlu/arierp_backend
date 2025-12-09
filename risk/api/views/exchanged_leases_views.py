@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists
-from django.db.models.functions import Lower,Upper
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists, F
+from django.db.models.functions import Lower,Upper,Coalesce
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -117,8 +117,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
     filterset_class = ExchangedLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request',
-                       'finansman_kurum','bbsn','lease_status_update_date']
-    ordering = ['-activation_date']
+                       'finansman_kurum','bbsn','lease_status_update_date','kur_kaybi']
+    ordering = ['-kur_kaybi']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -140,8 +140,33 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         ordering = self.request.query_params.get('ordering')
+
+        # Bugünkü USD kurunu al
+        today_usd_rate = ExchangeRate.objects.filter(
+            date=date.today(), 
+            target_currency__code="USD"
+        ).first()
+        today_forex = today_usd_rate.forex_buying if today_usd_rate else Decimal('1.00')
         
         custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
+
+        # Installment toplamı
+        installment_subquery = Installment.objects.filter(
+            lease=OuterRef('pk'),
+            payment_date__lte=date.today()
+        ).values('lease').annotate(
+            total=Sum('amount')
+        ).values('total')[:1]
+        
+        # Trade transaction toplamı
+        trade_subquery = TradeTransaction.objects.filter(
+            lease=OuterRef('pk'),
+            posting_group_name='Kira',
+            amount_type='0',
+            due_date__lte=datetime.now()
+        ).values('lease').annotate(
+            total=Sum('amount')
+        ).values('total')[:1]
 
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
@@ -161,6 +186,13 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(currency__code__in=['TRY'])
         )
 
+        queryset = queryset.annotate(
+            installment_total=Coalesce(Subquery(installment_subquery), Decimal('0.00')),
+            trade_total=Coalesce(Subquery(trade_subquery), Decimal('0.00')),
+            # Yaklaşık kur kaybı (gerçek hesaplama tarihsel kur gerektirir)
+            kur_kaybi=F('installment_total') / Value(today_forex) - F('trade_total') / Value(today_forex) - F('overdue_amount') / Value(today_forex)
+        )
+
         query = self.request.query_params.get('search[value]', None)
         if query:
             search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
@@ -174,33 +206,6 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
 
         return queryset
 
-        # Python-side sorting for computed exchange metrics only when paginate=false
-        exchange_order_keys = {
-            "odenmesi_gereken_yerel",
-            "odenmesi_gereken_usd",
-            "odenen_yerel",
-            "odenen_usd",
-            "geciken_usd",
-            "geciken_odenmesi_gereken_usd",
-            "kur_kaybi",
-        }
-        if ordering:
-            desc = ordering.startswith('-')
-            key_name = ordering[1:] if desc else ordering
-            if key_name in exchange_order_keys:
-                items = list(queryset)
-                metrics_cache = {}
-                def metric_for(lease):
-                    if lease.uuid in metrics_cache:
-                        return metrics_cache[lease.uuid][key_name]
-                    m = compute_exchanged_amounts(lease)
-                    metrics_cache[lease.uuid] = m
-                    return m[key_name]
-                items.sort(key=metric_for, reverse=desc)
-                self._cached_queryset = items
-                return items
 
-        self._cached_queryset = queryset
-        return queryset
 
 

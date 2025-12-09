@@ -150,11 +150,9 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
     
     def get_kur_kaybi_yuzde(self, obj):
         installments = Installment.objects.select_related().filter(
-            lease=obj,
+            lease=obj, 
             payment_date__lte=date.today()
         )
-
-        installments_total = installments.aggregate(total_amount=Sum('amount'))
 
         exchanged_amount_due_to_date = Decimal('0.00')
         for installment in installments:
@@ -169,8 +167,6 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
             amount_type='0',
             due_date__lte=datetime.now()
         )
-
-        trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
 
         exchanged_amount_paid_to_date = Decimal('0.00')
         for transaction in trade_transactions:
