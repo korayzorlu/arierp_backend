@@ -1,4 +1,4 @@
-SELECT
+SELECT TOP 2000
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,
@@ -67,7 +67,7 @@ WHERE
     AND TrnPostingType <> 461
     -- AND TrnOprContractId = 59061
     -- AND TrnOprProjectId = 61034
-    -- AND TrnOprLeasingOperationPrjId = 93110
+    --AND TrnOprLeasingOperationPrjId = 94391
     AND (
         lopStatu.LastSubStatuId IN (
             405, 416, 415, 402, 2028, 2057, 2041, 2058, 2059, 408, 2073, 806, 412, 2047, 503, 1026, 1014, 2032, 2072,
@@ -81,5 +81,3 @@ WHERE
     AND TrnPostingTypeDetail <> 80 
 ORDER BY
     TrnCreateDate DESC
-OFFSET 10000 ROWS
-FETCH NEXT 5000 ROWS ONLY;
