@@ -1,4 +1,4 @@
-SELECT TOP 100000
+SELECT
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,
@@ -81,3 +81,5 @@ WHERE
     AND TrnPostingTypeDetail <> 80 
 ORDER BY
     TrnCreateDate DESC
+OFFSET 10000 ROWS
+FETCH NEXT 5000 ROWS ONLY;
