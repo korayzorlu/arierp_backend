@@ -116,6 +116,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Yürürlükte Olmayan Söz.", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Sözleşme Mizanları", "icon" : "checkbook", "route" : "/trial-balance-contract-inactives"},
+                    {"type" : "item", "class" : ["default"], "label" : "Sözleşme Mizanları (Adet)", "icon" : "checkbook", "route" : "/count-trial-balance-contract-inactives"},
                 ]},
                 # {"type" : "item", "class" : ["default"], "label" : "Genel Mizan İncelenecekler", "icon" : "checkbook", "route" : "/accounting-under-reviews"},
             ]},

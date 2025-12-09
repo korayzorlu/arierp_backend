@@ -255,6 +255,11 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
 class UnderReviewListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
+    
+
+class UnderReviewListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
     contract_id = serializers.CharField()
     partner = serializers.SerializerMethodField()

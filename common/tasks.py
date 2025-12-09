@@ -67,7 +67,7 @@ def fetch_very_big_data_from_leaseflex(company):
 
 @shared_task()
 def fetch_exchange_rates(target_currency,date):
-    start_date = datetime.now() - timedelta(days=40*1)
+    start_date = datetime.now() - timedelta(days=35*1)
     end_date = datetime.now()
 
     current_date = start_date
