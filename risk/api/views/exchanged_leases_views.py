@@ -151,7 +151,7 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
 
         # Installment toplamı
-        installment_subquery = Installment.objects.filter(
+        installment_subquery = Installment.objects.select_related().filter(
             lease=OuterRef('pk'),
             payment_date__lte=date.today()
         ).values('lease').annotate(
@@ -159,7 +159,7 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
         ).values('total')[:1]
         
         # Trade transaction toplamı
-        trade_subquery = TradeTransaction.objects.filter(
+        trade_subquery = TradeTransaction.objects.select_related().filter(
             lease=OuterRef('pk'),
             posting_group_name='Kira',
             amount_type='0',
