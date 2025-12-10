@@ -61,3 +61,9 @@ def trial_balance_main_account_codes(params):
         elif params.get('currency') == 'no_try':
             return ["151","227","279","391","393","979","981"]
         return ["150","151","226","227","278","279","390","391","392","393","978","979","980","981"]
+    if params.get('lease_status') == 'planlandi':
+        if params.get('currency') == 'try':
+            return ["228","278","392","978","980"]
+        elif params.get('currency') == 'no_try':
+            return ["229","279","393","979","981"]
+        return ["228","229","278","279","392","393","978","979","980","981"]

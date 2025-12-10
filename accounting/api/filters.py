@@ -79,15 +79,15 @@ class TrialBalanceContractFilter(FilterSet):
         elif value == "planlandi" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status = "planlandi",
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","980","981","936","934"]
+                contract_leases__lease_status = self.data.get('lease_status'),
+                contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
         elif value == "planlandi" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status = "planlandi"
+                contract_leases__lease_status = self.data.get('lease_status')
             ).exclude(
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","980","981","936","934"]
+                contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
         elif value == "aktiflestirildi" and is_correct == "true":
             return queryset.filter(
