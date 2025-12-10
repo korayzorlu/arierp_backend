@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django_filters import CharFilter
 
 from accounting.models import *
+from accounting.utils.common_utils import trial_balance_main_account_codes
 
 class PaymentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
@@ -91,15 +92,15 @@ class TrialBalanceContractFilter(FilterSet):
         elif value == "aktiflestirildi" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status = "aktiflestirildi",
-                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979","980","981","936","934"]
+                contract_leases__lease_status = self.data.get('lease_status'),
+                contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
         elif value == "aktiflestirildi" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status = "aktiflestirildi"
+                contract_leases__lease_status = self.data.get('lease_status')
             ).exclude(
-                contract_trial_balances__main_account_code__in=["150","151","278","279","390","391","978","979","980","981","936","934"]
+                contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
         elif value == "durduruldu" and is_correct == "true":
             return queryset.filter(
