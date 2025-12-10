@@ -145,7 +145,7 @@ def fetch_finmaks_bank_accounts(company):
                 update_objs.append(obj)
                 update_progress += 1
             else:
-                if obj["Currency"] == "TL" or bank_account["Currency"] == "YTL":
+                if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
                     currency = "TRY"
                 else:
                     currency = bank_account["Currency"]
