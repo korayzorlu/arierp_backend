@@ -364,6 +364,7 @@ class TrialBalanceContractList(ModelViewSet, QueryListAPIView):
         
         queryset = Contract.objects.select_related(*custom_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
+            Q(contract_leases__is_last_project = True) &
             Q(contract_trial_balances__isnull=False)
         ).distinct()
 

@@ -66,26 +66,27 @@ class TrialBalanceContractFilter(FilterSet):
         if value == "all" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"],
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979","980","981","936","934"]
+                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
             )
         elif value == "all" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
+                contract_leases__lease_status__in=["planlandi","aktiflestirildi"]
             ).exclude(
-                contract_trial_balances__main_account_code__in=["392","393","378","378","278","279","150","151","278","279","390","391","978","979","980","981","936","934"]
+                contract_trial_balances__main_account_code__in=trial_balance_main_account_codes({'lease_status': 'aktiflestirildi'}) + trial_balance_main_account_codes({'lease_status': 'planlandi'})
             )
         elif value == "planlandi" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = self.data.get('lease_status'),
+                contract_leases__currency__code = self.data.get('currency'),
                 contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
         elif value == "planlandi" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status = self.data.get('lease_status')
+                contract_leases__lease_status = self.data.get('lease_status'),
+                contract_leases__currency__code = self.data.get('currency'),
             ).exclude(
                 contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
@@ -93,12 +94,14 @@ class TrialBalanceContractFilter(FilterSet):
             return queryset.filter(
                 contract_leases__is_last_project = True,
                 contract_leases__lease_status = self.data.get('lease_status'),
+                contract_leases__currency__code = self.data.get('currency'),
                 contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )
         elif value == "aktiflestirildi" and is_correct == "false":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status = self.data.get('lease_status')
+                contract_leases__lease_status = self.data.get('lease_status'),
+                contract_leases__currency__code = self.data.get('currency'),
             ).exclude(
                 contract_trial_balances__main_account_code__in=trial_balance_main_account_codes(self.data)
             )

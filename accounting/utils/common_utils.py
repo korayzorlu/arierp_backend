@@ -56,14 +56,16 @@ def create_transaction(company, type, account, amount, ref_uuid, description="")
 
 def trial_balance_main_account_codes(params):
     if params.get('lease_status') == 'aktiflestirildi':
-        if params.get('currency') == 'try':
+        if params.get('currency') == 'TRY':
             return ["150","226","278","390","392","978","980"]
-        elif params.get('currency') == 'no_try':
+        elif params.get('currency') == 'USD' or params.get('currency') == 'EUR':
             return ["151","227","279","391","393","979","981"]
         return ["150","151","226","227","278","279","390","391","392","393","978","979","980","981"]
-    if params.get('lease_status') == 'planlandi':
-        if params.get('currency') == 'try':
+    elif params.get('lease_status') == 'planlandi':
+        if params.get('currency') == 'TRY':
             return ["228","278","392","978","980"]
-        elif params.get('currency') == 'no_try':
+        elif params.get('currency') == 'USD' or params.get('currency') == 'EUR':
             return ["229","279","393","979","981"]
         return ["228","229","278","279","392","393","978","979","980","981"]
+    else:
+        return []
