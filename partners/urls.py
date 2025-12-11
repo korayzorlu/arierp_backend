@@ -26,6 +26,9 @@ urlpatterns = [
     path('ignore_partner/', IgnoePartnerView.as_view(), name="ignore_partner"),
     path('confirm_partner/', ConfirmPartnerView.as_view(), name="confirm_partner"),
 
+    path('export_partners/', ExportPartnersView.as_view(), name="export_partners"),
+    path('partners_excel/', PartnersExcelView.as_view(), name="partners_excel"),
+
     path('test/', ExampleView.as_view(), name="test"),
     
     path('', include("partners.api.urls")),

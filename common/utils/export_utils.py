@@ -28,6 +28,7 @@ from risk.utils.risk_utils import export_amount_debit_transactions
 from risk.utils.under_reviews_utils import export_under_reviews
 from contracts.utils.contract_utils import export_contract_payments
 from operation.utils import export_partner_advance_activities,export_partner_advances
+from partners.utils.common_utils import export_partners
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -145,6 +146,9 @@ class BaseExporter():
 
     def export_contractpayment(self):
         export_contract_payments(self)
+
+    def export_partner(self):
+        export_partners(self)
 
     def export_partneradvanceactivity(self):
         export_partner_advance_activities(self)

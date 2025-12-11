@@ -1,7 +1,8 @@
 from celery import shared_task
 from core.celery import app
 from django.http import JsonResponse
-from django.db.models import Q
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
+from django.db.models.functions import TruncDate
 from django.utils.timezone import make_aware
 
 import pandas as pd
@@ -21,9 +22,10 @@ from leasing.utils.common_utils import get_lease_status_value,status_filter_for_
 from users.models import User
 from leasing.models import *
 from leasing.sqls import OVERDUE_INSTALLMENTS
-from common.models import Currency
+from common.models import Currency,ExchangeRate
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
+from trade.models import TradeTransaction
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -144,3 +146,77 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass
 
+def fetch_exchanged_amounts(company,BATCH_SIZE=1000):
+    try:
+        objs = Lease.objects.select_related("status","company","contract","currency").filter(company__id=int(company))
+        installments = Installment.objects.select_related().filter(company__id=int(company))
+        trade_transactions = TradeTransaction.objects.select_related().filter(company__id=int(company),posting_group_name='Kira',amount_type='0')
+        exchange_rates = ExchangeRate.objects.select_related().filter(target_currency__code="USD")
+
+        installments_dict = {(i.lease,i.payment_date): i for i in installments}
+        trade_transactions_dict = {(t.lease,t.due_date): t for t in trade_transactions}
+        exchange_rates_dict = {e.date: e for e in exchange_rates}
+
+        update_progress = 0
+
+        update_objs = []
+        for index,obj in enumerate(objs):
+            installments = [i for i in installments_dict.values() if i.lease == obj and i.payment_date <= date.today()]
+
+            installments_total = installments.aggregate(total_amount=Sum('amount'))
+
+            exchanged_amount_due_to_date = Decimal('0.00')
+            for installment in installments:
+                exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
+                exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
+            
+            trade_transactions = TradeTransaction.objects.select_related().annotate(
+                due_date_date=TruncDate('due_date')
+            ).filter(
+                lease=obj,
+                posting_group_name='Kira',
+                amount_type='0',
+                due_date__lte=datetime.now()
+            )
+
+            trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
+
+            exchanged_amount_paid_to_date = Decimal('0.00')
+            for transaction in trade_transactions:
+                exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
+                exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
+
+            kur_kaybi_yuzde = Decimal('0.00')
+            if exchanged_amount_due_to_date != Decimal('0.00'):
+                kur_kaybi_yuzde = exchanged_amount_paid_to_date / exchanged_amount_due_to_date * Decimal('100.00')
+            else:
+                kur_kaybi_yuzde = Decimal('0.00')
+
+            obj.odenmesi_gereken_yerel = installments_total['total_amount'] or Decimal('0.00')
+            obj.odenmesi_gereken_usd = exchanged_amount_due_to_date
+            obj.odenen_yerel = trade_transactions_total['total_amount'] or Decimal('0.00')
+            obj.odenen_usd = exchanged_amount_paid_to_date
+            obj.geciken_usd =  obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00'))
+            obj.geciken_odenmesi_gereken_usd = exchanged_amount_due_to_date - exchanged_amount_paid_to_date
+            obj.kur_kaybi = exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00')))
+            obj.kur_kaybi_yuzde = kur_kaybi_yuzde
+
+            update_objs.append(obj)
+            update_progress += 1
+        if update_objs:
+            Lease.objects.bulk_update(update_objs, [
+                "odenmesi_gereken_yerel",
+                "odenmesi_gereken_usd",
+                "odenen_yerel",
+                "odenen_usd",
+                "geciken_usd",
+                "geciken_odenmesi_gereken_usd",
+                "kur_kaybi",
+                "kur_kaybi_yuzde",
+            ])
+
+        print(f"Toplam {update_progress} kira planı kur kayıpları güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())

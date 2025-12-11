@@ -18,7 +18,9 @@ from partners.utils.common_utils import is_valid_partner_data, get_partner_types
 from partners.utils.partner_utils import *
 from common.models import ImportProcess
 from common.utils.import_utils import BaseImporter
+from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
+from common.models import ExportProcess
 
 import os
 import json
@@ -284,3 +286,40 @@ class PartnerInformationView(LoginRequiredMixin,View):
         }
 
         return JsonResponse({'partner':partner_data}, status=200)
+    
+
+class ExportPartnersView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if ExportProcess.objects.filter(user=request.user,model_name="Partner",status__in=["pending","in_progress"]).exists():
+            return JsonResponse({'message':'Bu tablo için başka bir dışarı aktarma işlemi devam ediyor! Lütfen bekleyin.','status':'error'}, status=400)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="partners",
+            model_name="Partner",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-partner-listesi.xlsx",
+            export_url="/partners/partners_excel",
+            params={"project":data.get('project')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class PartnersExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "partners", "partners", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-partner-listesi.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
