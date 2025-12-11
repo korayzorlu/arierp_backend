@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists, F
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists, F,DecimalField
 from django.db.models.functions import Lower,Upper,Coalesce
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -117,7 +117,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
     filterset_class = ExchangedLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request',
-                       'finansman_kurum','bbsn','lease_status_update_date','kur_kaybi']
+                       'finansman_kurum','bbsn','lease_status_update_date','odenmesi_gereken_yerel','odenmesi_gereken_usd','odenen_yerel','odenen_usd',
+                       'geciken_usd','geciken_odenmesi_gereken_usd','kur_kaybi','kur_kaybi_yuzde']
     ordering = ['-kur_kaybi']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
@@ -140,33 +141,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         ordering = self.request.query_params.get('ordering')
-
-        # Bugünkü USD kurunu al
-        today_usd_rate = ExchangeRate.objects.filter(
-            date=date.today(), 
-            target_currency__code="USD"
-        ).first()
-        today_forex = today_usd_rate.forex_buying if today_usd_rate else Decimal('1.00')
         
         custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
-
-        # Installment toplamı
-        installment_subquery = Installment.objects.select_related().filter(
-            lease=OuterRef('pk'),
-            payment_date__lte=date.today()
-        ).values('lease').annotate(
-            total=Sum('amount')
-        ).values('total')[:1]
-        
-        # Trade transaction toplamı
-        trade_subquery = TradeTransaction.objects.select_related().filter(
-            lease=OuterRef('pk'),
-            posting_group_name='Kira',
-            amount_type='0',
-            due_date__lte=datetime.now()
-        ).values('lease').annotate(
-            total=Sum('amount')
-        ).values('total')[:1]
 
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
@@ -183,14 +159,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(overdue_amount__gt=100) &
             Q(is_last_project=True) &
             Q(is_tufe=False) &
-            Q(currency__code__in=['TRY'])
-        )
-
-        queryset = queryset.annotate(
-            installment_total=Coalesce(Subquery(installment_subquery), Decimal('0.00')),
-            trade_total=Coalesce(Subquery(trade_subquery), Decimal('0.00')),
-            # Yaklaşık kur kaybı (gerçek hesaplama tarihsel kur gerektirir)
-            kur_kaybi=F('installment_total') / Value(today_forex) - F('trade_total') / Value(today_forex) - F('overdue_amount') / Value(today_forex)
+            Q(currency__code__in=['TRY']) &
+            ~Q(contract__partner__types__contains=["special"])
         )
 
         query = self.request.query_params.get('search[value]', None)

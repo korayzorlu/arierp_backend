@@ -53,9 +53,17 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
     terminated_date = serializers.DateField()
-    exchanged_amounts = serializers.SerializerMethodField()
+    #exchanged_amounts = serializers.SerializerMethodField()
     paid_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
-    kur_kaybi_yuzde = serializers.SerializerMethodField()
+    #kur_kaybi_yuzde = serializers.SerializerMethodField()
+    odenmesi_gereken_yerel = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenmesi_gereken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenen_yerel = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenen_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    geciken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    geciken_odenmesi_gereken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    kur_kaybi = serializers.DecimalField(max_digits=14,decimal_places=2)
+    kur_kaybi_yuzde = serializers.DecimalField(max_digits=14,decimal_places=2)
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -102,81 +110,81 @@ class ExchangedLeaseListSerializer(serializers.Serializer):
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
-    def get_exchanged_amounts(self, obj):
-        installments = Installment.objects.select_related().filter(
-            lease=obj,
-            payment_date__lte=date.today()
-        )
+    # def get_exchanged_amounts(self, obj):
+    #     installments = Installment.objects.select_related().filter(
+    #         lease=obj,
+    #         payment_date__lte=date.today()
+    #     )
 
-        installments_total = installments.aggregate(total_amount=Sum('amount'))
+    #     installments_total = installments.aggregate(total_amount=Sum('amount'))
 
-        exchanged_amount_due_to_date = Decimal('0.00')
-        for installment in installments:
-            exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
-            exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
+    #     exchanged_amount_due_to_date = Decimal('0.00')
+    #     for installment in installments:
+    #         exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
+    #         exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
         
-        trade_transactions = TradeTransaction.objects.select_related().annotate(
-            due_date_date=TruncDate('due_date')
-        ).filter(
-            lease=obj,
-            posting_group_name='Kira',
-            amount_type='0',
-            due_date__lte=datetime.now()
-        )
+    #     trade_transactions = TradeTransaction.objects.select_related().annotate(
+    #         due_date_date=TruncDate('due_date')
+    #     ).filter(
+    #         lease=obj,
+    #         posting_group_name='Kira',
+    #         amount_type='0',
+    #         due_date__lte=datetime.now()
+    #     )
 
-        trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
+    #     trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
 
-        exchanged_amount_paid_to_date = Decimal('0.00')
-        for transaction in trade_transactions:
-            exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
-            exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
+    #     exchanged_amount_paid_to_date = Decimal('0.00')
+    #     for transaction in trade_transactions:
+    #         exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
+    #         exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
 
-        kur_kaybi_yuzde = Decimal('0.00')
-        if exchanged_amount_due_to_date != Decimal('0.00'):
-            kur_kaybi_yuzde = exchanged_amount_paid_to_date / exchanged_amount_due_to_date * Decimal('100.00')
-        else:
-            kur_kaybi_yuzde = Decimal('0.00')
+    #     kur_kaybi_yuzde = Decimal('0.00')
+    #     if exchanged_amount_due_to_date != Decimal('0.00'):
+    #         kur_kaybi_yuzde = exchanged_amount_paid_to_date / exchanged_amount_due_to_date * Decimal('100.00')
+    #     else:
+    #         kur_kaybi_yuzde = Decimal('0.00')
 
-        return {
-            "odenmesi_gereken_yerel": installments_total['total_amount'] or Decimal('0.00'),
-            "odenmesi_gereken_usd": exchanged_amount_due_to_date,
-            "odenen_yerel": trade_transactions_total['total_amount'] or Decimal('0.00'),
-            "odenen_usd": exchanged_amount_paid_to_date,
-            "geciken_usd":  obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00')),
-            "geciken_odenmesi_gereken_usd" : exchanged_amount_due_to_date - exchanged_amount_paid_to_date,
-            "kur_kaybi" : exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00'))),
-            "kur_kaybi_yuzde" : kur_kaybi_yuzde
-        }
+    #     return {
+    #         "odenmesi_gereken_yerel": installments_total['total_amount'] or Decimal('0.00'),
+    #         "odenmesi_gereken_usd": exchanged_amount_due_to_date,
+    #         "odenen_yerel": trade_transactions_total['total_amount'] or Decimal('0.00'),
+    #         "odenen_usd": exchanged_amount_paid_to_date,
+    #         "geciken_usd":  obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00')),
+    #         "geciken_odenmesi_gereken_usd" : exchanged_amount_due_to_date - exchanged_amount_paid_to_date,
+    #         "kur_kaybi" : exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00'))),
+    #         "kur_kaybi_yuzde" : kur_kaybi_yuzde
+    #     }
     
-    def get_kur_kaybi_yuzde(self, obj):
-        installments = Installment.objects.select_related().filter(
-            lease=obj, 
-            payment_date__lte=date.today()
-        )
+    # def get_kur_kaybi_yuzde(self, obj):
+    #     installments = Installment.objects.select_related().filter(
+    #         lease=obj, 
+    #         payment_date__lte=date.today()
+    #     )
 
-        exchanged_amount_due_to_date = Decimal('0.00')
-        for installment in installments:
-            exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
-            exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
+    #     exchanged_amount_due_to_date = Decimal('0.00')
+    #     for installment in installments:
+    #         exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
+    #         exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
 
-        trade_transactions = TradeTransaction.objects.select_related().annotate(
-            due_date_date=TruncDate('due_date')
-        ).filter(
-            lease=obj,
-            posting_group_name='Kira',
-            amount_type='0',
-            due_date__lte=datetime.now()
-        )
+    #     trade_transactions = TradeTransaction.objects.select_related().annotate(
+    #         due_date_date=TruncDate('due_date')
+    #     ).filter(
+    #         lease=obj,
+    #         posting_group_name='Kira',
+    #         amount_type='0',
+    #         due_date__lte=datetime.now()
+    #     )
 
-        exchanged_amount_paid_to_date = Decimal('0.00')
-        for transaction in trade_transactions:
-            exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
-            exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
+    #     exchanged_amount_paid_to_date = Decimal('0.00')
+    #     for transaction in trade_transactions:
+    #         exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
+    #         exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
 
-        kur_kaybi_yuzde = Decimal('0.00')
-        if exchanged_amount_due_to_date != Decimal('0.00'):
-            kur_kaybi_yuzde = exchanged_amount_paid_to_date / exchanged_amount_due_to_date * Decimal('100.00')
-        else:
-            kur_kaybi_yuzde = Decimal('0.00')
+    #     kur_kaybi_yuzde = Decimal('0.00')
+    #     if exchanged_amount_due_to_date != Decimal('0.00'):
+    #         kur_kaybi_yuzde = exchanged_amount_paid_to_date / exchanged_amount_due_to_date * Decimal('100.00')
+    #     else:
+    #         kur_kaybi_yuzde = Decimal('0.00')
 
-        return kur_kaybi_yuzde
+    #     return kur_kaybi_yuzde

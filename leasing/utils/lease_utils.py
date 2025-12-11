@@ -146,44 +146,43 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass
 
-def fetch_exchanged_amounts(company,BATCH_SIZE=1000):
+def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
     try:
-        objs = Lease.objects.select_related("status","company","contract","currency").filter(company__id=int(company))
-        installments = Installment.objects.select_related().filter(company__id=int(company))
-        trade_transactions = TradeTransaction.objects.select_related().filter(company__id=int(company),posting_group_name='Kira',amount_type='0')
-        exchange_rates = ExchangeRate.objects.select_related().filter(target_currency__code="USD")
+        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),overdue_amount__gt=0,is_last_project=True,currency__code__in=['TRY'])
+        exchange_rates = ExchangeRate.objects.select_related("target_currency").filter(target_currency__code="USD")
 
-        installments_dict = {(i.lease,i.payment_date): i for i in installments}
-        trade_transactions_dict = {(t.lease,t.due_date): t for t in trade_transactions}
         exchange_rates_dict = {e.date: e for e in exchange_rates}
 
         update_progress = 0
 
         update_objs = []
         for index,obj in enumerate(objs):
-            installments = [i for i in installments_dict.values() if i.lease == obj and i.payment_date <= date.today()]
+            installments = Installment.objects.select_related("lease").filter(
+                lease=obj,
+                payment_date__lte=date.today()
+            )
 
             installments_total = installments.aggregate(total_amount=Sum('amount'))
 
             exchanged_amount_due_to_date = Decimal('0.00')
             for installment in installments:
-                exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=installment.payment_date, target_currency__code="USD").first()
+                exchange_rate = exchange_rates_dict.get(installment.payment_date)
                 exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
             
-            trade_transactions = TradeTransaction.objects.select_related().annotate(
+            trade_transactions = TradeTransaction.objects.select_related("lease").annotate(
                 due_date_date=TruncDate('due_date')
             ).filter(
                 lease=obj,
                 posting_group_name='Kira',
                 amount_type='0',
-                due_date__lte=datetime.now()
+                due_date__lte=timezone.now()
             )
 
             trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
 
             exchanged_amount_paid_to_date = Decimal('0.00')
             for transaction in trade_transactions:
-                exchange_rate = ExchangeRate.objects.select_related("target_currency").filter(date=transaction.due_date.date(), target_currency__code="USD").first()
+                exchange_rate = exchange_rates_dict.get(transaction.due_date.date())
                 exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
 
             kur_kaybi_yuzde = Decimal('0.00')
@@ -196,9 +195,9 @@ def fetch_exchanged_amounts(company,BATCH_SIZE=1000):
             obj.odenmesi_gereken_usd = exchanged_amount_due_to_date
             obj.odenen_yerel = trade_transactions_total['total_amount'] or Decimal('0.00')
             obj.odenen_usd = exchanged_amount_paid_to_date
-            obj.geciken_usd =  obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00'))
+            obj.geciken_usd = obj.overdue_amount / (exchange_rates_dict.get(date.today()).forex_buying if exchange_rates_dict.get(date.today()) else Decimal('1.00'))
             obj.geciken_odenmesi_gereken_usd = exchanged_amount_due_to_date - exchanged_amount_paid_to_date
-            obj.kur_kaybi = exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / (ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first().forex_buying if ExchangeRate.objects.select_related("target_currency").filter(date=date.today(), target_currency__code="USD").first() else Decimal('1.00')))
+            obj.kur_kaybi = exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / (exchange_rates_dict.get(date.today()).forex_buying if exchange_rates_dict.get(date.today()) else Decimal('1.00')))
             obj.kur_kaybi_yuzde = kur_kaybi_yuzde
 
             update_objs.append(obj)
