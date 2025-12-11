@@ -48,6 +48,8 @@ def export_partners(self):
         "CRM Kodu": [],
         "Tel": [],
         "Email": [],
+        "Doğum Tarihi": [],
+        "Doğum Yeri": [],
     }
 
     previous_progress = 0
@@ -65,12 +67,14 @@ def export_partners(self):
         data["CRM Kodu"].append(obj.crm_code or "")
         data["Tel"].append(obj.phone_number or "")
         data["Email"].append(obj.email or "")
+        data["Doğum Tarihi"].append(obj.birthday.strftime("%d.%m.%Y") if obj.birthday else "")
+        data["Doğum Yeri"].append(obj.birth_place or "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
 
     numeric_columns = [
-        
+
     ]
 
     for col in numeric_columns:
