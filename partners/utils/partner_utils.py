@@ -85,6 +85,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.tc_vkn_no = str(data.TaxAndTCIdentity) or ""
                     obj.father_name = data.FathersName or ""
                     obj.birthday = data.BirthDate.date() if data.BirthDate else None
+                    obj.birth_place = data.BirthPlace or ""
                     obj.email = data.Email or ""
                     obj.passport_no = str(data.PassportNo) or ""
                     obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
@@ -109,6 +110,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         sector = sectors_dict.get(data.MainSectorId),
                         father_name = data.FathersName or "",
                         birthday = data.BirthDate.date() if data.BirthDate else None,
+                        birth_place = data.BirthPlace or "",
                         country = countries_dict.get(data.CountryCode),
                         city = cities_dict.get(normalize(data.CityName)),
                         address = data.Address or "",
@@ -136,6 +138,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     "tc_vkn_no",
                     "father_name",
                     "birthday",
+                    "birth_place",
                     "email",
                     "passport_no",
                     "is_turkkep",

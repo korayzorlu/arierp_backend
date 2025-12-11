@@ -73,6 +73,7 @@ class Partner(models.Model):
 
     father_name = models.CharField(_("Father Name"), max_length=140, blank=True, null=True)
     birthday = models.DateField(_("Birthday"), blank=True, null=True)
+    birth_place = models.CharField(_("Birth Place"), max_length=140, blank=True, null=True)
 
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, blank=True, null=True, related_name="country_partners")
     city = models.ForeignKey(City, on_delete=models.SET_NULL, blank=True, null=True, related_name="city_partners")
