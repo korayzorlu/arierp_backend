@@ -169,10 +169,13 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 exchange_rate = exchange_rates_dict.get(installment.payment_date)
                 exchanged_amount_due_to_date += installment.amount / exchange_rate.forex_buying if exchange_rate else installment.amount
             
+            # obj.contract.code örneği: "1234", "1234/1", "1234/2" olabilir.
+            # Sadece ana kodu (ör: "1234") alıp filtrele
+            ana_kod = obj.contract.code.split('/')[0] if obj.contract and obj.contract.code else None
             trade_transactions = TradeTransaction.objects.select_related("lease").annotate(
                 due_date_date=TruncDate('due_date')
             ).filter(
-                lease=obj,
+                lease__contract__code__startswith=ana_kod,
                 posting_group_name='Kira',
                 amount_type='0',
                 due_date__lte=timezone.now()
