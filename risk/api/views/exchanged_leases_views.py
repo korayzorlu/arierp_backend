@@ -159,7 +159,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(overdue_amount__gt=100) &
             Q(is_last_project=True) &
             Q(is_tufe=False) &
-            Q(currency__code__in=['TRY'])
+            Q(currency__code__in=['TRY']) &
+            Q(kur_kaybi_yuzde__gt=0)
         ).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
