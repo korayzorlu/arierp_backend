@@ -173,9 +173,14 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             # Sadece ana kodu (ör: "1234") alıp filtrele
             ana_kod = obj.contract.code.split('/')[0] if obj.contract and obj.contract.code else None
             trade_transactions = TradeTransaction.objects.select_related("lease").annotate(
-                due_date_date=TruncDate('due_date')
+                due_date_date=TruncDate('due_date'),
+                ana_kod=Case(
+                    When(lease__contract__code__contains='/', then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                )
             ).filter(
-                lease__contract__code__startswith=ana_kod,
+                lease__contract__code=ana_kod,
                 posting_group_name='Kira',
                 amount_type='0',
                 due_date__lte=timezone.now()
