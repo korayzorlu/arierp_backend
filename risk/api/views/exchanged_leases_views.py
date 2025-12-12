@@ -159,9 +159,8 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(overdue_amount__gt=100) &
             Q(is_last_project=True) &
             Q(is_tufe=False) &
-            Q(currency__code__in=['TRY']) &
-            ~Q(contract__partner__types__contains=["special"])
-        )
+            Q(currency__code__in=['TRY'])
+        ).exclude(contract__partner__types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
