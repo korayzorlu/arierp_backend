@@ -6,6 +6,8 @@ from .views.warned_risk_partners_views import *
 from .views.to_terminated_risk_partners_views import *
 from .views.amount_debit_transactions_views import *
 from .views.under_reviews_views import *
+from .views.today_partners_views import *
+from .views.tomorrow_partners_views import *
 
 from .tests import *
 
@@ -38,6 +40,12 @@ urlpatterns = [
     path('to_terminated_risk_partners_excel_for_sms/', ToTerminatedRiskPartnersExcelForSMSView.as_view(), name="to_terminated_risk_partners_excel_for_sms"),
     path('export_to_terminated_risk_partners/', ExportToTerminatedRiskPartnersView.as_view(), name="export_to_terminated_risk_partners"),
     path('to_terminated_risk_partners_excel/', ToTerminatedRiskPartnersExcelView.as_view(), name="to_terminated_risk_partners_excel"),
+
+    path('export_today_partners/', ExportTodayPartnersView.as_view(), name="export_today_partners"),
+    path('today_partners_excel/', TodayPartnersExcelView.as_view(), name="today_partners_excel"),
+
+    path('export_tomorrow_partners/', ExportTomorrowPartnersView.as_view(), name="export_tomorrow_partners"),
+    path('tomorrow_partners_excel/', TomorrowPartnersExcelView.as_view(), name="tomorrow_partners_excel"),
 
     path('export_under_reviews/', ExportUnderReviewsView.as_view(), name="export_under_reviews"),
     path('under_reviews_excel/', UnderReviewsExcelView.as_view(), name="under_reviews_excel"),

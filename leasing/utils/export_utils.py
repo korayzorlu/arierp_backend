@@ -286,6 +286,7 @@ def export_today_partners(self):
     #self.process.status = "completed"
     self.process.save()
 
+
 def export_tomorrow_partners(self):
     tomorrow = date.today() + timedelta(days=1)
 

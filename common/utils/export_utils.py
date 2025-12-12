@@ -18,12 +18,14 @@ from users.models import User
 from common.models import ImportProcess,Country,City,ExportProcess
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
-from leasing.utils.export_utils import export_bank_activities,export_today_partners,export_tomorrow_partners,export_kdv_risk_partners,export_deposite_partners,export_delivery_confirms,export_active_leases
+from leasing.utils.export_utils import export_bank_activities,export_kdv_risk_partners,export_deposite_partners,export_delivery_confirms,export_active_leases
 from purchasing.utils.common_utils import export_purchase_payments
 from risk.utils.risk_partners_utils import *
 from risk.utils.to_warned_risk_partners_utils import *
 from risk.utils.warned_risk_partners_utils import *
 from risk.utils.to_terminated_risk_partners_utils import *
+from risk.utils.today_partners_utils import *
+from risk.utils.tomorrow_partners_utils import *
 from risk.utils.risk_utils import export_amount_debit_transactions
 from risk.utils.under_reviews_utils import export_under_reviews
 from contracts.utils.contract_utils import export_contract_payments
