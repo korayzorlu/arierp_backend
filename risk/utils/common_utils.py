@@ -3,11 +3,11 @@ from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,
 from django.db.models.functions import Lower,Upper,Cast
 from django.utils.timezone import now
 
-from datetime import datetime,timedelta
+from datetime import date,timedelta,datetime
 
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
-from leasing.models import Lease
+from leasing.models import Lease, Installment
 
 def partners_for_project(params):
     if params.get("risk_status") == "risk_partners":
@@ -301,6 +301,60 @@ def partners_for_project(params):
                 output_field=BooleanField()
             )
         ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(
+            Q(types__contains=["special"]) |
+            Q(types__contains=["barter"]) |
+            Q(types__contains=["virman"])
+        )
+    elif params.get("risk_status") == "today_partners":
+        today = date.today()
+        
+        latest_sequency_subquery = Installment.objects.filter(
+            lease=OuterRef('pk')
+        ).order_by('-sequency').values('sequency')[:1]
+
+        objs = Partner.objects.select_related().filter(
+            vendor_filter_for_views(params) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
+            Q(partner_contracts__contract_leases__is_last_project=True) &
+            Q(partner_contracts__contract_leases__lease_installments__payment_date=today) &
+            ~Q(partner_contracts__contract_leases__lease_installments__type='4') &
+            ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(
+            Q(types__contains=["special"]) |
+            Q(types__contains=["barter"]) |
+            Q(types__contains=["virman"])
+        )
+    elif params.get("risk_status") == "tomorrow_partners":
+        tomorrow = date.today() + timedelta(days=1)
+
+        latest_sequency_subquery = Installment.objects.filter(
+            lease=OuterRef('pk')
+        ).order_by('-sequency').values('sequency')[:1]
+
+        objs = Partner.objects.select_related().filter(
+            vendor_filter_for_views(params) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_credit=False) &
+            Q(partner_contracts__contract_leases__is_last_project=True) &
+            Q(partner_contracts__contract_leases__lease_installments__payment_date=tomorrow) &
+            ~Q(partner_contracts__contract_leases__lease_installments__type='4') &
+            ~Q(partner_contracts__contract_leases__lease_installments__sequency=Subquery(latest_sequency_subquery))
+        ).annotate(
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+            total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(
             Q(types__contains=["special"]) |
             Q(types__contains=["barter"]) |
             Q(types__contains=["virman"])
