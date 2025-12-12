@@ -160,7 +160,11 @@ class ExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(is_last_project=True) &
             Q(is_tufe=False) &
             Q(currency__code__in=['TRY'])
-        ).exclude(contract__partner__types__contains=["special"])
+        ).exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
