@@ -361,6 +361,11 @@ if not DEBUG:
             "schedule": crontab(minute=0, hour='1,3,5,7,9,11,13,15,17,19,21,23'),
             "args": [2],
         },
+        "fetch-data-for-daily-services-task": {
+            "task": "common.tasks.fetch_data_for_daily_services",
+            "schedule": crontab(minute=0, hour='23'),
+            "args": [2],
+        },
     }
 else:
     CELERY_BEAT_SCHEDULE = {
