@@ -31,6 +31,6 @@ class Command(BaseCommand):
 
         print("processing...")
 
-        fetch_exchange_rates.delay(target_currency,date)
+        fetch_exchange_rates.delay(target_currency)
 
         print("done!")
