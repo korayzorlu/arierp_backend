@@ -43,6 +43,7 @@ class Lease(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
 
     lease_id = models.CharField(_("Lease ID"), max_length=25, null=True, blank=True)
+    main_lease_id = models.CharField(_("Main Lease ID"), max_length=25, null=True, blank=True)
     code = models.CharField(_("Code"), max_length=25)
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_leases")
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)

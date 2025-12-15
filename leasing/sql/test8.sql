@@ -1,2 +1,2 @@
 SELECT TOP 1000 *
-FROM ARI_LEASING.dbo.LeasingOperationPaymentRecordHistory
+FROM RPR_FREE_PART_LIST_FOR_DET

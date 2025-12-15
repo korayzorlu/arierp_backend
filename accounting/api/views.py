@@ -370,7 +370,21 @@ class TrialBalanceContractList(ModelViewSet, QueryListAPIView):
 
         query = self.request.query_params.get('search[value]', None)
         if query:
-            search_fields = ["code","partner__name","kof","quotation","committe","credit_type","customer_representative","supplier","project","status__name","mkk_tesciline_gonderilecek_mi","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+            search_fields = [
+                "code",
+                "partner__name",
+                "kof",
+                "quotation",
+                "committe",
+                "credit_type",
+                "customer_representative",
+                "supplier",
+                "project",
+                "status__name",
+                "mkk_tesciline_gonderilecek_mi",
+                "kof_tan_sozlesmeye_aktarim_tarihi",
+                "lop_open_date"
+            ]
             
             q_objects = Q()
             for field in search_fields:
