@@ -69,6 +69,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
 
                 if obj:
                     obj.lease_id = str(data.OperationProjectId) or ""
+                    obj.main_lease_id = str(data.MainLopId) or ""
                     obj.code = str(data.OperationProjectCode) or ""
                     obj.contract = contracts_dict.get(str(data.ContractHeaderCode))
                     obj.type = str(data.TypeName) or ""
@@ -92,6 +93,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     create_objs.append(Lease(
                         company = company_obj,
                         lease_id = str(data.OperationProjectId) or "",
+                        main_lease_id = str(data.MainLopId) or "",
                         code = str(data.OperationProjectCode) or "",
                         contract = contracts_dict.get(str(data.ContractHeaderCode)),
                         type = str(data.TypeName) or "",
@@ -114,6 +116,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
             if update_objs:
                 Lease.objects.bulk_update(update_objs, [
                     "lease_id",
+                    "main_lease_id",
                     "code",
                     "contract",
                     "type",
