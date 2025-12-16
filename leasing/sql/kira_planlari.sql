@@ -1,4 +1,4 @@
-SELECT TOP 1000
+SELECT
     lop.OperationProjectId,
     lop.OperationProjectCode,
     ch.ContractHeaderCode,
