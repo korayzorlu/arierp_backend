@@ -65,3 +65,5 @@ FROM
     LEFT OUTER JOIN dbo.FoundationStatuteMenuParent p (NOLOCK) ON lop.LastParentStatuId = p.Id
     LEFT OUTER JOIN FoundationStatuteMenu d (NOLOCK) ON m.DefinitionId = d.DefinitionId AND d.TableName = 'LeasingOperationProject'
     LEFT JOIN LeasingOperationProject l ON lop.OperationProjectId = l.OperationProjectId
+WHERE
+    ContractHeaderCode = '66665'

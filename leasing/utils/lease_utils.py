@@ -127,6 +127,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "main_lease_id",
                     "code",
                     "contract",
+                    "vendor",
+                    "item",
                     "type",
                     "vat",
                     "activation_date",
