@@ -23,6 +23,7 @@ from common.utils.ai_utils import EXAMPLE_DEF,EXAMPLE_LIST
 from contracts.models import Contract
 from partners.models import Partner
 from finance.models import FinmaksTransaction
+from inventory.models import Item
 from compliance.utils.third_person_utils import create_third_person
 from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
 from .utils.bank_activity_utils import (
@@ -95,6 +96,8 @@ class Lease(models.Model):
     kur_kaybi = models.DecimalField(_("Kur Kaybı"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     kur_kaybi_yuzde = models.DecimalField(_("Kur Kaybı Yüzde"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, blank=True, null=True, related_name="project_leases")
+    vendor = models.ForeignKey(Partner, on_delete=models.SET_NULL, blank=True, null=True, related_name="vendor_leases")
     project_no = models.CharField(_("Project No"), max_length=25, blank=True, null=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, related_name="status_rents", null=True, blank=True)
     leasing_type = models.CharField(_("Leasing Type"), max_length=25, blank=True, null=True)

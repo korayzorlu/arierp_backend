@@ -40,7 +40,9 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.fast_executemany = True
 
         leases = Lease.objects.select_related("status","company","contract","currency").filter(company__id=int(company))
+        partners = Partner.objects.select_related().filter(company__id=int(company))
         contracts = Contract.objects.select_related().filter(company__id=int(company))
+        items = Item.objects.select_related().filter(company__id=int(company))
         statuses = Status.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
@@ -50,6 +52,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         gc.collect()
 
         contracts_dict = {c.code: c for c in contracts}
+        partners_dict = {p.crm_code: p for p in partners}
+        items_dict = {i.stock_code_id: i for i in items}
         statuses_dict = {s.name: s for s in statuses}
         currencies_dict = {c.code: c for c in currencies}
 
@@ -72,6 +76,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.main_lease_id = str(data.MainLopId) or ""
                     obj.code = str(data.OperationProjectCode) or ""
                     obj.contract = contracts_dict.get(str(data.ContractHeaderCode))
+                    obj.vendor = partners_dict.get(str(data.Vendor))
+                    obj.item = items_dict.get(str(data.Project))
                     obj.type = str(data.TypeName) or ""
                     obj.vat = safe_decimal(data.VatRate)
                     obj.activation_date = data.ActivationDate.date() if data.ActivationDate else None
@@ -96,6 +102,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         main_lease_id = str(data.MainLopId) or "",
                         code = str(data.OperationProjectCode) or "",
                         contract = contracts_dict.get(str(data.ContractHeaderCode)),
+                        vendor = partners_dict.get(str(data.Vendor)),
+                        item = items_dict.get(str(data.Project)),
                         type = str(data.TypeName) or "",
                         vat = safe_decimal(data.VatRate),
                         activation_date = data.ActivationDate.date() if data.ActivationDate else None,
