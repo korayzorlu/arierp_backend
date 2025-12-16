@@ -24,6 +24,7 @@ from contracts.models import Contract
 from partners.models import Partner
 from finance.models import FinmaksTransaction
 from inventory.models import Item
+from quotations.models import Quotation
 from compliance.utils.third_person_utils import create_third_person
 from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
 from .utils.bank_activity_utils import (

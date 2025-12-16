@@ -3,6 +3,7 @@ from rest_framework.utils import html, model_meta, representation
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
 
 from accounting.models import *
+from leasing.models import Lease
 
 class AccountListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -225,14 +226,17 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
         trial_balances = obj.contract_trial_balances.select_related("currency").all()
 
         last_lease = obj.contract_leases.filter(is_last_project = True).first()
-        leases = obj.contract_leases.filter(main_lease_id=last_lease.main_lease_id).order_by('-contract__code')
+        leases = Lease.objects.select_related().filter(main_lease_id=last_lease.main_lease_id).order_by('-lease_id')
 
+        if obj.code == '66665':
+            for lease in leases:
+                print(lease)  
 
         trial_balance_dict = {"trial_balances": [],"total_overdue_amount": "", "max_overdue_days": "" }
         if trial_balances and leases:
             for lease in leases:
                 #lease = obj.contract_leases.filter(is_last_project = True).first()
-                trial_balances = obj.contract_trial_balances.select_related("currency").all()
+                trial_balances = lease.contract.contract_trial_balances.select_related("currency").all()
                 trial_balances_dict_list = []
                 for trial_balance in trial_balances:
                     trial_balance_dict["trial_balances"].append({
@@ -259,7 +263,7 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
                         "lease_status" : lease.get_lease_status_display() if lease else "",
                     })
         #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
-        print(trial_balance_dict)
+
         return trial_balance_dict
 
 class UnderReviewListSerializer(serializers.Serializer):
