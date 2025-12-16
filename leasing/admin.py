@@ -13,7 +13,7 @@ class LeaseAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["activation_date"]
-    autocomplete_fields = ["contract"]
+    autocomplete_fields = ["contract","vendor","item"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
