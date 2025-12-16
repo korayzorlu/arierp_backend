@@ -4,6 +4,7 @@ SELECT TOP 1000
     ch.ContractHeaderCode,
     lot.TypeName,
     lorit.TypeName AS RiskIncludingTypeName,
+    l.RiskIncludingLastUpdateDate AS RiskIncludingLastUpdateDate,
     lop.VatRate,
     lop.ActivationDate,
     lop.CustomerBaseCost,
