@@ -210,6 +210,16 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             ),
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
+            ),
+            total_trade_transactions=Sum(
+                Case(
+                    When(
+                        lease_trade_transactions__posting_group_name='Kira',
+                        lease_trade_transactions__amount_type=0,
+                        then='lease_trade_transactions__amount'
+                    ),
+                    output_field=models.DecimalField(),
+                )
             )
         ).filter(
             # (
@@ -217,7 +227,8 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             #     Q(first_installment_payment__lte=20000)
             # ) |
             Q(first_installment_payment_date=F('expected_payment_date')) |
-            Q(total_contract_payments__lte=20000)
+            Q(total_contract_payments__lte=20000) |
+            Q(total_trade_transactions__lte=20000)
         )
 
         # latest_lease = leases.filter(

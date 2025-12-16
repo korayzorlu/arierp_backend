@@ -29,7 +29,7 @@ class LeaseListSerializer(serializers.Serializer):
     leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
-    project_name = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     leasing_type = serializers.CharField()
     application_no = serializers.CharField()
@@ -88,8 +88,8 @@ class LeaseListSerializer(serializers.Serializer):
     def get_kof(self, obj):
         return obj.contract.kof if obj.contract else ""
     
-    def get_project_name(self, obj):
-        return obj.contract.project if obj.contract else ""
+    def get_item(self, obj):
+        return obj.item.stock_name if obj.item else ""
     
     def get_block(self, obj):
         return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
@@ -124,7 +124,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
-    project_name = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     leasing_type = serializers.CharField()
     application_no = serializers.CharField()
@@ -183,8 +183,8 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     def get_kof(self, obj):
         return obj.contract.kof if obj.contract else ""
     
-    def get_project_name(self, obj):
-        return obj.contract.project if obj.contract else ""
+    def get_item(self, obj):
+        return obj.item.stock_name if obj.item else ""
     
     def get_block(self, obj):
         return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""

@@ -251,6 +251,16 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ),
             total_contract_payments=Sum(
                 'partner_contracts__contract_contract_payments__credit_amount'
+            ),
+            total_trade_transactions=Sum(
+                Case(
+                    When(
+                        partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
+                        partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
+                        then='partner_contracts__contract_leases__lease_trade_transactions__amount'
+                    ),
+                    output_field=models.DecimalField(),
+                )
             )
         ).filter(
             # (
@@ -258,7 +268,8 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             #     Q(first_installment_payment__lte=20000)
             # ) |
             Q(first_installment_payment_date=F('expected_payment_date')) |
-            Q(total_contract_payments__lte=20000)
+            Q(total_contract_payments__lte=20000) |
+            Q(total_trade_transactions__lte=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)
