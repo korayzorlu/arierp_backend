@@ -129,6 +129,8 @@ class Lease(models.Model):
 
     terminated_date = models.DateField(_("Terminated Date"), blank=True, null=True)
 
+    transfer_count = models.PositiveIntegerField(_("Transfer Count"), default=0)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

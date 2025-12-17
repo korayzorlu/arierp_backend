@@ -47,6 +47,7 @@ class TrialBalanceContractFilter(FilterSet):
     is_commercial = CharFilter(method='filter_is_commercial')
     quotation = CharFilter(method='quotation_obj__code', lookup_expr='exact')
     lease_status = CharFilter(method='filter_lease_status')
+    transfer_count = CharFilter(method='filter_transfer_count')
 
     class Meta:
         model = Contract
@@ -60,6 +61,9 @@ class TrialBalanceContractFilter(FilterSet):
         elif value == "all":
             return queryset
         return queryset.filter(partner__is_commercial = value)
+    
+    def filter_transfer_count(self, queryset, transfer_count, value):
+        print(transfer_count)
     
     def filter_lease_status(self, queryset, lease_status, value):
         is_correct = self.data.get('is_correct')

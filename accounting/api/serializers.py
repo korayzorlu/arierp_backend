@@ -208,6 +208,7 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
     created_date_leaseflex = serializers.DateTimeField()
     trial_balances = serializers.SerializerMethodField()
     lease_status = serializers.SerializerMethodField()
+    transfer_count = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -222,22 +223,18 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
         lease = obj.contract_leases.filter(is_last_project = True).first()
         return lease.get_lease_status_display() if lease else ""
     
+    def get_transfer_count(self, obj):
+        return obj.contract_leases.filter(is_last_project = True).first().transfer_count
+    
     def get_trial_balances(self, obj):
-        trial_balances = obj.contract_trial_balances.select_related("currency").all()
-
         last_lease = obj.contract_leases.filter(is_last_project = True).first()
-        leases = Lease.objects.select_related().filter(main_lease_id=last_lease.main_lease_id).order_by('-lease_id')
+        leases = Lease.objects.select_related("contract").filter(main_lease_id=last_lease.main_lease_id,is_last_project = True).order_by('-lease_id')
 
-        if obj.code == '66665':
-            for lease in leases:
-                print(lease)  
-
-        trial_balance_dict = {"trial_balances": [],"total_overdue_amount": "", "max_overdue_days": "" }
-        if trial_balances and leases:
+        trial_balance_dict = {"trial_balances": [],"transfer_count": len(leases) - 1 if len(leases) > 0 else 0, "max_overdue_days": "" }
+        if leases:
             for lease in leases:
                 #lease = obj.contract_leases.filter(is_last_project = True).first()
-                trial_balances = lease.contract.contract_trial_balances.select_related("currency").all()
-                trial_balances_dict_list = []
+                trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract","partner").all()
                 for trial_balance in trial_balances:
                     trial_balance_dict["trial_balances"].append({
                         "id" : trial_balance.uuid,
