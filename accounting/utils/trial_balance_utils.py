@@ -121,13 +121,14 @@ def export_trial_balances(self):
         Q(contract_leases__is_last_project = True) &
         ~Q(contract_leases__lease_id = F('contract_leases__main_lease_id'))
     ).distinct()
-    
+
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
     self.process.save()
 
     data = {
         "Transfer Kodu": [],
+        "Sözleşme": [],
         "Hesap Kodu": [],
         "PB": [],
         "Borç Bakiyesi": [],
