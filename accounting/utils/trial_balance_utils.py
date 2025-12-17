@@ -118,8 +118,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
 def export_trial_balances(self):
     objs = Contract.objects.select_related().prefetch_related("contract_leases", "contract_trial_balances").filter(
         Q(contract_trial_balances__isnull=False) &
-        Q(contract_leases__is_last_project = True) &
-        ~Q(contract_leases__lease_id = F('contract_leases__main_lease_id'))
+        Q(contract_leases__is_last_project = True)
     ).distinct()
 
     self.process.status = "in_progress"
