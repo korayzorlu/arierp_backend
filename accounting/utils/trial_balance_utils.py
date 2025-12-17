@@ -116,9 +116,9 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
         print(e)
 
 def export_trial_balances(self):
-    objs = Lease.objects.select_related().filter(
-        Q(is_last_project = True) &
-        ~Q(lease_id = F('main_lease_id'))
+    objs = Contract.objects.select_related().prefetch_related("contract_leases", "contract_trial_balances").filter(
+        Q(contract_leases__is_last_project = True) &
+        Q(contract_trial_balances__isnull=False)
     ).distinct()
     
     self.process.status = "in_progress"
@@ -143,23 +143,24 @@ def export_trial_balances(self):
             self.process.save()
             previous_progress = current_progress
 
-        if not obj.main_lease_id in processed_leases:
-            old_lease = Lease.objects.select_related().filter(
-                lease_id=obj.main_lease_id,
-                is_last_project = True,
-                lease_status="baskasina_transfer_edildi",
-            ).first()
-
-            if old_lease:
-                trial_balances = old_lease.contract.contract_trial_balances.select_related("currency").all()
+        last_lease = obj.contract_leases.filter(is_last_project = True).first()
+        leases = Lease.objects.select_related("contract").prefetch_related("contract__contract_trial_balances").filter(
+            main_lease_id=last_lease.main_lease_id,
+            is_last_project = True
+        ).distinct().order_by('-lease_id')
+        
+        for lease in leases:
+            if not lease.lease_id in processed_leases:
+                trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract","partner").all().distinct()
                 for trial_balance in trial_balances:
                     data["Hesap Kodu"].append(trial_balance.account_code or "")
                     data["PB"].append(trial_balance.currency.code or "")
                     data["Borç Bakiyesi"].append(trial_balance.total_debit_alternate or Decimal("0.00"))
                     data["Alacak Bakiyesi"].append(trial_balance.total_credit_alternate or Decimal("0.00"))
                     data["Döviz Bakiye"].append(trial_balance.balance_debit_alternate - trial_balance.balance_credit_alternate or Decimal("0.00"))
+                processed_leases.append(lease.lease_id)
 
-                processed_leases.append(old_lease.lease_id)
+
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
 
