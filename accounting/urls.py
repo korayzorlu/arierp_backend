@@ -3,6 +3,7 @@ from django.urls import path, include
 from .views.account_views import *
 from .views.invoice_views import *
 from .views.payment_views import *
+from .views.trial_balance_views import *
 
 app_name = "accounting"
 
@@ -18,6 +19,9 @@ urlpatterns = [
     path('add_payment/', AddPaymentView.as_view(), name="add_payment"),
     path('update_payment/', UpdatePaymentView.as_view(), name="update_payment"),
     path('delete_payment/', DeletePaymentView.as_view(), name="delete_payment"),
+
+    path('export_trial_balances/', ExportTrialBalancesView.as_view(), name="export_trial_balances"),
+    path('trial_balances_excel/', TrialBalancesExcelView.as_view(), name="trial_balances_excel"),
     
     path('', include("accounting.api.urls")),
 ]

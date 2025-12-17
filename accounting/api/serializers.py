@@ -224,7 +224,8 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
         return lease.get_lease_status_display() if lease else ""
     
     def get_transfer_count(self, obj):
-        return obj.contract_leases.filter(is_last_project = True).first().transfer_count
+        last_lease = obj.contract_leases.filter(is_last_project = True).first()
+        return last_lease.transfer_count if last_lease else 0
     
     def get_trial_balances(self, obj):
         last_lease = obj.contract_leases.filter(is_last_project = True).first()

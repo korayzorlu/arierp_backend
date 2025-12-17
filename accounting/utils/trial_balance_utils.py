@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.utils.timezone import make_aware
-from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value
+from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value,F
 from django.conf import settings
 
 import pyodbc
@@ -17,6 +17,7 @@ from accounting.models import *
 from common.models import Status
 from partners.models import Partner
 from common.utils.common_utils import normalize,safe_decimal
+from leasing.models import Lease,Contract
 
 def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -113,3 +114,90 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
         print("--------")
     except Exception as e:
         print(e)
+
+def export_trial_balances(self):
+    objs = Contract.objects.select_related().filter(
+        Q(contract_leases__is_last_project = True) &
+        Q(contract_trial_balances__isnull=False) &
+        ~Q(contract_leases__lease_id = F('contract_leases__main_lease_id'))
+    ).distinct()
+    
+    
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+
+    
+    
+    data = {
+        "Hesap Kodu": [],
+        "PB": [],
+        "Borç Bakiyesi": [],
+        "Alacak Bakiyesi": [],
+        "Döviz Bakiye": [],
+    }
+
+    previous_progress = 0
+    processed_leases = []
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+
+        last_lease = obj.contract_leases.filter(is_last_project = True).first()
+
+        if last_lease and not last_lease.main_lease_id in processed_leases:
+            old_lease = Lease.objects.select_related().filter(
+                lease_id=last_lease.main_lease_id,
+                is_last_project = True,
+                lease_status="baskasina_transfer_edildi",
+            ).first()
+
+            if old_lease:
+                trial_balances = old_lease.contract.contract_trial_balances.select_related("currency").all()
+                for trial_balance in trial_balances:
+                    data["Hesap Kodu"].append(trial_balance.account_code or "")
+                    data["PB"].append(trial_balance.currency.code or "")
+                    data["Borç Bakiyesi"].append(trial_balance.total_debit_alternate or Decimal("0.00"))
+                    data["Alacak Bakiyesi"].append(trial_balance.total_credit_alternate or Decimal("0.00"))
+                    data["Döviz Bakiye"].append(trial_balance.balance_debit_alternate - trial_balance.balance_credit_alternate or Decimal("0.00"))
+
+                processed_leases.append(old_lease.lease_id)
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+
+    numeric_columns = [
+        "Borç Bakiyesi",
+        "Alacak Bakiyesi",
+        "Döviz Bakiye",
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "accounting", "trial_balances", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-mizan.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+        # Workbook'u al
+        workbook = writer.book
+        worksheet = writer.sheets['Sayfa']
+
+        # Kolon isimlerine göre format uygula
+        for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+            if col in numeric_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = '#,##0.00'   # İstediğin format
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
