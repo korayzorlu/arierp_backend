@@ -31,7 +31,7 @@ class ExportTrialBalancesView(LoginRequiredMixin,View):
             user_id=request.user.id,
             app="accounting",
             model_name="TrialBalance",
-            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-satici-odemeleri.xlsx",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-mizan.xlsx",
             export_url="/accounting/trial_balances_excel",
             params={"project":data.get('project')}
         )
