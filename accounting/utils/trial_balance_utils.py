@@ -127,6 +127,7 @@ def export_trial_balances(self):
     self.process.save()
 
     data = {
+        "Transfer Kodu": [],
         "Hesap Kodu": [],
         "PB": [],
         "Borç Bakiyesi": [],
