@@ -116,20 +116,15 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
         print(e)
 
 def export_trial_balances(self):
-    objs = Contract.objects.select_related().filter(
-        Q(contract_leases__is_last_project = True) &
-        Q(contract_trial_balances__isnull=False) &
-        ~Q(contract_leases__lease_id = F('contract_leases__main_lease_id'))
+    objs = Lease.objects.select_related().filter(
+        Q(is_last_project = True) &
+        ~Q(lease_id = F('main_lease_id'))
     ).distinct()
     
-    
-
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
     self.process.save()
 
-    
-    
     data = {
         "Hesap Kodu": [],
         "PB": [],
@@ -148,11 +143,9 @@ def export_trial_balances(self):
             self.process.save()
             previous_progress = current_progress
 
-        last_lease = obj.contract_leases.filter(is_last_project = True).first()
-
-        if last_lease and not last_lease.main_lease_id in processed_leases:
+        if not obj.main_lease_id in processed_leases:
             old_lease = Lease.objects.select_related().filter(
-                lease_id=last_lease.main_lease_id,
+                lease_id=obj.main_lease_id,
                 is_last_project = True,
                 lease_status="baskasina_transfer_edildi",
             ).first()
