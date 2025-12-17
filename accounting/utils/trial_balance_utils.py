@@ -117,8 +117,9 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
 
 def export_trial_balances(self):
     objs = Contract.objects.select_related().prefetch_related("contract_leases", "contract_trial_balances").filter(
+        Q(contract_trial_balances__isnull=False) &
         Q(contract_leases__is_last_project = True) &
-        Q(contract_trial_balances__isnull=False)
+        ~Q(contract_leases__lease_id = F('contract_leases__main_lease_id'))
     ).distinct()
     
     self.process.status = "in_progress"
@@ -151,7 +152,7 @@ def export_trial_balances(self):
         
         for lease in leases:
             if not lease.lease_id in processed_leases:
-                trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract","partner").all().distinct()
+                trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract").all().distinct()
                 for trial_balance in trial_balances:
                     data["Hesap Kodu"].append(trial_balance.account_code or "")
                     data["PB"].append(trial_balance.currency.code or "")
