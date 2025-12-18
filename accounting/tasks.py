@@ -14,6 +14,6 @@ from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from accounting.utils.trial_balance_utils import fetch_trial_balances_from_leaseflex
 
-@shared_task()
+@shared_task(queue="exports")
 def fetch_trial_balances(company):
     fetch_trial_balances_from_leaseflex(company)

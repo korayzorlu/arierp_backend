@@ -168,7 +168,6 @@ def export_trial_balances(self):
                     processed_leases.append(lease.lease_id)
                     transfer_code += 1
 
-
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
 
