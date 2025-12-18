@@ -47,6 +47,7 @@ class ThirdPersonListSerializer(serializers.Serializer):
     third_person_documents = serializers.SerializerMethodField()
     finmaks_transaction = serializers.SerializerMethodField()
     is_email_sent = serializers.BooleanField()
+    is_customer_sent = serializers.BooleanField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

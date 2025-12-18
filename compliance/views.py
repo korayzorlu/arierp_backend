@@ -38,6 +38,8 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
             obj.status = data.get('status')
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
+        if data.get('status') == 'cleared':
+            obj.is_email_sent = True
         obj.save()
 
         bank_activities = obj.bank_activities.select_related().all()
@@ -58,6 +60,20 @@ class UpdateThirdPersonIsEmailSentView(LoginRequiredMixin,View):
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
         obj.is_email_sent = data.get('is_email_sent')
+        obj.save()
+
+        return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
+    
+class UpdateThirdPersonIsCustomerSentView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        
+        if request.user.authorization.department != 'finans':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
+        obj.is_customer_sent = True
         obj.save()
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)

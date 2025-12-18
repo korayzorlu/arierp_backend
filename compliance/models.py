@@ -49,6 +49,7 @@ class ThirdPerson(models.Model):
     is_vpos = models.BooleanField(default=False)
 
     is_email_sent = models.BooleanField(default=False)
+    is_customer_sent = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

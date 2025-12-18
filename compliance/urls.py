@@ -9,6 +9,7 @@ urlpatterns = [
     path('update_third_person_status/', views.UpdateThirdPersonStatusView.as_view(), name="update_third_person_status"),
     path('import_third_person_document/', views.ImportThirdPersonDocumentsView.as_view(), name="import_third_person_document"),
     path('update_third_person_is_email_sent/', views.UpdateThirdPersonIsEmailSentView.as_view(), name="update_third_person_is_email_sent"),
+    path('update_third_person_is_customer_sent/', views.UpdateThirdPersonIsCustomerSentView.as_view(), name="update_third_person_is_customer_sent"),
 
     path('', include("compliance.api.urls")),
 ]
