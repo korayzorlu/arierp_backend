@@ -48,6 +48,20 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
     
+class UpdateThirdPersonIsEmailSentView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        
+        if request.user.authorization.department != 'kredi_tahsis':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
+        obj.is_email_sent = data.get('is_email_sent')
+        obj.save()
+
+        return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
+    
 class AddBlackListPersonView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)

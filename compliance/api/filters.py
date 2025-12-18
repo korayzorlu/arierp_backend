@@ -42,6 +42,7 @@ class ThirdPersonFilter(FilterSet):
     name = CharFilter(field_name='name', lookup_expr='icontains')
     tc_vkn_no = CharFilter(field_name='tc_vkn_no', lookup_expr='icontains')
     status = CharFilter(method='filter_status')
+    is_email_sent = CharFilter(method='filter_is_email_sent')
 
     class Meta:
         model = ThirdPerson
@@ -51,3 +52,13 @@ class ThirdPersonFilter(FilterSet):
         if value == "all":
             return queryset
         return queryset.filter(status = value)
+    
+    def filter_is_email_sent(self, queryset, is_email_sent, value):
+        if value == "all":
+            return queryset
+        elif value.lower() == 'true':
+            return queryset.filter(is_email_sent = True)
+        elif value.lower() == 'false':
+            return queryset.filter(is_email_sent = False)
+        else:
+            return queryset
