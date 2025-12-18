@@ -53,7 +53,7 @@ class UpdateThirdPersonIsEmailSentView(LoginRequiredMixin,View):
         data = json.loads(request.body)
 
         
-        if request.user.authorization.department != 'kredi_tahsis':
+        if request.user.authorization.department != 'operasyon':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
