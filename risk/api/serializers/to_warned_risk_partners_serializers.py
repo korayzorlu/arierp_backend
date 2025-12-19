@@ -351,6 +351,19 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
             ),
+            total_trade_transactions=Sum(
+                Case(
+                    When(
+                        lease_trade_transactions__posting_group_name='Kira',
+                        lease_trade_transactions__amount_type=0,
+                        then='lease_trade_transactions__amount'
+                    ),
+                    output_field=models.DecimalField(),
+                )
+            )
+        ).filter(
+            Q(total_contract_payments__gt=20000) |
+            Q(total_trade_transactions__gt=20000)
         )
 
         # latest_lease = leases.filter(
@@ -472,9 +485,20 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             ),
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
+            ),
+            total_trade_transactions=Sum(
+                Case(
+                    When(
+                        lease_trade_transactions__posting_group_name='Kira',
+                        lease_trade_transactions__amount_type=0,
+                        then='lease_trade_transactions__amount'
+                    ),
+                    output_field=models.DecimalField(),
+                )
             )
         ).filter(
-            Q(total_contract_payments__gt=20000)
+            Q(total_contract_payments__gt=20000) |
+            Q(total_trade_transactions__gt=20000)
         )
 
         # latest_lease = leases.filter(
