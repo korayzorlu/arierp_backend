@@ -357,7 +357,8 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000)
+            Q(total_trade_transactions__gt=20000) |
+            Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)
@@ -445,7 +446,8 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000)
+            Q(total_trade_transactions__gt=20000) |
+            Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)

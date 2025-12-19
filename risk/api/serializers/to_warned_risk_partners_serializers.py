@@ -227,7 +227,8 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             # ) |
             Q(first_installment_payment_date=F('expected_payment_date')) |
             Q(total_contract_payments__lte=20000) |
-            Q(total_trade_transactions__lte=20000)
+            Q(total_trade_transactions__lte=20000) |
+            Q(odenen_yerel__lte=20000)
         )
 
         # latest_lease = leases.filter(
@@ -361,7 +362,8 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000)
+            Q(total_trade_transactions__gt=20000) |
+            Q(odenen_yerel__gt=20000)
         )
 
         # latest_lease = leases.filter(
@@ -495,7 +497,8 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000)
+            Q(total_trade_transactions__gt=20000) |
+            Q(odenen_yerel__gt=20000)
         )
 
         # latest_lease = leases.filter(
