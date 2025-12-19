@@ -260,7 +260,10 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                     ),
                     output_field=models.DecimalField(),
                 )
-            )
+            ),
+            count_trade_transaction=Count(
+                'partner_contracts__contract_leases__lease_trade_transactions__id'
+            ),
         ).filter(
             # (
             #     Q(first_installment_payment_date=F('expected_payment_date')) |
@@ -269,9 +272,10 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(first_installment_payment_date=F('expected_payment_date')) |
             Q(total_contract_payments__lte=20000) |
             Q(total_trade_transactions__lte=20000) |
-            Q(
-                partner_contracts__contract_leases__is_last_project=True,
-                partner_contracts__contract_leases__odenen_yerel__lte=20000
+            (
+                Q(count_trade_transaction__gt=0) &
+                Q(partner_contracts__contract_leases__is_last_project=True) &
+                Q(partner_contracts__contract_leases__odenen_yerel__lte=20000)
             )
         )
 
@@ -357,13 +361,17 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                     ),
                     output_field=models.DecimalField(),
                 )
-            )
+            ),
+            count_trade_transaction=Count(
+                'partner_contracts__contract_leases__lease_trade_transactions__id'
+            ),
         ).filter(
             Q(total_contract_payments__gt=20000) |
             Q(total_trade_transactions__gt=20000) |
-            Q(
-                partner_contracts__contract_leases__is_last_project=True,
-                partner_contracts__contract_leases__odenen_yerel__gt=20000
+            (
+                Q(count_trade_transaction__gt=0) &
+                Q(partner_contracts__contract_leases__is_last_project=True) &
+                Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
             )
         )
 
@@ -449,13 +457,17 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                     ),
                     output_field=models.DecimalField(),
                 )
-            )
+            ),
+            count_trade_transaction=Count(
+                'partner_contracts__contract_leases__lease_trade_transactions__id'
+            ),
         ).filter(
             Q(total_contract_payments__gt=20000) |
             Q(total_trade_transactions__gt=20000) |
-            Q(
-                partner_contracts__contract_leases__is_last_project=True,
-                partner_contracts__contract_leases__odenen_yerel__gt=20000
+            (
+                Q(count_trade_transaction__gt=0) &
+                Q(partner_contracts__contract_leases__is_last_project=True) &
+                Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
             )
         )
 

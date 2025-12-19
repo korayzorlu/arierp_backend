@@ -219,6 +219,9 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     ),
                     output_field=models.DecimalField(),
                 )
+            ),
+            count_trade_transaction=Count(
+                'partner_contracts__contract_leases__lease_trade_transactions__id'
             )
         ).filter(
             # (
@@ -228,7 +231,10 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(first_installment_payment_date=F('expected_payment_date')) |
             Q(total_contract_payments__lte=20000) |
             Q(total_trade_transactions__lte=20000) |
-            Q(odenen_yerel__lte=20000)
+            (
+                Q(count_trade_transaction__gt=0) &
+                Q(odenen_yerel__lte=20000)
+            )
         )
 
         # latest_lease = leases.filter(
@@ -359,11 +365,17 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     ),
                     output_field=models.DecimalField(),
                 )
+            ),
+            count_trade_transaction=Count(
+                'partner_contracts__contract_leases__lease_trade_transactions__id'
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
             Q(total_trade_transactions__gt=20000) |
-            Q(odenen_yerel__gt=20000)
+            (
+                Q(count_trade_transaction__gt=0) &
+                Q(odenen_yerel__gt=20000)
+            )
         )
 
         # latest_lease = leases.filter(
@@ -494,11 +506,17 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
                     ),
                     output_field=models.DecimalField(),
                 )
+            ),
+            count_trade_transaction=Count(
+                'partner_contracts__contract_leases__lease_trade_transactions__id'
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
             Q(total_trade_transactions__gt=20000) |
-            Q(odenen_yerel__gt=20000)
+            (
+                Q(count_trade_transaction__gt=0) &
+                Q(odenen_yerel__gt=20000)
+            )
         )
 
         # latest_lease = leases.filter(
