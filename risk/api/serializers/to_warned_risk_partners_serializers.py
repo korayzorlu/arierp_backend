@@ -335,9 +335,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             to_warned_filters_for_serializers() &
             #Q(lease_trade_transactions__amount_type=0) &
             Q(contract__partner__is_turkkep=True)
-        )
-
-        leases = leases.annotate(
+        ).annotate(
             overdue_days_int=Cast(
                 F('overdue_days'),
                 output_field=IntegerField()
