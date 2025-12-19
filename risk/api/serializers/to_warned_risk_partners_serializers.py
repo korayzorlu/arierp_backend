@@ -187,7 +187,8 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            to_warned_filters_for_serializers()
+            to_warned_filters_for_serializers() &
+            Q(odenen_yerel__lte=20000)
         )
 
         leases = leases.annotate(
@@ -210,33 +211,34 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
             ),
-            total_trade_transactions=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Kira',
-                        lease_trade_transactions__amount_type=0,
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            count_trade_transaction=Count(
-                'lease_trade_transactions__id'
-            )
-        ).filter(
-            # (
-            #     Q(first_installment_payment_date=F('expected_payment_date')) &
-            #     Q(first_installment_payment__lte=20000)
-            # ) |
-            Q(first_installment_payment_date=F('expected_payment_date')) |
-            Q(total_contract_payments__lte=20000) |
-            Q(total_trade_transactions__lte=20000) |
-            (
-                Q(count_trade_transaction__gt=0) &
-                Q(is_last_project=True) &
-                Q(odenen_yerel__lte=20000)
-            )
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             lease_trade_transactions__posting_group_name='Kira',
+            #             lease_trade_transactions__amount_type=0,
+            #             then='lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'lease_trade_transactions__id'
+            # )
         )
+        # .filter(
+        #     # (
+        #     #     Q(first_installment_payment_date=F('expected_payment_date')) &
+        #     #     Q(first_installment_payment__lte=20000)
+        #     # ) |
+        #     Q(first_installment_payment_date=F('expected_payment_date')) |
+        #     Q(total_contract_payments__lte=20000) |
+        #     Q(total_trade_transactions__lte=20000) |
+        #     (
+        #         Q(count_trade_transaction__gt=0) &
+        #         Q(is_last_project=True) &
+        #         Q(odenen_yerel__lte=20000)
+        #     )
+        # )
 
         # latest_lease = leases.filter(
         #     contract__code=OuterRef('contract__code')
@@ -334,6 +336,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter_for_serializers(filter_params) &
             to_warned_filters_for_serializers() &
             #Q(lease_trade_transactions__amount_type=0) &
+            Q(odenen_yerel__gt=20000) &
             Q(contract__partner__is_turkkep=True)
         ).annotate(
             overdue_days_int=Cast(
@@ -355,28 +358,29 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
             ),
-            total_trade_transactions=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Kira',
-                        lease_trade_transactions__amount_type=0,
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            count_trade_transaction=Count(
-                'lease_trade_transactions__id'
-            )
-        ).filter(
-            Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000) |
-            (
-                Q(count_trade_transaction__gt=0) &
-                Q(is_last_project=True) &
-                Q(odenen_yerel__gt=20000)
-            )
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             lease_trade_transactions__posting_group_name='Kira',
+            #             lease_trade_transactions__amount_type=0,
+            #             then='lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'lease_trade_transactions__id'
+            # )
         )
+        # .filter(
+        #     Q(total_contract_payments__gt=20000) |
+        #     Q(total_trade_transactions__gt=20000) |
+        #     (
+        #         Q(count_trade_transaction__gt=0) &
+        #         Q(is_last_project=True) &
+        #         Q(odenen_yerel__gt=20000)
+        #     )
+        # )
 
         # latest_lease = leases.filter(
         #     contract__code=OuterRef('contract__code')
@@ -474,6 +478,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             vendor_filter_for_serializers(filter_params) &
             to_warned_filters_for_serializers() &
             #Q(lease_trade_transactions__amount_type=0) &
+            Q(odenen_yerel__gt=20000) &
             Q(contract__partner__is_turkkep=False)
         )
 
@@ -497,28 +502,29 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
             ),
-            total_trade_transactions=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Kira',
-                        lease_trade_transactions__amount_type=0,
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            count_trade_transaction=Count(
-                'lease_trade_transactions__id'
-            )
-        ).filter(
-            Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000) |
-            (
-                Q(count_trade_transaction__gt=0) &
-                Q(is_last_project=True) &
-                Q(odenen_yerel__gt=20000)
-            )
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             lease_trade_transactions__posting_group_name='Kira',
+            #             lease_trade_transactions__amount_type=0,
+            #             then='lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'lease_trade_transactions__id'
+            # )
         )
+        # .filter(
+        #     Q(total_contract_payments__gt=20000) |
+        #     Q(total_trade_transactions__gt=20000) |
+        #     (
+        #         Q(count_trade_transaction__gt=0) &
+        #         Q(is_last_project=True) &
+        #         Q(odenen_yerel__gt=20000)
+        #     )
+        # )
 
         # latest_lease = leases.filter(
         #     contract__code=OuterRef('contract__code')

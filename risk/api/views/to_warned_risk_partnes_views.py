@@ -222,7 +222,8 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            to_warned_filters_for_views()
+            to_warned_filters_for_views() &
+            Q(partner_contracts__contract_leases__odenen_yerel__lte=20000)
             #~Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
@@ -251,33 +252,34 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             total_contract_payments=Sum(
                 'partner_contracts__contract_contract_payments__credit_amount'
             ),
-            total_trade_transactions=Sum(
-                Case(
-                    When(
-                        partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
-                        partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
-                        then='partner_contracts__contract_leases__lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            count_trade_transaction=Count(
-                'partner_contracts__contract_leases__lease_trade_transactions__id'
-            ),
-        ).filter(
-            # (
-            #     Q(first_installment_payment_date=F('expected_payment_date')) |
-            #     Q(first_installment_payment__lte=20000)
-            # ) |
-            Q(first_installment_payment_date=F('expected_payment_date')) |
-            Q(total_contract_payments__lte=20000) |
-            Q(total_trade_transactions__lte=20000) |
-            (
-                Q(count_trade_transaction__gt=0) &
-                Q(partner_contracts__contract_leases__is_last_project=True) &
-                Q(partner_contracts__contract_leases__odenen_yerel__lte=20000)
-            )
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
+            #             partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
+            #             then='partner_contracts__contract_leases__lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'partner_contracts__contract_leases__lease_trade_transactions__id'
+            # ),
         )
+        # .filter(
+        #     # (
+        #     #     Q(first_installment_payment_date=F('expected_payment_date')) |
+        #     #     Q(first_installment_payment__lte=20000)
+        #     # ) |
+        #     Q(first_installment_payment_date=F('expected_payment_date')) |
+        #     Q(total_contract_payments__lte=20000) |
+        #     Q(total_trade_transactions__lte=20000) |
+        #     (
+        #         Q(count_trade_transaction__gt=0) &
+        #         Q(partner_contracts__contract_leases__is_last_project=True) &
+        #         Q(partner_contracts__contract_leases__odenen_yerel__lte=20000)
+        #     )
+        # )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -329,6 +331,7 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             to_warned_filters_for_views() &
             #Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
             Q(is_turkkep=True) &
+            Q(partner_contracts__contract_leases__odenen_yerel__gt=20000) &
             ~Q(types__contains=["special"])
         ).annotate(
             overdue_days_int=Cast(
@@ -352,28 +355,29 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             total_contract_payments=Sum(
                 'partner_contracts__contract_contract_payments__credit_amount'
             ),
-            total_trade_transactions=Sum(
-                Case(
-                    When(
-                        partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
-                        partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
-                        then='partner_contracts__contract_leases__lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            count_trade_transaction=Count(
-                'partner_contracts__contract_leases__lease_trade_transactions__id'
-            ),
-        ).filter(
-            Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000) |
-            (
-                Q(count_trade_transaction__gt=0) &
-                Q(partner_contracts__contract_leases__is_last_project=True) &
-                Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
-            )
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
+            #             partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
+            #             then='partner_contracts__contract_leases__lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'partner_contracts__contract_leases__lease_trade_transactions__id'
+            # ),
         )
+        # .filter(
+        #     Q(total_contract_payments__gt=20000)
+        #     #Q(total_trade_transactions__gt=20000) |
+        #     # (
+        #     #     Q(count_trade_transaction__gt=0) &
+        #     #     Q(partner_contracts__contract_leases__is_last_project=True) &
+        #     #     Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
+        #     # )
+        # )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -425,6 +429,7 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             to_warned_filters_for_views() &
             # Q(partner_contracts__contract_leases__lease_trade_transactions__amount_type=0) &
             Q(is_turkkep=False) &
+            Q(partner_contracts__contract_leases__odenen_yerel__gt=20000) &
             ~Q(types__contains=["special"])
         ).annotate(
             overdue_days_int=Cast(
@@ -448,28 +453,29 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             total_contract_payments=Sum(
                 'partner_contracts__contract_contract_payments__credit_amount'
             ),
-            total_trade_transactions=Sum(
-                Case(
-                    When(
-                        partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
-                        partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
-                        then='partner_contracts__contract_leases__lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            count_trade_transaction=Count(
-                'partner_contracts__contract_leases__lease_trade_transactions__id'
-            ),
-        ).filter(
-            Q(total_contract_payments__gt=20000) |
-            Q(total_trade_transactions__gt=20000) |
-            (
-                Q(count_trade_transaction__gt=0) &
-                Q(partner_contracts__contract_leases__is_last_project=True) &
-                Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
-            )
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             partner_contracts__contract_leases__lease_trade_transactions__posting_group_name='Kira',
+            #             partner_contracts__contract_leases__lease_trade_transactions__amount_type=0,
+            #             then='partner_contracts__contract_leases__lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'partner_contracts__contract_leases__lease_trade_transactions__id'
+            # ),
         )
+        # .filter(
+        #     Q(total_contract_payments__gt=20000) |
+        #     Q(total_trade_transactions__gt=20000) |
+        #     (
+        #         Q(count_trade_transaction__gt=0) &
+        #         Q(partner_contracts__contract_leases__is_last_project=True) &
+        #         Q(partner_contracts__contract_leases__odenen_yerel__gt=20000)
+        #     )
+        # )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
