@@ -71,12 +71,12 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 else:
                     obj = None
 
-                leases_count = Lease.objects.select_related().filter(
-                    main_lease_id=str(data.MainLopId),
-                    is_last_project = True
-                ).aggregate(
-                    count=Count('id')
-                )['count']
+                # leases_count = Lease.objects.select_related().filter(
+                #     main_lease_id=str(data.MainLopId),
+                #     is_last_project = True
+                # ).aggregate(
+                #     count=Count('id')
+                # )['count']
 
                 if obj:
                     obj.lease_id = str(data.OperationProjectId) or ""
@@ -100,7 +100,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.application_no = str(data.ApplicationID) or ""
                     obj.is_last_project = True if str(data.IS_LAST_PROJECT) == "1" else False
                     obj.current_request = str(data.CurrentRequest) or ""
-                    obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
+                    #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -127,7 +127,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         application_no = str(data.ApplicationID) or "",
                         is_last_project = True if str(data.IS_LAST_PROJECT) == "1" else False,
                         current_request = str(data.CurrentRequest) or "",
-                        transfer_count = leases_count - 1 if leases_count > 0 else 0,
+                        #transfer_count = leases_count - 1 if leases_count > 0 else 0,
                     ))
                     create_progress += 1
             if update_objs:
