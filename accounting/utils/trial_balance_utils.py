@@ -149,8 +149,7 @@ def export_trial_balances(self):
         last_lease = obj.contract_leases.filter(is_last_project = True).first()
 
         leases = Lease.objects.select_related("contract").prefetch_related("contract__contract_trial_balances").filter(
-            main_lease_id=last_lease.main_lease_id,
-            is_last_project = True
+            main_lease_id=last_lease.main_lease_id
         ).order_by('-lease_id')
     
         for lease in leases:
