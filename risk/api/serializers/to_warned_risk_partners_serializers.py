@@ -194,8 +194,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             overdue_days_int=Cast(
                 F('overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             expected_payment_date=ExpressionWrapper(
                 today - (F('overdue_days_int') * timedelta(days=1)),
                 output_field=DateField()
@@ -334,8 +333,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             overdue_days_int=Cast(
                 F('overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             expected_payment_date=ExpressionWrapper(
                 today - (F('overdue_days_int') * timedelta(days=1)),
                 output_field=DateField()
@@ -469,8 +467,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             overdue_days_int=Cast(
                 F('overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             expected_payment_date=ExpressionWrapper(
                 today - (F('overdue_days_int') * timedelta(days=1)),
                 output_field=DateField()

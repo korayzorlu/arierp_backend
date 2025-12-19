@@ -235,8 +235,7 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             overdue_days_int=Cast(
                 F('partner_contracts__contract_leases__overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             expected_payment_date=ExpressionWrapper(
                 today - (F('overdue_days_int') * timedelta(days=1)),
                 output_field=DateField()
@@ -327,8 +326,7 @@ class KepToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             overdue_days_int=Cast(
                 F('partner_contracts__contract_leases__overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             expected_payment_date=ExpressionWrapper(
@@ -416,8 +414,7 @@ class PostaToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             overdue_days_int=Cast(
                 F('partner_contracts__contract_leases__overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             expected_payment_date=ExpressionWrapper(
