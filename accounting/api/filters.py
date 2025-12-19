@@ -70,7 +70,7 @@ class TrialBalanceContractFilter(FilterSet):
         if value == "all" and is_correct == "true":
             return queryset.filter(
                 contract_leases__is_last_project = True,
-                contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
+                #contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
             )
         elif value == "all" and is_correct == "false":
             return queryset.filter(
