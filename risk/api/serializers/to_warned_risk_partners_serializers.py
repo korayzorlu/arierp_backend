@@ -233,6 +233,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(total_trade_transactions__lte=20000) |
             (
                 Q(count_trade_transaction__gt=0) &
+                Q(is_last_project=True) &
                 Q(odenen_yerel__lte=20000)
             )
         )
@@ -374,6 +375,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(total_trade_transactions__gt=20000) |
             (
                 Q(count_trade_transaction__gt=0) &
+                Q(is_last_project=True) &
                 Q(odenen_yerel__gt=20000)
             )
         )
@@ -515,6 +517,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(total_trade_transactions__gt=20000) |
             (
                 Q(count_trade_transaction__gt=0) &
+                Q(is_last_project=True) &
                 Q(odenen_yerel__gt=20000)
             )
         )
