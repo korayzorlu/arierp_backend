@@ -221,7 +221,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 )
             ),
             count_trade_transaction=Count(
-                'partner_contracts__contract_leases__lease_trade_transactions__id'
+                'lease_trade_transactions__id'
             )
         ).filter(
             # (
@@ -367,7 +367,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 )
             ),
             count_trade_transaction=Count(
-                'partner_contracts__contract_leases__lease_trade_transactions__id'
+                'lease_trade_transactions__id'
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
@@ -508,7 +508,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
                 )
             ),
             count_trade_transaction=Count(
-                'partner_contracts__contract_leases__lease_trade_transactions__id'
+                'lease_trade_transactions__id'
             )
         ).filter(
             Q(total_contract_payments__gt=20000) |
