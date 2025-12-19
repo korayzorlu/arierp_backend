@@ -6,6 +6,7 @@ import os
 from datetime import datetime,date,timedelta
 
 from partners.models import Partner
+from leasing.utils.common_utils import vendor_filter_for_views
 
 def is_valid_sector_data(data):
     if not data.get('code') or not data.get('name') or not data.get('mainSectorCode') or not data.get('matchCode') or not data.get('kkbmbSectorCode'):
@@ -34,7 +35,11 @@ def get_partner_types(data):
     return types
 
 def export_partners(self):
-    objs = Partner.objects.select_related().filter()
+    objs = Partner.objects.select_related().filter(
+        Q(vendor_filter_for_views({'project':'kizilbuk'})) |
+        Q(vendor_filter_for_views({'project':'kasaba'})) |
+        Q(partner_contracts__contract_leases__bbsn__istartswith='PSSN')
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -42,14 +47,20 @@ def export_partners(self):
 
     
     
+    # data = {
+    #     "İsim": [],
+    #     "TC/VKN": [],
+    #     "CRM Kodu": [],
+    #     "Tel": [],
+    #     "Email": [],
+    #     "Doğum Tarihi": [],
+    #     "Doğum Yeri": [],
+    # }
+
     data = {
-        "İsim": [],
-        "TC/VKN": [],
-        "CRM Kodu": [],
-        "Tel": [],
-        "Email": [],
-        "Doğum Tarihi": [],
-        "Doğum Yeri": [],
+        "isim": [],
+        "email": [],
+        "tel": [],
     }
 
     previous_progress = 0
@@ -62,13 +73,18 @@ def export_partners(self):
             self.process.save()
             previous_progress = current_progress
 
-        data["İsim"].append(obj.name or "")
-        data["TC/VKN"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no or "")
-        data["CRM Kodu"].append(obj.crm_code or "")
-        data["Tel"].append(obj.phone_number or "")
-        data["Email"].append(obj.email or "")
-        data["Doğum Tarihi"].append(obj.birthday.strftime("%d.%m.%Y") if obj.birthday else "")
-        data["Doğum Yeri"].append(obj.birth_place or "")
+        # data["İsim"].append(obj.name or "")
+        # data["TC/VKN"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no or "")
+        # data["CRM Kodu"].append(obj.crm_code or "")
+        # data["Tel"].append(obj.phone_number or "")
+        # data["Email"].append(obj.email or "")
+        # data["Doğum Tarihi"].append(obj.birthday.strftime("%d.%m.%Y") if obj.birthday else "")
+        # data["Doğum Yeri"].append(obj.birth_place or "")
+
+        
+        data["isim"].append(obj.name)
+        data["email"].append(obj.email)
+        data["tel"].append(obj.phone_number)
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
