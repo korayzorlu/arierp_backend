@@ -268,7 +268,8 @@ class DepositeToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             # ) |
             Q(first_installment_payment_date=F('expected_payment_date')) |
             Q(total_contract_payments__lte=20000) |
-            Q(total_trade_transactions__lte=20000)
+            Q(total_trade_transactions__lte=20000) |
+            Q(partner_contracts__contract_leases__odenen_yerel__lte=20000)
         )
 
         query = self.request.query_params.get('search[value]', None)
