@@ -12,7 +12,7 @@ import json
 import os
 import pyodbc
 import requests
-
+import time
 class Command(BaseCommand):
     help = 'Exports parts to JSON file'
     
@@ -64,12 +64,14 @@ class Command(BaseCommand):
                     email.attach(attachment['name'], attachment['content'], attachment['mimetype'])
             email.send(fail_silently=False)
             #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-                
+        
         subject = 'Kredi Kartı ile Yapılacak Ödemelere İlişkin Bilgilendirme'
         
         from_email = 'Arı Leasing <noreply@arileasing.com.tr>'
-        recipient_list = email_list
 
-        send_outlook_email(subject, message, from_email, recipient_list)
+        for email in email_list:
+            recipient_list = [email]
+            send_outlook_email(subject, message, from_email, recipient_list)
+            time.sleep(2)  # To avoid overwhelming the email server
 
         print("done!")

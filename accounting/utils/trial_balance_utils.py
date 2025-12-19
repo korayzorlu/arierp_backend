@@ -118,7 +118,8 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
 def export_trial_balances(self):
     objs = Contract.objects.select_related().prefetch_related("contract_leases", "contract_trial_balances").filter(
         Q(contract_leases__is_last_project = True) &
-        Q(contract_trial_balances__isnull=False)
+        Q(contract_trial_balances__isnull=False) &
+        ~Q(contract_leases__lease_status__in = ['baskasina_transfer_edildi'])
     ).distinct()
 
     self.process.status = "in_progress"
@@ -151,21 +152,21 @@ def export_trial_balances(self):
         leases = Lease.objects.select_related("contract").prefetch_related("contract__contract_trial_balances").filter(
             main_lease_id=last_lease.main_lease_id
         ).order_by('-lease_id')
-    
-        for lease in leases:
-            if not lease.lease_id in processed_leases:
-                trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract").all().distinct()
-                if trial_balances:
-                    for trial_balance in trial_balances:
-                        data["Transfer Kodu"].append(transfer_code)
-                        data["Sözleşme"].append(trial_balance.contract.code or "")
-                        data["Hesap Kodu"].append(trial_balance.account_code or "")
-                        data["PB"].append(trial_balance.currency.code or "")
-                        data["Borç Bakiyesi"].append(trial_balance.total_debit_alternate or Decimal("0.00"))
-                        data["Alacak Bakiyesi"].append(trial_balance.total_credit_alternate or Decimal("0.00"))
-                        data["Döviz Bakiye"].append(trial_balance.balance_debit_alternate - trial_balance.balance_credit_alternate or Decimal("0.00"))
-                    processed_leases.append(lease.lease_id)
-                    transfer_code += 1
+        if leases:
+            for lease in leases:
+                if not lease.lease_id in processed_leases:
+                    trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract").all().distinct()
+                    if trial_balances:
+                        for trial_balance in trial_balances:
+                            data["Transfer Kodu"].append(transfer_code)
+                            data["Sözleşme"].append(trial_balance.contract.code or "")
+                            data["Hesap Kodu"].append(trial_balance.account_code or "")
+                            data["PB"].append(trial_balance.currency.code or "")
+                            data["Borç Bakiyesi"].append(trial_balance.total_debit_alternate or Decimal("0.00"))
+                            data["Alacak Bakiyesi"].append(trial_balance.total_credit_alternate or Decimal("0.00"))
+                            data["Döviz Bakiye"].append(trial_balance.balance_debit_alternate - trial_balance.balance_credit_alternate or Decimal("0.00"))
+            processed_leases.append(lease.lease_id)
+            transfer_code += 1
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()

@@ -232,34 +232,34 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related("contract").filter(main_lease_id=last_lease.main_lease_id,is_last_project = True).order_by('-lease_id')
 
         trial_balance_dict = {"trial_balances": [],"transfer_count": len(leases) - 1 if len(leases) > 0 else 0, "max_overdue_days": "" }
-        if leases:
-            for lease in leases:
-                #lease = obj.contract_leases.filter(is_last_project = True).first()
-                trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract","partner").all()
-                for trial_balance in trial_balances:
-                    trial_balance_dict["trial_balances"].append({
-                        "id" : trial_balance.uuid,
-                        "partner" : trial_balance.partner.name if trial_balance.partner else "",
-                        "currency" : trial_balance.currency.code if trial_balance.currency else "",
-                        "account_id" : trial_balance.account_id,
-                        "main_account_code" : trial_balance.main_account_code,
-                        "account_code" : trial_balance.account_code,
-                        "account_code_trim" : trial_balance.account_code_trim,
-                        "account_name" : trial_balance.account_name,
-                        "balance_account_type" : trial_balance.balance_account_type,
-                        "balance_debit" : trial_balance.balance_debit,
-                        "balance_credit" : trial_balance.balance_credit,
-                        "total_debit" : trial_balance.total_debit,
-                        "total_credit" : trial_balance.total_credit,
-                        "total_tl" : trial_balance.balance_debit - trial_balance.balance_credit,
-                        "balance_debit_alternate" : trial_balance.balance_debit_alternate,
-                        "balance_credit_alternate" : trial_balance.balance_credit_alternate,
-                        "total_debit_alternate" : trial_balance.total_debit_alternate,
-                        "total_credit_alternate" : trial_balance.total_credit_alternate,
-                        "total_currency" : trial_balance.balance_debit_alternate - trial_balance.balance_credit_alternate,
-                        "contract" : trial_balance.contract.code if trial_balance.contract else "",
-                        "lease_status" : lease.get_lease_status_display() if lease else "",
-                    })
+
+        for lease in leases:
+            #lease = obj.contract_leases.filter(is_last_project = True).first()
+            trial_balances = lease.contract.contract_trial_balances.select_related("currency","contract","partner").all()
+            for trial_balance in trial_balances:
+                trial_balance_dict["trial_balances"].append({
+                    "id" : trial_balance.uuid,
+                    "partner" : trial_balance.partner.name if trial_balance.partner else "",
+                    "currency" : trial_balance.currency.code if trial_balance.currency else "",
+                    "account_id" : trial_balance.account_id,
+                    "main_account_code" : trial_balance.main_account_code,
+                    "account_code" : trial_balance.account_code,
+                    "account_code_trim" : trial_balance.account_code_trim,
+                    "account_name" : trial_balance.account_name,
+                    "balance_account_type" : trial_balance.balance_account_type,
+                    "balance_debit" : trial_balance.balance_debit,
+                    "balance_credit" : trial_balance.balance_credit,
+                    "total_debit" : trial_balance.total_debit,
+                    "total_credit" : trial_balance.total_credit,
+                    "total_tl" : trial_balance.balance_debit - trial_balance.balance_credit,
+                    "balance_debit_alternate" : trial_balance.balance_debit_alternate,
+                    "balance_credit_alternate" : trial_balance.balance_credit_alternate,
+                    "total_debit_alternate" : trial_balance.total_debit_alternate,
+                    "total_credit_alternate" : trial_balance.total_credit_alternate,
+                    "total_currency" : trial_balance.balance_debit_alternate - trial_balance.balance_credit_alternate,
+                    "contract" : trial_balance.contract.code if trial_balance.contract else "",
+                    "lease_status" : lease.get_lease_status_display() if lease else "",
+                })
         #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
 
         return trial_balance_dict
