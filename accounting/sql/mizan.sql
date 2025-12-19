@@ -62,7 +62,7 @@ FROM
     ) lt ON AccountCodeTransaction = LedgerAccount.AccountCode
 WHERE
     ISNULL(MZ110UFAccountCode, '') = ''
-    -- AND LedgerAccount.Dimension8 = '62056'
+    -- AND LedgerAccount.Dimension8 = '55379'
     -- AND CRMCode = '6638'
     -- AND LedgerAccount.AccountCode >= '392'
     -- AND LedgerAccount.AccountCode <= '393999'
