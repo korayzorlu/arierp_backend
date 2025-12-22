@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "django_select2",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_extensions",
     "users",
     "common",
     "subscriptions",
