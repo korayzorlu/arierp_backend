@@ -46,6 +46,7 @@ h11==0.14.0
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
+ipython==9.8.0
 kombu==5.4.2
 msgpack==1.1.0
 packaging==24.2
