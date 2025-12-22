@@ -66,6 +66,17 @@ class ExchangeRateAdmin(admin.ModelAdmin):
 
     class Meta:
         model = ExchangeRate
+
+@admin.register(TufeRate)
+class TufeRateAdmin(admin.ModelAdmin):
+    list_display = ["date","rate","change_rate"]
+    list_display_links = ["date"]
+    search_fields = ["date","rate","change_rate"]
+    list_filter = []
+    inlines = []
+    ordering = ["-date"]
+    class Meta:
+        model = TufeRate
         
 @admin.register(ImportProcess)
 class ImportProcessAdmin(admin.ModelAdmin):

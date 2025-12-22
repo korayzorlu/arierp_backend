@@ -106,6 +106,17 @@ class ExchangeRate(models.Model):
 
     def __str__(self):
         return str(f"{self.base_currency.code} - {self.target_currency.code} - {self.date}")
+    
+class TufeRate(models.Model):
+    date = models.DateField(_("Date"), blank=True, null=True)
+    rate = models.DecimalField(_("Rate"), default = 0.00, max_digits=14, decimal_places=2)
+    change_rate = models.DecimalField(_("Change Rate"), default = 0.00, max_digits=14, decimal_places=2)
+
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return str(f"{self.rate} - {self.change_rate} - {self.date}")
 
 class MainStatus(models.Model):
     name = models.CharField(_("Name"), max_length=25)
