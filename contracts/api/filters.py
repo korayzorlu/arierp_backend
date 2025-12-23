@@ -34,6 +34,7 @@ class ContractPaymentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     contract = CharFilter(method = 'filter_contract')
     contract_id = CharFilter(field_name='contract__contract_id', lookup_expr='exact')
+    contract_uuid = CharFilter(field_name='contract__uuid', lookup_expr='exact')
     currency = CharFilter(method = 'filter_currency')
     ledger_account_name = CharFilter(method = 'filter_ledger_account_name')
     group_name = CharFilter(method = 'filter_group_name')
