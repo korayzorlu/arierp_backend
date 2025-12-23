@@ -365,7 +365,12 @@ if not DEBUG:
         },
         "fetch-data-for-daily-services-task": {
             "task": "common.tasks.fetch_data_for_daily_services",
-            "schedule": crontab(minute=0, hour='23'),
+            "schedule": crontab(minute=0, hour='4'),
+            "args": [2],
+        },
+        "fetch-big-data-for-daily-services-task": {
+            "task": "common.tasks.fetch_big_data_for_daily_services",
+            "schedule": crontab(minute=0, hour='1'),
             "args": [2],
         },
     }
