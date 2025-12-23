@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     libldap2-dev \
     libsasl2-dev \
     && rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libffi-dev
 ENV PATH="$PATH:/opt/mssql-tools18/bin"
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
