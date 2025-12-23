@@ -3,6 +3,8 @@ from django.utils.timezone import make_aware, localtime
 from django.db.models import Q
 
 from decimal import Decimal, InvalidOperation
+from datetime import date, timedelta
+import calendar
 import re
 
 from leasing.models import *
@@ -521,3 +523,6 @@ def extract_contract_numbers(description):
 
     return result
     
+
+def days_in_month(dt: date) -> int:
+    return calendar.monthrange(dt.year, dt.month)[1]

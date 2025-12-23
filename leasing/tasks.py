@@ -18,7 +18,7 @@ from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
-from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils
+from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils
 from .utils.installment_utils import fetch_installments_from_leaseflex,update_first_installment_date
 
 @shared_task()
@@ -28,6 +28,11 @@ def fetch_leases(company):
 @shared_task()
 def fetch_exchanged_amounts(company):
     fetch_exchanged_amounts_utils(company)
+    #fetch_tufe_exchanged_amounts_utils(company)
+
+@shared_task()
+def fetch_tufe_exchanged_amounts(company):
+    fetch_tufe_exchanged_amounts_utils(company)
 
 @shared_task()
 def fetch_interest_rates(company):

@@ -96,6 +96,7 @@ class Lease(models.Model):
     geciken_odenmesi_gereken_usd = models.DecimalField(_("Geciken Ödenmesi Gereken USD"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     kur_kaybi = models.DecimalField(_("Kur Kaybı"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     kur_kaybi_yuzde = models.DecimalField(_("Kur Kaybı Yüzde"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufeli_geciken = models.DecimalField(_("Tüfeli Geciken"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     item = models.ForeignKey(Item, on_delete=models.SET_NULL, blank=True, null=True, related_name="project_leases")
     vendor = models.ForeignKey(Partner, on_delete=models.SET_NULL, blank=True, null=True, related_name="vendor_leases")

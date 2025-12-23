@@ -18,11 +18,11 @@ import string
 import random
 
 from leasing.models import *
-from leasing.utils.common_utils import get_lease_status_value,status_filter_for_leases
+from leasing.utils.common_utils import get_lease_status_value,status_filter_for_leases,days_in_month
 from users.models import User
 from leasing.models import *
 from leasing.sqls import OVERDUE_INSTALLMENTS
-from common.models import Currency,ExchangeRate
+from common.models import Currency,ExchangeRate,TufeRate
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from trade.models import TradeTransaction
@@ -241,6 +241,66 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             ])
 
         print(f"Toplam {update_progress} kira planı kur kayıpları güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
+def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
+    try:
+        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),overdue_amount__gt=0,is_last_project=True,currency__code__in=['TRY'])
+        tufe_rate = TufeRate.objects.select_related().order_by('-date').first()
+
+        update_progress = 0
+
+        update_objs = []
+        for index,obj in enumerate(objs):
+            overdue_date = timezone.now().date() - timedelta(days=obj.overdue_days)
+            # Eğer gecikme tarihi içinde bulunduğumuz ay ise, bir önceki ayı ve yılı al
+            today = timezone.now().date()
+            if overdue_date.year == today.year and overdue_date.month == today.month:
+                if overdue_date.month == 1:
+                    overdue_year = overdue_date.year - 1
+                    overdue_month = 12
+                else:
+                    overdue_year = overdue_date.year
+                    overdue_month = overdue_date.month - 1
+            else:
+                overdue_year = overdue_date.year
+                overdue_month = overdue_date.month
+
+            # 1. Gecikmenin başlangıcındaki ay içerisindeki hesap
+            tufe_rate_at_overdue_start = TufeRate.objects.select_related().filter(date__year=overdue_year, date__month=overdue_month).first()
+            daily_rate_at_overdue_start = tufe_rate_at_overdue_start.change_rate / Decimal(str(days_in_month(overdue_date)))
+            days_in_overdue_start_month = days_in_month(overdue_date) - overdue_date.day + 1
+            tufeli_amount_start_month = obj.overdue_amount * (Decimal('1.00') + (daily_rate_at_overdue_start * Decimal(str(days_in_overdue_start_month))) / Decimal('100.00'))
+
+            # 2. Gecikmenin devam ettiği aylar için bugünkü aya kadar olan hesap
+            tufeli_amount = Decimal('0.00') + tufeli_amount_start_month
+            for year in range(overdue_year, today.year + 1):
+                start_month = overdue_month + 1 if year == overdue_year else 1
+                end_month = today.month if year == today.year else 12
+                for month in range(start_month, end_month):
+                    tufe_rate_current = TufeRate.objects.select_related().filter(date__year=year, date__month=month).first()
+                    tufeli_amount = tufeli_amount * (Decimal('1.00') + tufe_rate_current.change_rate / Decimal('100.00'))
+            
+            # 3. Bugünkü ay için günlük hesap
+            daily_rate_current_month = tufe_rate.change_rate / Decimal(str(days_in_month(today)))
+            tufeli_amount = tufeli_amount * (Decimal('1.00') + (daily_rate_current_month * Decimal(str(today.day))) / Decimal('100.00'))
+            
+            #print(f"Lease {obj.code} gecikme günü: {obj.overdue_days} - gecikme tutarı: {obj.overdue_amount} - Tüfeli Amount Total: {tufeli_amount}")
+
+            obj.tufeli_geciken = tufeli_amount
+
+            update_objs.append(obj)
+            update_progress += 1
+        if update_objs:
+            Lease.objects.bulk_update(update_objs, [
+                "tufeli_geciken",
+            ])
+            pass
+
+        print(f"Toplam {update_progress} kira planı tüfe kayıpları güncellendi.")
         print("--------")
     except Exception as e:
         print(e)

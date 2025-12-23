@@ -68,9 +68,10 @@ class UpdateThirdPersonIsCustomerSentView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        
         if request.user.authorization.department != 'finans':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
         obj.is_customer_sent = True

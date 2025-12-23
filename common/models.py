@@ -108,6 +108,7 @@ class ExchangeRate(models.Model):
         return str(f"{self.base_currency.code} - {self.target_currency.code} - {self.date}")
     
 class TufeRate(models.Model):
+    code = models.CharField(_("Code"), max_length=25, null=True, blank=True)
     date = models.DateField(_("Date"), blank=True, null=True)
     rate = models.DecimalField(_("Rate"), default = 0.00, max_digits=14, decimal_places=2)
     change_rate = models.DecimalField(_("Change Rate"), default = 0.00, max_digits=14, decimal_places=2)

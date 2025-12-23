@@ -63,7 +63,7 @@ FROM
 WHERE
     ISNULL(MZ110UFAccountCode, '') = ''
     -- AND LedgerAccount.Dimension8 = '55379'
-    -- AND CRMCode = '6638'
+    -- AND CRMCode = '1269'
     -- AND LedgerAccount.AccountCode >= '392'
     -- AND LedgerAccount.AccountCode <= '393999'
     -- AND (LedgerAccount.AccountCode LIKE '392.99.2.00%' OR LedgerAccount.AccountCode LIKE '393.99.2.01%')

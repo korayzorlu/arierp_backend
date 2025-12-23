@@ -82,6 +82,7 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default","operasyon"], "label" : "Kapsamlı İhtar Çekilenler", "icon" : "policy", "route" : "/comprehensive-warned-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "Fesih Edilecekler", "icon" : "policy", "route" : "/to-terminated-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "Kur Değerleme Kayıpları", "icon" : "policy", "route" : "/exchanged-leases"},
+                    {"type" : "item", "class" : ["default"], "label" : "Tüfe Değerleme Kayıpları", "icon" : "policy", "route" : "/tufe-exchanged-leases"},
                     {"type" : "item", "class" : ["default"], "label" : "Hatalı/Belirsiz Olanlar", "icon" : "policy", "route" : "/under-reviews"},
                     {"type" : "item", "class" : ["default"], "label" : "KDV Farkı Olanlar", "icon" : "policy", "route" : "/kdv-risk-partners"},
                 ]},
