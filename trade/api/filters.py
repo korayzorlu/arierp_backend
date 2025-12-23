@@ -31,6 +31,7 @@ class TradeTransactionFilter(FilterSet):
     currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
     lease = CharFilter(field_name='lease__code', lookup_expr='icontains')
     lease_id = CharFilter(field_name='lease__lease_id', lookup_expr='exact')
+    lease_uuid = CharFilter(field_name='lease__uuid', lookup_expr='exact')
     posting_group_name = CharFilter(field_name='posting_group__name', lookup_expr='icontains')
     description = CharFilter(field_name='description', lookup_expr='icontains')
     document_no = CharFilter(field_name='document_no', lookup_expr='icontains')

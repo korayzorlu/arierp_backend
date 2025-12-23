@@ -9,17 +9,22 @@ import gc
 
 from common.utils.common_utils import normalize,safe_decimal
 from trade.models import *
+from contracts.models import Contract
 
-def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
+def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_code=None):
     try:
         conn = pyodbc.connect(settings.ARI_CONNECTION_STRING)
 
-        SQL_PATH = os.path.join(settings.BASE_DIR, "trade","sql","cari_hareketler.sql")
+        SQL_PATH = os.path.join(settings.BASE_DIR, "trade","sql",f"cari_hareketler.sql" if not contract_code else f"cari_hareketler_filtreli.sql")
         with open(SQL_PATH, "r", encoding="utf-8") as file:
             SQL_QUERY = file.read()
 
         cursor = conn.cursor()
-        cursor.execute(SQL_QUERY)
+        if contract_code:
+            contract = Contract.objects.select_related().filter(company__id=int(company), code=contract_code).first()
+            cursor.execute(SQL_QUERY,[contract.contract_id] )
+        else:
+            cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
         # trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
@@ -114,4 +119,6 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000):
         print(f"Toplam {create_progress} cari hesap hareketi oluşturuldu.")
         print("--------")
     except Exception as e:
+        print("Hata oluştu:")
         print(e)
+        traceback.print_exc()

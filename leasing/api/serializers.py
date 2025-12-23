@@ -112,6 +112,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     code = serializers.CharField()
+    lease_id = serializers.CharField()
     contract = serializers.SerializerMethodField()
     contract_id = serializers.SerializerMethodField()
     type = serializers.CharField()

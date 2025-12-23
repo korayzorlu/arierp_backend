@@ -65,7 +65,7 @@ WHERE
     AND NOT (TrnIsDeleted = 2 AND TrnPostingType > 120 AND TrnPostingType < 110)
     -- AND TrnAccountId = 36077
     AND TrnPostingType <> 461
-    -- AND TrnOprContractId = 42601
+    AND TrnOprContractId = ?
     -- AND TrnOprProjectId = 61034
     --AND TrnOprLeasingOperationPrjId = 94391
     AND (

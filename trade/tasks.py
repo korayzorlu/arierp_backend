@@ -74,5 +74,5 @@ def transfer_trade_accounts(company):
         print(e)
 
 @shared_task()
-def fetch_trade_transactions(company):
-    fetch_trade_transactions_from_leaseflex(company)
+def fetch_trade_transactions(company,BATCH_SIZE=1000,contract_code=None):
+    fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=BATCH_SIZE,contract_code=contract_code)
