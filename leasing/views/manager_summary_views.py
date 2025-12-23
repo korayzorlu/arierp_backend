@@ -39,7 +39,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        active_company_uuid = data.get('params').get('activeCompany').get('id')
+        active_company_uuid = data.get('params').get('activeCompany').get('id') if data.get('params').get('activeCompany') else None
         active_company = request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         today = now().date()

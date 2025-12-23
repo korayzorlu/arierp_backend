@@ -265,6 +265,7 @@ class LeaseInformationView(LoginRequiredMixin,View):
                 'id': obj.uuid,
                 'code':obj.code,
                 'contract':obj.contract.code if obj.contract else "",
+                'contract_uuid':obj.contract.uuid if obj.contract else "",
                 'project': obj.contract.project if obj.contract else "",
                 'block': obj.contract.quotation_obj.quick_quotation.block if obj.contract and obj.contract.quotation_obj.quick_quotation else "",
                 'unit' : obj.contract.quotation_obj.quick_quotation.unit if obj.contract and obj.contract.quotation_obj.quick_quotation else "",
