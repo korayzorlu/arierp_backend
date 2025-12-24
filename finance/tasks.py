@@ -121,6 +121,10 @@ def fetch_finmaks_bank_accounts(company):
             if obj:
                 if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
                     currency = "TRY"
+                elif bank_account["AccountNo"] == '0159607':
+                    currency = "TRY"
+                elif bank_account["AccountNo"] == '634248135012':
+                    currency = "TRY"
                 else:
                     currency = bank_account["Currency"]
                 obj.bank_account_id = str(bank_account["BankAccountId"]) or ""
@@ -146,6 +150,10 @@ def fetch_finmaks_bank_accounts(company):
                 update_progress += 1
             else:
                 if bank_account["Currency"] == "TL" or bank_account["Currency"] == "YTL":
+                    currency = "TRY"
+                elif bank_account["AccountNo"] == '0159607':
+                    currency = "TRY"
+                elif bank_account["AccountNo"] == '634248135012':
                     currency = "TRY"
                 else:
                     currency = bank_account["Currency"]

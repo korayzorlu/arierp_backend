@@ -296,31 +296,20 @@ class BankAccountBalancesView(LoginRequiredMixin,View):
         )
 
         bank_accounts = {
-            'yapi_kredi': {
-                'try' : [],
-                'usd' : [],
-                'eur' : [],
-            },
-            'albaraka': {
-                'try' : [],
-                'usd' : [],
-                'eur' : [],
-            },
-            'vakifbank': {
-                'try' : [],
-                'usd' : [],
-                'eur' : [],
-            },
-            'vakif_katilim': {
-                'try' : [],
-                'usd' : [],
-                'eur' : [],
-            },
-            'akbank': {
-                'try' : [],
-                'usd' : [],
-                'eur' : [],
-            },
+            'yapi_kredi': {'try' : [],'usd' : [],'eur' : [],},
+            'albaraka': {'try' : [],'usd' : [],'eur' : [],},
+            'vakifbank': {'try' : [],'usd' : [],'eur' : [],},
+            'vakif_katilim': {'try' : [],'usd' : [],'eur' : [],},
+            'akbank': {'try' : [],'usd' : [],'eur' : [],},
+            'is_bank': {'try' : [],'usd' : [],'eur' : [],},
+            'garanti': {'try' : [],'usd' : [],'eur' : [],},
+            'halkbank': {'try' : [],'usd' : [],'eur' : [],},
+            'ziraat': {'try' : [],'usd' : [],'eur' : [],},
+            'ziraat_katilim': {'try' : [],'usd' : [],'eur' : [],},
+            'turkiye_finans': {'try' : [],'usd' : [],'eur' : [],},
+            'teb': {'try' : [],'usd' : [],'eur' : [],},
+            'kuveytturk': {'try' : [],'usd' : [],'eur' : [],},
+            'emlak_katilim': {'try' : [],'usd' : [],'eur' : [],},
         }
         for finmaks_bank_account in finmaks_bank_accounts:
             if finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'TRY':
@@ -357,87 +346,107 @@ class BankAccountBalancesView(LoginRequiredMixin,View):
                 bank_accounts['akbank']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
             elif finmaks_bank_account.bank_code == '0046' and finmaks_bank_account.currency.code == 'EUR':
                 bank_accounts['akbank']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
-                
-        bank_accounts['yapi_kredi']['try'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0067', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['yapi_kredi']['usd'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0067', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['yapi_kredi']['eur'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0067', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
 
-        bank_accounts['albaraka']['try'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0203', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['albaraka']['usd'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0203', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['albaraka']['eur'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0203', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
+            elif finmaks_bank_account.bank_code == '0064' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['is_bank']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
 
-        bank_accounts['vakifbank']['try'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0015', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['vakifbank']['usd'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0015', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['vakifbank']['eur'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0015', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
+            elif finmaks_bank_account.bank_code == '9999' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['garanti']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '9999' and finmaks_bank_account.currency.code == 'USD':
+                bank_accounts['garanti']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '9999' and finmaks_bank_account.currency.code == 'EUR':
+                bank_accounts['garanti']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
 
-        bank_accounts['vakif_katilim']['try'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0210', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['vakif_katilim']['usd'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0210', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['vakif_katilim']['eur'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0210', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
+            elif finmaks_bank_account.bank_code == '0012' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['halkbank']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0012' and finmaks_bank_account.currency.code == 'USD':
+                bank_accounts['halkbank']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0012' and finmaks_bank_account.currency.code == 'EUR':
+                bank_accounts['halkbank']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
 
-        bank_accounts['akbank']['try'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0046', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['akbank']['usd'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0046', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-        bank_accounts['akbank']['eur'].append({
-            'id': '999',
-            'account_no':"TOPLAM",
-            'balance' : finmaks_bank_accounts.filter(bank_code='0046', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')
-        })
-            
+            elif finmaks_bank_account.bank_code == '0010' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['ziraat']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0010' and finmaks_bank_account.currency.code == 'USD':
+                bank_accounts['ziraat']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0010' and finmaks_bank_account.currency.code == 'EUR':
+                bank_accounts['ziraat']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+
+            elif finmaks_bank_account.bank_code == '0209' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['ziraat_katilim']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0209' and finmaks_bank_account.currency.code == 'USD':
+                bank_accounts['ziraat_katilim']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0209' and finmaks_bank_account.currency.code == 'EUR':
+                bank_accounts['ziraat_katilim']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+
+            elif finmaks_bank_account.bank_code == '0206' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['turkiye_finans']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0206' and finmaks_bank_account.currency.code == 'USD':
+                bank_accounts['turkiye_finans']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '0206' and finmaks_bank_account.currency.code == 'EUR':
+                bank_accounts['turkiye_finans']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+
+            elif finmaks_bank_account.bank_code == '8888' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['teb']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+
+            elif finmaks_bank_account.bank_code == '0205' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['kuveytturk']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+
+            elif finmaks_bank_account.bank_code == '7777' and finmaks_bank_account.currency.code == 'TRY':
+                bank_accounts['emlak_katilim']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '7777' and finmaks_bank_account.currency.code == 'USD':
+                bank_accounts['emlak_katilim']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+            elif finmaks_bank_account.bank_code == '7777' and finmaks_bank_account.currency.code == 'EUR':
+                bank_accounts['emlak_katilim']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance})
+
+        bank_accounts['yapi_kredi']['try'].append({'id': '999','account_no':"TOPLAM",'balance' : finmaks_bank_accounts.filter(bank_code='0067', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['yapi_kredi']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0067', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['yapi_kredi']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0067', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        
+        bank_accounts['albaraka']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0203', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['albaraka']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0203', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['albaraka']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0203', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        
+        bank_accounts['vakifbank']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0015', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['vakifbank']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0015', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['vakifbank']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0015', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        
+        bank_accounts['vakif_katilim']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0210', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['vakif_katilim']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0210', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['vakif_katilim']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0210', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        
+        bank_accounts['akbank']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0046', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['akbank']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0046', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['akbank']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0046', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        
+        bank_accounts['is_bank']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0064', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['garanti']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='9999', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['garanti']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='9999', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['garanti']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='9999', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['halkbank']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0012', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['halkbank']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0012', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['halkbank']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0012', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['ziraat']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0010', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['ziraat']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0010', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['ziraat']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0010', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['ziraat_katilim']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0209', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['ziraat_katilim']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0209', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['ziraat_katilim']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0209', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['turkiye_finans']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0206', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['turkiye_finans']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0206', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['turkiye_finans']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0206', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['teb']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='8888', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['kuveytturk']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='0205', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+
+        bank_accounts['emlak_katilim']['try'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='7777', currency__code='TRY').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['emlak_katilim']['usd'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='7777', currency__code='USD').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})
+        bank_accounts['emlak_katilim']['eur'].append({'id': '999', 'account_no': "TOPLAM", 'balance': finmaks_bank_accounts.filter(bank_code='7777', currency__code='EUR').aggregate(total_available_balance=Sum('available_balance'))['total_available_balance'] or Decimal('0.00')})    
 
         # data = {
         #     'active_balances' : [
