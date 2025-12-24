@@ -243,3 +243,60 @@ class FinanceSummaryView(LoginRequiredMixin,View):
         ]
 
         return JsonResponse({'data':manager_summary}, status=200)
+    
+class BankAccountBalancesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        active_company_uuid = data.get('params').get('activeCompany').get('id') if data.get('params') and data.get('params').get('activeCompany') else None
+        active_company = request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        try_cari_banks = [
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+            {'bank_name' : 'Yapı Kredi', 'account_no' : '1234567890'},
+        ]
+
+        try_balance = FinmaksBankAccount.objects.select_related().prefetch_related().filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(currency__code = "TRY")
+        ).aggregate(
+            total_available_balance=Sum('available_balance'),
+        )['total_available_balance'] or Decimal('0.00')
+
+        usd_balance = FinmaksBankAccount.objects.select_related().prefetch_related().filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(currency__code = "USD")
+        ).aggregate(
+            total_available_balance=Sum('available_balance'),
+        )['total_available_balance'] or Decimal('0.00')
+
+        eur_balance = FinmaksBankAccount.objects.select_related().prefetch_related().filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(currency__code = "EUR")
+        ).aggregate(
+            total_available_balance=Sum('available_balance'),
+        )['total_available_balance'] or Decimal('0.00')
+
+        print(try_balance)
+
+        data = {
+            'active_balances' : [
+                {'id': 1, 'label':'TRY Bakiye', 'two_days_ago_amount': Decimal('0.00'), 'yesterday_amount': Decimal('0.00'), 'current_amount': try_balance},
+                {'id': 2, 'label':'USD Bakiye', 'two_days_ago_amount': Decimal('0.00'), 'yesterday_amount': Decimal('0.00'), 'current_amount': usd_balance},
+                {'id': 3, 'label':'EUR Bakiye', 'two_days_ago_amount': Decimal('0.00'), 'yesterday_amount': Decimal('0.00'), 'current_amount': eur_balance},
+            ]
+            
+        }
+
+        return JsonResponse({'data':data}, status=200)

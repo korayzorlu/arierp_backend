@@ -59,6 +59,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 ]},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Finans", "icon" : "paid", "items" : [
+                {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Bakiyeleri", "icon" : "description", "route" : "/bank-account-balances"},
                 {"type" : "item", "class" : ["finans"], "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
                 {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Hareketleri", "icon" : "description", "route" : "/bank-account-transactions"},
                 {"type" : "item", "class" : ["default"], "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
