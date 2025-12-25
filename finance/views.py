@@ -483,6 +483,10 @@ class BankAccountBalancesView(LoginRequiredMixin,View):
                 'total_try_balance': try_balance + (usd_balance*usd_exchange_rate) + (eur_balance*eur_exchange_rate),
             },
             'bank_accounts' : bank_accounts,
+            'exchange_rates' : {
+                'usd_exchange_rate' : usd_exchange_rate,
+                'eur_exchange_rate' : eur_exchange_rate,
+            }
         }
 
         return JsonResponse({'data':data}, status=200)
