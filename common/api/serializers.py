@@ -29,6 +29,20 @@ class CurrencyListSerializer(serializers.Serializer):
     symbol = serializers.CharField()
     exchange_rate = serializers.DecimalField(max_digits=10,decimal_places=4)
 
+class ExchangeRateListSerializer(serializers.Serializer):
+    id = serializers.CharField(source='uuid')
+    base_currency = serializers.SerializerMethodField()
+    base_currency = serializers.SerializerMethodField()
+    date = serializers.DateField()
+    forex_buying = serializers.DecimalField(max_digits=14,decimal_places=2)
+    forex_selling = serializers.DecimalField(max_digits=14,decimal_places=2)
+
+    def get_base_currency(self, obj):
+        return obj.base_currency.code if obj.base_currency else ''
+    
+    def get_target_currency(self, obj):
+        return obj.target_currency.code if obj.target_currency else ''
+
 class ImportProcessListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     user = serializers.SerializerMethodField()

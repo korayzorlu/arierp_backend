@@ -259,7 +259,7 @@ def fetch_finmaks_transactions(company):
                     balance = safe_decimal(transaction["Balance"].replace(",", "")),
                     firm_id = str(transaction["FirmId"]) or "",
                     firm_name =str(transaction["FirmName"]) or "",
-                    firm_merchantId = str(transaction["FirmMerchantId"]) or "",
+                    #firm_merchantId = str(transaction["FirmMerchantId"]) or "",
                     firm_externalCode = str(transaction["FirmExternalCode"]) or "",
                     firm_externalId = str(transaction["FirmExternalId"]) or "",
                     transaction_branch_code = str(transaction["TransactionBranchCode"]) or "",

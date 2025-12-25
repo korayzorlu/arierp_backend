@@ -103,7 +103,38 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
     def get_currency(self, obj):
         return obj.bank_account.currency.code if obj.bank_account and obj.bank_account.currency else ''
         
-        
+class BankAccountBalanceListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    bank_account_id = serializers.CharField()
+    iban = serializers.CharField()
+    account_no = serializers.CharField()
+    branch_code = serializers.CharField()
+    branch_name = serializers.CharField()
+    finmaks_account_type = serializers.CharField()
+    balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    available_balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    over_draft = serializers.DecimalField(max_digits=14, decimal_places=2)
+    credit_risk = serializers.DecimalField(max_digits=14, decimal_places=2)
+    blocked_balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    credit_limit = serializers.DecimalField(max_digits=14, decimal_places=2)
+    currency = serializers.SerializerMethodField()
+    currency_type = serializers.CharField()
+    bank_name = serializers.CharField()
+    bank_code = serializers.CharField()
+    bank_integration_info_id = serializers.CharField()
+    last_read_time = serializers.DateTimeField()
+    status = serializers.BooleanField()
+    finekra_bank_account_id = serializers.CharField()
+    is_active = serializers.BooleanField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ''
+
+
 
 class PartnerAdvanceListSerializer(serializers.Serializer):
     uuid = serializers.CharField()

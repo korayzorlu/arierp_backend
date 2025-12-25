@@ -12,6 +12,8 @@ from rest_framework_datatables_editor.viewsets import DatatablesEditorModelViewS
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
@@ -78,6 +80,24 @@ class QueryListAPIView(generics.ListAPIView):
                 self._paginator = None
         return self._paginator
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class DatatablesPagination(LimitOffsetPagination):
+    default_limit = 50
+    limit_query_param = 'length'
+    offset_query_param = 'start'
+
+    def get_paginated_response(self, data):
+        return Response({
+            'draw': int(self.request.query_params.get('draw', 0)),
+            'recordsTotal': self.count,
+            'recordsFiltered': self.count,
+            'data': data
+        })
+    
 class CountryList(ModelViewSet, QueryListAPIView):
     serializer_class = CountryListSerializer
     filterset_fields = {
@@ -171,6 +191,55 @@ class CurrencyList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+# class ExchangeRateList(ModelViewSet, QueryListAPIView):
+#     serializer_class = ExchangeRateListSerializer
+#     filterset_class = ExchangeRateFilter
+#     filter_backends = [OrderingFilter,DjangoFilterBackend]
+#     ordering_fields = '__all__'
+#     #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+#     ordering_fields = [f.name for f in ExchangeRate._meta.get_fields() if hasattr(f, 'name')]
+#     ordering = ['-lop_open_date']
+#     pagination_class = DatatablesPagination
+#     required_subscription = "free"
+#     permission_classes = [SubscriptionPermission]
+    
+#     def get_queryset(self):
+#         active_company_uuid = self.request.query_params.get('ac')
+#         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+#         custom_related_fields = ["company","partner","status"]
+        
+#         queryset = Contract.objects.select_related(*custom_related_fields).filter(
+#             Q(company=active_company.company if active_company else None) &
+#             Q(contract_leases__is_last_project = True) &
+#             Q(contract_trial_balances__isnull=False)
+#         ).distinct()
+
+#         query = self.request.query_params.get('search[value]', None)
+#         if query:
+#             search_fields = [
+#                 "code",
+#                 "partner__name",
+#                 "kof",
+#                 "quotation",
+#                 "committe",
+#                 "credit_type",
+#                 "customer_representative",
+#                 "supplier",
+#                 "project",
+#                 "status__name",
+#                 "mkk_tesciline_gonderilecek_mi",
+#                 "kof_tan_sozlesmeye_aktarim_tarihi",
+#                 "lop_open_date"
+#             ]
+            
+#             q_objects = Q()
+#             for field in search_fields:
+#                 q_objects |= Q(**{f"{field}__icontains": query})
+            
+#             queryset = queryset.filter(q_objects)
+#         return queryset
     
 class ImportProcessList(ModelViewSet, QueryListAPIView):
     serializer_class = ImportProcessListSerializer
