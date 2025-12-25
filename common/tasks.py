@@ -87,7 +87,12 @@ def fetch_exchange_rates(target_currency):
 
         obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(base_currency__code='TRY', target_currency__code=target_currency, date=current_date).first()
         if obj:
-            prev_obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(id = obj.id - 1).first()
+            #prev_obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(target_currency__code=target_currency).first()
+            prev_obj = ExchangeRate.objects.select_related('base_currency', 'target_currency').filter(
+                    base_currency__code='TRY',
+                    target_currency__code=target_currency,
+                    date__lt=current_date
+            ).order_by('-date').first()
             obj.date = current_date
             if response.get('forex_buying', Decimal('0.00')) == Decimal('0.00') and prev_obj:
                 obj.forex_buying = prev_obj.forex_buying
