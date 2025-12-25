@@ -89,7 +89,7 @@ class FinmaksTransaction(models.Model):
     branch_code = models.CharField(_("Branch Code"), max_length=50, null=True, blank=True)
     transaction_external_id = models.CharField(_("Transaction External Id"), max_length=25, null=True, blank=True)
     external_id_used = models.BooleanField(default=False)
-    external_bank_id = models.CharField(_("External Bank Id"), max_length=25, null=True, blank=True)
+    external_bank_id = models.CharField(_("External Bank Id"), max_length=50, null=True, blank=True)
     reference_no = models.CharField(_("Reference No"), max_length=50, null=True, blank=True)
     finmaks_process_type = models.CharField(_("Finmaks Process Type"), max_length=50, null=True, blank=True)
     category_name = models.CharField(_("Category Name"), max_length=50, null=True, blank=True)
