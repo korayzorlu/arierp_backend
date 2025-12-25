@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.utils.timezone import make_aware
 from django.conf import settings
 from django.utils.dateparse import parse_datetime
+from django.utils.timezone import now,localtime
 
 import pandas as pd
 import io
@@ -499,5 +500,34 @@ def remove_finekra_bank_account(company,uuid):
         if uuid:
             response = delete_finekra_bank_account(uuid)
             print(response)
+    except Exception as e:
+        traceback.print_exc()
+
+@shared_task()
+def add_finmaks_bank_account_daily_record(company,BATCH_SIZE = 1000):
+    try:
+        finmaks_bank_accounts = FinmaksBankAccount.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+        create_progress = 0
+        create_objs = []
+        for index, bank_account in enumerate(finmaks_bank_accounts):
+            create_objs.append(FinmaksBankAccountDailyRecord(
+                company = company_obj,
+                finmaks_bank_account = bank_account,
+                date = localtime().date(),
+                balance = bank_account.balance,
+                available_balance = bank_account.available_balance,
+                over_draft = bank_account.over_draft,
+                credit_risk = bank_account.credit_risk,
+                blocked_balance = bank_account.blocked_balance,
+                credit_limit = bank_account.credit_limit,
+            ))
+            create_progress += 1
+        if create_objs:
+            FinmaksBankAccountDailyRecord.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+
+        print(f"Toplam {create_progress} finmaks banka hesap günlük kaydı oluşturuldu.")
+        print("--------")
     except Exception as e:
         traceback.print_exc()

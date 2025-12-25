@@ -75,6 +75,8 @@ def fetch_data_for_daily_services(company):
 def fetch_big_data_for_daily_services(company):
     fetch_installments_from_leaseflex(company)
 
+
+
 @shared_task()
 def fetch_exchange_rates(target_currency):
     start_date = datetime.now() - timedelta(days=35*1)

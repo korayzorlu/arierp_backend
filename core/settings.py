@@ -373,6 +373,11 @@ if not DEBUG:
             "schedule": crontab(minute=0, hour='1'),
             "args": [2],
         },
+        "add_finmaks_bank_account_daily_record-task": {
+            "task": "finance.tasks.add_finmaks_bank_account_daily_record",
+            "schedule": crontab(minute=59, hour='23'),
+            "args": [2],
+        },
     }
 else:
     CELERY_BEAT_SCHEDULE = {

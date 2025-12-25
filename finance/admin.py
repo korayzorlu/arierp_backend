@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import FinmaksBankAccount,FinmaksTransaction
+from .models import FinmaksBankAccount,FinmaksTransaction,FinmaksBankAccountDailyRecord
 
 # Register your models here.
 
@@ -23,6 +23,25 @@ class FinmaksBankAccountAdmin(admin.ModelAdmin):
     
     class Meta:
         model = FinmaksBankAccount
+
+@admin.register(FinmaksBankAccountDailyRecord)
+class FinmaksBankAccountDailyRecordAdmin(admin.ModelAdmin):
+    list_display = ["company","finmaks_bank_account","date","balance","available_balance"]
+    list_display_links = ["finmaks_bank_account"]
+    search_fields = ["company__name","finmaks_bank_account__bank_name","date","balance","available_balance"]
+    list_filter = []
+    inlines = []
+    ordering = ["-date"]
+    autocomplete_fields = ["finmaks_bank_account"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def finmaks_bank_account(self,obj):
+        return obj.finmaks_bank_account.bank_name if obj.finmaks_bank_account else ""
+    
+    class Meta:
+        model = FinmaksBankAccountDailyRecord
 
 @admin.register(FinmaksTransaction)
 class FinmaksTransactionAdmin(admin.ModelAdmin):
