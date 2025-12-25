@@ -23,10 +23,31 @@ class PartnerAdvanceFilter(FilterSet):
         fields = ['uuid']
 
 class BankAccountFilter(FilterSet):
-    uuid = CharFilter(method = 'filter_uuid')
+    bank_account_id = CharFilter(field_name='bank_account_id', lookup_expr='icontains')
+    iban = CharFilter(field_name='iban', lookup_expr='icontains')
+    account_no = CharFilter(field_name='account_no', lookup_expr='icontains')
+    branch_code = CharFilter(field_name='branch_code', lookup_expr='icontains')
+    branch_name = CharFilter(field_name='branch_name', lookup_expr='icontains')
+    finmaks_account_type = CharFilter(field_name='finmaks_account_type', lookup_expr='icontains')
+    currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
+    currency_type = CharFilter(field_name='currency_type', lookup_expr='icontains')
+    bank_name = CharFilter(field_name='bank_name', lookup_expr='icontains')
+    bank_code = CharFilter(field_name='bank_code', lookup_expr='icontains')
+    bank_integration_info_id = CharFilter(field_name='bank_integration_info_id', lookup_expr='icontains')
+    last_read_time = CharFilter(field_name='last_read_time', lookup_expr='icontains')
+    status = CharFilter(field_name='status', lookup_expr='icontains')
+    finekra_bank_account_id = CharFilter(field_name='finekra_bank_account_id', lookup_expr='icontains')
+    is_active = CharFilter(method='filter_is_active')
     class Meta:
         model = FinmaksBankAccount
         fields = ['uuid']
+
+    def filter_is_active(self, queryset, is_active, value):
+        if value == 'true':
+            return queryset.filter(is_active=True)
+        elif value == 'false':
+            return queryset.filter(is_active=False)
+        return queryset
 
 class BankAccountTransactionFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')

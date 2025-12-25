@@ -320,21 +320,21 @@ class BankAccountBalancesView(LoginRequiredMixin,View):
             'emlak_katilim': {'try' : [],'usd' : [],'eur' : [],},
         }
         for finmaks_bank_account in finmaks_bank_accounts:
-            if finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'TRY':
-                bank_accounts['yapi_kredi']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
-            elif finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'USD':
-                bank_accounts['yapi_kredi']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
-            elif finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'EUR':
-                bank_accounts['yapi_kredi']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
+            # if finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'TRY':
+            #     bank_accounts['yapi_kredi']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
+            # elif finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'USD':
+            #     bank_accounts['yapi_kredi']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
+            # elif finmaks_bank_account.bank_code == '0067' and finmaks_bank_account.currency.code == 'EUR':
+            #     bank_accounts['yapi_kredi']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
             
-            elif finmaks_bank_account.bank_code == '0203' and finmaks_bank_account.currency.code == 'TRY':
-                bank_accounts['albaraka']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
-            elif finmaks_bank_account.bank_code == '0203' and finmaks_bank_account.currency.code == 'USD':
-                bank_accounts['albaraka']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
-            elif finmaks_bank_account.bank_code == '0203' and finmaks_bank_account.currency.code == 'EUR':
-                bank_accounts['albaraka']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
+            # if finmaks_bank_account.bank_code == '0203' and finmaks_bank_account.currency.code == 'TRY':
+            #     bank_accounts['albaraka']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
+            # elif finmaks_bank_account.bank_code == '0203' and finmaks_bank_account.currency.code == 'USD':
+            #     bank_accounts['albaraka']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
+            # elif finmaks_bank_account.bank_code == '0203' and finmaks_bank_account.currency.code == 'EUR':
+            #     bank_accounts['albaraka']['eur'].append({'id': finmaks_bank_account.uuid, 'account_no': f"EUR - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
             
-            elif finmaks_bank_account.bank_code == '0015' and finmaks_bank_account.currency.code == 'TRY':
+            if finmaks_bank_account.bank_code == '0015' and finmaks_bank_account.currency.code == 'TRY':
                 bank_accounts['vakifbank']['try'].append({'id': finmaks_bank_account.uuid, 'account_no': f"TRY - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})
             elif finmaks_bank_account.bank_code == '0015' and finmaks_bank_account.currency.code == 'USD':
                 bank_accounts['vakifbank']['usd'].append({'id': finmaks_bank_account.uuid, 'account_no': f"USD - {finmaks_bank_account.account_no}",'balance' : finmaks_bank_account.available_balance if date == str(today) else Decimal('0.00')})

@@ -5,6 +5,7 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'bank_accounts', BankAccountList, "bank_accounts_api")
+router.register(r'bank_account_balances', BankAccountBalanceList, "bank_account_balances_api")
 router.register(r'bank_account_transactions', BankAccountTransactionList, "bank_account_transactions_api")
 router.register(r'partner_advances', PartnerAdvanceList, "partner_advances_api")
 

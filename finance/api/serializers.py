@@ -15,6 +15,7 @@ from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue
     
 class BankAccountListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
+    id = serializers.CharField(source='uuid')
     companyId = serializers.SerializerMethodField()
     bank_account_id = serializers.CharField()
     iban = serializers.CharField()

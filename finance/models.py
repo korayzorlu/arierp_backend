@@ -55,6 +55,26 @@ class FinmaksBankAccount(models.Model):
     def __str__(self):
         return str(self.bank_name)
     
+class FinmaksBankAccountDailyRecord(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="finmaks_bank_account_daily_records")
+
+    finmaks_bank_account = models.ForeignKey(FinmaksBankAccount, on_delete=models.CASCADE, related_name="finmaks_bank_account_finmaks_bank_account_daily_records")
+    date = models.DateField(_("Date"), blank=True, null=True)
+
+    balance = models.DecimalField(_("Balance"), default = 0.00, max_digits=14, decimal_places=2)
+    available_balance = models.DecimalField(_("Available Balance"), default = 0.00, max_digits=14, decimal_places=2)
+    over_draft = models.DecimalField(_("Over Draft"), default = 0.00, max_digits=14, decimal_places=2)
+    credit_risk = models.DecimalField(_("Credit Risk"), default = 0.00, max_digits=14, decimal_places=2)
+    blocked_balance = models.DecimalField(_("Blocked Balance"), default = 0.00, max_digits=14, decimal_places=2)
+    credit_limit = models.DecimalField(_("Credit Limit"), default = 0.00, max_digits=14, decimal_places=2)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.finmaks_bank_account.bank_name)
+    
 class FinmaksTransaction(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="finmaks_transactions")
