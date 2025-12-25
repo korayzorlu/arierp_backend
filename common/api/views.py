@@ -18,6 +18,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
+from .filters import *
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -192,54 +193,38 @@ class CurrencyList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
     
-# class ExchangeRateList(ModelViewSet, QueryListAPIView):
-#     serializer_class = ExchangeRateListSerializer
-#     filterset_class = ExchangeRateFilter
-#     filter_backends = [OrderingFilter,DjangoFilterBackend]
-#     ordering_fields = '__all__'
-#     #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
-#     ordering_fields = [f.name for f in ExchangeRate._meta.get_fields() if hasattr(f, 'name')]
-#     ordering = ['-lop_open_date']
-#     pagination_class = DatatablesPagination
-#     required_subscription = "free"
-#     permission_classes = [SubscriptionPermission]
+class ExchangeRateList(ModelViewSet, QueryListAPIView):
+    serializer_class = ExchangeRateListSerializer
+    filterset_class = ExchangeRateFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in ExchangeRate._meta.get_fields() if hasattr(f, 'name')]
+    ordering = ['-date','-target_currency__code']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
     
-#     def get_queryset(self):
-#         active_company_uuid = self.request.query_params.get('ac')
-#         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-
-#         custom_related_fields = ["company","partner","status"]
+    def get_queryset(self):
+        custom_related_fields = ["base_currency","target_currency"]
         
-#         queryset = Contract.objects.select_related(*custom_related_fields).filter(
-#             Q(company=active_company.company if active_company else None) &
-#             Q(contract_leases__is_last_project = True) &
-#             Q(contract_trial_balances__isnull=False)
-#         ).distinct()
+        queryset = ExchangeRate.objects.select_related(*custom_related_fields).filter(
+        ).distinct()
 
-#         query = self.request.query_params.get('search[value]', None)
-#         if query:
-#             search_fields = [
-#                 "code",
-#                 "partner__name",
-#                 "kof",
-#                 "quotation",
-#                 "committe",
-#                 "credit_type",
-#                 "customer_representative",
-#                 "supplier",
-#                 "project",
-#                 "status__name",
-#                 "mkk_tesciline_gonderilecek_mi",
-#                 "kof_tan_sozlesmeye_aktarim_tarihi",
-#                 "lop_open_date"
-#             ]
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = [
+                "base_currency__code",
+                "target_currency__code",
+                "date",
+            ]
             
-#             q_objects = Q()
-#             for field in search_fields:
-#                 q_objects |= Q(**{f"{field}__icontains": query})
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
             
-#             queryset = queryset.filter(q_objects)
-#         return queryset
+            queryset = queryset.filter(q_objects)
+        return queryset
     
 class ImportProcessList(ModelViewSet, QueryListAPIView):
     serializer_class = ImportProcessListSerializer

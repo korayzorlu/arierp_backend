@@ -9,6 +9,7 @@ router.register(r'cities', CityList, "cities_api")
 router.register(r'currencies', CurrencyList, "currencies_api")
 router.register(r'import_processes', ImportProcessList, "import_processes_api")
 router.register(r'export_processes', ExportProcessList, "export_processes_api")
+router.register(r'exchange_rates', ExchangeRateList, "exchange_rates_api")
 
 urlpatterns = [
     path('',include(router.urls)),

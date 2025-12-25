@@ -30,9 +30,9 @@ class CurrencyListSerializer(serializers.Serializer):
     exchange_rate = serializers.DecimalField(max_digits=10,decimal_places=4)
 
 class ExchangeRateListSerializer(serializers.Serializer):
-    id = serializers.CharField(source='uuid')
+    id = serializers.CharField()
     base_currency = serializers.SerializerMethodField()
-    base_currency = serializers.SerializerMethodField()
+    target_currency = serializers.SerializerMethodField()
     date = serializers.DateField()
     forex_buying = serializers.DecimalField(max_digits=14,decimal_places=2)
     forex_selling = serializers.DecimalField(max_digits=14,decimal_places=2)
