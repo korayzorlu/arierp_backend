@@ -241,7 +241,7 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             lease=OuterRef('pk')
         ).order_by('-sequency').values('payment_date')[:1]
 
-        queryset = Lease.objects.select_related().prefetch_related().filter(
+        queryset = Lease.objects.select_related("company").prefetch_related("lease_installments").filter(
             Q(company=active_company.company if active_company else None) &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -284,6 +284,7 @@ class LeaseSummaryList(ModelViewSet, QueryListAPIView):
             'devredilecek': 0,
             'devredildi': 0
         }
+
         for item in status_counts:
             result[item['lease_status']] = item['count']
         

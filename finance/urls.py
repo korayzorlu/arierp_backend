@@ -10,7 +10,8 @@ urlpatterns = [
     path('finance_summary/', FinanceSummaryView.as_view(), name="finance_summary"),
     path('add_finmaks_transaction/', AddFinmaksTransactionView.as_view(), name="add_finmaks_transaction"),
     path('update_finmaks_transaction_name/', UpdateFinmaksTransactionNameView.as_view(), name="update_finmaks_transaction_name"),
-    path('bank_account_balancess/', BankAccountBalancesView.as_view(), name="bank_account_balancess"),
+    path('export_finmaks_bank_account_balances/', ExportFinmaksBankAccountBalancesView.as_view(), name="export_finmaks_bank_account_balances"),
+    path('finmaks_bank_account_balances_excel/', FinmaksBankAccountBalancesExcelView.as_view(), name="finmaks_bank_account_balances_excel"),
 
     path('', include("finance.api.urls")),
 ]
