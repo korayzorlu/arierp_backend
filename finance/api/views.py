@@ -211,68 +211,214 @@ class BankAccountBalanceList(ModelViewSet, QueryListAPIView):
             },
             'bank_accounts' : {
                 'yapi_kredi': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0067', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance': queryset.filter(bank_code='0067', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0067', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0067', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0067', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0067', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0067', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance': queryset.filter(bank_code='0067', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')
+                    }],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0067', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0067', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')
+                    }],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0067', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0067', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'albaraka': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0203', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0203', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0203', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0203', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0203', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0203', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0203', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0203', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0203', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0203', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0203', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0203', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'vakifbank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0015', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0015', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0015', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0015', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0015', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0015', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0015', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0015', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0015', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0015', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0015', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0015', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'vakif_katilim': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0210', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0210', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0210', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0210', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0210', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0210', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0210', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0210', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0210', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0210', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0210', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0210', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'akbank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0046', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0046', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0046', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0046', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0046', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0046', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0046', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0046', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0046', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0046', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0046', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0046', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'is_bank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0064', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0064', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0064', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0064', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'garanti': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='9999', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='9999', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='9999', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='9999', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='9999', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='9999', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='9999', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='9999', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='9999', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='9999', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='9999', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='9999', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'halkbank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0012', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0012', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0012', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0012', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0012', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0012', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0012', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0012', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0012', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0012', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0012', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0012', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'ziraat': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0010', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0010', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0010', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0010', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0010', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0010', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0010', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0010', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0010', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0010', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0010', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0010', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'ziraat_katilim': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0209', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0209', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0209', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0209', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0209', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0209', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0209', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0209', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0209', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0209', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0209', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0209', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'turkiye_finans': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0206', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0206', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0206', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0206', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0206', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0206', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0206', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0206', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0206', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0206', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0206', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0206', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'teb': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='8888', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='8888', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='8888', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='8888', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'kuveytturk': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='0205', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0205', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='0205', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='0205', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'emlak_katilim': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='7777', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='7777', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='7777', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='7777', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.account_no}",'balance': obj.available_balance} for obj in queryset.filter(bank_code='7777', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='7777', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='7777', currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='7777', currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='7777', currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='7777', currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.account_no}",
+                        # 'iban': obj.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(bank_code='7777', currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(bank_code='7777', currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
             },
             'exchange_rates' : {
@@ -332,68 +478,212 @@ class BankAccountDailyRecordList(ModelViewSet, QueryListAPIView):
             },
             'bank_accounts' : {
                 'yapi_kredi': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance': queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance': queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0067', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'albaraka': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0203', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'vakifbank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0015', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'vakif_katilim': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0210', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'akbank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0046', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'is_bank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0064', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0064', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0064', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0064', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'garanti': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='9999', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'halkbank': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0012', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'ziraat': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0010', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'ziraat_katilim': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0209', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'turkiye_finans': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0206', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'teb': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='8888', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='8888', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='8888', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='8888', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'kuveytturk': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0205', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0205', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='0205', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='0205', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
                 'emlak_katilim': {
-                    'try' : [{'id':obj.id,'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'usd' : [{'id':obj.id,'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
-                    'eur' : [{'id':obj.id,'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'try' : [{
+                        'id':obj.id,
+                        'account_no':  f"TRY - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='TRY')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='TRY').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'usd' : [{
+                        'id':obj.id,
+                        'account_no':  f"USD - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='USD')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='USD').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
+                    'eur' : [{
+                        'id':obj.id,
+                        'account_no':  f"EUR - {obj.finmaks_bank_account.account_no}",
+                        # 'iban': obj.finmaks_bank_account.iban,
+                        'balance': obj.available_balance} for obj in queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='EUR')] + [{'id':'999','account_no':'TOPLAM','balance':queryset.filter(finmaks_bank_account__bank_code='7777', finmaks_bank_account__currency__code='EUR').aggregate(total=Sum('available_balance'))['total'] or Decimal('0.00')}],
                 },
             },
             'exchange_rates' : {
