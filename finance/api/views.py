@@ -453,16 +453,17 @@ class BankAccountDailyRecordList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         
-        custom_related_fields = ["company"]
-
-        queryset = FinmaksBankAccountDailyRecord.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None)
-        )
+        custom_related_fields = ["company","finmaks_bank_account"]
 
         if self.request.query_params.get('date'):
             date = self.request.query_params.get('date')
         else:
             date = localtime().date()
+
+        queryset = FinmaksBankAccountDailyRecord.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(date = date)
+        )
 
         usd_exchange_rate = ExchangeRate.objects.filter(target_currency__code ="USD",date=date).first().forex_buying
         eur_exchange_rate = ExchangeRate.objects.filter(target_currency__code ="EUR",date=date).first().forex_buying
