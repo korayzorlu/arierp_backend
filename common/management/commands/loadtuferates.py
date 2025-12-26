@@ -53,6 +53,7 @@ class Command(BaseCommand):
                     date = date_value,
                     rate = Decimal(str(row['Değer'])),
                     change_rate = Decimal(str(row['Aylık Değişim'])),
+                    value = Decimal(str(row['Gözlem Değeri'])),
                 )
 
         

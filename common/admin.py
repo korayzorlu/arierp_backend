@@ -69,9 +69,9 @@ class ExchangeRateAdmin(admin.ModelAdmin):
 
 @admin.register(TufeRate)
 class TufeRateAdmin(admin.ModelAdmin):
-    list_display = ["date","rate","change_rate"]
+    list_display = ["date","rate","change_rate","value"]
     list_display_links = ["date"]
-    search_fields = ["date","rate","change_rate"]
+    search_fields = ["date","rate","change_rate","value"]
     list_filter = []
     inlines = []
     ordering = ["-date"]
