@@ -330,9 +330,12 @@ class BankActivity(models.Model):
                 else:
                     scan_result = check_third_person_status(self)
                     #print(scan_result)
-                    create_third_person(self,scan_result)
+                    third_person = create_third_person(self,scan_result)
                     if scan_result["status"] == 'cleared':
-                        self.third_person_status = 'need_document'
+                        if third_person == "new":
+                            self.third_person_status = 'need_document'
+                        else:
+                            self.third_person_status = 'cleared'
                     else:
                         self.third_person_status = 'pending'
                     self.is_third_person = True

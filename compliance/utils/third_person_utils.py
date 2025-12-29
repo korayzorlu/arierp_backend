@@ -6,41 +6,45 @@ from django.conf import settings
 import re
 
 def create_third_person(self,scan_result):
-        if self.name is not None and self.name != "" and self.name != "None":
-            name = self.name
+    if self.name is not None and self.name != "" and self.name != "None":
+        name = self.name
+    else:
+        catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
+        if catched_name:
+            name = catched_name.group(1)
         else:
-            catched_name = re.search(r"-\s*(.*?)\s*-", self.description)
-            if catched_name:
-                name = catched_name.group(1)
-            else:
-                name = ""
+            name = ""
 
-        if scan_result["status"] == 'cleared':
-            status = 'need_document'
-        else:
-            status = 'pending'
-            
-        if name and name != "" and status == 'pending':
-            send_email_for_third_person(name,self.tc_vkn_no)
-
-        if name and name != "" and status == 'need_document':
-            send_email_for_third_person_document(name,self.tc_vkn_no)
+    if scan_result["status"] == 'cleared':
+        status = 'need_document'
+    else:
+        status = 'pending'
         
-        old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
-        if not old_obj:
-            new_obj = ThirdPerson.objects.create(
-                company=self.company,
-                name=name,
-                tc_vkn_no=self.tc_vkn_no,
-                status=status,
-                results=scan_result["details"] if scan_result["details"] else None
-            )
+    if name and name != "" and status == 'pending':
+        send_email_for_third_person(name,self.tc_vkn_no)
 
-            new_obj.bank_activities.add(self)
-            new_obj.save()
-        else:
-            old_obj.bank_activities.add(self)
-            old_obj.save()
+    if name and name != "" and status == 'need_document':
+        send_email_for_third_person_document(name,self.tc_vkn_no)
+    
+    old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
+    if not old_obj:
+        new_obj = ThirdPerson.objects.create(
+            company=self.company,
+            name=name,
+            tc_vkn_no=self.tc_vkn_no,
+            status=status,
+            results=scan_result["details"] if scan_result["details"] else None
+        )
+
+        new_obj.bank_activities.add(self)
+        new_obj.save()
+
+        return "new"
+    else:
+        old_obj.bank_activities.add(self)
+        old_obj.save()
+
+        return "old"
 
 def send_email_for_third_person(name,tc_vkn_no):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
