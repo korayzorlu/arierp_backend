@@ -19,7 +19,7 @@ from datetime import date,datetime
 
 from .models import *
 from .utils.black_list_person_utils import is_valid_black_list_person_data
-from .utils.third_person_utils import send_email_for_third_person_cleared
+from .utils.third_person_utils import send_email_for_third_person_cleared,send_email_for_third_person_to_cleared
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
 
@@ -39,6 +39,7 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
         if data.get('status') == 'cleared':
+            send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
             obj.is_email_sent = True
         obj.save()
 
