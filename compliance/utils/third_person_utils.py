@@ -39,12 +39,12 @@ def create_third_person(self,scan_result):
         new_obj.bank_activities.add(self)
         new_obj.save()
 
-        return "new"
+        return {"is_new": True, "status": new_obj.status}
     else:
         old_obj.bank_activities.add(self)
         old_obj.save()
 
-        return "old"
+        return {"is_new": False, "status": old_obj.status}
 
 def send_email_for_third_person(name,tc_vkn_no):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
