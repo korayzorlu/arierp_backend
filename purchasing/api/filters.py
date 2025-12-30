@@ -59,8 +59,9 @@ class PurchasePaymentFilter(FilterSet):
         
     def filter_special(self, queryset, special, value):
         if value == "true":
+            print("yet")
             return queryset.filter(
-                ~Q(lease__contract__partner__types__contains=['special'])
+                Q(lease__contract__partner__types__contains=['special'])
             )
         else:
             return queryset.filter()
