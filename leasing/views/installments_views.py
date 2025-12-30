@@ -18,6 +18,7 @@ from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
 from partners.models import Partner
 from contracts.models import Contract
+from risk.utils.exchanged_leases_utils import compute_tufe_endeks
 
 import os
 import json
@@ -153,6 +154,9 @@ class ImportInstallmentsView(LoginRequiredMixin,View):
 class InstallmentInformationView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
+
+        lease = Lease.objects.filter(uuid = data.get('lease_id')).first()
+        compute_tufe_endeks(lease)
         
         if data.get('lease_code'):
             objs = Installment.objects.filter(lease__code = str(data.get('lease_code'))).order_by("sequency")

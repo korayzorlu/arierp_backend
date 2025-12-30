@@ -9,6 +9,7 @@ import pyodbc
 from decimal import Decimal
 from datetime import datetime,date
 from collections import defaultdict
+import traceback
 
 from .models import *
 from .utils.common_utils import get_lease_status_value
@@ -20,6 +21,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils
 from .utils.installment_utils import fetch_installments_from_leaseflex,update_first_installment_date
+from risk.utils.exchanged_leases_utils import compute_tufe_endeks
 
 @shared_task()
 def fetch_leases(company):
@@ -1077,3 +1079,26 @@ def fetch_kdv_leases(company):
 @shared_task()
 def test_scheduler_task():
     print(print(f"[{datetime.datetime.now()}] Zamanlanmış görev çalıştı!"))
+
+@shared_task()
+def fetch_lease_tufe_endeks(company):
+    try:
+        objs = Lease.objects.select_related("company").filter(
+            company__id=int(company),
+            overdue_amount__gt=0
+        )
+
+        update_progress = 0
+
+        for obj in objs:
+            tufe_endeks = compute_tufe_endeks(obj)
+            obj.tufe_endeks = tufe_endeks
+            obj.save()
+
+            update_progress += 1
+            
+        print(f"Toplam {update_progress} kira planı tüfe kayıpları güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        traceback.print_exc()

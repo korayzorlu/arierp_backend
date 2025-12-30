@@ -7,8 +7,9 @@ from decimal import Decimal
 
 
 from leasing.models import Installment
-from common.models import ExchangeRate
+from common.models import ExchangeRate,TufeRate
 from trade.models import TradeTransaction
+import traceback
 
 def compute_exchanged_amounts(obj):
     installments = Installment.objects.select_related().filter(
@@ -55,3 +56,16 @@ def compute_exchanged_amounts(obj):
         "geciken_odenmesi_gereken_usd": exchanged_amount_due_to_date - exchanged_amount_paid_to_date,
         "kur_kaybi": exchanged_amount_due_to_date - exchanged_amount_paid_to_date - (obj.overdue_amount / usd_div),
     }
+
+def compute_tufe_endeks(obj):
+    installments = Installment.objects.select_related().filter(
+        lease=obj,
+        payment_date__lte=date.today()
+    )
+
+    tufe_endeks = Decimal('0.00')
+    for installment in installments:
+        tufe_rate = TufeRate.objects.select_related().filter(date__year=installment.payment_date.year, date__month=installment.payment_date.month - 1).first()
+        tufe_endeks += installment.amount / tufe_rate.value if tufe_rate else installment.amount
+
+    return tufe_endeks

@@ -67,6 +67,7 @@ class TufeExchangedLeaseListSerializer(serializers.Serializer):
     tufeli_geciken = serializers.DecimalField(max_digits=14,decimal_places=2)
     tufe_amount = serializers.SerializerMethodField()
     tufe_rate = serializers.SerializerMethodField()
+    tufe_endeks = serializers.DecimalField(max_digits=14,decimal_places=2)
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
