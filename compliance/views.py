@@ -73,7 +73,7 @@ class UpdateThirdPersonIsCustomerSentView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        if request.user.authorization.department != 'finans' or request.user.authorization.department != 'operasyon' or request.user.authorization.department != 'kredi_risk_izleme':
+        if request.user.authorization.department != 'finans' and request.user.authorization.department != 'operasyon' and request.user.authorization.department != 'kredi_risk_izleme':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         
