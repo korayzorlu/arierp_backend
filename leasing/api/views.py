@@ -198,6 +198,8 @@ class ActiveLeaseList(ModelViewSet, QueryListAPIView):
             #     Q(lease_status='devredildi')
             # ) &
             Q(is_last_project=True)
+        ).exclude(
+            Q(contract__partner__types__contains=['special'])
         )
 
         query = self.request.query_params.get('search[value]', None)

@@ -12,12 +12,13 @@ from purchasing.models import PurchasePayment,PurchaseDocument
 def export_purchase_payments(self):
     if self.params.get('project'):
         objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").filter(
-            Q(lease__contract__partner__types__contains=['special'])
+            Q(lease__contract__partner__types__contains=['special']) |
+            Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
         )
     else:
         objs = PurchasePayment.objects.select_related("lease","lease__contract","lease__contract__partner").filter(
-            ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]) &
-            ~Q(lease__contract__partner__types__contains=['special'])
+            ~Q(lease__contract__partner__types__contains=['special']) &
+            ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]) 
         )
 
     self.process.status = "in_progress"

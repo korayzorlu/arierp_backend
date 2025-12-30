@@ -58,13 +58,19 @@ class PurchasePaymentFilter(FilterSet):
             return queryset.filter()
         
     def filter_special(self, queryset, special, value):
+        queryset = self.Meta.model.objects.filter()
         if value == "true":
-            print("yet")
-            return queryset.filter(
-                Q(lease__contract__partner__types__contains=['special'])
+            queryset = queryset.filter(
+                Q(lease__contract__partner__types__contains=['special']) |
+                Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
             )
+
         else:
-            return queryset.filter()
+            queryset = queryset.filter(
+                ~Q(lease__contract__partner__types__contains=['special']) &
+                ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]) 
+            )
+        return queryset
         
     
 class PurchaseDocumentFilter(FilterSet):

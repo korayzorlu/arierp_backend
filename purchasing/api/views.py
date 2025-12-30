@@ -126,16 +126,18 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
 
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            ~Q(lease__contract__partner__types__contains=['special'])
+            ~Q(lease__contract__partner__types__contains=['special']) &
+            ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
         ).annotate(
             total_purchase_document=Sum('lease__lease_purchase_documents__total_amount'),
             diff=ExpressionWrapper(
                 F('lease_payment_amount') - F('before_total_payment'),
                 output_field=DecimalField(max_digits=14, decimal_places=2)
             )
-        ).exclude(
-            lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]
         )
+        # .exclude(
+        #     lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]
+        # )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
