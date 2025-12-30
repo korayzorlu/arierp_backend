@@ -43,9 +43,14 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
         obj.save()
 
         bank_activities = obj.bank_activities.select_related().all()
+        new_date = date.today()
         for bank_activity in bank_activities:
             bank_activity.is_reliable_person = True if data.get('status') == 'cleared' else False
             bank_activity.third_person_status = data.get('status')
+            if data.get('status') == 'cleared':
+                current_date=obj.created_date
+                updated_date=datetime.combine(new_date,current_date.time())
+                obj.created_date=updated_date
             bank_activity.save()
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
