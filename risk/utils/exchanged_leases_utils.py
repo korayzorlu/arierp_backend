@@ -69,3 +69,21 @@ def compute_tufe_endeks(obj):
         tufe_endeks += installment.amount / tufe_rate.value if tufe_rate else installment.amount
 
     return tufe_endeks
+
+def compute_tufe_ana_endeks(obj):
+    installments = Installment.objects.select_related().filter(
+        lease=obj,
+        payment_date__lte=date.today()
+    )
+
+    tufe_ana_endeks = Decimal('0.00')
+    sum_installment_amounts = Decimal('0.00')
+    sum_tufe_values = Decimal('0.00')
+    for installment in installments:
+        tufe_rate = TufeRate.objects.select_related().filter(date__year=installment.payment_date.year, date__month=installment.payment_date.month - 1).first()
+        sum_installment_amounts = sum_installment_amounts + installment.amount
+        sum_tufe_values = sum_tufe_values + (tufe_rate.value if tufe_rate else Decimal('1.00'))
+    
+    tufe_ana_endeks = sum_installment_amounts / sum_tufe_values if sum_tufe_values != Decimal('0.00') else Decimal('0.00')
+
+    return tufe_ana_endeks

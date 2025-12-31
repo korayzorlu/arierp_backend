@@ -98,6 +98,10 @@ class Lease(models.Model):
     kur_kaybi_yuzde = models.DecimalField(_("Kur Kaybı Yüzde"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     tufeli_geciken = models.DecimalField(_("Tüfeli Geciken"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     tufe_endeks = models.DecimalField(_("Tüfe Endeks"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufe_ana_endeks = models.DecimalField(_("Tüfe Ana Endeks"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufe_tahsilat_endeks = models.DecimalField(_("Tüfe Tahsilat Endeks"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufe_fark = models.DecimalField(_("Tüfe Fark"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufe_reel_fark = models.DecimalField(_("Tüfe Reel Fark"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     item = models.ForeignKey(Item, on_delete=models.SET_NULL, blank=True, null=True, related_name="project_leases")
     vendor = models.ForeignKey(Partner, on_delete=models.SET_NULL, blank=True, null=True, related_name="vendor_leases")

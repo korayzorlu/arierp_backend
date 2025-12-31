@@ -21,7 +21,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils
 from .utils.installment_utils import fetch_installments_from_leaseflex,update_first_installment_date
-from risk.utils.exchanged_leases_utils import compute_tufe_endeks
+from risk.utils.exchanged_leases_utils import compute_tufe_endeks,compute_tufe_ana_endeks
 
 @shared_task()
 def fetch_leases(company):
@@ -1092,6 +1092,7 @@ def fetch_lease_tufe_endeks(company):
 
         for obj in objs:
             tufe_endeks = compute_tufe_endeks(obj)
+            tufe_ana_endeks = compute_tufe_ana_endeks(obj)
             obj.tufe_endeks = tufe_endeks
             obj.save()
 
