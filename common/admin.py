@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django_celery_results.models import TaskResult
 
 from .models import *
 
@@ -131,3 +132,17 @@ class StatusAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Status
+
+# admin.site.unregister(TaskResult)
+
+# @admin.register(TaskResult)
+# class TaskResultAdmin(admin.ModelAdmin):
+#     list_display = (
+#         "task_id",
+#         "task_name",
+#         "status",
+#         "date_done",
+#         "worker",
+#     )
+#     search_fields = ("task_id", "task_name", "result", "traceback")
+#     list_filter = ("status", "date_done", "task_name")

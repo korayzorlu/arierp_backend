@@ -321,6 +321,8 @@ CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_CONNECTION_HEARTBEAT = 60  # saniye
 CELERY_BROKER_CONNECTION_RETRY = True
 
+CELERY_RESULT_EXTENDED = True
+
 # # Celery restart olduğunda schedule task'ların hemen çalışmaması için:
 # CELERY_BEAT_SYNC_EVERY = 1  # Django Celery Beat için
 # CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
