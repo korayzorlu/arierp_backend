@@ -21,6 +21,8 @@ from .serializers import *
 from django.db.models import IntegerField
 from django.db.models.functions import Cast
 
+from .filters import *
+
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.GET.get('format', None) == 'datatables':
@@ -222,6 +224,38 @@ class PartnerList(ModelViewSet, QueryListAPIView):
         query = self.request.query_params.get('search[value]', None)
         if query:
             search_fields = ["name","formal_name","company__name","tc_vkn_no","country__name"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class PartnerNoteList(ModelViewSet, QueryListAPIView):
+    serializer_class = PartnerNoteListSerializer
+    filterset_class = PartnerNoteFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","user"]
+
+        # crm_code alanını integer olarak sıralamak için annotate ile dönüştür
+
+        queryset = PartnerNote.objects.select_related(*custom_related_fields).filter(
+            company=active_company.company if active_company else None
+        ).order_by('-created_date')
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["user__get_full_name","title","text"]
             
             q_objects = Q()
             for field in search_fields:

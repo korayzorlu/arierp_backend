@@ -274,6 +274,7 @@ class PartnerInformationView(LoginRequiredMixin,View):
             return JsonResponse({'message' : 'Sorry, something went wrong!','status':'error'}, status=400)
         
         partner_data = {
+                'uuid': obj.uuid,
                 'crm_code': obj.crm_code,
                 'name': obj.name,
                 'tc_vkn_no' : obj.tc_vkn_no,
@@ -286,7 +287,51 @@ class PartnerInformationView(LoginRequiredMixin,View):
         }
 
         return JsonResponse({'partner':partner_data}, status=200)
+
+class AddPartnerNoteView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        company = Company.objects.filter(id = data.get('companyId')).first()
+        active_company = request.user.user_companies.filter(is_active = True, company = company).first()
+
+        if not company or not active_company:
+            return JsonResponse({'message': 'Sorry, something went wrong!','status':'error'}, status=400)
+
+        partner = Partner.objects.select_related().filter(uuid=data.get('partner_id')).first()
+
+        PartnerNote.objects.create(
+            company = company,
+            title = data.get('data').get('title'),
+            text = data.get('data').get('text'),
+            partner = partner,
+            user = request.user
+        )
+
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+
+class UpdatePartnerNoteView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = PartnerNote.objects.filter(uuid = data.get('data').get('uuid')).first()
+        if data.get('type') == 'title':
+            obj.title = data.get('data').get('title')
+        elif data.get('type') == 'text':
+            obj.text = data.get('data').get('text')
+        obj.save()
+
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
     
+class DeletePartnerNoteView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = PartnerNote.objects.filter(uuid = data.get('data').get('uuid')).first()
+        obj.delete()
+
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+
 
 class ExportPartnersView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
@@ -323,3 +368,4 @@ class PartnersExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+

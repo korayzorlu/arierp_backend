@@ -29,6 +29,10 @@ urlpatterns = [
     path('export_partners/', ExportPartnersView.as_view(), name="export_partners"),
     path('partners_excel/', PartnersExcelView.as_view(), name="partners_excel"),
 
+    path('add_partner_note/', AddPartnerNoteView.as_view(), name="add_partner_note"),
+    path('update_partner_note/', UpdatePartnerNoteView.as_view(), name="update_partner_note"),
+    path('delete_partner_note/', DeletePartnerNoteView.as_view(), name="delete_partner_note"),
+
     path('test/', ExampleView.as_view(), name="test"),
     
     path('', include("partners.api.urls")),

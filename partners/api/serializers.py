@@ -130,3 +130,24 @@ class PartnerListSerializer(serializers.Serializer):
             field.set(value)
         
         return instance
+
+
+class PartnerNoteListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    user = serializers.SerializerMethodField()
+    partner = serializers.SerializerMethodField()
+    title = serializers.CharField()
+    text = serializers.CharField()
+    date = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.get_full_name() if obj.user else ''
+    
+    def get_partner(self, obj):
+        return obj.partner.name if obj.partner else ''
+    
+    def get_date(self, obj):
+        if obj.created_date:
+            return obj.created_date.strftime("%d.%m.%Y %H:%M")
+        return ''

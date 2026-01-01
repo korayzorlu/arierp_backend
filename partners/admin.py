@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Partner,Sector
+from .models import Partner,Sector,PartnerNote
 
 # Register your models here.
 
@@ -66,3 +66,21 @@ class PartnerAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Partner
+
+@admin.register(PartnerNote)
+class PartnerNoteAdmin(admin.ModelAdmin):
+
+    list_display = ["company","partner","title","text","user","created_date","updated_date"]
+    list_display_links = ["title"]
+    search_fields = ["company__name","partner__name","user__first_name","user__last_name","title","text"]
+    list_filter = []
+    inlines = []
+    ordering = ["title"]
+    autocomplete_fields = ["company","user","partner"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    def user(self,obj):
+        return obj.user.get_full_name() if obj.user else ""
+    class Meta:
+        model = PartnerNote

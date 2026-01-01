@@ -6,6 +6,7 @@ import uuid
 
 from companies.models import Company
 from common.models import Country,City
+from users.models import User
 
 # Create your models here.
 
@@ -111,3 +112,17 @@ class Partner(models.Model):
     def __str__(self):
         return str(self.name)
 
+class PartnerNote(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_notes")
+
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_notes")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name="user_partner_notes")
+    title = models.CharField(_("Title"), max_length=140, blank=True, null=True)
+    text = models.CharField(_("Text"), max_length=1000, blank=True, null=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.user.get_full_name()} - {self.title}")
