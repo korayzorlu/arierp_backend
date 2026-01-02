@@ -370,32 +370,21 @@ class TrialBalance(models.Model):
     def __str__(self):
         return str(f"{self.account_code} - {self.account_name}")
     
-# class TrialBalanceTransaction(models.Model):
-#     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-#     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="trade_transactions")
+class TrialBalanceTransaction(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="trial_balance_transactions")
 
-#     transaction_id = models.CharField(_("Trade Transaction ID"), max_length=50, null=True, blank=True)
-#     trial_balance = models.ForeignKey(TrialBalance, on_delete=models.CASCADE, related_name="trial_balance_trial_balance_transactions", null=True, blank=True)
-#     ledger_period = models.CharField(_("Ledger Period"), max_length=25, null=True, blank=True)
-#     transaction_text = models.CharField(_("Transaction Text"), max_length=500, null=True, blank=True)
-#     amount_type = models.CharField(_("Amount Type"), max_length=50, null=True, blank=True)
-#     local_amount = models.DecimalField(_("Local Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    transaction_id = models.CharField(_("Trade Transaction ID"), max_length=50, null=True, blank=True)
+    trial_balance = models.ForeignKey(TrialBalance, on_delete=models.CASCADE, related_name="trial_balance_trial_balance_transactions", null=True, blank=True)
+    ledger_period = models.CharField(_("Ledger Period"), max_length=25, null=True, blank=True)
+    transaction_text = models.CharField(_("Transaction Text"), max_length=500, null=True, blank=True)
+    amount_type = models.CharField(_("Amount Type"), max_length=50, null=True, blank=True)
+    local_amount = models.DecimalField(_("Local Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    transaction_date = models.DateTimeField(_("Transaction Date"), blank=True, null=True)
 
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
 
-#     description = models.CharField(_("Description"), max_length=1000, null=True, blank=True)
-#     document_no = models.CharField(_("Document No"), max_length=140, null=True, blank=True)
-#     amount_type = models.CharField(_("Amount Type"), max_length=50, null=True, blank=True)
-
-#     due_date = models.DateTimeField(_("Due Date"), blank=True, null=True)
-#     record_date = models.DateTimeField(_("Record Date"), blank=True, null=True)
-
-#     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_trade_transactions")
-#     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
-#     local_amount = models.DecimalField(_("Local Amount"), default = 0.00, max_digits=14, decimal_places=2)
-#     exchange_rate = models.DecimalField(_("Exchange Rate"), default = 0.00, max_digits=14, decimal_places=2)
-
-#     created_date = models.DateTimeField(auto_now_add=True)
-#     updated_date = models.DateTimeField(auto_now=True)
-
-#     def __str__(self):
-#         return str(f"{self.trade_transaction_id}")  
+    def __str__(self):
+        return str(f"{self.transaction_id} - {self.trial_balance.code} - {self.trial_balance.account_name}")  

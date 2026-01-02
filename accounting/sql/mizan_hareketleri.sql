@@ -1,9 +1,15 @@
-SELECT TOP 1000
-    *
+SELECT TransactionId,
+    LedgerPeriod
+    TransactionText,
+    AccountCode,
+    AmountType,
+    AmountLocal,
+    AmountCurrency,
+    TransactionDate
 FROM
     LedgerTransaction
 WHERE
-   AccountCode = '278.99.6.00.028888.58889.01'
+   AccountCode = '981.58.01.67814.01'
 ORDER BY
     TransactionDate DESC,
     TransactionId DESC
