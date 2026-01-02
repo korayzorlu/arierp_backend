@@ -21,6 +21,10 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     is_commercial = serializers.BooleanField()
+    partner_note_count = serializers.SerializerMethodField()
+
+    def get_partner_note_count(self, obj):
+        return obj.partner_partner_notes.count() if obj.partner_partner_notes.exists() else 0
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -132,6 +136,10 @@ class ComprehensiveWarnedRiskPartnerListSerializer(serializers.Serializer):
     virman = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     is_commercial = serializers.BooleanField()
+    partner_note_count = serializers.SerializerMethodField()
+
+    def get_partner_note_count(self, obj):
+        return obj.partner_partner_notes.count() if obj.partner_partner_notes.exists() else 0
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
