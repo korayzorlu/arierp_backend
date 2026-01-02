@@ -3,6 +3,7 @@ from rest_framework.utils import html, model_meta, representation
 
 from partners.models import *
 from companies.models import Company,UserCompany
+from django.utils.timezone import localtime
 
 class SectorListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -149,5 +150,5 @@ class PartnerNoteListSerializer(serializers.Serializer):
     
     def get_date(self, obj):
         if obj.created_date:
-            return obj.created_date.strftime("%d.%m.%Y %H:%M")
+            return localtime(obj.created_date).strftime("%d.%m.%Y %H:%M")
         return ''
