@@ -127,18 +127,7 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        TrialBalanceTransaction.objects.select_related("trial_balance").all().delete()
-
-        trial_balances = TrialBalance.objects.select_related("company","currency","partner").filter(company__id=int(company))
-        partners = Partner.objects.select_related().filter(company__id=int(company))
-        contracts = Contract.objects.select_related().filter(company__id=int(company))
-        currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
-
-        trial_balance_by_code = {t.account_id: t for t in trial_balances if t.account_id}
-        partners_dict = {p.crm_code: p for p in partners}
-        contracts_dict = {c.contract_id: c for c in contracts}
-        currencies_dict = {c.code: c for c in currencies}
 
         update_progress = 0
         create_progress = 0
@@ -148,65 +137,50 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
                 break
             update_objs = []
             create_objs = []
+            account_codes = [r.AccountCode for r in records]
+            transaction_ids = [r.TransactionId for r in records]
+            trial_balances = TrialBalance.objects.filter(account_code__in=account_codes).only("account_code")
+            trial_balance_transactions = TrialBalanceTransaction.objects.filter(transaction_id__in=transaction_ids).only("transaction_id")
+            trial_balances_dict = {t.account_code: t for t in trial_balances}
+            trial_balance_transactions_dict = {tt.transaction_id: tt for tt in trial_balance_transactions}
             for index,data in enumerate(records):
-                if str(data.AccountId):
-                    obj = (trial_balance_by_code.get(str(data.AccountId)))
+                if str(data.TransactionId):
+                    obj = (trial_balance_transactions_dict.get(str(data.TransactionId)))
                 else:
                     obj = None
 
                 if obj:
-                    obj.account_id = str(data.AccountId) or ""
-                    obj.main_account_code = str(data.AccountCode).split(".")[0] or ""
-                    obj.account_code = str(data.AccountCode) or ""
-                    obj.account_code_trim = str(data.AccountCodeTrim) or ""
-                    obj.account_name = str(data.AccountName) or ""  
-                    obj.partner = partners_dict.get(str(data.CRMCode))
-                    obj.balance_account_type = str(data.BalanceAccountType) or "" 
-                    obj.currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode)
-                    obj.balance_debit = safe_decimal(data.BalanceDebit)
-                    obj.balance_credit = safe_decimal(data.BalanceCredit)
-                    obj.total_debit = safe_decimal(data.TotalDebit)
-                    obj.total_credit = safe_decimal(data.TotalCredit)
-                    obj.balance_debit_alternate = safe_decimal(data.BalanceDebitAlternate)
-                    obj.balance_credit_alternate = safe_decimal(data.BalanceCreditAlternate)
-                    obj.total_debit_alternate = safe_decimal(data.TotalDebitAlternate)
-                    obj.total_credit_alternate = safe_decimal(data.TotalCreditAlternate)
-                    obj.contract = contracts_dict.get(str(data.ContractId))
+                    obj.transaction_id = str(data.TransactionId) or ""
+                    obj.trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None
+                    obj.ledger_period = str(data.LedgerPeriod) or ""
+                    obj.transaction_text = str(data.TransactionText) or ""
+                    obj.amount_type = str(data.AmountType) or ""
+                    obj.local_amount = safe_decimal(data.AmountLocal)
+                    obj.amount = safe_decimal(data.AmountCurrency)
+                    obj.transaction_date = make_aware(data.TransactionDate) if data.TransactionDate else None
                     update_objs.append(obj)
                     update_progress += 1
                 else:
-                    create_objs.append(TrialBalance(
+                    create_objs.append(TrialBalanceTransaction(
                         company = company_obj,
-                        account_id = str(data.AccountId) or "",
-                        main_account_code = str(data.AccountCode).split(".")[0] or "",
-                        account_code = str(data.AccountCode) or "",
-                        account_code_trim = str(data.AccountCodeTrim) or "",
-                        account_name = str(data.AccountName) or "",
-                        partner = partners_dict.get(str(data.CRMCode)),
-                        balance_account_type = str(data.BalanceAccountType) or "",
-                        currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode),
-                        balance_debit = safe_decimal(data.BalanceDebit),
-                        balance_credit = safe_decimal(data.BalanceCredit),
-                        total_debit = safe_decimal(data.TotalDebit),
-                        total_credit = safe_decimal(data.TotalCredit),
-                        balance_debit_alternate = safe_decimal(data.BalanceDebitAlternate),
-                        balance_credit_alternate = safe_decimal(data.BalanceCreditAlternate),
-                        total_debit_alternate = safe_decimal(data.TotalDebitAlternate),
-                        total_credit_alternate = safe_decimal(data.TotalCreditAlternate),
-                        contract = contracts_dict.get(str(data.ContractId))
+                        transaction_id = str(data.TransactionId) or "",
+                        trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None,
+                        ledger_period = str(data.LedgerPeriod) or "",
+                        transaction_text = str(data.TransactionText) or "",
+                        amount_type = str(data.AmountType) or "",
+                        local_amount = safe_decimal(data.AmountLocal),
+                        amount = safe_decimal(data.AmountCurrency),
+                        transaction_date = make_aware(data.TransactionDate) if data.TransactionDate else None
                     ))
                     create_progress += 1
             if update_objs:
-                TrialBalance.objects.bulk_update(update_objs, [
-                    "account_id","main_account_code","account_code","account_code_trim","account_name","partner",
-                    "balance_account_type","currency","balance_debit","balance_credit",
-                    "total_debit","total_credit","balance_debit_alternate","balance_credit_alternate",
-                    "total_debit_alternate","total_credit_alternate","contract"
+                TrialBalanceTransaction.objects.bulk_update(update_objs, [
+                    "transaction_id","trial_balance","ledger_period","transaction_text","amount_type","local_amount","amount","transaction_date"
                 ], batch_size=BATCH_SIZE)
             if create_objs:
-                TrialBalance.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
-        print(f"Toplam {update_progress} mizan güncellendi.")
-        print(f"Toplam {create_progress} mizan oluşturuldu.")
+                TrialBalanceTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        print(f"Toplam {update_progress} mizan hareketi güncellendi.")
+        print(f"Toplam {create_progress} mizan hareketi oluşturuldu.")
         print("--------")
     except Exception as e:
         print(e)

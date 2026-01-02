@@ -1,5 +1,5 @@
 SELECT TransactionId,
-    LedgerPeriod
+    LedgerPeriod,
     TransactionText,
     AccountCode,
     AmountType,

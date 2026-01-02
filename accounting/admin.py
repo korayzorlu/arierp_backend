@@ -134,3 +134,25 @@ class TrialBalanceAdmin(admin.ModelAdmin):
     
     class Meta:
         model = TrialBalance
+
+@admin.register(TrialBalanceTransaction)
+class TrialBalanceTransactionAdmin(admin.ModelAdmin):
+    list_display = ["company","transaction_date","transaction_id","trial_balance","ledger_period","transaction_text","local_amount","amount","currency"]
+    list_display_links = ["transaction_id"]
+    search_fields = ["company__name","transaction_id","trial_balance__account_name","ledger_period","transaction_text","currency__code"]
+    list_filter = []
+    inlines = []
+    ordering = ["-transaction_date"]
+    autocomplete_fields = ["trial_balance"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def currency(self,obj):
+        return obj.trial_balance.currency.code if obj.trial_balance and obj.trial_balance.currency else ""
+    
+    def trial_balance(self,obj):
+        return obj.trial_balance.account_code if obj.trial_balance else ""
+    
+    class Meta:
+        model = TrialBalanceTransaction

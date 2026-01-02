@@ -387,4 +387,4 @@ class TrialBalanceTransaction(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(f"{self.transaction_id} - {self.trial_balance.code} - {self.trial_balance.account_name}")  
+        return str(f"{self.transaction_id} - {self.trial_balance.account_code} - {self.trial_balance.account_name}")  
