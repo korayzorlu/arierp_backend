@@ -33,7 +33,21 @@ def sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date):
 
 
 def send_turatel_sms_for_check(params):
-    SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin 50.000,00 TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. {"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') != 'sinpas' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 02123102721/rig@arileasing.com.tr)Mernis No: 0147005285500018"
+    tomorrow = date.today() + timedelta(days=1)
+    if params.get("risk_status") == "risk_partners":
+        SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin 50.000,00 TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. {"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680/rig@arileasing.com.tr)Mernis No: 0147005285500018"
+    elif params.get("risk_status") == "to_warned":
+        SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin 50.000,00 TL ödenmemiş taksiti bulunmaktadır. Bugün itibari ile ihtarname süreci başlatılmıştır. {"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680 / rig@arileasing.com.tr)Mernis No: 0147005285500018"
+    elif params.get("risk_status") == "warned":
+        SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesi’ne ait 01.01.2026 son ödeme tarihli 50.000,00 TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:4447680 Mernis No:0147005285500018"
+    elif params.get("risk_status") == "to_terminated":
+        SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesi’ne ait 50.000,00 TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:4447680 Mernis No:0147005285500018"
+    elif params.get("risk_status") == "today_partners":
+        SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.{"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680/rig@arileasing.com.tr)Mernis No: 0147005285500018"
+    elif params.get("risk_status") == "tomorrow_partners":
+        SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin {tomorrow.strftime('%d.%m.%Y')} tarihli taksit ödemenizi hatırlatmak isteriz.{"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680/rig@arileasing.com.tr)Mernis No: 0147005285500018"
+    elif params.get("risk_status") == "global_notification":
+        SMS_TEXT = F"Değerli müşterimiz, Ödemelerinizin gecikmesiz işlenebilmesi için Eft/Havale işlemlerinizde açıklama kısmına mutlaka sözleşme numaranızı,sözleşme sahibi T.C. numarasını ve sözleşme sahibi isim-soy isim bilgisini yazmanız gerekmektedir. IBAN: TR27 0001 2009 6260 0010 1009 81 Alıcı Adı: Arı Finansal Kiralama Arı Finansal Kiralama. Mernis No: 0147005285500018"
 
     data = {
         "messageText" : SMS_TEXT,
