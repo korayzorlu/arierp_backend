@@ -315,10 +315,8 @@ class UpdatePartnerNoteView(LoginRequiredMixin,View):
         data = json.loads(request.body)
 
         obj = PartnerNote.objects.filter(uuid = data.get('data').get('uuid')).first()
-        if data.get('type') == 'title':
-            obj.title = data.get('data').get('title')
-        elif data.get('type') == 'text':
-            obj.text = data.get('data').get('text')
+        obj.title = data.get('data').get('title')
+        obj.text = data.get('data').get('text')
         obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
@@ -330,7 +328,7 @@ class DeletePartnerNoteView(LoginRequiredMixin,View):
         obj = PartnerNote.objects.filter(uuid = data.get('data').get('uuid')).first()
         obj.delete()
 
-        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+        return JsonResponse({'message': 'Başarıyla silindi!','status':'success'}, status=200)
 
 
 class ExportPartnersView(LoginRequiredMixin,View):
