@@ -35,11 +35,7 @@ def get_partner_types(data):
     return types
 
 def export_partners(self):
-    objs = Partner.objects.select_related().filter(
-        Q(vendor_filter_for_views({'project':'kizilbuk'})) |
-        Q(vendor_filter_for_views({'project':'kasaba'})) |
-        Q(partner_contracts__contract_leases__bbsn__istartswith='PSSN')
-    )
+    objs = Partner.objects.select_related().filter()
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -59,6 +55,8 @@ def export_partners(self):
 
     data = {
         "isim": [],
+        "tc_vkn_no": [],
+        "crm_kodu": [],
         "email": [],
         "tel": [],
     }
@@ -83,6 +81,8 @@ def export_partners(self):
 
         
         data["isim"].append(obj.name)
+        data["tc_vkn_no"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no)
+        data["crm_kodu"].append(obj.crm_code)
         data["email"].append(obj.email)
         data["tel"].append(obj.phone_number)
 
