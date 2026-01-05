@@ -146,38 +146,37 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
             trial_balances_dict = {t.account_code: t for t in trial_balances}
             trial_balance_transactions_dict = {tt.transaction_id: tt for tt in trial_balance_transactions}
             for index,data in enumerate(records):
-                if str(data.TransactionId):
-                    obj = (trial_balance_transactions_dict.get(str(data.TransactionId)))
-                else:
-                    obj = None
+                # if str(data.TransactionId):
+                #     obj = (trial_balance_transactions_dict.get(str(data.TransactionId)))
+                # else:
+                #     obj = None
 
-                if obj:
-                    continue
-                    obj.transaction_id = str(data.TransactionId) or ""
-                    obj.trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None
-                    obj.ledger_period = str(data.LedgerPeriod) or ""
-                    obj.transaction_text = str(data.TransactionText) or ""
-                    obj.user_id = str(data.UserCodeCreated) or ""
-                    obj.amount_type = str(data.AmountType) or ""
-                    obj.local_amount = safe_decimal(data.AmountLocal)
-                    obj.amount = safe_decimal(data.AmountCurrency)
-                    obj.transaction_date = make_aware(data.TransactionDate) if data.TransactionDate else None
-                    update_objs.append(obj)
-                    update_progress += 1
-                else:
-                    create_objs.append(TrialBalanceTransaction(
-                        company = company_obj,
-                        transaction_id = str(data.TransactionId) or "",
-                        trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None,
-                        ledger_period = str(data.LedgerPeriod) or "",
-                        transaction_text = str(data.TransactionText) or "",
-                        user_id = str(data.UserCodeCreated) or "",
-                        amount_type = str(data.AmountType) or "",
-                        local_amount = safe_decimal(data.AmountLocal),
-                        amount = safe_decimal(data.AmountCurrency),
-                        transaction_date = make_aware(data.TransactionDate) if data.TransactionDate else None
-                    ))
-                    create_progress += 1
+                # if obj:
+                #     obj.transaction_id = str(data.TransactionId) or ""
+                #     obj.trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None
+                #     obj.ledger_period = str(data.LedgerPeriod) or ""
+                #     obj.transaction_text = str(data.TransactionText) or ""
+                #     obj.user_id = str(data.UserCodeCreated) or ""
+                #     obj.amount_type = str(data.AmountType) or ""
+                #     obj.local_amount = safe_decimal(data.AmountLocal)
+                #     obj.amount = safe_decimal(data.AmountCurrency)
+                #     obj.transaction_date = make_aware(data.TransactionDate) if data.TransactionDate else None
+                #     update_objs.append(obj)
+                #     update_progress += 1
+                # else:
+                create_objs.append(TrialBalanceTransaction(
+                    company = company_obj,
+                    transaction_id = str(data.TransactionId) or "",
+                    trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None,
+                    ledger_period = str(data.LedgerPeriod) or "",
+                    transaction_text = str(data.TransactionText) or "",
+                    user_id = str(data.UserCodeCreated) or "",
+                    amount_type = str(data.AmountType) or "",
+                    local_amount = safe_decimal(data.AmountLocal),
+                    amount = safe_decimal(data.AmountCurrency),
+                    transaction_date = make_aware(data.TransactionDate) if data.TransactionDate else None
+                ))
+                create_progress += 1
             if update_objs:
                 TrialBalanceTransaction.objects.bulk_update(update_objs, [
                     "transaction_id","trial_balance","ledger_period","transaction_text","user_id","amount_type","local_amount","amount","transaction_date"
