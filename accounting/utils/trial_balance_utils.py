@@ -152,6 +152,7 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
                     obj = None
 
                 if obj:
+                    continue
                     obj.transaction_id = str(data.TransactionId) or ""
                     obj.trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None
                     obj.ledger_period = str(data.LedgerPeriod) or ""
