@@ -152,6 +152,7 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
                     obj = None
 
                 if obj:
+                    continue
                     obj.transaction_id = str(data.TransactionId) or ""
                     obj.trial_balance = trial_balances_dict.get(str(data.AccountCode)) or None
                     obj.ledger_period = str(data.LedgerPeriod) or ""
@@ -179,7 +180,7 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
                     create_progress += 1
             if update_objs:
                 TrialBalanceTransaction.objects.bulk_update(update_objs, [
-                    "transaction_id","trial_balance","ledger_period","transaction_text","amount_type","local_amount","amount","transaction_date"
+                    "transaction_id","trial_balance","ledger_period","transaction_text","user_id","amount_type","local_amount","amount","transaction_date"
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 TrialBalanceTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
