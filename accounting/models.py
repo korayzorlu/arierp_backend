@@ -378,6 +378,7 @@ class TrialBalanceTransaction(models.Model):
     trial_balance = models.ForeignKey(TrialBalance, on_delete=models.CASCADE, related_name="trial_balance_trial_balance_transactions", null=True, blank=True)
     ledger_period = models.CharField(_("Ledger Period"), max_length=25, null=True, blank=True)
     transaction_text = models.CharField(_("Transaction Text"), max_length=1000, null=True, blank=True)
+    user_id = models.CharField(_("User ID"), max_length=25, null=True, blank=True)
     amount_type = models.CharField(_("Amount Type"), max_length=50, null=True, blank=True)
     local_amount = models.DecimalField(_("Local Amount"), default = 0.00, max_digits=14, decimal_places=2)
     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
