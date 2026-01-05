@@ -5,7 +5,8 @@ SELECT TransactionId,
     AmountType,
     AmountLocal,
     AmountCurrency,
-    TransactionDate
+    TransactionDate,
+    UserCodeCreated
 FROM
     LedgerTransaction
 -- WHERE

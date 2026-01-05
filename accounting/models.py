@@ -348,7 +348,7 @@ class TrialBalance(models.Model):
     main_account_code = models.CharField(_("Main Account Code"), max_length=50, null=True, blank=True)
     account_code = models.CharField(_("Account Code"), max_length=50, null=True, blank=True)
     account_code_trim = models.CharField(_("Account Code Trim"), max_length=50, null=True, blank=True)
-    account_name = models.CharField(_("Account Name"), max_length=1000, null=True, blank=True)
+    account_name = models.CharField(_("Account Name"), max_length=500, null=True, blank=True)
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_trial_balances", null=True, blank=True)
     balance_account_type = models.CharField(_("Balance Account Type"), max_length=50, null=True, blank=True)
     
@@ -377,7 +377,7 @@ class TrialBalanceTransaction(models.Model):
     transaction_id = models.CharField(_("Trade Transaction ID"), max_length=50, null=True, blank=True)
     trial_balance = models.ForeignKey(TrialBalance, on_delete=models.CASCADE, related_name="trial_balance_trial_balance_transactions", null=True, blank=True)
     ledger_period = models.CharField(_("Ledger Period"), max_length=25, null=True, blank=True)
-    transaction_text = models.CharField(_("Transaction Text"), max_length=500, null=True, blank=True)
+    transaction_text = models.CharField(_("Transaction Text"), max_length=1000, null=True, blank=True)
     amount_type = models.CharField(_("Amount Type"), max_length=50, null=True, blank=True)
     local_amount = models.DecimalField(_("Local Amount"), default = 0.00, max_digits=14, decimal_places=2)
     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
