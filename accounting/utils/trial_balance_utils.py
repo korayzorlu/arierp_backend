@@ -139,8 +139,10 @@ def fetch_trial_balance_transactions_from_leaseflex(company,BATCH_SIZE=1000):
             create_objs = []
             account_codes = [r.AccountCode for r in records]
             transaction_ids = [r.TransactionId for r in records]
-            trial_balances = TrialBalance.objects.filter(account_code__in=account_codes).only("account_code")
-            trial_balance_transactions = TrialBalanceTransaction.objects.filter(transaction_id__in=transaction_ids).only("transaction_id")
+            # trial_balances = TrialBalance.objects.filter(account_code__in=account_codes).only("account_code")
+            trial_balances = TrialBalance.objects.filter(account_code__in=account_codes)
+            #trial_balance_transactions = TrialBalanceTransaction.objects.filter(transaction_id__in=transaction_ids).only("transaction_id")
+            trial_balance_transactions = TrialBalanceTransaction.objects.filter(transaction_id__in=transaction_ids)
             trial_balances_dict = {t.account_code: t for t in trial_balances}
             trial_balance_transactions_dict = {tt.transaction_id: tt for tt in trial_balance_transactions}
             for index,data in enumerate(records):

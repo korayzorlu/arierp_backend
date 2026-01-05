@@ -264,6 +264,37 @@ class TrialBalanceContractListSerializer(serializers.Serializer):
 
         return trial_balance_dict
 
+class TrialBalanceTransactionListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    transaction_id = serializers.CharField()
+    trial_balance = serializers.SerializerMethodField()
+    account_name = serializers.SerializerMethodField()
+    currency = serializers.SerializerMethodField()
+    main_account_code = serializers.SerializerMethodField()
+    ledger_period = serializers.CharField()
+    transaction_text = serializers.CharField()
+    amount_type = serializers.CharField()
+    local_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    transaction_date = serializers.DateTimeField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+    def get_trial_balance(self, obj):
+        return obj.trial_balance.account_code if obj.trial_balance else ''
+    
+    def get_account_name(self, obj):
+        return obj.trial_balance.account_name if obj.trial_balance else ''
+    
+    def get_currency(self, obj):
+        return obj.trial_balance.currency.code if obj.trial_balance and obj.trial_balance.currency else ''
+    
+    def get_main_account_code(self, obj):
+        return obj.trial_balance.main_account_code if obj.trial_balance else ''
+
+
 class UnderReviewListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()

@@ -11,6 +11,7 @@ router.register(r'payments', PaymentList, "payments_api")
 router.register(r'main_account_codes', MainAccountCodeList, "main_account_codes_api")
 router.register(r'trial_balances', TrialBalanceList, "trial_balances_api")
 router.register(r'trial_balance_contracts', TrialBalanceContractList, "trial_balance_contracts_api")
+router.register(r'trial_balance_transactions', TrialBalanceTransactionList, "trial_balance_transactions_api")
 router.register(r'under_reviews', UnderReviewList, "under_reviews_api")
 
 urlpatterns = [

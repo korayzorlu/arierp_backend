@@ -146,7 +146,29 @@ class TrialBalanceContractFilter(FilterSet):
                 contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
             )
         return queryset
+
+class TrialBalanceTransactionFilter(FilterSet):
+    trial_balance = CharFilter(field_name='trial_balance__account_code', lookup_expr='icontains')
+    account_name = CharFilter(field_name='trial_balance__account_name', lookup_expr='icontains')
+    transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
+    ledger_period = CharFilter(field_name='ledger_period', lookup_expr='icontains')
+    transaction_text = CharFilter(field_name='transaction_text', lookup_expr='icontains')
+    amount_type = CharFilter(field_name='amount_type', lookup_expr='icontains')
+    transaction_date = CharFilter(field_name='transaction_date', lookup_expr='icontains')
+    main_account_code = CharFilter(method = 'filter_main_account_code')
+
+    class Meta:
+        model = TrialBalanceTransaction
+        fields = ['uuid']
+
+    def filter_main_account_code(self, queryset, main_account_code, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(trial_balance__main_account_code = value)
     
+    
+
+
 class UnderReviewFilter(FilterSet):
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
     partner_tc = CharFilter(field_name='partner__tc_vkn_no', lookup_expr='icontains')
