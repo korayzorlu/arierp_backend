@@ -270,8 +270,11 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 overdue_month = overdue_date.month
 
             # 1. Gecikmenin başlangıcındaki ay içerisindeki hesap
-            tufe_rate_at_overdue_start = TufeRate.objects.select_related().filter(date__year=overdue_year, date__month=overdue_month).first()
-            daily_rate_at_overdue_start = tufe_rate_at_overdue_start.change_rate / Decimal(str(days_in_month(overdue_date)))
+            if TufeRate.objects.select_related().filter(date__year=overdue_year, date__month=overdue_month).exists():
+                tufe_rate_at_overdue_start = TufeRate.objects.select_related().filter(date__year=overdue_year, date__month=overdue_month).first()
+            else:
+                tufe_rate_at_overdue_start = TufeRate.objects.select_related().filter(date__year=overdue_year if overdue_month > 1 else overdue_year - 1, date__month=overdue_month - 1 if overdue_month > 1 else 12).first()
+            daily_rate_at_overdue_start = (tufe_rate_at_overdue_start.change_rate if tufe_rate_at_overdue_start else Decimal('0.00')) / Decimal(str(days_in_month(overdue_date)))
             days_in_overdue_start_month = days_in_month(overdue_date) - overdue_date.day + 1
             tufeli_amount_start_month = obj.overdue_amount * (Decimal('1.00') + (daily_rate_at_overdue_start * Decimal(str(days_in_overdue_start_month))) / Decimal('100.00'))
 
