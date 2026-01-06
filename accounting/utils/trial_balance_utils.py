@@ -31,7 +31,7 @@ def fetch_trial_balances_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        TrialBalance.objects.select_related().all().delete()
+        # TrialBalance.objects.select_related().all().delete()
 
         trial_balances = TrialBalance.objects.select_related("company","currency","partner").filter(company__id=int(company))
         partners = Partner.objects.select_related().filter(company__id=int(company))

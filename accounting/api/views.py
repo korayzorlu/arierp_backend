@@ -412,8 +412,8 @@ class TrialBalanceTransactionList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company","trial_balance","trial_balance__currency"]
         
         queryset = TrialBalanceTransaction.objects.select_related(*custom_related_fields).filter(
-            Q(company=active_company.company if active_company else None)
-        )
+            Q(company=active_company.company if active_company else None) 
+        ).order_by("-transaction_date","trial_balance__account_code")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
