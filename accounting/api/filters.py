@@ -150,6 +150,7 @@ class TrialBalanceContractFilter(FilterSet):
 
 class TrialBalanceTransactionFilter(FilterSet):
     trial_balance = CharFilter(field_name='trial_balance__account_code', lookup_expr='icontains')
+    tb_uuid = CharFilter(field_name='trial_balance__uuid', lookup_expr='exact')
     account_name = CharFilter(field_name='trial_balance__account_name', lookup_expr='icontains')
     transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
     ledger_period = CharFilter(field_name='ledger_period', lookup_expr='icontains')

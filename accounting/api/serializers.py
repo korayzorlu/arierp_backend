@@ -270,6 +270,7 @@ class TrialBalanceTransactionListSerializer(serializers.Serializer):
     companyId = serializers.SerializerMethodField()
     transaction_id = serializers.CharField()
     trial_balance = serializers.SerializerMethodField()
+    trial_balance_uuid = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     account_name = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
@@ -286,6 +287,9 @@ class TrialBalanceTransactionListSerializer(serializers.Serializer):
 
     def get_trial_balance(self, obj):
         return obj.trial_balance.account_code if obj.trial_balance else ''
+    
+    def get_trial_balance_uuid(self, obj):
+        return obj.trial_balance.uuid if obj.trial_balance else ''
     
     def get_user(self, obj):
         user = User.objects.filter(leaseflex_id=obj.user_id).first()
