@@ -21,7 +21,7 @@ class UserAdmin(UserAdmin):
     ordering = ["email"]
 
     fieldsets = UserAdmin.fieldsets + (
-        ("More details", {"fields": ["is_email_verified","phone_country","phone_number","verify_sid"]}),
+        ("More details", {"fields": ["is_email_verified","phone_country","phone_number","verify_sid","leaseflex_id"]}),
     )
     
     class Meta:

@@ -137,7 +137,7 @@ class TrialBalanceAdmin(admin.ModelAdmin):
 
 @admin.register(TrialBalanceTransaction)
 class TrialBalanceTransactionAdmin(admin.ModelAdmin):
-    list_display = ["company","transaction_date","transaction_id","trial_balance","ledger_period","transaction_text","local_amount","amount","currency"]
+    list_display = ["company","transaction_date","transaction_id","trial_balance","ledger_period","transaction_text","local_amount","amount","currency","user_id"]
     list_display_links = ["transaction_id"]
     search_fields = ["company__name","transaction_id","trial_balance__account_name","ledger_period","transaction_text","currency__code"]
     list_filter = []

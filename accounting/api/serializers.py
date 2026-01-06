@@ -3,6 +3,7 @@ from rest_framework.utils import html, model_meta, representation
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
 
 from accounting.models import *
+from users.models import User
 from leasing.models import Lease
 
 class AccountListSerializer(serializers.Serializer):
@@ -269,6 +270,7 @@ class TrialBalanceTransactionListSerializer(serializers.Serializer):
     companyId = serializers.SerializerMethodField()
     transaction_id = serializers.CharField()
     trial_balance = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     account_name = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
     main_account_code = serializers.SerializerMethodField()
@@ -284,6 +286,10 @@ class TrialBalanceTransactionListSerializer(serializers.Serializer):
 
     def get_trial_balance(self, obj):
         return obj.trial_balance.account_code if obj.trial_balance else ''
+    
+    def get_user(self, obj):
+        user = User.objects.filter(leaseflex_id=obj.user_id).first()
+        return user.get_full_name() if user else ''
     
     def get_account_name(self, obj):
         return obj.trial_balance.account_name if obj.trial_balance else ''
