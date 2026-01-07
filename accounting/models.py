@@ -363,6 +363,12 @@ class TrialBalance(models.Model):
     total_credit_alternate = models.DecimalField(_("Total Credit Alternate"), default = 0.00, max_digits=14, decimal_places=2)
 
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_trial_balances", null=True, blank=True)
+
+    account_code_1 = models.CharField(_("Account Code 1"), max_length=50, null=True, blank=True)
+    account_code_2 = models.CharField(_("Account Code 2"), max_length=50, null=True, blank=True)
+    account_code_3 = models.CharField(_("Account Code 3"), max_length=50, null=True, blank=True)
+    account_code_4 = models.CharField(_("Account Code 4"), max_length=50, null=True, blank=True)
+    account_code_5 = models.CharField(_("Account Code 5"), max_length=50, null=True, blank=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

@@ -122,6 +122,9 @@ class MenuItemListSerializer(serializers.Serializer):
                     # {"type" : "item", "class" : ["default"], "label" : "Sözleşme Mizanları (Adet)", "icon" : "checkbook", "route" : "/count-trial-balance-contract-inactives"},
                 ]},
                 # {"type" : "item", "class" : ["default"], "label" : "Genel Mizan İncelenecekler", "icon" : "checkbook", "route" : "/accounting-under-reviews"},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "BDDK Rapor", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Mali Tablo", "icon" : "checkbook", "route" : "/mali-tablo"},
+                ]},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},

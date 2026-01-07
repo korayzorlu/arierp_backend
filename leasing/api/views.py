@@ -109,7 +109,42 @@ class DatatablesPagination(LimitOffsetPagination):
             'recordsFiltered': self.count,
             'data': data
         })
-    
+
+class ProjectList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseListSerializer
+    filterset_class = LeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        result = Lease.objects.filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(item__bddk_code__icontains="GAYRIMENKUL") &
+            ~Q(item__item_group_id="142") &
+            Q(is_last_project=True)
+        ).exclude(
+            Q(contract__partner__types__contains=['special'])
+        ).order_by("item__stock_name").values("item__stock_name", "item__uuid").distinct()
+
+        result = list(result)
+
+        return Response(result)
+
 class LeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseListSerializer
     filterset_class = LeaseFilter

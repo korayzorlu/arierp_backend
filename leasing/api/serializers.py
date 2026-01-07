@@ -152,6 +152,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
+    #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -193,13 +194,21 @@ class ActiveLeaseListSerializer(serializers.Serializer):
         return obj.contract.kof if obj.contract else ""
     
     def get_item(self, obj):
-        return obj.item.stock_name if obj.item else ""
+        return {
+            "id" : obj.item.uuid if obj.item else "",
+            "name" : obj.item.stock_name if obj.item else "",
+        }
     
     def get_block(self, obj):
         return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     def get_unit(self, obj):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    
+    # def get_project_list(self, obj):
+    #     projects = Lease.objects.values_list('item__stock_name', flat=True).distinct()
+
+    #     return projects
     
     # def get_overdue_days(self, obj):
     #     installments = obj.lease_installments.all()
