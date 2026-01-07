@@ -400,7 +400,7 @@ class TrialBalanceTransactionList(ModelViewSet, QueryListAPIView):
     ordering_fields = '__all__'
     #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
     ordering_fields = [f.name for f in TrialBalance._meta.get_fields() if hasattr(f, 'name')]
-    ordering = ['-transaction_date']
+    ordering = ['transaction_id','-transaction_date']
     pagination_class = DatatablesPagination
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
@@ -413,7 +413,7 @@ class TrialBalanceTransactionList(ModelViewSet, QueryListAPIView):
         
         queryset = TrialBalanceTransaction.objects.select_related(*custom_related_fields).filter(
             Q(company=active_company.company if active_company else None) 
-        ).order_by("-transaction_date","trial_balance__account_code")
+        ).distinct("transaction_id")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
