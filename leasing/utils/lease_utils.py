@@ -256,6 +256,60 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
         update_objs = []
         for index,obj in enumerate(objs):
             overdue_date = timezone.now().date() - timedelta(days=obj.overdue_days)
+            today = timezone.now().date()
+            installments = Installment.objects.select_related("lease").filter(
+                lease=obj,
+                payment_date__lte=overdue_date
+            )
+
+            tufe_rate_start = TufeRate.objects.select_related().filter(date__lte=overdue_date).order_by("-date").first()
+            end_karsiligi_toplam = Decimal('0.00')
+            for installment in installments:
+                tufe_rate = TufeRate.objects.select_related().filter(date__lte=installment.payment_date).order_by("-date").first()
+                end_karsiligi_toplam += (installment.amount * (tufe_rate_start.value if tufe_rate_start else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
+
+            ana_kod = obj.contract.code.split('/')[0] if obj.contract and obj.contract.code else None
+
+            trade_transactions = TradeTransaction.objects.select_related("lease").filter(
+                lease__contract__code__startswith=ana_kod,
+                posting_group_name='Kira',
+                amount_type='0',
+                due_date__lte=timezone.now()
+            )
+
+            end_karsiligi_tahsilat_toplam = Decimal('0.00')
+            for trade_transaction in trade_transactions:
+                tufe_rate = TufeRate.objects.select_related().filter(date__lte=trade_transaction.due_date).order_by("-date").first()
+                end_karsiligi_tahsilat_toplam += (installment.amount * (tufe_rate_start.value if tufe_rate_start else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
+
+            fark = end_karsiligi_toplam - end_karsiligi_tahsilat_toplam
+
+            obj.tufe_fark = fark
+
+            update_objs.append(obj)
+            update_progress += 1
+        if update_objs:
+            Lease.objects.bulk_update(update_objs, [
+                "tufeli_geciken",
+            ])
+            pass
+
+        print(f"Toplam {update_progress} kira planı tüfe kayıpları güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
+def fetch_tufe_exchanged_amounts_utilss(company,BATCH_SIZE=1000):
+    try:
+        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),overdue_amount__gt=0,is_last_project=True,currency__code__in=['TRY'])
+        tufe_rate = TufeRate.objects.select_related().order_by('-date').first()
+
+        update_progress = 0
+
+        update_objs = []
+        for index,obj in enumerate(objs):
+            overdue_date = timezone.now().date() - timedelta(days=obj.overdue_days)
             # Eğer gecikme tarihi içinde bulunduğumuz ay ise, bir önceki ayı ve yılı al
             today = timezone.now().date()
             if overdue_date.year == today.year and overdue_date.month == today.month:

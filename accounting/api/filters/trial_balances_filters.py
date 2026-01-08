@@ -6,24 +6,6 @@ from accounting.models import *
 from users.models import User
 from accounting.utils.common_utils import trial_balance_main_account_codes
 
-class PaymentFilter(FilterSet):
-    uuid = CharFilter(method = 'filter_uuid')
-    type = CharFilter(method = 'filter_type')
-    partner = CharFilter(method = 'filter_partner')
-
-    class Meta:
-        model = Payment
-        fields = ['uuid','type','partner']
-
-    def filter_uuid(self, queryset, uuid, value):
-        return queryset.filter(uuid = value)
-    
-    def filter_type(self, queryset, type, value):
-        return queryset.filter(type = value)
-    
-    def filter_partner(self, queryset, partner, value):
-        return queryset.filter(partner__uuid = value)
-    
 class TrialBalanceFilter(FilterSet):
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
     currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
@@ -147,35 +129,6 @@ class TrialBalanceContractFilter(FilterSet):
                 contract_leases__lease_status__in=["planlandi","aktiflestirildi","durduruldu"]
             )
         return queryset
-
-class TrialBalanceTransactionFilter(FilterSet):
-    trial_balance = CharFilter(field_name='trial_balance__account_code', lookup_expr='icontains')
-    tb_uuid = CharFilter(field_name='trial_balance__uuid', lookup_expr='exact')
-    account_name = CharFilter(field_name='trial_balance__account_name', lookup_expr='icontains')
-    transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
-    ledger_period = CharFilter(field_name='ledger_period', lookup_expr='icontains')
-    transaction_text = CharFilter(field_name='transaction_text', lookup_expr='icontains')
-    amount_type = CharFilter(field_name='amount_type', lookup_expr='icontains')
-    transaction_date = CharFilter(field_name='transaction_date', lookup_expr='icontains')
-    main_account_code = CharFilter(method = 'filter_main_account_code')
-    user = CharFilter(method = 'filter_user')
-
-    class Meta:
-        model = TrialBalanceTransaction
-        fields = ['uuid']
-
-    def filter_main_account_code(self, queryset, main_account_code, value):
-        if value == 'all':
-            return queryset
-        return queryset.filter(trial_balance__main_account_code = value)
-    
-    def filter_user(self, queryset, user, value):
-        user_objs = User.objects.filter(name__icontains=value)
-        user_ids = [u.leaseflex_id for u in user_objs if u.leaseflex_id]
-        if not user_objs and not user_ids:
-            return queryset
-        return queryset.filter(user_id__in=user_ids)
-
 
 class UnderReviewFilter(FilterSet):
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')

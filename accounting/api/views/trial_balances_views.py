@@ -1,0 +1,252 @@
+from django.core.validators import EMPTY_VALUES
+from django.db.models import QuerySet, Q
+from rest_framework import generics
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework_datatables.filters import DatatablesFilterBackend
+
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from django_filters import CharFilter
+from rest_framework.response import Response
+from rest_framework_datatables_editor.viewsets import DatatablesEditorModelViewSet, EditorModelMixin
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
+
+from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
+
+from ..serializers.trial_balances_serializers import *
+from ..filters.trial_balances_filters import *
+from django.db.models import F, ExpressionWrapper, DecimalField
+
+class QueryListAPIView(generics.ListAPIView):
+    def get_queryset(self):
+        if self.request.GET.get('format', None) == 'datatables':
+            self.filter_backends = (OrderingFilter, DatatablesFilterBackend, DjangoFilterBackend)
+            return super().get_queryset()
+        queryset = self.queryset
+
+        # check the start index is integer
+        try:
+            start = self.request.GET.get('start')
+            start = int(start) if start else None
+        # else make it None
+        except ValueError:
+            start = None
+
+        # check the end index is integer
+        try:
+            end = self.request.GET.get('end')
+            end = int(end) if end else None
+        # else make it None
+        except ValueError:
+            end = None
+
+        # skip filters and sorting if they are not exists in the model to ensure security
+        accepted_filters = {}
+        # loop fields of the model
+        for field in queryset.model._meta.get_fields():
+            # if field exists in request, accept it
+            if field.name in dict(self.request.GET):
+                accepted_filters[field.name] = dict(self.request.GET)[field.name]
+            # if field exists in sorting parameter's value, accept it
+
+        filters = {}
+
+        for key, value in accepted_filters.items():
+            if any(val in value for val in EMPTY_VALUES):
+                if queryset.model._meta.get_field(key).null:
+                    filters[key + '__isnull'] = True
+                else:
+                    filters[key + '__exact'] = ''
+            else:
+                filters[key + '__in'] = value
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all().filter(**filters)[start:end]
+        return queryset
+
+    @property
+    def paginator(self):
+        """
+        The paginator instance associated with the view, or `None`.
+        """
+        if not hasattr(self, '_paginator'):
+            if self.pagination_class is None:
+                self._paginator = None
+            elif self.request.GET.get('format', None) == 'datatables':
+                self._paginator = self.pagination_class()
+            else:
+                self._paginator = None
+        return self._paginator
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class DatatablesPagination(LimitOffsetPagination):
+    default_limit = 50
+    limit_query_param = 'length'
+    offset_query_param = 'start'
+
+    def get_paginated_response(self, data):
+        return Response({
+            'draw': int(self.request.query_params.get('draw', 0)),
+            'recordsTotal': self.count,
+            'recordsFiltered': self.count,
+            'data': data
+        })
+    
+class MainAccountCodeList(ModelViewSet, QueryListAPIView):
+    serializer_class = TrialBalanceListSerializer
+    filterset_class = TrialBalanceFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        result = TrialBalance.objects.filter(
+            company=active_company.company if active_company else None
+        ).values_list(
+            'main_account_code', flat=True
+        ).distinct()
+
+        return Response(result)
+    
+class TrialBalanceList(ModelViewSet, QueryListAPIView):
+    serializer_class = TrialBalanceListSerializer
+    filterset_class = TrialBalanceFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in TrialBalance._meta.get_fields() if hasattr(f, 'name')] + ['total_tl']
+    ordering = ['account_name']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","currency"]
+        
+        queryset = TrialBalance.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None)
+        ).annotate(
+            total_tl=ExpressionWrapper(F('total_debit') - F('total_credit'),output_field=DecimalField())
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["account_id","account_code","account_name","partner__name","balance_account_type","currency__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class TrialBalanceContractList(ModelViewSet, QueryListAPIView):
+    serializer_class = TrialBalanceContractListSerializer
+    filterset_class = TrialBalanceContractFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in TrialBalance._meta.get_fields() if hasattr(f, 'name')]
+    ordering = ['-lop_open_date']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","status"]
+        
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(contract_leases__is_last_project = True) &
+            Q(contract_trial_balances__isnull=False)
+        ).distinct()
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = [
+                "code",
+                "partner__name",
+                "kof",
+                "quotation",
+                "committe",
+                "credit_type",
+                "customer_representative",
+                "supplier",
+                "project",
+                "status__name",
+                "mkk_tesciline_gonderilecek_mi",
+                "kof_tan_sozlesmeye_aktarim_tarihi",
+                "lop_open_date"
+            ]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
+class UnderReviewList(ModelViewSet, QueryListAPIView):
+    serializer_class = UnderReviewListSerializer
+    filterset_class = UnderReviewFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    #ordering_fields = list(TrialBalance._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in TrialBalance._meta.get_fields() if hasattr(f, 'name')]
+    ordering = ['-lop_open_date']
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","status"]
+        
+        queryset = Contract.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(contract_trial_balances__isnull=False)
+        ).annotate(
+            trial_balance_count=models.Count('contract_trial_balances')
+        ).filter(
+            trial_balance_count__gt=4
+        ).distinct()
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["code","partner__name","kof","quotation","committe","credit_type","customer_representative","supplier","project","status__name","mkk_tesciline_gonderilecek_mi","kof_tan_sozlesmeye_aktarim_tarihi","lop_open_date"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
