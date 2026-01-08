@@ -259,10 +259,10 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             today = timezone.now().date()
             installments = Installment.objects.select_related("lease").filter(
                 lease=obj,
-                payment_date__lte=today
+                payment_date__lte=date.today()
             )
 
-            tufe_rate_last = TufeRate.objects.select_related().filter(date__lte=today).order_by("-date").first()
+            tufe_rate_last = TufeRate.objects.select_related().filter(date__lte=date.today()).order_by("-date").first()
             end_karsiligi_toplam = Decimal('0.00')
             for installment in installments:
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=installment.payment_date).order_by("-date").first()
