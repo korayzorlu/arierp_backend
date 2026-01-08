@@ -259,14 +259,14 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             today = timezone.now().date()
             installments = Installment.objects.select_related("lease").filter(
                 lease=obj,
-                payment_date__lte=overdue_date
+                payment_date__lte=today
             )
 
-            tufe_rate_start = TufeRate.objects.select_related().filter(date__lte=overdue_date).order_by("-date").first()
+            tufe_rate_last = TufeRate.objects.select_related().filter(date__lte=today).order_by("-date").first()
             end_karsiligi_toplam = Decimal('0.00')
             for installment in installments:
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=installment.payment_date).order_by("-date").first()
-                end_karsiligi_toplam += (installment.amount * (tufe_rate_start.value if tufe_rate_start else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
+                end_karsiligi_toplam += (installment.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
 
             ana_kod = obj.contract.code.split('/')[0] if obj.contract and obj.contract.code else None
 
@@ -280,7 +280,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             end_karsiligi_tahsilat_toplam = Decimal('0.00')
             for trade_transaction in trade_transactions:
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=trade_transaction.due_date).order_by("-date").first()
-                end_karsiligi_tahsilat_toplam += (installment.amount * (tufe_rate_start.value if tufe_rate_start else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
+                end_karsiligi_tahsilat_toplam += (installment.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
 
             fark = end_karsiligi_toplam - end_karsiligi_tahsilat_toplam
 
@@ -290,9 +290,8 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             update_progress += 1
         if update_objs:
             Lease.objects.bulk_update(update_objs, [
-                "tufeli_geciken",
+                "tufe_fark",
             ])
-            pass
 
         print(f"Toplam {update_progress} kira planı tüfe kayıpları güncellendi.")
         print("--------")
