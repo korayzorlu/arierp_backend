@@ -416,6 +416,8 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
     except Exception as e:
         traceback.print_exc()
 
+
+
 def send_warning_email_for_ignored_partners(params):
     today = datetime.today().date().strftime("%d.%m.%Y")
 

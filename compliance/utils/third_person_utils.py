@@ -1,9 +1,13 @@
+from django.db.models import Q
+
 import json
 from compliance.models import ThirdPerson
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 
 import re
+
+from partners.models import Partner
 
 def create_third_person(self,scan_result):
     if self.name is not None and self.name != "" and self.name != "None":
@@ -157,3 +161,15 @@ def send_email_for_third_person_to_cleared(name,tc_vkn_no):
     recipient_list = settings.THIRD_PERSON_CLEARED_EMAIL_LIST
 
     send_outlook_email(subject, message, from_email, recipient_list)
+
+def check_third_person_in_partners():
+    objs = ThirdPerson.objects.select_related().filter(
+        Q(status = 'pending') |
+        Q(status = 'need_document')
+    )
+    for obj in objs:
+        if Partner.objects.select_related().filter(tc_vkn_no=obj.tc_vkn_no).exists():
+            obj.status = 'cleared'
+            obj.save()
+            send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
+

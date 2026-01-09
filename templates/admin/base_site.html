@@ -6,7 +6,13 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "css/admin-extra.css" %}" />{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">ARIERP ADMINISTRATION</a></h1>
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <img src="{% static 'images/global/ari-logo-full-2.png' %}" height="24" alt="ARINET"/>
+            &nbsp;
+            <strong>ADMINISTRATION</strong>
+        </a>
+    </h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
