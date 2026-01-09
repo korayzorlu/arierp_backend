@@ -117,8 +117,6 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
             if create_objs:
                 Installment.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
         
-        del installment_by_code
-        gc.collect()
         print(f"Toplam {update_progress} taksit güncellendi.")
         print(f"Toplam {create_progress} taksit oluşturuldu.")
         print("--------")

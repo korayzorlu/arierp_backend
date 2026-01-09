@@ -12,4 +12,6 @@ SELECT OperationPaymentId,
     PaymentTypeId,
     OperationPaymentId
 FROM LopPaymentList
+ORDER BY
+    OperationPaymentId DESC
 --WHERE OperationProjectId = '22590'
