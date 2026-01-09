@@ -39,22 +39,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        leases = Lease.objects.select_related("status","company","contract","currency").filter(company__id=int(company))
-        partners = Partner.objects.select_related().filter(company__id=int(company))
-        contracts = Contract.objects.select_related().filter(company__id=int(company))
-        items = Item.objects.select_related().filter(company__id=int(company))
-        statuses = Status.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
-
-        lease_by_code = {l.lease_id: l for l in leases if l.lease_id}
-        del leases
-        gc.collect()
-
-        contracts_dict = {c.code: c for c in contracts}
-        partners_dict = {p.crm_code: p for p in partners}
-        items_dict = {i.stock_code_id: i for i in items}
-        statuses_dict = {s.name: s for s in statuses}
         currencies_dict = {c.code: c for c in currencies}
 
         update_progress = 0
@@ -65,9 +51,27 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 break
             update_objs = []
             create_objs = []
+            # 1. codes
+            lease_codes = [r.OperationProjectId for r in records]
+            contract_codes = [r.ContractHeaderCode for r in records]
+            partner_codes = [r.Vendor for r in records]
+            item_codes = [r.Project for r in records]
+            status_codes = [r.SubStatuteName for r in records]
+            # 2. querysets
+            leases = Lease.objects.select_related().filter(lease_id__in=lease_codes)
+            contracts = Contract.objects.select_related().filter(code__in=contract_codes)
+            partners = Partner.objects.select_related().filter(crm_code__in=partner_codes)
+            items = Item.objects.select_related().filter(stock_code_id__in=item_codes)
+            statuses = Status.objects.select_related().filter(name__in=status_codes)
+            # 3. dicts
+            lease_dict = {l.lease_id: l for l in leases}
+            contracts_dict = {c.code: c for c in contracts}
+            partners_dict = {p.crm_code: p for p in partners}
+            items_dict = {i.stock_code_id: i for i in items}
+            statuses_dict = {s.name: s for s in statuses}
             for index,data in enumerate(records):
                 if str(data.OperationProjectId):
-                    obj = (lease_by_code.get(str(data.OperationProjectId)))
+                    obj = (lease_dict.get(str(data.OperationProjectId)))
                 else:
                     obj = None
 
@@ -156,8 +160,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Lease.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
-        del lease_by_code
-        gc.collect()
+
         print(f"Toplam {update_progress} kira planı güncellendi.")
         print(f"Toplam {create_progress} kira planı oluşturuldu.")
         print("--------")

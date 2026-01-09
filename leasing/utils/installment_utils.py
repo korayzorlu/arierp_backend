@@ -57,9 +57,9 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
             create_objs = []
             lease_codes = [r.OperationProjectId for r in records]
             installment_ids = [r.OperationPaymentId for r in records]
-            leases = Lease.objects.filter(lease_id__in=lease_codes)
+            leases = Lease.objects.select_related().filter(lease_id__in=lease_codes)
             leases_dict = {l.lease_id: l for l in leases}
-            installments = Installment.objects.filter(installment_id__in=installment_ids)
+            installments = Installment.objects.select_related().filter(installment_id__in=installment_ids)
             installments_dict = {i.installment_id: i for i in installments}
             for index,data in enumerate(records):
                 if str(data.OperationProjectId):
