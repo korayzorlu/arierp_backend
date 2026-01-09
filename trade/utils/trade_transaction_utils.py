@@ -28,16 +28,16 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
         cursor.fast_executemany = True
 
         # trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
-        partners = Partner.objects.select_related().filter(company__id=int(company))
-        leases = Lease.objects.select_related().all()
+        # partners = Partner.objects.select_related().filter(company__id=int(company))
+        # leases = Lease.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
 
         # trade_transaction_by_crm = {t.trade_transaction_id: t for t in trade_transactions if t.trade_transaction_id}
         # del trade_transactions
         # gc.collect()
 
-        partners_dict = {p.crm_code: p for p in partners}
-        leases_dict = {l.lease_id: l for l in leases}
+        # partners_dict = {p.crm_code: p for p in partners}
+        # leases_dict = {l.lease_id: l for l in leases}
         currencies_dict = {c.code: c for c in currencies}
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
@@ -49,10 +49,22 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                 break
             update_objs = []
             create_objs = []
+            # 1. codes
+            trade_transaction_codes = [r.TrnId for r in records]
+            partner_codes = [r.CustomerId for r in records]
+            lease_codes = [r.TrnOprLeasingOperationPrjId for r in records]
+            # 2. querysets
+            trade_transactions = TradeTransaction.objects.select_related().filter(trade_transaction_id__in=trade_transaction_codes,company__id=int(company))
+            partners = Partner.objects.select_related().filter(crm_code__in=partner_codes,company__id=int(company))
+            leases = Lease.objects.select_related().filter(lease_id__in=lease_codes,company__id=int(company))
+            # 3. dicts
+            trade_transactions_dict = {tt.trade_transaction_id: tt for tt in trade_transactions}
+            partners_dict = {p.crm_code: p for p in partners}
+            leases_dict = {l.lease_id: l for l in leases}
             for index,data in enumerate(records):
                 if str(data.TrnId):
-                    # obj = (trade_transaction_by_crm.get(str(data.TrnId)))
-                    obj = TradeTransaction.objects.select_related().filter(company__id=int(company), trade_transaction_id=str(data.TrnId)).first()
+                    obj = (trade_transactions_dict.get(str(data.TrnId)))
+                   # obj = TradeTransaction.objects.select_related().filter(company__id=int(company), trade_transaction_id=str(data.TrnId)).first()
                 else:
                     obj = None
 
