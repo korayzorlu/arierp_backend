@@ -9,8 +9,7 @@ SELECT OperationPaymentId,
     PrincipalDisplay,
     Balance,
     InterestDisplay,
-    PaymentTypeId,
-    OperationPaymentId
+    PaymentTypeId
 FROM LopPaymentList
 ORDER BY
     OperationPaymentId DESC
