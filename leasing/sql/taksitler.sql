@@ -9,6 +9,7 @@ SELECT OperationPaymentId,
     PrincipalDisplay,
     Balance,
     InterestDisplay,
-    PaymentTypeId
+    PaymentTypeId,
+    OperationPaymentId
 FROM LopPaymentList
 --WHERE OperationProjectId = '22590'

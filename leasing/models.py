@@ -147,6 +147,7 @@ class Installment(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="installments")
 
+    installment_id = models.CharField(_("Installment ID"), max_length=25, null=True, blank=True)
     lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_installments")
     payment_date = models.DateField(_("Payment Date"), blank=True, null=True)
     vat = models.DecimalField(_("Vat"), default = Decimal("0.00"), max_digits=5, decimal_places=2)

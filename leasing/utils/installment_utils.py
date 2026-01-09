@@ -34,15 +34,15 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
 
         # Installment.objects.select_related().filter(sequency = 0).delete()
 
-        installments = Installment.objects.select_related("lease").filter(company__id=int(company))
-        leases = Lease.objects.select_related().filter(company__id=int(company))
+        # installments = Installment.objects.select_related("lease").filter(company__id=int(company))
+        # leases = Lease.objects.select_related().filter(company__id=int(company))
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id}
-        del installments
-        gc.collect()
+        # installment_by_code = {(i.lease.lease_id, i.sequency): i for i in installments if i.lease.lease_id}
+        # del installments
+        # gc.collect()
 
-        leases_dict = {l.lease_id: l for l in leases}
+        # leases_dict = {l.lease_id: l for l in leases}
 
         # installments_zeros = Installment.objects.select_related().filter(sequency = 0)
         # installments_zeros.delete()
@@ -55,13 +55,21 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
                 break
             update_objs = []
             create_objs = []
+            lease_codes = [r.OperationProjectId for r in records]
+            installment_ids = [r.OperationPaymentId for r in records]
+            leases = Lease.objects.filter(lease_id__in=lease_codes)
+            leases_dict = {l.lease_id: l for l in leases}
+            installments = Installment.objects.filter(installment_id__in=installment_ids)
+            installments_dict = {i.installment_id: i for i in installments}
             for index,data in enumerate(records):
                 if str(data.OperationProjectId):
-                    obj = (installment_by_code.get((str(data.OperationProjectId),int(data.SequenceNo))))
+                    # obj = (installment_by_code.get((str(data.OperationProjectId),int(data.SequenceNo))))
+                    obj = (installments_dict.get(str(data.OperationPaymentId)))
                 else:
                     obj = None
 
                 if obj:
+                    obj.installment_id = str(data.OperationPaymentId) or ""
                     obj.lease = leases_dict.get(str(data.OperationProjectId))
                     obj.payment_date = data.PaymentDate.date() if data.PaymentDate else None
                     obj.vat = safe_decimal(data.VATRate)
@@ -78,6 +86,7 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
                 else:
                     create_objs.append(Installment(
                         company = company_obj,
+                        installment_id = str(data.OperationPaymentId) or "",
                         lease = leases_dict.get(str(data.OperationProjectId)),
                         payment_date = data.PaymentDate.date() if data.PaymentDate else None,
                         vat = safe_decimal(data.VATRate),
