@@ -143,12 +143,12 @@ class BDDKHesaplarList(ModelViewSet, QueryListAPIView):
 
         result = []
         for idx, code in enumerate(account_codes, start=1):
-            total = objs.filter(Q(account_code__startswith=code)).aggregate(Sum('total_debit'))['total_debit__sum'] or Decimal('0.00')
+            total = objs.filter(Q(account_code__startswith=code)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
             result.append({
-            'id': idx,
-            'account_code': code,
-            'total': total,
-            'currency': 'TRY',
+                'id': idx,
+                'account_code': code,
+                'total': total,
+                'currency': 'TRY',
             })
 
         return Response(result)
@@ -181,28 +181,223 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
 
         row_names = [
             {
-                'title': 'I. NAKİT, NAKİT BENZERLERİ ve MERKEZ BANKASI',
+                'title': {'text': 'AKTİF KALEMLER', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'I. NAKİT, NAKİT BENZERLERİ ve MERKEZ BANKASI', 'font_weight': 'bold'},
                 'tps': ['010.00.1.00','022'],
                 'yps': ['023'],
+            },
+            {
+                'title': {'text': 'II. GERÇEĞE UYGUN DEĞER FARKI KÂR/ZARARA YANSITILAN FİNANSAL VARLIKLAR (Net)', 'font_weight': 'bold'},
+                'tps': ['030.02.0.00','030.19.0.00','038.00.0.00'],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'III. TÜREV FİNANSAL VARLIKLAR', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'IV. GERÇEĞE UYGUN DEĞER FARKI DİĞER KAPSAMLI GELİRE YANSITILAN FİNANSAL VARLIKLAR (Net)  ', 'font_weight': 'bold'},
+                'tps': ['032.02.0.00','038.01.0.00','032.90.0.0001','032.90.0.0002','032.90.0.0003'],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'V. İTFA EDİLMİŞ MALİYETİ İLE ÖLÇÜLEN FİNANSAL VARLIKLAR (Net)', 'font_weight': 'bold'},
+                'tps': ['150.00','154.02.1','154.02.2','154.02.3','150.02','150.01','154.03.4','222.99.2','222.01.3','170','176','180'],
+                'yps': ['151.00','151.02.1','155.02.1','155.02.2','155.02.3','151.01','151.98','155.03.4','223.98','223.99.1','223.99.2','223.01.3','171','177','181'],
+            },
+            {
+                'title': {'text': '5.1 Faktoring Alacakları', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.1.1 İskontolu Faktoring Alacakları (Net)', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.1.2 Diğer Faktoring Alacakları', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.2 Tasarruf Finansman Alacakları', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.2.1 Tasarruf Fon Havuzundan ', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.2.2 Özkaynaklardan', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.3 Finansman Kredileri', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.3.1 Tüketici Kredileri', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.3.2 Kredi Kartları', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.3.3 Taksitli Ticari Krediler', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.4 Kiralama İşlemleri (Net)', 'font_weight': 'normal'},
+                'tps': ['150.00','154.02.1','154.02.2','154.02.3','150.02','150.01','154.03.4'],
+                'yps': ['151.00','151.02.1','155.02.1','155.02.2','155.02.3','151.01','151.98','155.03.4'],
+            },
+            {
+                'title': {'text': '5.4.1 Finansal Kiralama Alacakları', 'font_weight': 'normal'},
+                'tps': ['150.00','154.02.1','154.02.2','154.02.3'],
+                'yps': ['151.00','151.02.1','155.02.1','155.02.2','155.02.3'],
+            },
+            {
+                'title': {'text': '5.4.2 Faaliyet Kiralaması Alacakları', 'font_weight': 'normal'},
+                'tps': ['150.02'],
+                'yps': [],
+            },
+            {
+                'title': {'text': '5.4.3 Kazanılmamış Gelirler (-)', 'font_weight': 'normal'},
+                'tps': ['150.01','154.03.4'],
+                'yps': ['151.01','151.98','155.03.4'],
+            },
+            {
+                'title': {'text': '5.5 İtfa Edilmiş Maliyeti İle Ölçülen Diğer Finansal Varlıklar', 'font_weight': 'normal'},
+                'tps': ['222.99.2','222.01.3'],
+                'yps': ['223.98','223.99.1','223.99.2','223.01.3'],
+            },
+            {
+                'title': {'text': '5.6 Takipteki Alacaklar', 'font_weight': 'normal'},
+                'tps': ['170','176'],
+                'yps': ['171','177'],
+            },
+            {
+                'title': {'text': '5.7 Beklenen Zarar Karşılıkları/Özel Karşılıklar (-)', 'font_weight': 'normal'},
+                'tps': ['180'],
+                'yps': ['181'],
+            },
+            {
+                'title': {'text': 'VI. ORTAKLIK YATIRIMLARI', 'font_weight': 'bold'},
+                'tps': ['246'],
+                'yps': [],
+            },
+            {
+                'title': {'text': '6.1 İştirakler (Net)', 'font_weight': 'normal'},
+                'tps': ['246'],
+                'yps': [],
+            },
+            {
+                'title': {'text': '6.2 Bağlı Ortaklıklar (Net)', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '6.3 Birlikte Kontrol Edilen Ortaklıklar (İş Ortaklıkları) (Net)  ', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'VII. MADDİ DURAN VARLIKLAR (Net) ', 'font_weight': 'bold'},
+                'tps': ['250','252','254','256.00','256.01','256.02','256.08'],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'VIII. MADDİ OLMAYAN DURAN VARLIKLAR (Net)', 'font_weight': 'bold'},
+                'tps': ['258','256.07'],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'IX. YATIRIM AMAÇLI GAYRİMENKULLER (Net)', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'X. CARİ DÖNEM VERGİ VARLIĞI', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'X. CARİ DÖNEM VERGİ VARLIĞI', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'XII. DİĞER AKTİFLER  ', 'font_weight': 'bold'},
+                'tps': ['226','228','278','280.01','260.01','260.04','280.00','260.00','260.03','280.99'],
+                'yps': ['227','229','279','281.98','281.00','281.99'],
+            },
+            {
+                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
             },
         ]
 
         result = []
         for idx, row_name in enumerate(row_names, start=1):
-            tp = Decimal('0.00')
-            yp = Decimal('0.00')
-            for t in row_name['tps']:
-                tp += objs.filter(Q(account_code__startswith=t)).aggregate(Sum('total_debit'))['total_debit__sum'] or Decimal('0.00')
-            for y in row_name['yps']:
-                yp += objs.filter(Q(account_code__startswith=y)).aggregate(Sum('total_debit'))['total_debit__sum'] or Decimal('0.00')
+            if row_name['title']['text'] == 'AKTİF KALEMLER':
+                sira_no = ''
+                tp = ''
+                yp = ''
+                toplam = ''
+                bos = True
+            else:
+                sira_no = idx - 1
+
+                tp = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                for t in row_name['tps']:
+                    tp += objs.filter(Q(account_code__startswith=t)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+                for y in row_name['yps']:
+                    yp += objs.filter(Q(account_code__startswith=y)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+                tp = tp / Decimal('1000.00')
+                yp = yp / Decimal('1000.00')
+                toplam = tp + yp
+                bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
             result.append({
-            'id': idx,
-            'sira_no': idx,
-            'sira_adi': row_name['title'],
-            'tp': tp/Decimal('1000.00'),
-            'yp': yp/Decimal('1000.00'),
-            'toplam': ( tp + yp ) / Decimal('1000.00'),
-            'currency': 'TRY',
+                'id': sira_no,
+                'sira_no': sira_no,
+                'sira_adi': row_name['title'],
+                'tp': tp,
+                'yp': yp,
+                'toplam': toplam,
+                'bos': bos,
             })
 
         return Response(result)
