@@ -252,7 +252,7 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
 def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
     try:
         objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),overdue_amount__gt=0,is_last_project=True,currency__code__in=['TRY'])
-        tufe_rate = TufeRate.objects.select_related().order_by('-date').first()
+        tufe_rate_last = TufeRate.objects.select_related().filter(date__lte=date.today()).order_by("-date").first()
 
         update_progress = 0
 
@@ -264,8 +264,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 lease=obj,
                 payment_date__lte=date.today()
             )
-
-            tufe_rate_last = TufeRate.objects.select_related().filter(date__lte=date.today()).order_by("-date").first()
+            
             end_karsiligi_toplam = Decimal('0.00')
             for installment in installments:
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=installment.payment_date).order_by("-date").first()
