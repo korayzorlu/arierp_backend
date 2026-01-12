@@ -182,19 +182,24 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
         row_names = [
             {
                 'title': 'I. NAKİT, NAKİT BENZERLERİ ve MERKEZ BANKASI',
-                'tp': Decimal('0.00'),
-                'yp': Decimal('0.00'),
+                'tps': ['010.00.1.00','022'],
+                'yps': ['023'],
             },
         ]
 
         result = []
         for idx, row_name in enumerate(row_names, start=1):
-            total = objs.filter(Q(account_code__startswith=row_name)).aggregate(Sum('total_debit'))['total_debit__sum'] or Decimal('0.00')
+            tp = Decimal('0.00')
+            yp = Decimal('0.00')
+            for t in row_name['tps']:
+                tp += objs.filter(Q(account_code__startswith=t)).aggregate(Sum('total_debit'))['total_debit__sum'] or Decimal('0.00')
+            for y in row_name['yps']:
+                yp += objs.filter(Q(account_code__startswith=y)).aggregate(Sum('total_debit'))['total_debit__sum'] or Decimal('0.00')
             result.append({
             'id': idx,
             'sira_no': idx,
             'sira_adi': row_name['title'],
-            'tp': row_name['tp'],
+            'tp': tp,
             'yp': row_name['yp'],
             'toplam': row_name['tp'] + row_name['yp'],
             'currency': 'TRY',
