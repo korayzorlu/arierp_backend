@@ -118,7 +118,12 @@ class TrialBalanceTransactionList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company","trial_balance","trial_balance__currency"]
         
         queryset = TrialBalanceTransaction.objects.select_related(*custom_related_fields).filter(
-            Q(company=active_company.company if active_company else None) 
+            Q(company=active_company.company if active_company else None) &
+            ~Q(transaction_text__icontains='YIL AÇMA') &
+            ~Q(transaction_text__icontains='Yıl Acma') &
+            ~Q(transaction_text__icontains='Yıl Açma') &
+            ~Q(transaction_text__icontains='YIL KAPAMA') &
+            ~Q(transaction_text__icontains='Yıl Kapama')
         ).distinct("transaction_id")
 
         query = self.request.query_params.get('search[value]', None)

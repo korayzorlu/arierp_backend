@@ -180,7 +180,11 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
         )
 
         row_names = [
-            'I. NAKİT, NAKİT BENZERLERİ ve MERKEZ BANKASI',
+            {
+                'title': 'I. NAKİT, NAKİT BENZERLERİ ve MERKEZ BANKASI',
+                'tp': Decimal('0.00'),
+                'yp': Decimal('0.00'),
+            },
         ]
 
         result = []
@@ -189,10 +193,10 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
             result.append({
             'id': idx,
             'sira_no': idx,
-            'sira_adi': row_name,
-            'tp': row_name,
-            'yp': row_name,
-            'toplam': row_name,
+            'sira_adi': row_name['title'],
+            'tp': row_name['tp'],
+            'yp': row_name['yp'],
+            'toplam': row_name['tp'] + row_name['yp'],
             'currency': 'TRY',
             })
 
