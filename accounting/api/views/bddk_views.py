@@ -200,8 +200,8 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
             'sira_no': idx,
             'sira_adi': row_name['title'],
             'tp': tp,
-            'yp': row_name['yp'],
-            'toplam': row_name['tp'] + row_name['yp'],
+            'yp': yp,
+            'toplam': tp + yp,
             'currency': 'TRY',
             })
 
