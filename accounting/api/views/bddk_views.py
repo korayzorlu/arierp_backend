@@ -201,7 +201,7 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
             'sira_adi': row_name['title'],
             'tp': tp/Decimal('1000.00'),
             'yp': yp/Decimal('1000.00'),
-            'toplam': tp + yp,
+            'toplam': ( tp + yp ) / Decimal('1000.00'),
             'currency': 'TRY',
             })
 
