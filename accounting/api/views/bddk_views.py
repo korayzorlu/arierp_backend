@@ -329,47 +329,102 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 'title': {'text': 'IX. YATIRIM AMAÇLI GAYRİMENKULLER (Net)', 'font_weight': 'bold'},
                 'tps': [],
                 'yps': [],
-            },
+            },-
             {
                 'title': {'text': 'X. CARİ DÖNEM VERGİ VARLIĞI', 'font_weight': 'bold'},
                 'tps': [],
                 'yps': [],
             },
             {
-                'title': {'text': 'X. CARİ DÖNEM VERGİ VARLIĞI', 'font_weight': 'bold'},
+                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞ', 'font_weight': 'bold'},
                 'tps': [],
                 'yps': [],
             },
             {
-                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
-                'tps': [],
-                'yps': [],
-            },
-            {
-                'title': {'text': 'XII. DİĞER AKTİFLER  ', 'font_weight': 'bold'},
+                'title': {'text': 'XII. DİĞER AKTİFLER', 'font_weight': 'bold'},
                 'tps': ['226','228','278','280.01','260.01','260.04','280.00','260.00','260.03','280.99'],
                 'yps': ['227','229','279','281.98','281.00','281.99'],
             },
             {
-                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'title': {'text': 'ARA TOPLAM', 'font_weight': 'bold'},
+                'tps': ['010.00.1.00','022','030.02.0.00','030.19.0.00','038.00.0.00','032.02.0.00','038.01.0.00','032.90.0.0001','032.90.0.0002','032.90.0.0003','150.00','154.02.1','154.02.2','154.02.3','150.02','150.01','154.03.4','222.99.2','222.01.3','170','176','180','246','250','252','254','256.00','256.01','256.02','256.08','258','256.07','226','228','278','280.01','260.01','260.04','280.00','260.00','260.03','280.99'],
+                'yps': ['023','151.00','151.02.1','155.02.1','155.02.2','155.02.3','151.01','151.98','155.03.4','223.98','223.99.1','223.99.2','223.01.3','171','177','181','227','229','279','281.98','281.00','281.99'],
+            },
+            {
+                'title': {'text': 'XIII. SATIŞ AMAÇLI ELDE TUTULAN VE DURDURULAN FAALİYETLERE İLİŞKİN VARLIKLAR (Net)', 'font_weight': 'bold'},
+                'tps': ['238'],
+                'yps': [],
+            },
+            {
+                'title': {'text': '13.1 Satış Amaçlı ', 'font_weight': 'normal'},
+                'tps': ['238'],
+                'yps': [],
+            },
+            {
+                'title': {'text': '13.2 Durdurulan Faaliyetlere İlişkin', 'font_weight': 'normal'},
                 'tps': [],
                 'yps': [],
             },
             {
-                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'title': {'text': 'PASİF KALEMLER', 'font_weight': 'bold'},
                 'tps': [],
                 'yps': [],
             },
             {
-                'title': {'text': 'XI. ERTELENMİŞ VERGİ VARLIĞI ', 'font_weight': 'bold'},
+                'title': {'text': 'I. ALINAN KREDİLER', 'font_weight': 'bold'},
+                'tps': ['342','360.00.1','361.00.1'],
+                'yps': ['343'],
+            },
+            {
+                'title': {'text': 'II. FAKTORİNG BORÇLARI', 'font_weight': 'bold'},
                 'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'III. TASARRUF FON HAVUZUNDAN BORÇLAR', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'IV. KİRALAMA İŞLEMLERİNDEN BORÇLAR', 'font_weight': 'bold'},
+                'tps': ['352.00'],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'V. İHRAÇ EDİLEN MENKUL KIYMETLER (Net)', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'VI. GERÇEĞE UYGUN DEĞER FARKI KAR ZARARA YANSITILAN FİNANSAL YÜKÜMLÜLÜKLER', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'VII. TÜREV FİNANSAL YÜKÜMLÜLÜKLER', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': 'VIII. KARŞILIKLAR', 'font_weight': 'bold'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '8.1 Yeniden Yapılanma Karşılığı', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '8.2 Çalışan Hakları Yükümlülüğü Karşılığı', 'font_weight': 'normal'},
+                'tps': ['350.01','350.03'],
                 'yps': [],
             },
         ]
 
         result = []
         for idx, row_name in enumerate(row_names, start=1):
-            if row_name['title']['text'] == 'AKTİF KALEMLER':
+            if row_name['title']['text'] == 'AKTİF KALEMLER' or row_name['title']['text'] == 'PASİF KALEMLER':
                 sira_no = ''
                 tp = ''
                 yp = ''
