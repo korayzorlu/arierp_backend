@@ -6,6 +6,7 @@ from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 
 import re
+import time
 
 from partners.models import Partner
 
@@ -173,3 +174,4 @@ def check_third_person_in_partners():
             obj.save()
             send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
 
+        time.sleep(1)   
