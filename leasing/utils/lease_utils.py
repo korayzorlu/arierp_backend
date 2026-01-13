@@ -289,7 +289,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=trade_transaction.due_date).order_by("-date").first()
                 if trade_transaction.amount_type == '0':  # Tahsilat
                     end_karsiligi_tahsilat_toplam += (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
-                elif transaction.amount_type == '1' and (transaction.document_no == '' or transaction.document_no is None):
+                elif trade_transaction.amount_type == '1' and (trade_transaction.document_no == '' or trade_transaction.document_no is None):
                     end_karsiligi_tahsilat_toplam -= (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
 
             fark = end_karsiligi_toplam - end_karsiligi_tahsilat_toplam
