@@ -100,6 +100,8 @@ class Lease(models.Model):
     tufe_endeks = models.DecimalField(_("Tüfe Endeks"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     tufe_ana_endeks = models.DecimalField(_("Tüfe Ana Endeks"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     tufe_tahsilat_endeks = models.DecimalField(_("Tüfe Tahsilat Endeks"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufe_odenmesi_gereken = models.DecimalField(_("Tüfe Ödenmesi Gereken"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    tufe_odenen = models.DecimalField(_("Tüfe Ödenen"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     tufe_fark = models.DecimalField(_("Tüfe Fark"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     tufe_reel_fark = models.DecimalField(_("Tüfe Reel Fark"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 

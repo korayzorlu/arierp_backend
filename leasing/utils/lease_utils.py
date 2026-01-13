@@ -294,6 +294,8 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
 
             fark = end_karsiligi_toplam - end_karsiligi_tahsilat_toplam
 
+            obj.tufe_odenmesi_gereken = end_karsiligi_toplam
+            obj.tufe_odenen = end_karsiligi_tahsilat_toplam
             obj.tufe_fark = fark
 
             update_objs.append(obj)
@@ -301,6 +303,8 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
         if update_objs:
             Lease.objects.bulk_update(update_objs, [
                 "tufe_fark",
+                "tufe_odenmesi_gereken",
+                "tufe_odenen"
             ])
 
         print(f"Toplam {update_progress} kira planı tüfe kayıpları güncellendi.")
