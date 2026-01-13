@@ -215,7 +215,7 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 exchange_rate = exchange_rates_dict.get(transaction.due_date.date())
                 if transaction.amount_type == '0':  # Tahsilat
                     exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
-                else:  # İade veya diğer işlemler
+                elif transaction.amount_type == '1' and (transaction.document_no == '' or transaction.document_no is None):  # İade veya diğer işlemler
                     exchanged_amount_paid_to_date -= transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
 
             kur_kaybi_yuzde = Decimal('0.00')
@@ -289,7 +289,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=trade_transaction.due_date).order_by("-date").first()
                 if trade_transaction.amount_type == '0':  # Tahsilat
                     end_karsiligi_tahsilat_toplam += (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
-                else:
+                elif transaction.amount_type == '1' and (transaction.document_no == '' or transaction.document_no is None):
                     end_karsiligi_tahsilat_toplam -= (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
 
             fark = end_karsiligi_toplam - end_karsiligi_tahsilat_toplam
