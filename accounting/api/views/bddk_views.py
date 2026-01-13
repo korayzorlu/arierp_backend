@@ -420,6 +420,16 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 'tps': ['350.01','350.03'],
                 'yps': [],
             },
+            {
+                'title': {'text': '8.3 Genel Karşılıklar', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
+            {
+                'title': {'text': '8.4 Diğer Karşılıklar', 'font_weight': 'normal'},
+                'tps': [],
+                'yps': [],
+            },
         ]
 
         result = []

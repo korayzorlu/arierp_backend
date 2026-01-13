@@ -12,6 +12,7 @@ from collections import defaultdict
 
 from .models import *
 from partners.models import Partner
+from .utils.third_person_utils import check_third_person_in_partners
 
 @shared_task()
 def fetch_black_list_partners(company):
@@ -67,3 +68,7 @@ def update_ignored_partners(company):
                 print(f"Yasaklı müşteri algılandı: {obj.tc_vkn_no} - {obj.name}")
         
     print(f"{old_obj_count} objects updated for partners.")
+
+@shared_task()
+def update_ignored_partners(company):
+    check_third_person_in_partners()
