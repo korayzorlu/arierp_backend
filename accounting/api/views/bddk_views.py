@@ -329,7 +329,7 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 'title': {'text': 'IX. YATIRIM AMAÇLI GAYRİMENKULLER (Net)', 'font_weight': 'bold'},
                 'tps': [],
                 'yps': [],
-            },-
+            },
             {
                 'title': {'text': 'X. CARİ DÖNEM VERGİ VARLIĞI', 'font_weight': 'bold'},
                 'tps': [],
