@@ -4,6 +4,7 @@ from django.conf import settings
 from contracts.models import *
 from leasing.models import *
 from accounting.tasks import fetch_trial_balances
+from compliance.tasks import check_third_person_in_partnerss
 
 import pandas as pd
 import json
@@ -27,6 +28,6 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        fetch_trial_balances.delay(company)
+        check_third_person_in_partnerss.delay(company)
         
         print("done!")

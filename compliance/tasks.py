@@ -70,5 +70,5 @@ def update_ignored_partners(company):
     print(f"{old_obj_count} objects updated for partners.")
 
 @shared_task()
-def update_ignored_partners(company):
+def check_third_person_in_partnerss(company):
     check_third_person_in_partners()
