@@ -273,7 +273,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             end_karsiligi_toplam = Decimal('0.00')
             for installment in installments:
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=installment.payment_date).order_by("-date").first()
-                end_karsiligi_toplam += (installment.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
+                end_karsiligi_toplam += (installment.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate and tufe_rate != 0 else Decimal('1.00'))
 
             ana_kod = obj.contract.code.split('/')[0] if obj.contract and obj.contract.code else None
 
@@ -288,7 +288,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             for trade_transaction in trade_transactions:
                 tufe_rate = TufeRate.objects.select_related().filter(date__lte=trade_transaction.due_date).order_by("-date").first()
                 if trade_transaction.amount_type == '0':  # Tahsilat
-                    end_karsiligi_tahsilat_toplam += (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
+                    end_karsiligi_tahsilat_toplam += (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate and tufe_rate != 0 else Decimal('1.00'))
                 elif trade_transaction.amount_type == '1' and (trade_transaction.document_no == '' or trade_transaction.document_no is None):
                     end_karsiligi_tahsilat_toplam -= (trade_transaction.amount * (tufe_rate_last.value if tufe_rate_last else Decimal('1.00'))) / (tufe_rate.value if tufe_rate else Decimal('1.00'))
 
