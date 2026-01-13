@@ -168,7 +168,7 @@ def check_third_person_in_partners():
         Q(status = 'need_document')
     )
     for obj in objs:
-        if Partner.objects.select_related().filter(tc_vkn_no=obj.tc_vkn_no).exists():
+        if Partner.objects.select_related().filter(Q(tc_vkn_no=obj.tc_vkn_no) | Q(vat_no=obj.tc_vkn_no)).exists():
             obj.status = 'cleared'
             obj.save()
             send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
