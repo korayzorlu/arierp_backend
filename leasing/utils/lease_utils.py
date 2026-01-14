@@ -173,7 +173,7 @@ def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
 
 def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
     try:
-        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),is_last_project=True,currency__code__in=['TRY'])
+        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),overdue_amount__gt=0,is_last_project=True,currency__code__in=['TRY'])
         #objs = objs.filter(contract__code__in = ['57796','57797','57798'])
         exchange_rates = ExchangeRate.objects.select_related("target_currency").filter(target_currency__code="USD")
 
@@ -255,7 +255,7 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
 
 def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
     try:
-        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),is_last_project=True,currency__code__in=['TRY'])
+        objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),overdue_amount__gt=0,is_last_project=True,currency__code__in=['TRY'])
         #objs = objs.filter(contract__code__in = ['57796','57797','57798'])
         tufe_rate_last = TufeRate.objects.select_related().filter(date__lte=date.today()).order_by("-date").first()
 

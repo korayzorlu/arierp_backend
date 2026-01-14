@@ -155,8 +155,8 @@ class TufeExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=0) &
-            Q(overdue_amount__gt=100) &
+            # Q(overdue_days__gt=0) &
+            # Q(overdue_amount__gt=100) &
             Q(is_last_project=True) &
             Q(is_tufe=False) &
             Q(currency__code__in=['TRY']) &
@@ -167,7 +167,7 @@ class TufeExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(contract__partner__types__contains=["virman"])
         ).annotate(
             tufe_amount=(F('tufeli_geciken') - F('overdue_amount')),
-            tufe_rate=((F('tufeli_geciken') / F('overdue_amount')) - Value(Decimal('1.00'))) * Value(Decimal('100.00'))
+            tufe_rate=((F('tufeli_geciken') / F('overdue_amount') if F('overdue_amount') != 0 else Value(Decimal('1.00'))) - Value(Decimal('1.00'))) * Value(Decimal('100.00'))
         )
 
         query = self.request.query_params.get('search[value]', None)

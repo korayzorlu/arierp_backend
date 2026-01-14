@@ -121,7 +121,7 @@ class TufeExchangedLeaseListSerializer(serializers.Serializer):
         return obj.tufeli_geciken - obj.overdue_amount
     
     def get_tufe_rate(self, obj):
-        return ((obj.tufeli_geciken / obj.overdue_amount) - Decimal('1.00')) * Decimal('100.00')
+        return ((obj.tufeli_geciken / obj.overdue_amount if obj.overdue_amount != 0 else Decimal('1.00')) - Decimal('1.00')) * Decimal('100.00')
     
     # def get_exchanged_amounts(self, obj):
     #     installments = Installment.objects.select_related().filter(
