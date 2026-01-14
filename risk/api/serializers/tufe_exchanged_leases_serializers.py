@@ -118,7 +118,7 @@ class TufeExchangedLeaseListSerializer(serializers.Serializer):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     def get_tufe_amount(self, obj):
-        return obj.tufeli_geciken - obj.overdue_amount
+        return obj.tufe_fark - obj.overdue_amount
     
     def get_tufe_rate(self, obj):
         return ((obj.tufeli_geciken / obj.overdue_amount if obj.overdue_amount != 0 else Decimal('1.00')) - Decimal('1.00')) * Decimal('100.00')

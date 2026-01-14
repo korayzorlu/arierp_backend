@@ -306,4 +306,34 @@ def bl222af_row_names():
                     'tps': [],
                     'yps': [],
                 },
+                {
+                    'type': 'PASİF KALEMLER',
+                    'title': {'text': 'IX. CARİ VERGİ BORCU', 'font_weight': 'bold'},
+                    'tps': ['350.04'],
+                    'yps': [],
+                },
+                {
+                    'type': 'PASİF KALEMLER',
+                    'title': {'text': 'X. ERTELENMİŞ VERGİ BORCU', 'font_weight': 'bold'},
+                    'tps': ['262','386'],
+                    'yps': [],
+                },
+                {
+                    'type': 'PASİF KALEMLER',
+                    'title': {'text': 'XI. SERMAYE BENZERİ BORÇLANMA ARAÇLARI', 'font_weight': 'bold'},
+                    'tps': [],
+                    'yps': [],
+                },
+                {
+                    'type': 'PASİF KALEMLER',
+                    'title': {'text': 'XII. DİĞER YÜKÜMLÜLÜKLER', 'font_weight': 'bold'},
+                    'tps': ['360.09.1','390','392','380'],
+                    'yps': ['361.09.1','361.99','391','393'],
+                },
+                {
+                    'type': 'PASİF KALEMLER',
+                    'title': {'text': 'ARA TOPLAM', 'font_weight': 'bold'},
+                    'tps': ['342','360.00.1','361.00.1','352.00','350.04','262','386','360.09.1','390','392','380'],
+                    'yps': ['343','361.09.1','361.99','391','393'],
+                },
             ]

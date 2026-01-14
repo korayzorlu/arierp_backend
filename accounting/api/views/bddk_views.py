@@ -188,13 +188,15 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
             if row_name['title']['text'] == 'AKTİF KALEMLER':
                 sira_no = 0
                 tp = ''
-                yp = ''
+                yp_usd = ''
+                yp_eur = ''
                 toplam = ''
                 bos = True
             elif row_name['title']['text'] == 'PASİF KALEMLER':
                 sira_no = 999
                 tp = ''
-                yp = ''
+                yp_usd = ''
+                yp_eur = ''
                 toplam = ''
                 bos = True
             else:
@@ -202,16 +204,19 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 seq += 1
 
                 tp = Decimal('0.00')
-                yp = Decimal('0.00')
+                yp_usd = Decimal('0.00')
+                yp_eur = Decimal('0.00')
 
                 for t in row_name['tps']:
                     tp += objs.filter(Q(account_code__startswith=t)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
                 for y in row_name['yps']:
-                    yp += objs.filter(Q(account_code__startswith=y)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+                    yp_usd += objs.filter(Q(account_code__startswith=y) & Q(currency__code='USD')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+                    yp_eur += objs.filter(Q(account_code__startswith=y) & Q(currency__code='EUR')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
 
                 tp = tp / Decimal('1000.00')
-                yp = yp / Decimal('1000.00')
-                toplam = tp + yp
+                yp_usd = yp_usd / Decimal('1000.00')
+                yp_eur = yp_eur / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
                 bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
             result.append({
                 'type': row_name.get('type', 'value'),
@@ -219,7 +224,8 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 'sira_no': sira_no,
                 'sira_adi': row_name['title'],
                 'tp': tp,
-                'yp': yp,
+                'yp_usd': yp_usd,
+                'yp_eur': yp_eur,
                 'toplam': toplam,
                 'bos': bos,
             })
