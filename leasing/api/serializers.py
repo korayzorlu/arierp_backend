@@ -316,7 +316,7 @@ class BankActivityListSerializer(serializers.Serializer):
         return obj.currency.code if obj.currency else ""
     
     def get_leases(self, obj):
-        bank_activity_leases = BankActivityLease.objects.select_related().filter(
+        bank_activity_leases = BankActivityLease.objects.select_related('contract','currency').prefetch_related('lease__lease_installments').filter(
             Q(bank_activity__uuid = obj.uuid) &
             (
                 Q(lease__lease_status='aktiflestirildi') |
