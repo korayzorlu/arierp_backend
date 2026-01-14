@@ -166,7 +166,7 @@ class TufeExchangedLeaseList(ModelViewSet, QueryListAPIView):
             Q(contract__partner__types__contains=["barter"]) |
             Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            tufe_amount=(F('tufeli_geciken') - F('overdue_amount')),
+            tufe_amount=F('tufe_fark') - (F('overdue_amount')),
             #tufe_rate=((F('tufeli_geciken') / F('overdue_amount') if F('overdue_amount') != 0 else Value(Decimal('1.00'))) - Value(Decimal('1.00'))) * Value(Decimal('100.00'))
             tufe_rate=Case(
                 When(overdue_amount=0, then=Value(0)),
