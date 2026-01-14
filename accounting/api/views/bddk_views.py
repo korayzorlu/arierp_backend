@@ -207,11 +207,24 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 yp_usd = Decimal('0.00')
                 yp_eur = Decimal('0.00')
 
-                for t in row_name['tps']:
-                    tp += objs.filter(Q(account_code__startswith=t)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
-                for y in row_name['yps']:
-                    yp_usd += objs.filter(Q(account_code__startswith=y) & Q(currency__code='USD')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
-                    yp_eur += objs.filter(Q(account_code__startswith=y) & Q(currency__code='EUR')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+                # for t in row_name['tps']:
+                #     tp += objs.filter(Q(account_code__startswith=t)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+                
+                tp_query = Q()
+                for code in row_name['tps']:
+                    tp_query |= Q(account_code__startswith=code)
+                tp = objs.filter(tp_query).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+                # for y in row_name['yps']:
+                #     yp_usd += objs.filter(Q(account_code__startswith=y) & Q(currency__code='USD')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+                #     yp_eur += objs.filter(Q(account_code__startswith=y) & Q(currency__code='EUR')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+
+                yp_query = Q()
+                for code in row_name['yps']:
+                    yp_query |= Q(account_code__startswith=code)
+
+                yp_usd = objs.filter(yp_query, currency__code='USD').aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+                yp_eur = objs.filter(yp_query, currency__code='EUR').aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
 
                 tp = tp / Decimal('1000.00')
                 yp_usd = yp_usd / Decimal('1000.00')
