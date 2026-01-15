@@ -243,4 +243,7 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 'bos': bos,
             })
 
+        page = self.paginate_queryset(result)
+        if page is not None:
+            return self.get_paginated_response(page)
         return Response(result)

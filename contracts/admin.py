@@ -13,6 +13,7 @@ class ContractAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["kof_tan_sozlesmeye_aktarim_tarihi"]
+    autocomplete_fields = ["partner","quotation_obj","vendor"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""

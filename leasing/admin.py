@@ -7,12 +7,12 @@ from .models import Lease,Installment,BankActivity,BankActivityLease
 
 @admin.register(Lease)
 class LeaseAdmin(admin.ModelAdmin):
-    list_display = ["company","partner","lease_id","code","project","activation_date","lease_status","lease_status_update_date"]
+    list_display = ["company","partner","lease_id","code","project","activation_date","notary_public_date","lease_status","lease_status_update_date"]
     list_display_links = ["code"]
-    search_fields = ["company__name","lease_id","code","contract__partner__name","activation_date"]
+    search_fields = ["company__name","lease_id","code","contract__partner__name","activation_date","notary_public_date"]
     list_filter = []
     inlines = []
-    ordering = ["activation_date"]
+    ordering = ["-activation_date"]
     autocomplete_fields = ["contract","vendor","item"]
     
     def company(self,obj):

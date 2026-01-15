@@ -22,6 +22,8 @@ import json
 import pandas as pd
 from decimal import Decimal
 from datetime import datetime
+from docxtpl import DocxTemplate
+import io, zipfile
 
 # Create your views here.
 
@@ -99,6 +101,9 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
         data = json.loads(request.body)
         uuids = data.get('uuids')
 
+        files = []
+        
+
         for uuid in uuids:
             lease = Lease.objects.select_related().filter(uuid = uuid).first()
 
@@ -106,4 +111,31 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                 lease.warning_notice_status = 'kapsamli_ihtar'
                 lease.save()
 
-        return JsonResponse({'message': 'Başarıyla gönderildi!','status':'success'}, status=200)
+                # word işlemleri
+                file_name = lease.contract.code
+                doc = DocxTemplate(f"files/ihtar-{'ticari' if lease.contract.partner.is_commercial else 'tuketici'}.docx")
+                context = {
+                    "tarih": datetime.today().strftime('%d.%m.%Y'),
+                    "isim": lease.contract.partner.name,
+                    "adres": lease.contract.partner.address,
+                    "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+                }
+                doc.render(context)
+
+                files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "warned_risk_partners", "documents",f"{file_name}.docx")
+                doc.save(files_path)
+
+                files.append(files_path)
+
+        # zip işlemleri
+        buffer = io.BytesIO()
+
+        with zipfile.ZipFile(buffer, "w") as zip_file:
+            for path in files:
+                zip_file.write(path, arcname=path.split('/')[-1])
+
+        buffer.seek(0)
+    
+        return FileResponse(buffer)
+
+        # return JsonResponse({'message': 'Başarıyla gönderildi!','status':'success'}, status=200)

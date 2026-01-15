@@ -136,6 +136,7 @@ class Lease(models.Model):
     warning_notice_status = models.CharField(_("Status"), max_length=25, default='ihtar_yok', choices=WARNING_NOTICE_STATUS_CHOICES, blank=True, null=True)
 
     terminated_date = models.DateField(_("Terminated Date"), blank=True, null=True)
+    notary_public_date = models.DateField(_("Notary Public Date"), blank=True, null=True)
 
     transfer_count = models.PositiveIntegerField(_("Transfer Count"), default=0)
 

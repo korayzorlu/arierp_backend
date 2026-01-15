@@ -261,7 +261,7 @@ class ComprehensiveWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000) &
             Q(warning_notice_status='kapsamli_ihtar')
         ).annotate(
@@ -280,7 +280,7 @@ class ComprehensiveWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             Q(partner_contracts__contract_leases__warning_notice_status='kapsamli_ihtar')
         ).annotate(

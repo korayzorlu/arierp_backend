@@ -52,7 +52,8 @@ SELECT
         WHEN lop.IS_PERT_APPROVED = 5 THEN 'Ana Statüyü Kapanmadan Önceki Statüye Alma Talebi'
         ELSE ''
     END AS CurrentRequest,
-    l.MainLopId
+    l.MainLopId,
+    l.NotaryPublicDate
 FROM
     dbo.LeasingOperationProject lop (NOLOCK)
     INNER JOIN dbo.GeneralCurrency gc (NOLOCK) ON lop.CurrencyId = gc.CurrencyId
@@ -65,3 +66,5 @@ FROM
     LEFT OUTER JOIN dbo.FoundationStatuteMenuParent p (NOLOCK) ON lop.LastParentStatuId = p.Id
     LEFT OUTER JOIN FoundationStatuteMenu d (NOLOCK) ON m.DefinitionId = d.DefinitionId AND d.TableName = 'LeasingOperationProject'
     LEFT JOIN LeasingOperationProject l ON lop.OperationProjectId = l.OperationProjectId
+ORDER BY 
+    lop.OperationProjectId DESC;

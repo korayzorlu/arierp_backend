@@ -1,3 +1,3 @@
 SELECT *
 FROM LeasingOperationProject
-WHERE OperationProjectCode = '66665.1.0'
+WHERE OperationProjectCode = '53057.1.0'
