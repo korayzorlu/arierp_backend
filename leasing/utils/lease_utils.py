@@ -26,6 +26,7 @@ from common.models import Currency,ExchangeRate,TufeRate
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from trade.models import TradeTransaction
+from django.utils import timezone
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -89,6 +90,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.contract = contracts_dict.get(str(data.ContractHeaderCode))
                     obj.vendor = partners_dict.get(str(data.Vendor))
                     obj.item = items_dict.get(str(data.Project))
+                    obj.block = str(data.BLOCK_NO) or ""
+                    obj.unit = str(data.FREE_PART_NO) or ""
                     obj.type = str(data.TypeName) or ""
                     obj.vat = safe_decimal(data.VatRate)
                     obj.activation_date = data.ActivationDate.date() if data.ActivationDate else None
@@ -117,6 +120,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         contract = contracts_dict.get(str(data.ContractHeaderCode)),
                         vendor = partners_dict.get(str(data.Vendor)),
                         item = items_dict.get(str(data.Project)),
+                        block = str(data.BLOCK_NO) or "",
+                        unit = str(data.FREE_PART_NO) or "",
                         type = str(data.TypeName) or "",
                         vat = safe_decimal(data.VatRate),
                         activation_date = data.ActivationDate.date() if data.ActivationDate else None,
@@ -144,6 +149,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "contract",
                     "vendor",
                     "item",
+                    "block",
+                    "unit",
                     "type",
                     "vat",
                     "activation_date",
@@ -378,3 +385,19 @@ def fetch_tufe_exchanged_amounts_utilss(company,BATCH_SIZE=1000):
     except Exception as e:
         print(e)
         print(traceback.format_exc())
+
+def get_future_payments(lease_id, from_date=None) -> QuerySet:
+    """
+    Belirtilen tarihten (varsayılan: bugün) itibaren gelecekteki ödemeleri getirir.
+    """
+    if from_date is None:
+        from_date = timezone.now().date()
+
+    lease = Lease.objects.filter(lease_id=lease_id).first()
+
+    if not lease:
+        return Decimal('0.00')
+    
+    total = Installment.objects.select_related("lease").filter(lease=lease, payment_date__gte=from_date).aggregate(total_amount=Sum('amount'))['total_amount'] or Decimal('0.00')
+    
+    return total

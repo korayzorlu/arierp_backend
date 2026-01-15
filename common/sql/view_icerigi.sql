@@ -1,3 +1,3 @@
-SELECT definition AS LopPaymentList
+SELECT definition AS INVENTORYSTOCKCODELISTWITHVAT
 FROM sys.sql_modules
-WHERE object_id = OBJECT_ID('LopPaymentList');
+WHERE object_id = OBJECT_ID('INVENTORYSTOCKCODELISTWITHVAT');

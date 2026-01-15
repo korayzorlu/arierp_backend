@@ -8,3 +8,5 @@ SELECT QuotationHeaderId,
     Vendor,
     Project
 FROM QuotationHeaderLightList
+-- WHERE
+--     QuotationHeaderId = 52275;

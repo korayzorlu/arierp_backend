@@ -53,7 +53,9 @@ SELECT
         ELSE ''
     END AS CurrentRequest,
     l.MainLopId,
-    l.NotaryPublicDate
+    l.NotaryPublicDate,
+    pb.BLOCK_NO,
+    fp.FREE_PART_NO
 FROM
     dbo.LeasingOperationProject lop (NOLOCK)
     INNER JOIN dbo.GeneralCurrency gc (NOLOCK) ON lop.CurrencyId = gc.CurrencyId
@@ -65,6 +67,12 @@ FROM
     LEFT OUTER JOIN FoundationStatuteMenu m (NOLOCK) ON lop.LastSubStatuId = m.DefinitionId AND m.TableName = 'LeasingOperationProject'
     LEFT OUTER JOIN dbo.FoundationStatuteMenuParent p (NOLOCK) ON lop.LastParentStatuId = p.Id
     LEFT OUTER JOIN FoundationStatuteMenu d (NOLOCK) ON m.DefinitionId = d.DefinitionId AND d.TableName = 'LeasingOperationProject'
-    LEFT JOIN LeasingOperationProject l ON lop.OperationProjectId = l.OperationProjectId
+    LEFT JOIN LeasingOperationProject l (NOLOCK) ON lop.OperationProjectId = l.OperationProjectId
+    LEFT JOIN RPR_QUO_ITEM qi (NOLOCK) ON qh.QuotationHeaderId = qi.QUO_HEADER_ID
+    LEFT JOIN RPR_FREE_PART_LIST_FOR_DET fp (NOLOCK) ON qi.FREE_PART_ID = fp.FREE_PART_ID
+    LEFT JOIN RPR_PROJECT_BLOCK_LIST pb (NOLOCK) ON qi.BLOCK_ID = pb.BLOCK_ID
+-- WHERE
+--     lop.OperationProjectId = '98347'
 ORDER BY 
+    pb.BLOCK_NO,
     lop.OperationProjectId DESC;

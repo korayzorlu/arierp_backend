@@ -46,8 +46,8 @@ class LeaseListSerializer(serializers.Serializer):
     partner_special = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
-    block = serializers.SerializerMethodField()
-    unit = serializers.SerializerMethodField()
+    block = serializers.CharField()
+    unit = serializers.CharField()
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -95,11 +95,11 @@ class LeaseListSerializer(serializers.Serializer):
     def get_item(self, obj):
         return obj.item.stock_name if obj.item else ""
     
-    def get_block(self, obj):
-        return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    # def get_block(self, obj):
+    #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
-    def get_unit(self, obj):
-        return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    # def get_unit(self, obj):
+    #     return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     # def get_overdue_days(self, obj):
     #     installments = obj.lease_installments.all()
@@ -146,8 +146,8 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     partner_special = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
-    block = serializers.SerializerMethodField()
-    unit = serializers.SerializerMethodField()
+    block = serializers.CharField()
+    unit = serializers.CharField()
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -199,11 +199,11 @@ class ActiveLeaseListSerializer(serializers.Serializer):
             "name" : obj.item.stock_name if obj.item else "",
         }
     
-    def get_block(self, obj):
-        return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    # def get_block(self, obj):
+    #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
-    def get_unit(self, obj):
-        return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    # def get_unit(self, obj):
+    #     return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     # def get_project_list(self, obj):
     #     projects = Lease.objects.values_list('item__stock_name', flat=True).distinct()

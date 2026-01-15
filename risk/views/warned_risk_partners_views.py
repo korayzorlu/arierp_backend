@@ -16,6 +16,7 @@ from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
 from leasing.models import Lease
+from leasing.utils.lease_utils import get_future_payments
 
 import os
 import json
@@ -114,23 +115,38 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                 # word işlemleri
                 file_name = lease.contract.code
                 doc = DocxTemplate(f"files/ihtar-{'ticari' if lease.contract.partner.is_commercial else 'tuketici'}.docx")
-                # Para formatlama yardımcı fonksiyonu
+         
                 def format_currency(value):
                     return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
                 
+                if lease.contract.partner.is_commercial:
+                    if lease.contract.partner.tc_vkn_no and len(lease.contract.partner.tc_vkn_no) > 0:
+                        tc_vkn_no = lease.contract.partner.tc_vkn_no
+                    elif lease.contract.partner.vat_no and len(lease.contract.partner.vat_no) > 0:
+                        tc_vkn_no = lease.contract.partner.vat_no
+                    else:
+                        tc_vkn_no = ''
+                else:
+                    tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
+
                 gecikme_bakiye = lease.overdue_amount
                 masraf_bakiye = (gecikme_bakiye / 100) * 10
-                toplam_bakiye = gecikme_bakiye + masraf_bakiye
+                toplam_borc_bakiye = gecikme_bakiye + masraf_bakiye
+                gelecek_bakiye = get_future_payments(lease.lease_id)
+                toplam_bakiye = toplam_borc_bakiye + gelecek_bakiye
 
                 context = {
                     "tarih": datetime.today().strftime('%d.%m.%Y'),
                     "isim": lease.contract.partner.name,
+                    "tc_vkn_no": tc_vkn_no,
                     "adres": lease.contract.partner.address,
                     "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
                     "sozlesme_no": lease.contract.code,
                     "gecikme_bakiye": format_currency(gecikme_bakiye),
                     "masraf_bakiye": format_currency(masraf_bakiye),
-                    "toplam_bakiye": format_currency(toplam_bakiye)
+                    "toplam_borc_bakiye": format_currency(toplam_borc_bakiye),
+                    "gelecek_bakiye": format_currency(gelecek_bakiye),
+                    "toplam_bakiye": format_currency(toplam_bakiye),
                 }
                 doc.render(context)
 

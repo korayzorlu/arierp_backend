@@ -334,3 +334,4 @@ def export_warned_risk_partners(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+
