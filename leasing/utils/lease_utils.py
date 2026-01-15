@@ -158,7 +158,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "leasing_type",
                     "application_no",
                     "is_last_project",
-                    "current_request"
+                    "current_request",
                     "notary_public_date",
                 ], batch_size=BATCH_SIZE)
             if create_objs:

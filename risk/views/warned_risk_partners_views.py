@@ -114,11 +114,23 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                 # word işlemleri
                 file_name = lease.contract.code
                 doc = DocxTemplate(f"files/ihtar-{'ticari' if lease.contract.partner.is_commercial else 'tuketici'}.docx")
+                # Para formatlama yardımcı fonksiyonu
+                def format_currency(value):
+                    return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+                
+                gecikme_bakiye = lease.overdue_amount
+                masraf_bakiye = (gecikme_bakiye / 100) * 10
+                toplam_bakiye = gecikme_bakiye + masraf_bakiye
+
                 context = {
                     "tarih": datetime.today().strftime('%d.%m.%Y'),
                     "isim": lease.contract.partner.name,
                     "adres": lease.contract.partner.address,
                     "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+                    "sozlesme_no": lease.contract.code,
+                    "gecikme_bakiye": format_currency(gecikme_bakiye),
+                    "masraf_bakiye": format_currency(masraf_bakiye),
+                    "toplam_bakiye": format_currency(toplam_bakiye)
                 }
                 doc.render(context)
 
