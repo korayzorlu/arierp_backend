@@ -119,7 +119,7 @@ class TufeExchangedLeaseList(ModelViewSet, QueryListAPIView):
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request',
                        'finansman_kurum','bbsn','lease_status_update_date','odenmesi_gereken_yerel','odenmesi_gereken_usd','odenen_yerel','odenen_usd',
                        'geciken_usd','geciken_odenmesi_gereken_usd','kur_kaybi','kur_kaybi_yuzde','tufeli_geciken','tufe_amount','tufe_rate','tufe_fark']
-    ordering = ['-tufe_amount']
+    ordering = ['-tufe_fark']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
