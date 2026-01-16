@@ -100,6 +100,15 @@ class Partner(models.Model):
     next_scan_date = models.DateTimeField(_("Next Scan Date"), blank=True, null=True)
     is_reliable_person = models.BooleanField(default=False)
     is_commercial = models.BooleanField(default=False)
+
+    sgk_job_code = models.CharField(_("SGK Job Code"), max_length=50, blank=True, null=True)
+    is_pep = models.BooleanField(default=False)
+    PEP_DEGREE_CHOICES = (
+        ('1', ('Kendisi')),
+        ('2', ('Birinci Derece Yakını')),
+    )
+    pep_degree = models.CharField(_("Pep Degree"), max_length=25, default='kendisi', choices=PEP_DEGREE_CHOICES, blank=True, null=True)
+    pep_description = models.CharField(_("Pep Description"), max_length=500, blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
