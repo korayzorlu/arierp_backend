@@ -36,6 +36,20 @@ class ScanPartnerListSerializer(serializers.Serializer):
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
     
+class PepPartnerListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    crm_code = serializers.CharField()
+    name = serializers.CharField()
+    tc_vkn_no = serializers.SerializerMethodField()
+    birthday = serializers.DateField()
+    sgk_job_code = serializers.CharField()
+    is_pep = serializers.BooleanField()
+    pep_degree = serializers.CharField()
+    pep_description = serializers.CharField()
+
+    def get_tc_vkn_no(self, obj):
+        return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
+    
 class ThirdPersonListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     companyId = serializers.SerializerMethodField()

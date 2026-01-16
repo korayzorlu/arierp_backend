@@ -6,6 +6,7 @@ from .views import *
 router = routers.DefaultRouter()
 router.register(r'black_list_persons', BlackListPersonList, "black_list_persons_api")
 router.register(r'scan_partners', ScanPartnerList, "scan_partners_api")
+router.register(r'pep_partners', PepPartnerList, "pep_partners_api")
 router.register(r'third_persons', ThirdPersonList, "third_persons_api")
 router.register(r'vpos_third_persons', VPosThirdPersonList, "vpos_third_persons_api")
 

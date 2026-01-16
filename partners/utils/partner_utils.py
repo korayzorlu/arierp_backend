@@ -88,9 +88,9 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.birth_place = data.BirthPlace or ""
                     obj.email = data.Email or ""
                     obj.passport_no = str(data.PassportNo) or ""
-                    obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False,
+                    obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     obj.sgk_job_code = data.SgkJobCode or ""
-                    obj.is_pep = True if data.PepList == "1" else False
+                    obj.is_pep = True if str(data.PepList) == "1" else False
                     obj.pep_degree = str(data.PepListDegree) or ""
                     obj.pep_description = data.PepListDescription or ""
                     update_objs.append(obj)
@@ -122,7 +122,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         email = data.Email or "",
                         types = ["customer"],
                         sgk_job_code = data.SgkJobCode or "",
-                        is_pep = True if data.PepList == "1" else False,
+                        is_pep = True if str(data.PepList) == "1" else False,
                         pep_degree = str(data.PepListDegree) or "",
                         pep_description = data.PepListDescription or "",
                     ))
@@ -150,6 +150,10 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     "email",
                     "passport_no",
                     "is_turkkep",
+                    "sgk_job_code",
+                    "is_pep",
+                    "pep_degree",
+                    "pep_description",
                 ], batch_size=BATCH_SIZE)
                 # print(f"{len(update_objs)} kayıt güncellendi.")
             if create_objs:
@@ -198,6 +202,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
         print("--------")
     except Exception as e:
         print(e)
+        traceback.print_exc()
 
 def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
     try:

@@ -37,6 +37,31 @@ class ScanPartnerFilter(FilterSet):
         model = Partner
         fields = ['uuid']
 
+class PepPartnerFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+    tc_vkn_no = CharFilter(field_name='tc_vkn_no', lookup_expr='icontains')
+    crm_code = CharFilter(field_name='crm_code', lookup_expr='exact')
+    birthday = CharFilter(field_name='birthday', lookup_expr='icontains')
+    sgk_job_code = CharFilter(field_name='sgk_job_code', lookup_expr='icontains')
+    is_pep = CharFilter(method='filter_is_pep')
+    pep_degree = CharFilter(field_name='pep_degree', lookup_expr='exact')
+    pep_description = CharFilter(field_name='pep_description', lookup_expr='icontains')
+
+    class Meta:
+        model = Partner
+        fields = ['uuid']
+
+    def filter_is_pep(self, queryset, is_pep, value):
+        if value == "all":
+            return queryset
+        elif value.lower() == 'true':
+            return queryset.filter(is_pep = True)
+        elif value.lower() == 'false':
+            return queryset.filter(is_pep = False)
+        else:
+            return queryset
+
 class ThirdPersonFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     name = CharFilter(field_name='name', lookup_expr='icontains')

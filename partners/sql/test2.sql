@@ -3,3 +3,4 @@ FROM
     CrmContact
 WHERE
     FullName LIKE '%İSMAİL UÇAR%'
+
