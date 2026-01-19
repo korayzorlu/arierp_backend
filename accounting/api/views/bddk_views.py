@@ -199,6 +199,13 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 yp_eur = ''
                 toplam = ''
                 bos = True
+            elif row_name['title']['text'] == 'NAZIM HESAP KALEMLERİ':
+                sira_no = 9999
+                tp = ''
+                yp_usd = ''
+                yp_eur = ''
+                toplam = ''
+                bos = True
             else:
                 sira_no = seq
                 seq += 1
@@ -231,17 +238,19 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 yp_eur = yp_eur / Decimal('1000.00')
                 toplam = tp + yp_usd + yp_eur
                 bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
-            result.append({
-                'type': row_name.get('type', 'value'),
-                'id': sira_no,
-                'sira_no': sira_no,
-                'sira_adi': row_name['title'],
-                'tp': tp,
-                'yp_usd': yp_usd,
-                'yp_eur': yp_eur,
-                'toplam': toplam,
-                'bos': bos,
-            })
+
+            if len(row_name['tps']) > 0 or len(row_name['yps']) > 0:
+                result.append({
+                    'type': row_name.get('type', 'value'),
+                    'id': sira_no,
+                    'sira_no': sira_no,
+                    'sira_adi': row_name['title'],
+                    'tp': tp,
+                    'yp_usd': yp_usd,
+                    'yp_eur': yp_eur,
+                    'toplam': toplam,
+                    'bos': bos,
+                })
 
         page = self.paginate_queryset(result)
         if page is not None:
