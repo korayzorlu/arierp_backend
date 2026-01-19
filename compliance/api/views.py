@@ -228,7 +228,17 @@ class PepPartnerList(ModelViewSet, QueryListAPIView):
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
-            Q(is_pep=True)
+            Q(is_pep=True) &
+            ~Q(tc_vkn_no__in=[
+                '30784704788',
+                '14587032842',
+                '23914445866',
+                '53818037218',
+                '23522536772',
+                '12256495318',
+                '47458127514',
+                '32797069182'
+            ])
         )
 
         query = self.request.query_params.get('search[value]', None)

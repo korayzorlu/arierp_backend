@@ -45,7 +45,7 @@ class MenuItemListSerializer(serializers.Serializer):
             # ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Uyum", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Yasaklı Listesi", "icon" : "paid", "route" : "/black-list-persons"},
-                {"type" : "item", "class" : ["default"], "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-partners"},
+                {"type" : "item", "class" : ["default"], "label" : "Kam. Nüfuz Sahibi Kişiler", "icon" : "paid", "route" : "/pep-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Kişiler", "icon" : "paid", "route" : "/third-persons"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
