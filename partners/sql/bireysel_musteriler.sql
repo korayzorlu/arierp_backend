@@ -6,6 +6,7 @@ SELECT TOP 100 PERCENT
     dbo.CrmContact.FullName AS ContactCompanyName,
     dbo.CrmIndividualCustomer.IndividualCustomerCode AS CustomerCode,
     dbo.CrmIndividualCustomer.IndividualCustomerId,
+    SalariedTitle,
     CASE ISNULL(dbo.CrmTaxDepartment.TaxDepartmentName,'')
          WHEN '' THEN td.TaxDepartmentName
          ELSE dbo.CrmTaxDepartment.TaxDepartmentName

@@ -47,6 +47,7 @@ class PepPartnerListSerializer(serializers.Serializer):
     is_pep = serializers.BooleanField()
     pep_degree = serializers.SerializerMethodField()
     pep_description = serializers.CharField()
+    salaried_title = serializers.CharField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no

@@ -102,6 +102,7 @@ class Partner(models.Model):
     is_commercial = models.BooleanField(default=False)
 
     sgk_job_code = models.CharField(_("SGK Job Code"), max_length=50, blank=True, null=True)
+    salaried_title = models.CharField(_("Salaried Title"), max_length=250, blank=True, null=True)
     is_pep = models.BooleanField(default=False)
     PEP_DEGREE_CHOICES = (
         ('1', ('Kendisi')),

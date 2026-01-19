@@ -93,6 +93,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.is_pep = True if str(data.PepList) == "1" else False
                     obj.pep_degree = str(data.PepListDegree) or ""
                     obj.pep_description = data.PepListDescription or ""
+                    obj.salaried_title = data.SalariedTitle or ""
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -125,6 +126,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         is_pep = True if str(data.PepList) == "1" else False,
                         pep_degree = str(data.PepListDegree) or "",
                         pep_description = data.PepListDescription or "",
+                        salaried_title = data.SalariedTitle or "",
                     ))
                     create_progress += 1
 
@@ -154,6 +156,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     "is_pep",
                     "pep_degree",
                     "pep_description",
+                    "salaried_title",
                 ], batch_size=BATCH_SIZE)
                 # print(f"{len(update_objs)} kayıt güncellendi.")
             if create_objs:

@@ -1,6 +1,5 @@
-SELECT TOP 1000 *
+SELECT *
 FROM
-    CrmContact
+    CrmIndividualCustomer
 WHERE
-    FullName LIKE '%İSMAİL UÇAR%'
-
+    IndividualCustomerId = '22310'
