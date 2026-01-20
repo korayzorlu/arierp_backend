@@ -18,6 +18,7 @@ router.register(r'trial_balance_transactions', TrialBalanceTransactionList, "tri
 router.register(r'under_reviews', UnderReviewList, "under_reviews_api")
 router.register(r'bddk_hesaplar', BDDKHesaplarList, "bddk_hesaplar_api")
 router.register(r'bl222af', Bl222afList, "bl222af_api")
+router.register(r'kz222af', Kz222afList, "kz222af_api")
 
 urlpatterns = [
     path('',include(router.urls)),

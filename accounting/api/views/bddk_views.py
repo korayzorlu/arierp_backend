@@ -20,7 +20,7 @@ from datetime import date
 
 from ..serializers.trial_balances_serializers import *
 from ..filters.trial_balances_filters import *
-from ...utils.bddk_utils import bl222af_row_names
+from ...utils.bddk_utils import bl222af_row_names, kz222af_row_names
 
 
 class QueryListAPIView(generics.ListAPIView):
@@ -190,21 +190,27 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 tp = ''
                 yp_usd = ''
                 yp_eur = ''
+                yp = ''
                 toplam = ''
+                toplam_tp = ''
                 bos = True
             elif row_name['title']['text'] == 'PASİF KALEMLER':
                 sira_no = 999
                 tp = ''
                 yp_usd = ''
                 yp_eur = ''
+                yp = ''
                 toplam = ''
+                toplam_tp = ''
                 bos = True
             elif row_name['title']['text'] == 'NAZIM HESAP KALEMLERİ':
                 sira_no = 9999
                 tp = ''
                 yp_usd = ''
                 yp_eur = ''
+                yp = ''
                 toplam = ''
+                toplam_tp = ''
                 bos = True
             else:
                 sira_no = seq
@@ -213,6 +219,7 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 tp = Decimal('0.00')
                 yp_usd = Decimal('0.00')
                 yp_eur = Decimal('0.00')
+                yp = Decimal('0.00')
 
                 # for t in row_name['tps']:
                 #     tp += objs.filter(Q(account_code__startswith=t)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
@@ -230,13 +237,24 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                 for code in row_name['yps']:
                     yp_query |= Q(account_code__startswith=code)
 
-                yp_usd = objs.filter(yp_query, currency__code='USD').aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
-                yp_eur = objs.filter(yp_query, currency__code='EUR').aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+                yp_usd_agg = objs.filter(yp_query, currency__code='USD').aggregate(
+                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                )
+                yp_eur_agg = objs.filter(yp_query, currency__code='EUR').aggregate(
+                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                )
+
+                yp_usd = yp_usd_agg['total_sum'] or Decimal('0.00')
+                yp_eur = yp_eur_agg['total_sum'] or Decimal('0.00')
+                yp = (yp_usd_agg['total_sum_tp'] or Decimal('0.00')) + (yp_eur_agg['total_sum_tp'] or Decimal('0.00'))
 
                 tp = tp / Decimal('1000.00')
                 yp_usd = yp_usd / Decimal('1000.00')
                 yp_eur = yp_eur / Decimal('1000.00')
                 toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + yp
                 bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
 
             if len(row_name['tps']) > 0 or len(row_name['yps']) > 0:
@@ -249,6 +267,129 @@ class Bl222afList(ModelViewSet, QueryListAPIView):
                     'yp_usd': yp_usd,
                     'yp_eur': yp_eur,
                     'toplam': toplam,
+                    'toplam_tp': toplam_tp,
+                    'bos': bos,
+                })
+
+        page = self.paginate_queryset(result)
+        if page is not None:
+            return self.get_paginated_response(page)
+        return Response(result)
+    
+class Kz222afList(ModelViewSet, QueryListAPIView):
+    serializer_class = TrialBalanceListSerializer
+    filterset_class = TrialBalanceFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        objs = TrialBalance.objects.select_related().filter(
+            Q(company=active_company.company if active_company else None)
+        )
+
+        row_names = kz222af_row_names()
+
+        result = []
+        seq = 1
+        for idx, row_name in enumerate(row_names, start=1):
+            if row_name['title']['text'] == 'AKTİF KALEMLER':
+                sira_no = 0
+                tp = ''
+                yp_usd = ''
+                yp_eur = ''
+                yp = ''
+                toplam = ''
+                toplam_tp = ''
+                bos = True
+            elif row_name['title']['text'] == 'PASİF KALEMLER':
+                sira_no = 999
+                tp = ''
+                yp_usd = ''
+                yp_eur = ''
+                yp = ''
+                toplam = ''
+                toplam_tp = ''
+                bos = True
+            elif row_name['title']['text'] == 'NAZIM HESAP KALEMLERİ':
+                sira_no = 9999
+                tp = ''
+                yp_usd = ''
+                yp_eur = ''
+                yp = ''
+                toplam = ''
+                toplam_tp = ''
+                bos = True
+            else:
+                sira_no = seq
+                seq += 1
+
+                tp = Decimal('0.00')
+                yp_usd = Decimal('0.00')
+                yp_eur = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                # for t in row_name['tps']:
+                #     tp += objs.filter(Q(account_code__startswith=t)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+                
+                tp_query = Q()
+                for code in row_name['tps']:
+                    tp_query |= Q(account_code__startswith=code)
+                tp = objs.filter(tp_query).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+                # for y in row_name['yps']:
+                #     yp_usd += objs.filter(Q(account_code__startswith=y) & Q(currency__code='USD')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+                #     yp_eur += objs.filter(Q(account_code__startswith=y) & Q(currency__code='EUR')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
+
+                yp_query = Q()
+                for code in row_name['yps']:
+                    yp_query |= Q(account_code__startswith=code)
+
+                yp_usd_agg = objs.filter(yp_query, currency__code='USD').aggregate(
+                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                )
+                yp_eur_agg = objs.filter(yp_query, currency__code='EUR').aggregate(
+                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                )
+
+                yp_usd = yp_usd_agg['total_sum'] or Decimal('0.00')
+                yp_eur = yp_eur_agg['total_sum'] or Decimal('0.00')
+                yp = (yp_usd_agg['total_sum_tp'] or Decimal('0.00')) + (yp_eur_agg['total_sum_tp'] or Decimal('0.00'))
+
+                tp = tp / Decimal('1000.00')
+                yp_usd = yp_usd / Decimal('1000.00')
+                yp_eur = yp_eur / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + yp
+                bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
+
+            if len(row_name['tps']) > 0 or len(row_name['yps']) > 0:
+                result.append({
+                    'type': row_name.get('type', 'value'),
+                    'id': sira_no,
+                    'sira_no': sira_no,
+                    'sira_adi': row_name['title'],
+                    'tp': tp,
+                    'yp_usd': yp_usd,
+                    'yp_eur': yp_eur,
+                    'toplam': toplam,
+                    'toplam_tp': toplam_tp,
                     'bos': bos,
                 })
 

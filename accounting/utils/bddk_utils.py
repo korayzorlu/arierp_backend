@@ -613,3 +613,21 @@ def bl222af_row_names():
                     'yps': ['925','935','979','983'],
                 },
             ]
+
+def kz222af_row_names():
+    return  [
+                {
+                    'type': '',
+                    'title': {'text': 'I. ESAS FAALİYET GELİRLERİ', 'font_weight': 'bold'},
+                    'tps': ['548','582','704'],
+                    'yps': ['549','583','705'],
+                },
+                # arada boş satırlar var
+                {
+                    'type': '',
+                    'title': {'text': ' KİRALAMA GELİRLERİ', 'font_weight': 'bold'},
+                    'tps': ['548','582','704'],
+                    'yps': ['549','583','705'],
+                },
+                
+    ]
