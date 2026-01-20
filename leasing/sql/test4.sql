@@ -1,121 +1,175 @@
-SELECT
-    lop.OperationProjectId AS OPERATIONPROJECTID,
-    lop.ContractProjectId AS CONTRACTPROJECTID,
-    lop.OperationProjectCode AS OPERATIONPROJECTCODE,
-    lop.TransferCode AS TRANSFERCODE,
-    cust.CustomerName AS CUSTOMERNAME,
-    cust.CustomerCode AS CUSTOMERCODE,
-    (
-        SELECT ActivationDate
-        FROM dbo.LeasingOperationProject AS lop2
-        WHERE lop2.OperationProjectId = lop.SourceLOPId
-    ) AS ACTIVATIONDATE,
-    pay.InvoiceDate AS INVOICEDATE,
-    pay.VatRate AS VATRATE,
-    lop.CurrencyId AS CURRENCYID,
-    curr.CurrencyCode AS CURRENCYCODE,
-    pay.TotalPaymentAmount AS TOTALPAYMENTAMOUNT,
-    pay.VatAmount AS VATAMOUNT,
-    ISNULL(inspol.InsuranceAmount, 0) AS InsuranceAmount,
-    pay.TotalPaymentAmount + ISNULL(inspol.InsuranceAmount, 0) AS TotalPaymentAmountWithInsurance,
-    pay.PaymentTypeId AS PAYMENTTYPEID,
-    pay.Payment AS PAYMENT,
-    pay.PrincipalDisplay AS PRINCIPALDISPLAY,
-    pay.InterestDisplay AS INTERESTDISPLAY,
-    lop.PaymentCount AS PAYMENTCOUNT,
-    lop.QuotationUserId AS QUOTATIONUSERID,
-    users.Name + users.Surname AS NAMESURNAME,
-    lop.CustomerBaseCost AS CUSTOMERBASECOST,
-    lop.CustomerId AS CUSTOMERID,
-    lop.ContractHeaderId AS CONTRACTHEADERID,
-    ch.ContractHeaderCode AS MAINCONTRACTHEADERID,
-    pay.PaymentDate AS PAYMENTDATE,
-    lop.RiskIncludingTypeId AS RISKINCLUDINGTYPEID,
-    riskType.TypeName AS TYPENAME,
-    cust.Companygroupid AS COMPANYGROUPID,
-    CASE WHEN ISNULL(lop.FloatingId, 0) <> 0 THEN 1 ELSE 2 END AS INTERESTTYPEID,
-    CASE WHEN ISNULL(lop.FloatingId, 0) <> 0 THEN 'FLOAT' ELSE 'FIXED' END AS INTERESTTYPENAME,
-    lop.OperationBaseIRR,
-    lop.LastSubStatuId AS SubStatuteId,
-    qptd.TypeName AS LeaseType,
-    statMenu.DefinitionName,
-    pay.SequenceNo,
-    lop.NotaryPublicDate AS NOTARYPUBLICDATE,
-    cust.PART_ID,
-    (
-        SELECT TOP 1 ql.StockCodeId
-        FROM dbo.QuotationLine ql
-        WHERE ql.QuotationHeaderId = lop.QuotationHeaderId
-            AND ISNULL(ql.ItemType, 0) = 0
-            AND ISNULL(ql.Deleted, 0) = 0
-    ) AS PROJECT_ID,
-    (
-        SELECT TOP 1 isc.StockName
-        FROM InventoryStockCodeListForComboLight isc
-        WHERE isc.StockCodeId = (
-            SELECT TOP 1 ql.StockCodeId
-            FROM dbo.QuotationLine ql
-            WHERE ql.QuotationHeaderId = lop.QuotationHeaderId
-                AND ISNULL(ql.ItemType, 0) = 0
-                AND ISNULL(ql.Deleted, 0) = 0
+CREATE procedure [dbo].[LeasePaymentDueDateOver_CollectionAmount]    @DueDate as varchar(10),    @SourceLopIds as varchar(max)    as    begin   declare @sql as varchar(max) =''    set @sql ='   SELECT  lop.SourceLOPId,lop.OperationProjectId,   ISNULL(( SELECT                           ABS(SUM(TrnAmount * ( ( TrnAmountType * 2 ) - 1 ))) totalAmount             FROM      TradeTransaction (NOLOCK)                       LEFT JOIN LOPRevisionJoinMainList lopStatu ( NOLOCK ) ON TrnOprLeasingOperationPrjId = lopStatu.SourceLOPId AND TrnOprCustomerId = lopStatu.CustomerId                       LEFT JOIN JournalSetupEnums e1 ( NOLOCK ) ON TrnPostingType = e1.JrnStpEnumValue AND e1.JrnStpEnumType = 50             WHERE     TrnPostingType NOT IN ( 111, 112, 113, 114, 115, 126, 121 )                       AND NOT ( lopStatu.RiskIncludingTypeId = 8                                 AND TrnPostingType = 121                               )                       AND TrnDummy = 0                       AND ( CASE WHEN TrnIsDeleted = 4                                      AND lopStatu.RiskIncludingTypeId = 7                                       AND ( SELECT    lll.RiskIncludingTypeId                                             FROM      LeasingOperationProject lll ( NOLOCK )                                             WHERE     lll.OperationProjectId = lopStatu.OperationProjectId                                           ) = 6 THEN 3                                  WHEN TrnIsDeleted = 4                                       AND lopStatu.RiskIncludingTypeId = 6                                       AND ( SELECT TOP 1                                                       lll.RiskIncludingTypeId                                             FROM      LOPRevisionJoinListOutPlan lll ( NOLOCK )                                             WHERE     ( lll.OperationProjectId = TrnOprRevisionLOPId                                                         AND TrnOprRevisionLOPId <> 0                                                       )                                                       OR ( lll.OperationProjectId = TrnOprLeasingOperationPrjId                                                            AND TrnOprRevisionLOPId = 0                                                          )                                           ) = 7 THEN 3                                  ELSE TrnIsDeleted                             END NOT IN ( 6, 4, 2, 8, 1 )                             OR ( TrnIsDeleted = 6                                  AND TrnAmount <> 0                                )                           )                       AND ( TrnAmount <> 0                             OR TrnAmountLocal <> 0                             OR TrnAmountCompany <> 0                           )                       AND TrnLayer = 1                       AND TrnLedgerStatu = 50                       AND NOT ( TrnIsDeleted = 2                                 AND TrnPostingType > 120                                 AND TrnPostingType < 110                               )                       AND TrnPostingType not in (461,420)                       AND TrnPostingGroupId = 1                       AND TrnAccountType = 11                       AND TrnDueDate <= ''' + @DueDate + '''                       AND TrnOprLeasingOperationPrjId = lop.SourceLOPId           ), 0)           +ISNULL(( SELECT                         ABS(SUM(TrnAmount * ( ( TrnAmountType * 2 ) - 1 ))) totalAmount               FROM    TradeTransaction (NOLOCK)                       LEFT JOIN LOPRevisionJoinMainList lopStatu ( NOLOCK ) ON TrnOprLeasingOperationPrjId = lopStatu.SourceLOPId                                                                 AND TrnOprCustomerId = lopStatu.CustomerId                       LEFT JOIN JournalSetupEnums e1 ( NOLOCK ) ON TrnPostingType = e1.JrnStpEnumValue AND e1.JrnStpEnumType = 50               WHERE   TrnPostingType NOT IN ( 111, 112, 113, 114, 115, 126, 121 )                       AND TrnDummy = 0                       AND ( CASE WHEN TrnIsDeleted = 4                                       AND lopStatu.RiskIncludingTypeId = 7                                       AND ( SELECT    lll.RiskIncludingTypeId                                             FROM      LeasingOperationProject lll ( NOLOCK )                                             WHERE     lll.OperationProjectId = lopStatu.OperationProjectId                                           ) = 6 THEN 3                                  WHEN TrnIsDeleted = 4                                       AND lopStatu.RiskIncludingTypeId = 6                                       AND ( SELECT TOP 1                                                       lll.RiskIncludingTypeId                                             FROM      LOPRevisionJoinListOutPlan lll ( NOLOCK )                                             WHERE     ( lll.OperationProjectId = TrnOprRevisionLOPId                                                         AND TrnOprRevisionLOPId <> 0                                                       )                                                       OR ( lll.OperationProjectId = TrnOprLeasingOperationPrjId                                                            AND TrnOprRevisionLOPId = 0                                                          )                                           ) = 7 THEN 3                                  ELSE TrnIsDeleted                             END NOT IN ( 6, 4, 2, 8, 1 )                             OR ( TrnIsDeleted = 6                                  AND TrnAmount <> 0                                )                           )                       AND ( TrnAmount <> 0                             OR TrnAmountLocal <> 0                             OR TrnAmountCompany <> 0                           )                       AND TrnLayer = 1                       AND TrnLedgerStatu = 50                       AND NOT ( TrnIsDeleted = 2                                 AND TrnPostingType > 120                                 AND TrnPostingType < 110                               )                       AND TrnPostingType not in (461,420)                       AND TrnPostingGroupId = 1                       AND TrnAccountType = 11                       AND TrnDueDate <= ''' + @DueDate + ''' AND TrnOprLeasingOperationPrjId IN (                       SELECT  SourceLOPId                       FROM    LeasingOperationProject (NOLOCK)                       WHERE   OperationTypeId = 2                               AND OperationProjectId IN (                               SELECT  loprev.PreviousLOPId                               FROM    dbo.LeasingOperationProject loprev ( NOLOCK )                               WHERE   ( ( lop.IsLOPRevision = 2                                           AND loprev.IsLOPRevision = 1                                         )                                         OR loprev.IsLOPRevision = 2                                       )                                       AND loprev.OperationTypeId = 2                                       AND loprev.RiskIncludingTypeId <> 3                                       AND loprev.MainLopId = lop.MainLopId ) )             ),0) totalAmount   FROM    dbo.LeasingOperationProject  lop (nolock)   LEFT JOIN dbo.LeasingOperationProject oldLop (nolock) ON oldlop.OperationProjectId= lop.MainLopId   where    lop.operationprojectId not in (SELECT OperationProjectId FROM dbo.LeasingOperationProject (nolock) WHERE ContractHeaderId IN  ( SELECT ContractHeaderId FROM dbo.LeasingOperationProject (nolock) WHERE RiskIncludingTypeId <> 3  AND OperationTypeId=2) AND OperationTypeId =1) AND lop.RiskIncludingTypeId NOT IN (3,9)  ' if @SourceLopIds<>'' 	set @sql = @sql + ' and lop.SourceLOPId in (' + @SourceLopIds+ ')'      print (@sql)      EXEC (@sql)   end   
+-- Kodun okunabilirliği için sadece biçimlendirme yapıldı, mantık değiştirilmedi.
+
+CREATE PROCEDURE [dbo].[LeasePaymentDueDateOver_CollectionAmount]
+    @DueDate AS VARCHAR(10),
+    @SourceLopIds AS VARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @sql AS VARCHAR(MAX) = ''
+
+    SET @sql = '
+    SELECT
+        lop.SourceLOPId,
+        lop.OperationProjectId,
+        ISNULL((
+            SELECT ABS(SUM(TrnAmount * ((TrnAmountType * 2) - 1))) totalAmount
+            FROM TradeTransaction (NOLOCK)
+                LEFT JOIN LOPRevisionJoinMainList lopStatu (NOLOCK)
+                    ON TrnOprLeasingOperationPrjId = lopStatu.SourceLOPId
+                    AND TrnOprCustomerId = lopStatu.CustomerId
+                LEFT JOIN JournalSetupEnums e1 (NOLOCK)
+                    ON TrnPostingType = e1.JrnStpEnumValue
+                    AND e1.JrnStpEnumType = 50
+            WHERE
+                TrnPostingType NOT IN (111, 112, 113, 114, 115, 126, 121)
+                AND NOT (
+                    lopStatu.RiskIncludingTypeId = 8
+                    AND TrnPostingType = 121
+                )
+                AND TrnDummy = 0
+                AND (
+                    CASE
+                        WHEN TrnIsDeleted = 4
+                            AND lopStatu.RiskIncludingTypeId = 7
+                            AND (
+                                SELECT lll.RiskIncludingTypeId
+                                FROM LeasingOperationProject lll (NOLOCK)
+                                WHERE lll.OperationProjectId = lopStatu.OperationProjectId
+                            ) = 6 THEN 3
+                        WHEN TrnIsDeleted = 4
+                            AND lopStatu.RiskIncludingTypeId = 6
+                            AND (
+                                SELECT TOP 1 lll.RiskIncludingTypeId
+                                FROM LOPRevisionJoinListOutPlan lll (NOLOCK)
+                                WHERE (
+                                    lll.OperationProjectId = TrnOprRevisionLOPId
+                                    AND TrnOprRevisionLOPId <> 0
+                                )
+                                OR (
+                                    lll.OperationProjectId = TrnOprLeasingOperationPrjId
+                                    AND TrnOprRevisionLOPId = 0
+                                )
+                            ) = 7 THEN 3
+                        ELSE TrnIsDeleted
+                    END NOT IN (6, 4, 2, 8, 1)
+                    OR (TrnIsDeleted = 6 AND TrnAmount <> 0)
+                )
+                AND (
+                    TrnAmount <> 0
+                    OR TrnAmountLocal <> 0
+                    OR TrnAmountCompany <> 0
+                )
+                AND TrnLayer = 1
+                AND TrnLedgerStatu = 50
+                AND NOT (
+                    TrnIsDeleted = 2
+                    AND TrnPostingType > 120
+                    AND TrnPostingType < 110
+                )
+                AND TrnPostingType NOT IN (461, 420)
+                AND TrnPostingGroupId = 1
+                AND TrnAccountType = 11
+                AND TrnDueDate <= ''' + @DueDate + '''
+                AND TrnOprLeasingOperationPrjId = lop.SourceLOPId
+        ), 0)
+        +
+        ISNULL((
+            SELECT ABS(SUM(TrnAmount * ((TrnAmountType * 2) - 1))) totalAmount
+            FROM TradeTransaction (NOLOCK)
+                LEFT JOIN LOPRevisionJoinMainList lopStatu (NOLOCK)
+                    ON TrnOprLeasingOperationPrjId = lopStatu.SourceLOPId
+                    AND TrnOprCustomerId = lopStatu.CustomerId
+                LEFT JOIN JournalSetupEnums e1 (NOLOCK)
+                    ON TrnPostingType = e1.JrnStpEnumValue
+                    AND e1.JrnStpEnumType = 50
+            WHERE
+                TrnPostingType NOT IN (111, 112, 113, 114, 115, 126, 121)
+                AND TrnDummy = 0
+                AND (
+                    CASE
+                        WHEN TrnIsDeleted = 4
+                            AND lopStatu.RiskIncludingTypeId = 7
+                            AND (
+                                SELECT lll.RiskIncludingTypeId
+                                FROM LeasingOperationProject lll (NOLOCK)
+                                WHERE lll.OperationProjectId = lopStatu.OperationProjectId
+                            ) = 6 THEN 3
+                        WHEN TrnIsDeleted = 4
+                            AND lopStatu.RiskIncludingTypeId = 6
+                            AND (
+                                SELECT TOP 1 lll.RiskIncludingTypeId
+                                FROM LOPRevisionJoinListOutPlan lll (NOLOCK)
+                                WHERE (
+                                    lll.OperationProjectId = TrnOprRevisionLOPId
+                                    AND TrnOprRevisionLOPId <> 0
+                                )
+                                OR (
+                                    lll.OperationProjectId = TrnOprLeasingOperationPrjId
+                                    AND TrnOprRevisionLOPId = 0
+                                )
+                            ) = 7 THEN 3
+                        ELSE TrnIsDeleted
+                    END NOT IN (6, 4, 2, 8, 1)
+                    OR (TrnIsDeleted = 6 AND TrnAmount <> 0)
+                )
+                AND (
+                    TrnAmount <> 0
+                    OR TrnAmountLocal <> 0
+                    OR TrnAmountCompany <> 0
+                )
+                AND TrnLayer = 1
+                AND TrnLedgerStatu = 50
+                AND NOT (
+                    TrnIsDeleted = 2
+                    AND TrnPostingType > 120
+                    AND TrnPostingType < 110
+                )
+                AND TrnPostingType NOT IN (461, 420)
+                AND TrnPostingGroupId = 1
+                AND TrnAccountType = 11
+                AND TrnDueDate <= ''' + @DueDate + '''
+                AND TrnOprLeasingOperationPrjId IN (
+                    SELECT SourceLOPId
+                    FROM LeasingOperationProject (NOLOCK)
+                    WHERE OperationTypeId = 2
+                        AND OperationProjectId IN (
+                            SELECT loprev.PreviousLOPId
+                            FROM dbo.LeasingOperationProject loprev (NOLOCK)
+                            WHERE (
+                                (
+                                    lop.IsLOPRevision = 2
+                                    AND loprev.IsLOPRevision = 1
+                                )
+                                OR loprev.IsLOPRevision = 2
+                            )
+                            AND loprev.OperationTypeId = 2
+                            AND loprev.RiskIncludingTypeId <> 3
+                            AND loprev.MainLopId = lop.MainLopId
+                        )
+                )
+        ), 0) totalAmount
+    FROM dbo.LeasingOperationProject lop (NOLOCK)
+        LEFT JOIN dbo.LeasingOperationProject oldLop (NOLOCK)
+            ON oldlop.OperationProjectId = lop.MainLopId
+    WHERE
+        lop.operationprojectId NOT IN (
+            SELECT OperationProjectId
+            FROM dbo.LeasingOperationProject (NOLOCK)
+            WHERE ContractHeaderId IN (
+                SELECT ContractHeaderId
+                FROM dbo.LeasingOperationProject (NOLOCK)
+                WHERE RiskIncludingTypeId <> 3
+                    AND OperationTypeId = 2
+            )
+            AND OperationTypeId = 1
         )
-    ) AS PROJECT_NAME,
-    (
-        SELECT TOP 1 ql.VendorId
-        FROM dbo.QuotationLine ql
-        WHERE ql.QuotationHeaderId = lop.QuotationHeaderId
-            AND ISNULL(ql.ItemType, 0) = 0
-            AND ISNULL(ql.Deleted, 0) = 0
-    ) AS VENDOR_ID,
-    (
-        SELECT TOP 1 ccw.CustomerName
-        FROM CrmCustomerWithTypesLight ccw
-        WHERE ccw.CustomerId = (
-            SELECT TOP 1 ql.VendorId
-            FROM dbo.QuotationLine ql
-            WHERE ql.QuotationHeaderId = lop.QuotationHeaderId
-                AND ISNULL(ql.ItemType, 0) = 0
-                AND ISNULL(ql.Deleted, 0) = 0
-        )
-    ) AS VENDOR_NAME,
-    ISNULL(prjBlock.BLOCK_NO, '') AS BLOCK_NO,
-    prjFreePart.FREE_PART_NO,
-    lop.VendorTypeId AS LopVendorTypeId,
-    venType.VendorTypeName,
-    pay.IsCpiCalculated,
-    pay.IsCpiRent,
-    CASE WHEN ISNULL(pay.IsCpiCalculated, 0) = 1 THEN 'E' ELSE 'H' END AS IsCpiCalculated_Text,
-    CASE WHEN ISNULL(pay.IsCpiRent, 0) = 1 THEN 'E' ELSE 'H' END AS IsCpiRent_Text
-FROM
-    dbo.LeasingOperationProject lop
-    INNER JOIN TradeLOPListAddPlaningDebit cont (NOLOCK) ON cont.OperationProjectId = lop.SourceLOPId
-    LEFT JOIN QuotationProjectVendorType venType (NOLOCK) ON venType.VendorTypeId = lop.VendorTypeId
-    LEFT JOIN dbo.ContractHeader ch ON lop.ContractHeaderId = ch.ContractHeaderId
-    LEFT OUTER JOIN dbo.LeasingOperationRiskIncludingType riskType ON lop.RiskIncludingTypeId = riskType.TypeId
-    LEFT OUTER JOIN dbo.FoundationUsers users ON lop.QuotationUserId = users.UserId
-    LEFT OUTER JOIN dbo.GeneralCurrency curr ON lop.CurrencyId = curr.CurrencyId
-    LEFT OUTER JOIN dbo.CrmCustomerWithTypesLight cust ON lop.CustomerId = cust.CustomerId
-    LEFT OUTER JOIN dbo.LeasingOperationPayment pay ON lop.OperationProjectId = pay.OperationProjectId
-    LEFT JOIN QuotationPaymentTypeDefinition qptd ON qptd.TypeId = pay.PaymentTypeId
-    LEFT OUTER JOIN FoundationStatuteMenu statMenu ON statMenu.DefinitionId = lop.LastSubStatuId AND statMenu.TableName = 'LeasingOperationProject'
-    LEFT OUTER JOIN RPR_QUO_ITEM rpritem ON rpritem.QUO_HEADER_ID = lop.QuotationHeaderId
-    LEFT OUTER JOIN dbo.RPR_PROJECT project ON project.PROJECT_ID = rpritem.PROJECT_ID
-    LEFT OUTER JOIN dbo.RPR_PROJECT_BLOCK prjBlock ON prjBlock.BLOCK_ID = rpritem.BLOCK_ID
-    LEFT OUTER JOIN RPR_PROJECT_FREE_PART prjFreePart ON prjFreePart.FREE_PART_ID = rpritem.FREE_PART_ID
-    LEFT OUTER JOIN (
-        SELECT
-            InsurancePolicy.OperationProjectId,
-            InsurancePolicyCollection.DueDate,
-            SUM(InsurancePolicyCollection.Amount) AS InsuranceAmount
-        FROM
-            InsurancePolicy
-            INNER JOIN InsurancePolicyCollection ON InsurancePolicyCollection.PolicyId = InsurancePolicy.PolicyId
-        WHERE
-            ISNULL(InsurancePolicy.IsInvoicedWithLease, 0) = 1
-            AND ISNULL(InsurancePolicy.IsDeleted, 0) = 0
-        GROUP BY
-            InsurancePolicy.OperationProjectId,
-            InsurancePolicyCollection.DueDate
-    ) inspol ON inspol.OperationProjectId = lop.OperationProjectId AND inspol.DueDate = pay.PaymentDate
-WHERE
-    pay.TotalPaymentAmount > 0
+        AND lop.RiskIncludingTypeId NOT IN (3, 9)
+    '
+
+    IF @SourceLopIds <> ''
+        SET @sql = @sql + ' AND lop.SourceLOPId IN (' + @SourceLopIds + ')'
+
+    PRINT (@sql)
+    EXEC (@sql)
+END
