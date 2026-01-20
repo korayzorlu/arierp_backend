@@ -413,3 +413,51 @@ def get_future_payments(lease_id, from_date=None) -> QuerySet:
     total = Installment.objects.select_related("lease").filter(lease=lease, payment_date__gte=from_date).aggregate(total_amount=Sum('amount'))['total_amount'] or Decimal('0.00')
     
     return total
+
+def get_lease_delay(company,lease_id,as_of=None):
+    as_of = as_of or timezone.now().date()
+
+    lease = Lease.objects.select_related().filter(company__id=int(company),lease_id=lease_id).first()
+
+    if lease:
+        installments = (
+            lease.lease_installments
+            .filter(payment_date__lt=as_of)
+            .order_by("sequency")
+            .values_list("payment_date", "amount")
+        )
+
+        due_total = Decimal('0.00')
+        installment_list = []
+        for payment_date, amount in installments:
+            due_total += amount
+            installment_list.append((payment_date, amount))
+
+        ana_kod = lease.contract.code.split('/')[0] if lease.contract and lease.contract.code else None
+
+        trade_transactions = TradeTransaction.objects.select_related("lease").filter(
+            lease__contract__code__startswith=ana_kod,
+            posting_group_name='Kira',
+            due_date__lt=as_of
+        )
+
+        paid_total = Decimal('0.00')
+        for transaction in trade_transactions:
+            if transaction.amount_type == '0':
+                paid_total += transaction.amount
+            elif transaction.amount_type == '1' and (transaction.document_no == '' or transaction.document_no is None):
+                paid_total -= transaction.amount
+
+        remaining_paid = paid_total
+
+        first_overdue_due_date = None
+        for payment_date, amount in installment_list:
+            if remaining_paid >= amount:
+                remaining_paid -= amount
+            else:
+                first_overdue_due_date = payment_date
+                break
+        
+        delay = (as_of - first_overdue_due_date).days if first_overdue_due_date else 0
+
+        print(f"ödenmesi gereken: {due_total} - ödenen: {paid_total} - gecikme: {due_total - paid_total} - gecikme gün sayısı: {delay}")
