@@ -66,6 +66,8 @@ class TradeTransaction(models.Model):
     local_amount = models.DecimalField(_("Local Amount"), default = 0.00, max_digits=14, decimal_places=2)
     exchange_rate = models.DecimalField(_("Exchange Rate"), default = 0.00, max_digits=14, decimal_places=2)
 
+    delete_status = models.CharField(_("Delete Status"), max_length=25, null=True, blank=True)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

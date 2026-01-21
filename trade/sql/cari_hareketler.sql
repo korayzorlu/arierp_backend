@@ -1,4 +1,4 @@
-SELECT TOP 10000
+SELECT
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,
@@ -12,7 +12,8 @@ SELECT TOP 10000
     TrnCreateDate,
     TrnAmountType,
     TrnAmount,
-    TrnAmountLocal
+    TrnAmountLocal,
+    TrnIsDeleted
 FROM
     TradeTransaction (NOLOCK)
     LEFT JOIN LOPRevisionJoinMainList lopStatu (NOLOCK)
@@ -78,6 +79,6 @@ WHERE
     )
     AND TrnPostingGroupId IN (1, 4, 6, 7, 9, 13, 16, 17, 19, 20, 21, 23, 27, 28, 29)
     AND TrnAccountType = 11
-    AND TrnPostingTypeDetail <> 80 
+    AND TrnPostingTypeDetail <> 80
 ORDER BY
     TrnCreateDate DESC

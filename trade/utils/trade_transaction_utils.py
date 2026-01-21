@@ -83,6 +83,7 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                     obj.amount = safe_decimal(data.TrnAmount)
                     obj.local_amount = safe_decimal(data.TrnAmountLocal)
                     obj.exchange_rate = safe_decimal(data.TrnExchangeRateLocal)
+                    obj.delete_status = str(data.TrnIsDeleted) or ""
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -101,7 +102,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                         currency = currencies_dict.get("TRY" if data.TrnCurrencyCode == "TL" else data.TrnCurrencyCode),
                         amount = safe_decimal(data.TrnAmount),
                         local_amount = safe_decimal(data.TrnAmountLocal),
-                        exchange_rate = safe_decimal(data.TrnExchangeRateLocal)
+                        exchange_rate = safe_decimal(data.TrnExchangeRateLocal),
+                        delete_status = str(data.TrnIsDeleted) or ""
                     ))
                     create_progress += 1
 
@@ -120,7 +122,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                     "currency",
                     "amount",
                     "local_amount",
-                    "exchange_rate"
+                    "exchange_rate",
+                    "delete_status"
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 TradeTransaction.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)

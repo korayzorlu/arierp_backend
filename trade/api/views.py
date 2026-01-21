@@ -129,7 +129,7 @@ class TradeAccountList(ModelViewSet, QueryListAPIView):
         return queryset
     
 class TradeTransactionList(ModelViewSet, QueryListAPIView):
-    serializer_class = TradeTransactionListSerializer
+    serializer_class = TradeTransaction1ListSerializer
     filterset_class = TradeTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     #ordering_fields = '__all__'
