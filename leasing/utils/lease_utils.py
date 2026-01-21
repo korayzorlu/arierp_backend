@@ -430,9 +430,9 @@ def get_lease_delay(company,lease_id,as_of=None):
 
         due_total = Decimal('0.00')
         installment_list = []
-        for payment_date, amount in installments:
-            due_total += amount
-            installment_list.append((payment_date, amount))
+        for payment_date, amount, payment, vat_amount in installments:
+            due_total +=  payment + vat_amount
+            installment_list.append((payment_date, payment + vat_amount))
 
         ana_kod = lease.contract.code.split('/')[0] if lease.contract and lease.contract.code else None
 
@@ -452,9 +452,9 @@ def get_lease_delay(company,lease_id,as_of=None):
         remaining_paid = paid_total
 
         first_overdue_due_date = None
-        for payment_date, amount in installment_list:
-            if remaining_paid >= amount:
-                remaining_paid -= amount
+        for payment_date, amount, payment, vat_amount in installment_list:
+            if remaining_paid >= payment + vat_amount:
+                remaining_paid -= payment + vat_amount
             else:
                 first_overdue_due_date = payment_date
                 break

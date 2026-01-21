@@ -12,6 +12,6 @@ SELECT OperationPaymentId,
     InterestDisplay,
     PaymentTypeId
 FROM LopPaymentList
--- WHERE OperationProjectId = '67721'
+--WHERE OperationProjectId = '92216'
 ORDER BY
     OperationPaymentId DESC
