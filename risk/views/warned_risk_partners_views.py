@@ -113,7 +113,7 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                 lease.save()
 
                 # word işlemleri
-                file_name = lease.contract.code
+                file_name = lease.contract.code.replace("/","-")
                 doc = DocxTemplate(f"files/ihtar-{'ticari' if lease.contract.partner.is_commercial else 'tuketici'}.docx")
          
                 def format_currency(value):
