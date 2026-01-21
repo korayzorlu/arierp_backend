@@ -675,5 +675,17 @@ def kz222af_row_names():
                     'tps': ['840'],
                     'yps': [],
                 },
+                {
+                    'type': '',
+                    'title': {'text': 'III. BRÜT K/Z (I+II)', 'font_weight': 'bold'},
+                    'tps': ['548','582','704','840'],
+                    'yps': ['549','583','705'],
+                },
+                {
+                    'type': '',
+                    'title': {'text': 'IV. ESAS FAALİYET GİDERLERİ (-)', 'font_weight': 'bold'},
+                    'tps': ['810','820.01','820.03.9.00','882'],
+                    'yps': [],
+                },
                 
     ]
