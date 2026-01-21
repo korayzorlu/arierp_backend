@@ -425,7 +425,7 @@ def get_lease_delay(company,lease_id,as_of=None):
             lease.lease_installments
             .filter(payment_date__lt=as_of)
             .order_by("sequency")
-            .values_list("payment_date", "amount")
+            .values_list("payment_date", "amount", "payment", "vat_amount")
         )
 
         due_total = Decimal('0.00')
@@ -452,9 +452,9 @@ def get_lease_delay(company,lease_id,as_of=None):
         remaining_paid = paid_total
 
         first_overdue_due_date = None
-        for payment_date, amount, payment, vat_amount in installment_list:
-            if remaining_paid >= payment + vat_amount:
-                remaining_paid -= payment + vat_amount
+        for payment_date, amount in installment_list:
+            if remaining_paid >= amount:
+                remaining_paid -= amount
             else:
                 first_overdue_due_date = payment_date
                 break
