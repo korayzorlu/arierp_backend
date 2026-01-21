@@ -158,8 +158,9 @@ class TradeTransactionList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company","partner","lease","currency"]
         
         queryset = TradeTransaction.objects.select_related(*custom_related_fields).filter(
-            Q(company=active_company.company if active_company else None)
-        )
+            Q(company=active_company.company if active_company else None) &
+            ~Q(delete_status__in=['2'])
+        ).exclude(delete_status__in=['2'])
 
         query = self.request.query_params.get('search[value]', None)
         if query:

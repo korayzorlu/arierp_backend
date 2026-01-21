@@ -148,7 +148,7 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 posting_group_name='Kira',
                 amount_type='0',
                 due_date__lte=timezone.now()
-            )
+            ).exclude(delete_status__in=['2'])
 
             trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
 

@@ -54,7 +54,7 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
             partner_codes = [r.CustomerId for r in records]
             lease_codes = [r.TrnOprLeasingOperationPrjId for r in records]
             # 2. querysets
-            trade_transactions = TradeTransaction.objects.select_related().filter(trade_transaction_id__in=trade_transaction_codes,company__id=int(company))
+            trade_transactions = TradeTransaction.objects.select_related().filter(trade_transaction_id__in=trade_transaction_codes,company__id=int(company)).exclude(delete_status__in=['2'])
             partners = Partner.objects.select_related().filter(crm_code__in=partner_codes,company__id=int(company))
             leases = Lease.objects.select_related().filter(lease_id__in=lease_codes,company__id=int(company))
             # 3. dicts

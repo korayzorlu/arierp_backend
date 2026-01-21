@@ -99,18 +99,18 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
         return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
     def get_terminated_date(self, obj):
-        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').first()
+        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
         return trade_transaction.due_date.strftime('%d.%m.%Y') if obj and trade_transaction.due_date else ''
     
     def get_last_refund_date(self, obj):
-        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').first()
+        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
         if obj and trade_transaction and trade_transaction.due_date:
             last_refund_date = trade_transaction.due_date + timedelta(days=180)
             return last_refund_date.strftime('%d.%m.%Y')
         return ''
     
     def get_refund(self, obj):
-        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi')
+        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi').exclude(delete_status__in=['2'])
         total_refund_amount = Decimal('0.00')
         for tt in trade_transactions:
             total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')

@@ -32,7 +32,7 @@ def compute_exchanged_amounts(obj):
         posting_group_name='Kira',
         amount_type='0',
         due_date__lte=datetime.now()
-    )
+    ).exclude(delete_status__in=['2'])
     trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
 
     exchanged_amount_paid_to_date = Decimal('0.00')

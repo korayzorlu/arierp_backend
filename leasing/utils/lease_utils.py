@@ -228,7 +228,7 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 posting_group_name='Kira',
                 # amount_type='0',
                 due_date__lte=timezone.now()
-            )
+            ).exclude(delete_status__in=['2'])
             
             trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
 
@@ -304,7 +304,7 @@ def fetch_tufe_exchanged_amounts_utils(company,BATCH_SIZE=1000):
                 posting_group_name='Kira',
                 # amount_type='0',
                 due_date__lte=timezone.now()
-            )
+            ).exclude(delete_status__in=['2'])
 
             end_karsiligi_tahsilat_toplam = Decimal('0.00')
             for trade_transaction in trade_transactions:
@@ -439,7 +439,7 @@ def get_lease_delay(company,lease_id,as_of=None):
             lease__contract__code__startswith=ana_kod,
             posting_group_name='Kira',
             due_date__lt=as_of
-        )
+        ).exclude(delete_status__in=['2'])
 
         paid_total = Decimal('0.00')
         for transaction in trade_transactions:
