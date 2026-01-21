@@ -4,6 +4,7 @@ SELECT OperationPaymentId,
     PaymentDate,
     VATRate,
     VATAmount,
+    Interest,
     Payment,
     TotalPaymentAmount,
     PrincipalDisplay,
@@ -11,6 +12,6 @@ SELECT OperationPaymentId,
     InterestDisplay,
     PaymentTypeId
 FROM LopPaymentList
+-- WHERE OperationProjectId = '67721'
 ORDER BY
     OperationPaymentId DESC
---WHERE OperationProjectId = '22590'

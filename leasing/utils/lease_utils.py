@@ -1,7 +1,7 @@
 from celery import shared_task
 from core.celery import app
 from django.http import JsonResponse
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum,F
 from django.db.models.functions import TruncDate
 from django.utils.timezone import make_aware
 
@@ -27,6 +27,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from trade.models import TradeTransaction
 from django.utils import timezone
+from django.db.models import ExpressionWrapper, DecimalField, F, Q
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -461,3 +462,19 @@ def get_lease_delay(company,lease_id,as_of=None):
         delay = (as_of - first_overdue_due_date).days if first_overdue_due_date else 0
 
         print(f"ödenmesi gereken: {due_total} - ödenen: {paid_total} - gecikme: {due_total - paid_total} - gecikme gün sayısı: {delay}")
+
+def get_faulty_lease(company):
+    # Farkın mutlak değeri 10'dan büyük olanları bul
+    objs = Installment.objects.select_related().annotate(
+        diff=ExpressionWrapper(F('amount') - (F('payment') + F('vat_amount')), output_field=DecimalField())
+    ).filter(
+        Q(company__id=int(company)),
+        Q(lease__is_last_project=True)
+    ).exclude(
+        diff__gte=-10, diff__lte=10
+    )
+
+    for obj in objs:
+        print(f"Kira: {obj.lease.code} - Taksit No: {obj.sequency} - Tutar: {obj.payment} - KDV Tutarı: {obj.vat_amount} - Toplam Tutar: {obj.amount}")
+
+    print(f"Toplam {objs.count()} hatalı kira taksiti bulundu.")

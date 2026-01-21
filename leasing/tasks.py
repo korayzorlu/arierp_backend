@@ -19,7 +19,7 @@ from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
-from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils,get_lease_delay
+from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils,get_lease_delay,get_faulty_lease
 from .utils.installment_utils import fetch_installments_from_leaseflex,update_first_installment_date
 from risk.utils.exchanged_leases_utils import compute_tufe_endeks,compute_tufe_ana_endeks
 
@@ -1107,3 +1107,7 @@ def fetch_lease_tufe_endeks(company):
 @shared_task()
 def get_lease_delay_task(company,lease_id):
     get_lease_delay(company, lease_id)
+
+@shared_task()
+def get_faulty_lease_task(company):
+    get_faulty_lease(company)
