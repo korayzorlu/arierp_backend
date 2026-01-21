@@ -625,9 +625,55 @@ def kz222af_row_names():
                 # arada boş satırlar var
                 {
                     'type': '',
-                    'title': {'text': ' KİRALAMA GELİRLERİ', 'font_weight': 'bold'},
+                    'title': {'text': 'KİRALAMA GELİRLERİ', 'font_weight': 'bold'},
                     'tps': ['548','582','704'],
                     'yps': ['549','583','705'],
+                },
+                {
+                    'type': '',
+                    'title': {'text': '1.5 Finansal Kiralama Gelirleri', 'font_weight': 'normal'},
+                    'tps': ['548','582'],
+                    'yps': ['549','583'],
+                },
+                {
+                    'type': '',
+                    'title': {'text': '1.6 Faaliyet Kiralaması Gelirleri', 'font_weight': 'normal'},
+                    'tps': ['704'],
+                    'yps': ['705'],
+                },
+                # arada boş satırlar var
+                {
+                    'type': '',
+                    'title': {'text': 'II. FİNANSMAN GİDERLERİ (-)', 'font_weight': 'bold'},
+                    'tps': ['840'],
+                    'yps': [],
+                },
+                # arada boş satırlar var
+                {
+                    'type': '',
+                    'title': {'text': '2.2 Kullanılan Kredilere Verilen Faizler', 'font_weight': 'normal'},
+                    'tps': ['622.00','622.09'],
+                    'yps': ['623.00','623.09'],
+                },
+                # arada boş satırlar var
+                {
+                    'type': '',
+                    'title': {'text': '2.4 Kiralama İşlemlerine İlişkin Faiz Giderleri', 'font_weight': 'normal'},
+                    'tps': ['644.00'],
+                    'yps': [],
+                },
+                # arada boş satırlar var
+                {
+                    'type': '',
+                    'title': {'text': '2.6 Diğer Faiz Giderleri', 'font_weight': 'normal'},
+                    'tps': ['698.99.00'],
+                    'yps': [],
+                },
+                {
+                    'type': '',
+                    'title': {'text': '2.7 Verilen Ücret ve Komisyonlar', 'font_weight': 'normal'},
+                    'tps': ['840'],
+                    'yps': [],
                 },
                 
     ]
