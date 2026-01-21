@@ -423,7 +423,7 @@ def get_lease_delay(company,lease_id,as_of=None):
     if lease:
         installments = (
             lease.lease_installments
-            .filter(payment_date__lt=as_of)
+            .filter(Q(payment_date__lt=as_of) & ~Q(type='5'))
             .order_by("sequency")
             .values_list("payment_date", "amount", "payment", "vat_amount")
         )
