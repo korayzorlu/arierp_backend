@@ -62,6 +62,7 @@ class ContractPayment(models.Model):
     ledger_account_name = models.CharField(_("Ledger Account Name"), max_length=250, null=True, blank=True)
     trade_account_code = models.CharField(_("Trade Account Code"), max_length=25, null=True, blank=True)
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
+    source_type = models.CharField(_("Source Type"), max_length=25, null=True, blank=True) # 80 --> virtual pos
     posting_type = models.CharField(_("Posting Type"), max_length=25, null=True, blank=True)
     group_name = models.CharField(_("Group Name"), max_length=50, null=True, blank=True)
     account_code = models.CharField(_("Account Code"), max_length=25, null=True, blank=True)

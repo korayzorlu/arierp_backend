@@ -296,16 +296,9 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        contract_payments = ContractPayment.objects.select_related("company","contract","currency").filter(company__id=int(company))
-        contracts = Contract.objects.select_related().filter(company__id=int(company))
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
-        contract_payment_by_code = {c.trn_id: c for c in contract_payments if c.trn_id}
-        del contract_payments
-        gc.collect()
-
-        contracts_dict = {c.code: c for c in contracts}
         currencies_dict = {c.code: c for c in currencies}
 
         update_progress = 0
@@ -316,9 +309,18 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
                 break
             update_objs = []
             create_objs = []
+            # 1. codes
+            contract_payment_codes = [r.TrnId for r in records]
+            contract_codes = [r.TrnOprContractId for r in records]
+            # 2. querysets
+            contract_payments = ContractPayment.objects.select_related().filter(trn_id__in=contract_payment_codes)
+            contracts = Contract.objects.select_related().filter(contract_id__in=contract_codes)
+            # 3. dicts
+            contract_payment_dict = {cp.trn_id: cp for cp in contract_payments}
+            contracts_dict = {c.contract_id: c for c in contracts}
             for index,data in enumerate(records):
                 if str(data.TrnId):
-                    obj = (contract_payment_by_code.get(str(data.TrnId)))
+                    obj = (contract_payment_dict.get(str(data.TrnId)))
                 else:
                     obj = None
 
@@ -330,6 +332,7 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.ledger_account_name = str(data.TrnFromLedgerAccountId_AN) or ""
                     obj.trade_account_code = str(data.TrnFromTradeAccountCode) or ""
                     obj.type = str(data.viewTrnFromToType) or ""
+                    obj.source_type = str(data.TrnSourceType) or ""
                     obj.posting_type = str(data.viewTrnPostingType) or ""
                     obj.group_name = str(data.JrnStpPstGrpName) or ""
                     obj.account_code = str(data.TrnAccountCode) or ""
@@ -357,6 +360,7 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
                             ledger_account_name = str(data.TrnFromLedgerAccountId_AN) or "",
                             trade_account_code = str(data.TrnFromTradeAccountCode) or "",
                             type = str(data.viewTrnFromToType) or "",
+                            source_type = str(data.TrnSourceType) or "",
                             posting_type = str(data.viewTrnPostingType) or "",
                             group_name = str(data.JrnStpPstGrpName) or "",
                             account_code = str(data.TrnAccountCode) or "",
@@ -396,11 +400,10 @@ def fetch_contract_payments_from_leaseflex(company,BATCH_SIZE=1000):
                     "exchange_rate",
                     "description",
                     "user_name",
+                    "source_type",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 ContractPayment.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
-        del contract_payment_by_code
-        gc.collect()
         print(f"Toplam {update_progress} tahsilat güncellendi.")
         print(f"Toplam {create_progress} tahsilat oluşturuldu.")
         print("--------")      

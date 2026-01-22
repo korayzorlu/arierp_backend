@@ -92,6 +92,7 @@ class ContractPaymentListSerializer(serializers.Serializer):
     exchange_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     user_name = serializers.CharField()
     description = serializers.CharField()
+    source_type = serializers.CharField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

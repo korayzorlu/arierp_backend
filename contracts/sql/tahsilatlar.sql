@@ -37,6 +37,7 @@ SELECT DISTINCT
     END,
     TrnDescription,
     TrnIsPlanned + TrnReturnValueId AS TrnIsPlanned,
+    TrnSourceType,
     TrnIsPlanned_INFO = CASE TrnSourceType
         WHEN 3 THEN 'Banka Otomasyonu'
         WHEN 31 THEN 'ATS Banka Oto.'
@@ -103,6 +104,7 @@ WHERE
     AND TrnTemplateType <> 0
     AND TrnAmountType = 0
     AND TrnPostingType IN (221, 211, 101, 102, 103, 931, 482)
+    --AND TrnSourceType = '80'
 ORDER BY
     TrnDueDate,
     AccountName;
