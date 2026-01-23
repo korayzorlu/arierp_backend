@@ -16,7 +16,7 @@ def matched_partner_with_tc_vkn_no(params):
 
 def match_bank_activity_from_iban(params):
     from leasing.models import BankActivity
-    objs = BankActivity.objects.select_related().filter(cross_bank_account_no = params["cross_bank_account_no"]).exclude(pk=params["exclude_pk"])
+    objs = BankActivity.objects.select_related().filter(cross_bank_account_no = params["cross_bank_account_no"], is_vpos=False).exclude(pk=params["exclude_pk"])
     return objs
 
 def matched_leases_with_contract_numbers(params):

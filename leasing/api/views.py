@@ -646,7 +646,8 @@ class BankActivityList(ModelViewSet, QueryListAPIView):
         today = date.today()
 
         queryset = BankActivity.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None)
+            Q(company = active_company.company if active_company else None) &
+            Q(is_vpos = False)
         ).order_by("-created_date")
 
         query = self.request.query_params.get('search[value]', None)
@@ -683,7 +684,8 @@ class AccountNoList(ModelViewSet, QueryListAPIView):
         active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
 
         result = BankActivity.objects.filter(
-            company=active_company.company if active_company else None
+            company=active_company.company if active_company else None,
+            is_vpos=False
         ).values_list(
             'finmaks_transaction__bank_account__account_no', flat=True
         ).distinct()

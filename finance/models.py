@@ -116,6 +116,8 @@ class FinmaksTransaction(models.Model):
     integration_field_value = models.CharField(_("Category Name"), max_length=50, null=True, blank=True)
     transaction_status = models.CharField(_("Transaction Status"), max_length=50, null=True, blank=True)
 
+    is_vpos = models.BooleanField(default=False)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

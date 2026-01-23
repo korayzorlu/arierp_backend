@@ -164,3 +164,31 @@ class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
         
         return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
 
+class VPosThirdPersonsTemplateView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "static", "files", "sanal-pos-template.xlsx")
+        
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        return FileResponse(open(file_path, 'rb'))
+    
+class ImportVPosThirdPersonsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get('data', '{}'))
+        file = request.FILES.get('file')
+        
+        importer = BaseImporter(user_id=request.user.id, app="compliance", model_name="ThirdPerson", file=file)
+
+        if importer.validate_file() != 200:
+            return JsonResponse(importer.validate_file(), status=400)
+
+        send_alert({"message":"Veriler yükleniyor...",'status':'success'},room=f"private_{request.user.id}")
+
+        df_json = importer.read_file()
+        if isinstance(importer.read_file(), dict):
+            return JsonResponse(df_json, status=400)
+            
+        importer.start_import(df_json)
+
+        return HttpResponse(status=200)

@@ -26,19 +26,20 @@ def create_third_person(self,scan_result):
         status = 'pending'
         
     if name and name != "" and status == 'pending':
-        send_email_for_third_person(name,self.tc_vkn_no)
+        send_email_for_third_person(name,self.tc_vkn_no or "")
 
     if name and name != "" and status == 'need_document':
-        send_email_for_third_person_document(name,self.tc_vkn_no)
+        send_email_for_third_person_document(name,self.tc_vkn_no or "")
     
-    old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name).first()
+    old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name, is_vpos=self.is_vpos).first()
     if not old_obj:
         new_obj = ThirdPerson.objects.create(
             company=self.company,
             name=name,
             tc_vkn_no=self.tc_vkn_no,
             status=status,
-            results=scan_result["details"] if scan_result["details"] else None
+            results=scan_result["details"] if scan_result["details"] else None,
+            is_vpos = self.is_vpos
         )
 
         new_obj.bank_activities.add(self)
@@ -48,6 +49,27 @@ def create_third_person(self,scan_result):
     else:
         old_obj.bank_activities.add(self)
         old_obj.save()
+
+        return {"is_new": False, "status": old_obj.status}
+    
+def create_third_person_vpos(name,company,tc_vkn_no,scan_result):
+    if scan_result["status"] == 'cleared':
+        status = 'need_document'
+    else:
+        status = 'pending'
+    
+    old_obj = ThirdPerson.objects.filter(company = company, tc_vkn_no = tc_vkn_no, name = name).first()
+    if not old_obj:
+        new_obj = ThirdPerson.objects.create(
+            company=company,
+            name=name,
+            tc_vkn_no=tc_vkn_no,
+            status=status,
+            results=scan_result["details"] if scan_result["details"] else None
+        )
+
+        return {"is_new": True, "status": new_obj.status}
+    else:
 
         return {"is_new": False, "status": old_obj.status}
 
@@ -165,8 +187,9 @@ def send_email_for_third_person_to_cleared(name,tc_vkn_no):
 
 def check_third_person_in_partners():
     objs = ThirdPerson.objects.select_related().filter(
-        Q(status = 'pending') |
-        Q(status = 'need_document')
+        (Q(status = 'pending') |
+        Q(status = 'need_document')) &
+        Q(is_vpos = False)
     )
     for obj in objs:
         if Partner.objects.select_related().filter(Q(tc_vkn_no=obj.tc_vkn_no) | Q(vat_no=obj.tc_vkn_no)).exists() and obj.tc_vkn_no and obj.tc_vkn_no != "":

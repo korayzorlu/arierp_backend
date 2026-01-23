@@ -31,7 +31,7 @@ def translate_third_person_status(status):
         return ""
 
 def export_bank_activities(self):
-    bank_activities = BankActivity.objects.select_related().filter(created_date__date = date.today()).order_by("id")
+    bank_activities = BankActivity.objects.select_related().filter(created_date__date = date.today(), is_vpos = False).order_by("id")
     objs = BankActivityLease.objects.select_related().filter(leaseflex_automation = True).order_by("bank_activity__bank_code","bank_activity__tc_vkn_no")
 
     self.process.status = "in_progress"

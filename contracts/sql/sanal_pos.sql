@@ -1,5 +1,3 @@
-
-
-SELECT DISTINCT TrnSourceType
-FROM TradeTransaction
-ORDER BY TrnSourceType;
+SELECT TOP 10 *
+FROM TradeTransaction 
+WHERE TrnId='13624563'

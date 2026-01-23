@@ -35,6 +35,7 @@ class ThirdPerson(models.Model):
 
     name = models.CharField(_("Name"), max_length=250, null=True, blank=True)
     tc_vkn_no = models.CharField(_("TC/VKN No"), max_length=500, null=True, blank=True)
+    card_no = models.CharField(_("Card No"), max_length=50, null=True, blank=True)
 
     STATUS_CHOICES = (
         ('pending', ('Pending')),

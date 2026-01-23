@@ -3,6 +3,9 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models import BooleanField,QuerySet, Q
 from django.db.models.functions import Lower,Upper
+from django.utils.crypto import get_random_string
+from django.utils.timezone import localtime, make_aware, is_naive
+
 
 import pandas as pd
 import io
@@ -18,6 +21,11 @@ from users.models import User
 from common.models import ImportProcess,Country,City
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
+from leasing.models import Lease,BankActivity
+from compliance.models import ThirdPerson
+from compliance.utils.third_person_utils import create_third_person
+from finance.models import FinmaksTransaction,FinmaksBankAccount
+from underwriting.utils import check_third_person_status
 from contracts.utils.contract_utils import import_contracts
 from leasing.utils.import_utils import import_leases,import_installments,import_bank_activities
 from quotations.utils.quotation_utils import import_quotations
@@ -90,7 +98,7 @@ class BaseImporter():
         try:
             excel_file = pd.ExcelFile(self.file)
             first_sheet_name = excel_file.sheet_names[0]
-
+            
             file_data = pd.read_excel(self.file, first_sheet_name)
             df = pd.DataFrame(file_data)
             self.df = df
@@ -262,6 +270,8 @@ class BaseImporter():
         self.process.progress = 100
         self.process.status = "completed"
         self.process.save()
+
+    
 
 
     def import_contract(self, df_json):
@@ -451,3 +461,123 @@ class BaseImporter():
         self.process.status = "completed"
         self.process.save()
 
+    def import_thirdperson(self, df_json):
+        df = pd.read_json(io.StringIO(df_json), orient='records')
+        
+        required_columns = []
+        empty_rows = df[required_columns].isnull().any(axis=1)
+        if empty_rows.any():
+            self.process.status = "rejected"
+            self.process.save()
+            self.process.delete()
+            return
+
+        self.process.status = "in_progress"
+        self.process.items_count = len(df)
+        self.process.save()
+        
+        previous_progress = 0
+        for index,row in df.iterrows():
+            current_progress = ((index + 1)/len(df))*100
+
+            if current_progress - previous_progress >= 5:
+                self.process.progress = int(current_progress)
+                self.process.save()
+                previous_progress = current_progress
+            
+            #type_list = [item.strip().lower() for item in row["type"].split(",")]
+
+            bank_account = FinmaksBankAccount.objects.filter(account_no = "sanalpos-1").first()
+
+            leases = Lease.objects.select_related("contract__partner").filter(code = str(row["Müşteri Telefon Numarası"]).replace("KiraPlanKodu: ","").split(",")[0])
+
+            for lease in leases:
+                if lease.contract.partner.name != row['Adı-Soyadı'].replace(' . ',' ').replace('  ',' '):
+                    print(f"kira planı: {lease.code} - müşteri adı: {lease.contract.partner.name} - ödemeyi yapan: {row['Adı-Soyadı'].replace(' . ',' ').replace('  ',' ')}")
+
+                    # ThirdPerson.objects.create(
+                    #     company = self.user.user_companies.filter(is_active=True).first().company,
+                    #     name = row['Adı-Soyadı'].replace(' . ',' ').replace('  ',' '),
+                    #     tc_vkn_passport_no = str(row['Vergi/TC Kimlik No']),
+                    #     lease = lease,
+                    #     is_vpos = True
+                    # )
+
+                    # scan_result = check_third_person_status(row['Adı-Soyadı'].replace(' . ',' ').replace('  ',' '))
+                    # third_person = create_third_person(self,scan_result)
+
+                    
+
+                    finmaks_transaction = FinmaksTransaction.objects.create(
+                        company = lease.company,
+                        bank_account = bank_account,
+                        transaction_id = f"T{get_random_string(length=6, allowed_chars='0123456789')}",
+                        transaction_date = datetime.now(),
+                        explanation_field = f"Sanal pos ödemesi - İşlem No: {Decimal(row.get('Sipariş Numarası',''))}",
+                        description = "",
+                        amount = Decimal(str(row.get('İşlem Tutarı', '0.00'))),
+                        sender_vkn = "",
+                        sender_iban = "",
+                        sender_account_name = row.get('Adı-Soyadı', '').replace(' . ',' ').replace('  ',' '),
+                        receiver_vkn = "",
+                        receiver_iban = "",
+                        receipt_number = "",
+                        value_date = datetime.now(),
+                        transaction_type = "",
+                        bank_code = "",
+                        balance = Decimal('0.00'),
+                        firm_id = "",
+                        firm_name = "",
+                        firm_externalCode = "",
+                        firm_externalId = "",
+                        transaction_branch_code = "",
+                        transaction_branch_name = "",
+                        firm_code = "",
+                        currency_type = "TRY",
+                        debit = "+",
+                        branch_code = "",
+                        transaction_external_id = "",
+                        external_id_used = False,
+                        external_bank_id = "",
+                        reference_no = "",
+                        finmaks_process_type = "",
+                        category_name = "",
+                        integration_field_value = "",
+                        transaction_status = "",
+                        is_vpos = True
+                    )
+
+                    if is_naive(finmaks_transaction.transaction_date):
+                        aware_date = make_aware(finmaks_transaction.transaction_date)
+                    else:
+                        aware_date = finmaks_transaction.transaction_date
+
+                    process_date_date = localtime(aware_date).date()
+
+                    BankActivity.objects.create(
+                        company = lease.company,
+                        finmaks_transaction = finmaks_transaction,
+                        bank_code = finmaks_transaction.bank_code,
+                        bank_branch_code = finmaks_transaction.branch_code,
+                        bank_account_no = finmaks_transaction.bank_account.account_no,
+                        cross_bank_code = finmaks_transaction.bank_code,
+                        cross_bank_branch_code = finmaks_transaction.transaction_branch_code,
+                        cross_bank_account_no = finmaks_transaction.sender_iban,
+                        process_code = finmaks_transaction.transaction_id,
+                        credit_or_debit = "C" if finmaks_transaction.debit == "+" else "D",
+                        kontrat_no = finmaks_transaction.receipt_number,
+                        process_date_date = process_date_date,
+                        #process_type = "in" if str(row['İşlem Tipi']) == "+" else "out",
+                        amount = finmaks_transaction.amount,
+                        currency = finmaks_transaction.bank_account.currency,
+                        name = finmaks_transaction.sender_account_name,
+                        description = finmaks_transaction.explanation_field,
+                        tc_vkn_no = str(row['Kredi Kartı Numarası']),
+                        is_vpos = True
+                    )
+
+                time.sleep(2)
+
+        self.process.progress = 100
+        self.process.status = "completed"
+        self.process.save()
