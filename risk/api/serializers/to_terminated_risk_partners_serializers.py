@@ -15,8 +15,6 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
     crm_code = serializers.CharField()
     name = serializers.CharField()
     tc_vkn_no = serializers.SerializerMethodField()
-    max_overdue_days = serializers.SerializerMethodField()
-    total_overdue_amount = serializers.SerializerMethodField()
     leases = serializers.SerializerMethodField()
     special = serializers.SerializerMethodField()
     barter = serializers.SerializerMethodField()
@@ -46,112 +44,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             return "İhtar Çekildi"
         else:
             return ""
-    
-    def get_max_overdue_days(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
 
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            (
-                Q(contract__contract_warning_notices__state='Yeni') |
-                Q(contract__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(overdue_days__gt=25) &
-            Q(overdue_amount__gt=1000)
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-            # overdue_check=Case(
-            #     When(
-            #         contract__partner__customer_type='individual',
-            #         then=Case(
-            #             When(overdue_days__gt=60, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     When(
-            #         contract__partner__customer_type='institutional',
-            #         then=Case(
-            #             When(overdue_days__gt=90, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     default=Value(False),
-            #     output_field=BooleanField()
-            # )
-        ).filter(warning_notice_count__gt=0)
-
-        overdue_days = 0
-        for lease in leases:
-            if lease.overdue_days > overdue_days:
-                overdue_days = lease.overdue_days
-        return overdue_days
-    
-    def get_total_overdue_amount(self, obj):
-        request = self.context.get('request')
-        filter_params = request.GET if request else {}
-
-        leases = Lease.objects.select_related().filter(
-            Q(contract__partner = obj) &
-            vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            (
-                Q(contract__contract_warning_notices__state='Yeni') |
-                Q(contract__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(overdue_days__gt=25) &
-            Q(overdue_amount__gt=1000)
-        ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
-            overdue_check=Case(
-                When(
-                    contract__partner__customer_type='individual',
-                    then=Case(
-                        When(overdue_days__gt=60, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                When(
-                    contract__partner__customer_type='institutional',
-                    then=Case(
-                        When(overdue_days__gt=90, then=Value(True)),
-                        default=Value(False),
-                        output_field=BooleanField()
-                    )
-                ),
-                default=Value(False),
-                output_field=BooleanField()
-            )
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
-
-        overdue_amount = 0
-        for lease in leases:
-            overdue_amount += lease.overdue_amount
-        return overdue_amount
-    
     def get_leases(self, obj):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
@@ -207,24 +100,9 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             id=Subquery(latest_lease.values('id')[:1])
         )
 
-        lease_list = []
+        lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
-                installments = lease.lease_installments.all()
-                total_overdue_amount = Decimal("0")
-                for installment in installments:
-                    total_overdue_amount += installment.overdue_amount
-                if total_overdue_amount < 100:
-                    total_overdue_amount = Decimal("0")
-
-                overdue_days = -1
-                for installment in installments:
-                    if installment.overdue_amount > 0:
-                        today = date.today()
-                        diff = (today - installment.payment_date).days
-                        if diff > overdue_days:
-                            overdue_days = diff
-
                 if lease.contract.contract_warning_notices.all():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
@@ -234,7 +112,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                 else:
                     status = "SMS"
 
-                lease_list.append({
+                lease_dict["leases"].append({
                     "id" : lease.uuid,
                     "code" : lease.code,
                     "contract" : lease.contract.code if lease.contract else "",
@@ -267,4 +145,5 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
                         }
                     ]
                 })
-        return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        #return sorted(lease_list, key=lambda x: x["overdue_days"], reverse=True)
+        return lease_dict
