@@ -687,5 +687,41 @@ def kz222af_row_names():
                     'tps': ['810','820.01','820.03.9.00','882'],
                     'yps': [],
                 },
-                
+                {
+                    'type': '',
+                    'title': {'text': '4.1 Personel Giderleri', 'font_weight': 'normal'},
+                    'tps': ['810','820.01','820.03.9.00'],
+                    'yps': [],
+                },
+                {
+                    'type': '',
+                    'title': {'text': '4.2 Kıdem Tazminatı Karşılığı Gideri', 'font_weight': 'normal'},
+                    'tps': [],
+                    'yps': [],
+                },
+                # arada boş satırlar var
+                {
+                    'type': '',
+                    'title': {'text': '4.4 Genel İşletme Giderleri', 'font_weight': 'normal'},
+                    'tps': ['830','850','880'],
+                    'yps': [],
+                },
+                {
+                    'type': '',
+                    'title': {'text': '4.5 Diğer', 'font_weight': 'normal'},
+                    'tps': ['882'],
+                    'yps': [],
+                },
+                {
+                    'type': '',
+                    'title': {'text': 'V. BRÜT FAALİYET K/Z (III+IV)', 'font_weight': 'bold'},
+                    'tps': ['548','582','704','840','810','820.01','820.03.9.00','882'],
+                    'yps': ['549','583','705'],
+                },
+                {
+                    'type': '',
+                    'title': {'text': 'VI. DİĞER FAALİYET GELİRLERİ', 'font_weight': 'bold'},
+                    'tps': [],
+                    'yps': [],
+                },
     ]
