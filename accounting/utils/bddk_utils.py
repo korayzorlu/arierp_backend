@@ -645,8 +645,8 @@ def kz222af_row_names():
                 {
                     'type': '',
                     'title': {'text': 'II. FİNANSMAN GİDERLERİ (-)', 'font_weight': 'bold'},
-                    'tps': ['840'],
-                    'yps': [],
+                    'tps': ['622.00','622.09','644.00','698.99.00','840'],
+                    'yps': ['623.00','623.09'],
                 },
                 # arada boş satırlar var
                 {

@@ -334,6 +334,55 @@ class Kz222afList(ModelViewSet, QueryListAPIView):
                 toplam = ''
                 toplam_tp = ''
                 bos = True
+            elif row_name['title']['text'] == 'III. BRÜT K/Z (I+IIsss)':
+                sira_no = seq
+                seq += 1
+
+                tp = Decimal('0.00')
+                yp_usd = Decimal('0.00')
+                yp_eur = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                tp_e12 = objs.filter(
+                    Q(account_code__startswith='548') |
+                    Q(account_code__startswith='582') |
+                    Q(account_code__startswith='704')
+                ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+                tp_e30 = objs.filter(
+                    Q(account_code__startswith='622.00') |
+                    Q(account_code__startswith='622.09') |
+                    Q(account_code__startswith='644.00') |
+                    Q(account_code__startswith='698.99.00') |
+                    Q(account_code__startswith='840')
+                ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+                tp = tp_e12 - tp_e30
+
+                yp_usd__f12 = objs.filter(
+                    Q(currency__code='USD') &
+                    (
+                        Q(account_code__startswith='549') |
+                        Q(account_code__startswith='583') |
+                        Q(account_code__startswith='705')
+                    )
+                ).aggregate(
+                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                )
+
+                yp_usd__f30 = objs.filter(
+                    Q(currency__code='USD') &
+                    (
+                        Q(account_code__startswith='549') |
+                        Q(account_code__startswith='583') |
+                        Q(account_code__startswith='705')
+                    )
+                ).aggregate(
+                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                )
+
             else:
                 sira_no = seq
                 seq += 1
