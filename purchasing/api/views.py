@@ -19,6 +19,9 @@ from rest_framework.permissions import AllowAny
 
 import traceback
 from datetime import datetime,timedelta
+import requests
+import xmltodict
+import json
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
@@ -122,7 +125,7 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         ordering = self.request.query_params.get('ordering')
         
-        custom_related_fields = ["company"]
+        custom_related_fields = ["company","lease__contract__partner"]
 
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &

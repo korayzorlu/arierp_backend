@@ -16,6 +16,9 @@ import traceback
 import gc
 import string
 import random
+import requests
+import xmltodict
+import json
 
 from leasing.models import *
 from leasing.utils.common_utils import get_lease_status_value,status_filter_for_leases,days_in_month
@@ -404,6 +407,37 @@ def fetch_tufe_exchanged_amounts_utilss(company,BATCH_SIZE=1000):
             pass
 
         print(f"Toplam {update_progress} kira planı tüfe kayıpları güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
+def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
+    try:
+        objs = Lease.objects.select_related().filter(is_last_project=True,bbsn__isnull=False).only('bbsn')
+
+        update_progress = 0
+        update_objs = []
+        for obj in objs:
+            url = f"http://192.168.48.49/SinpasCrmService/crm.asmx/SozlesmeNoGetir?BbsnNo={obj.bbsn}"
+
+            response = requests.get(url)
+            data_dict = xmltodict.parse(response.text)
+            #json_data = json.dumps(data_dict, ensure_ascii=False, indent=2)
+
+            result = data_dict["SozlesmeNoGetirSonucu"]
+
+            obj.crm_no = result.get("SozlesmeNo", None)
+
+            update_objs.append(obj)
+            update_progress += 1
+
+        if update_objs:
+            Lease.objects.bulk_update(update_objs, [
+                "crm_no",
+            ])
+
+        print(f"Toplam {update_progress} kira planı güncellendi.")
         print("--------")
     except Exception as e:
         print(e)

@@ -19,13 +19,17 @@ from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
-from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils,get_lease_delay,get_faulty_lease
+from .utils.lease_utils import fetch_leases_from_leaseflex,fetch_exchanged_amounts_utils,fetch_tufe_exchanged_amounts_utils,get_lease_delay,get_faulty_lease,fetch_leases_from_ifs
 from .utils.installment_utils import fetch_installments_from_leaseflex,update_first_installment_date
 from risk.utils.exchanged_leases_utils import compute_tufe_endeks,compute_tufe_ana_endeks
 
 @shared_task()
 def fetch_leases(company):
     fetch_leases_from_leaseflex(company)
+
+@shared_task()
+def fetch_leases_ifs(company):
+    fetch_leases_from_ifs(company)
 
 @shared_task()
 def fetch_exchanged_amounts(company):

@@ -123,7 +123,7 @@ class Lease(models.Model):
     is_tufe = models.BooleanField(default=False)
     is_musterek = models.BooleanField(default=False)
     bbsn = models.CharField(_("BBSN"), max_length=25, blank=True, null=True)
-    
+    crm_no = models.CharField(_("CRM No"), max_length=25, blank=True, null=True)
 
     leaseflex_automation = models.BooleanField(default=False)
     processed_amount = models.DecimalField(_("Processed Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
