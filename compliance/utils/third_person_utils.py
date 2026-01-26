@@ -31,26 +31,27 @@ def create_third_person(self,scan_result):
     if name and name != "" and status == 'need_document':
         send_email_for_third_person_document(name,self.tc_vkn_no or "")
     
-    old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name, is_vpos=self.is_vpos).first()
-    if not old_obj:
+    #old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name, is_vpos=self.is_vpos).first()
+    old_obj = ThirdPerson.objects.filter(tc_vkn_no = self.tc_vkn_no).first()
+    if old_obj:
+        old_obj.bank_activities.add(self)
+        old_obj.save()
+
+        return {"is_new": False, "status": old_obj.status}
+    else:
         new_obj = ThirdPerson.objects.create(
             company=self.company,
             name=name,
             tc_vkn_no=self.tc_vkn_no,
             status=status,
             results=scan_result["details"] if scan_result["details"] else None,
-            is_vpos = self.is_vpos
+            #is_vpos = self.is_vpos
         )
 
         new_obj.bank_activities.add(self)
         new_obj.save()
 
         return {"is_new": True, "status": new_obj.status}
-    else:
-        old_obj.bank_activities.add(self)
-        old_obj.save()
-
-        return {"is_new": False, "status": old_obj.status}
     
 def create_third_person_vpos(name,company,tc_vkn_no,scan_result):
     if scan_result["status"] == 'cleared':
