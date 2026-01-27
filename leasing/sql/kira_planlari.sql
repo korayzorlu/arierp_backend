@@ -59,7 +59,8 @@ SELECT
     fp.ISLAND_NO,
     fp.PARCEL_NO,
     pl.CityName,
-    pl.DistrictName
+    pl.DistrictName,
+    lw.BBSN_NO
 FROM
     dbo.LeasingOperationProject lop (NOLOCK)
     INNER JOIN dbo.GeneralCurrency gc (NOLOCK) ON lop.CurrencyId = gc.CurrencyId
@@ -76,6 +77,7 @@ FROM
     LEFT JOIN RPR_FREE_PART_LIST_FOR_DET fp (NOLOCK) ON qi.FREE_PART_ID = fp.FREE_PART_ID
     LEFT JOIN RPR_PROJECT_BLOCK_LIST pb (NOLOCK) ON qi.BLOCK_ID = pb.BLOCK_ID
     LEFT JOIN RPR_PROJECT_LIST pl ON qi.PROJECT_ID = pl.PROJECT_ID
+    LEFT JOIN LeasingOperationProjectList lw ON lop.OperationProjectId = lw.OperationProjectId
 -- WHERE
 --     lop.OperationProjectId = '67427'
 ORDER BY 

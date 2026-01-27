@@ -116,6 +116,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.is_last_project = True if str(data.IS_LAST_PROJECT) == "1" else False
                     obj.current_request = str(data.CurrentRequest) or ""
                     obj.notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None
+                    obj.bbsn = str(data.BBSN_NO) or ""
                     #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
                     update_objs.append(obj)
                     update_progress += 1
@@ -150,6 +151,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         is_last_project = True if str(data.IS_LAST_PROJECT) == "1" else False,
                         current_request = str(data.CurrentRequest) or "",
                         notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None,
+                        bbsn = str(data.BBSN_NO) or "",
                         #transfer_count = leases_count - 1 if leases_count > 0 else 0,
                     ))
                     create_progress += 1
@@ -183,6 +185,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "is_last_project",
                     "current_request",
                     "notary_public_date",
+                    "bbsn",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Lease.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
@@ -414,7 +417,7 @@ def fetch_tufe_exchanged_amounts_utilss(company,BATCH_SIZE=1000):
 
 def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
     try:
-        objs = Lease.objects.select_related().filter(is_last_project=True,bbsn__isnull=False).only('bbsn')
+        objs = Lease.objects.select_related().filter(is_last_project=True,bbsn__isnull=False).exclude(bbsn="").only('bbsn')
 
         update_progress = 0
         update_objs = []
