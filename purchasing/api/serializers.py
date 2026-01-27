@@ -48,7 +48,8 @@ class PurchasePaymentListSerializer(serializers.Serializer):
                 "status" : obj.lease.status.name if obj.lease.status else "",
                 "vat" : obj.lease.vat,
                 "bbsn" : obj.lease.bbsn,
-                "is_tufe" : obj.lease.is_tufe
+                "ifs_tahsilat" : obj.lease.ifs_tahsilat,
+                "is_tufe" : obj.lease.is_tufe,
             }
         else:
             return ""
