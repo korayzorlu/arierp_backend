@@ -80,6 +80,14 @@ FROM
     LEFT JOIN LeasingOperationProjectList lw ON lop.OperationProjectId = lw.OperationProjectId
 -- WHERE
 --     lop.OperationProjectId = '67427'
+-- WHERE
+--     lw.BBSN_NO IS NULL
+--     AND lop.IS_LAST_PROJECT = 1
+--     AND (
+--         RiskIncludingTypeName = 'Aktifleştirildi'
+--         OR RiskIncludingTypeName = 'Planlandı'
+--         OR RiskIncludingTypeName = 'Durduruldu'
+--     )
 ORDER BY 
     pb.BLOCK_NO,
     lop.OperationProjectId DESC;
