@@ -46,6 +46,7 @@ def export_purchase_payments(self):
         "Yönetim Gideri (KDV Dahil)": [],
         "Kira Tahsilat Tutarı": [],
         "Satıcı Ödemeleri Toplam Tutarı": [],
+        "IFS Tahsilat Tutarı": [],
         "Talimat": [],
         "Fark": [],
         "Temerrüt": [],
@@ -121,6 +122,7 @@ def export_purchase_payments(self):
             data["Yönetim Gideri (KDV Dahil)"].append(obj.managing_expense)
             data["Kira Tahsilat Tutarı"].append(obj.lease_payment_amount)
             data["Satıcı Ödemeleri Toplam Tutarı"].append(obj.total_vendor_payment)
+            data["IFS Tahsilat Tutarı"].append(obj.lease.ifs_tahsilat or Decimal("0.00"))
             data["Talimat"].append(talimat)
             data["Fark"].append(diff)
             data["Temerrüt"].append(temerrut)
