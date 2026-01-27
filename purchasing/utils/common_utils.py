@@ -145,6 +145,7 @@ def export_purchase_payments(self):
         "Yönetim Gideri (KDV Dahil)",
         "Kira Tahsilat Tutarı",
         "Satıcı Ödemeleri Toplam Tutarı",
+        "IFS Tahsilat Tutarı",
         "Talimat",
         "Fark",
         "Temerrüt",
