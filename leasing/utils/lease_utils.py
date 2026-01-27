@@ -443,6 +443,37 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
         print(e)
         print(traceback.format_exc())
 
+def fetch_purchase_payments_from_ifs(company,BATCH_SIZE=1000):
+    try:
+        objs = Lease.objects.select_related().filter(crm_no__isnull=False).only('crm_no')
+
+        update_progress = 0
+        update_objs = []
+        for obj in objs:
+            url = f"http://192.168.48.49/SinpasCrmService/crm.asmx/AriTahsilatGetir?SozlesmeNo={obj.crm_no}&Tarih={timezone.now().date()}"
+
+            response = requests.get(url)
+            data_dict = xmltodict.parse(response.text)
+            #json_data = json.dumps(data_dict, ensure_ascii=False, indent=2)
+
+            result = data_dict["AriTahsilatSonucu"]
+
+            obj.ifs_tahsilat = Decimal(result.get("IfsTahsilatTutari", Decimal('0.00')))
+
+            update_objs.append(obj)
+            update_progress += 1
+
+        if update_objs:
+            Lease.objects.bulk_update(update_objs, [
+                "ifs_tahsilat",
+            ])
+
+        print(f"Toplam {update_progress} kira planı güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
 def get_future_payments(lease_id, from_date=None) -> QuerySet:
     """
     Belirtilen tarihten (varsayılan: bugün) itibaren gelecekteki ödemeleri getirir.

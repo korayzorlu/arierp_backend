@@ -127,6 +127,17 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
         
         custom_related_fields = ["company","lease__contract__partner"]
 
+        url = f"http://192.168.48.49/SinpasCrmService/crm.asmx/AriTahsilatGetir?SozlesmeNo=M-FST.0097&Tarih=2026-01-26"
+
+        response = requests.get(url)
+        data_dict = xmltodict.parse(response.text)
+        json_data = json.dumps(data_dict, ensure_ascii=False, indent=2)
+
+        result = data_dict["AriTahsilatSonucu"]
+
+        print(result['TahsilatTutari'])
+        print(type(result['TahsilatTutari']))
+
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             ~Q(lease__contract__partner__types__contains=['special']) &
