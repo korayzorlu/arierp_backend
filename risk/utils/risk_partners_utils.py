@@ -316,13 +316,8 @@ def export_risk_partners(self):
 def export_overdue_leases(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
         vendor_filter_for_serializers(self.params) &
-        Q(overdue_days__gt=0) &
-        Q(overdue_amount__gt=0) &
-        (
-            Q(lease_status='aktiflestirildi') |
-            Q(lease_status='planlandi') |
-            Q(lease_status='durduruldu')
-        ) &
+        (Q(overdue_days__gt=0) |
+        Q(overdue_amount__gt=0)) &
         Q(is_last_project=True)
     ).order_by("-overdue_amount")
 
