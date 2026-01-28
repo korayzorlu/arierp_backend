@@ -1,3 +1,7 @@
+from django.db.models import QuerySet, Q, Sum, F, ExpressionWrapper, DecimalField
+
+from decimal import Decimal
+
 def bl222af_row_names():
     return  [
                 {
@@ -911,3 +915,76 @@ def kz222af_row_names():
                     'yps': [],
                 },
     ]
+
+def brut_kz(objs):
+    tp_e12 = objs.filter(
+        Q(account_code__startswith='548') |
+        Q(account_code__startswith='582') |
+        Q(account_code__startswith='704')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    tp_e30 = objs.filter(
+        Q(account_code__startswith='622.00') |
+        Q(account_code__startswith='622.09') |
+        Q(account_code__startswith='644.00') |
+        Q(account_code__startswith='698.99.00') |
+        Q(account_code__startswith='840')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    tp = tp_e12 - tp_e30
+
+    yp_usd__f12 = objs.filter(
+        Q(currency__code='USD') &
+        (
+            Q(account_code__startswith='549') |
+            Q(account_code__startswith='583') |
+            Q(account_code__startswith='705')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    yp_usd__f30 = objs.filter(
+        Q(currency__code='USD') &
+        (
+            Q(account_code__startswith='549') |
+            Q(account_code__startswith='583') |
+            Q(account_code__startswith='705')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    yp_eur__f12 = objs.filter(
+        Q(currency__code='EUR') &
+        (
+            Q(account_code__startswith='549') |
+            Q(account_code__startswith='583') |
+            Q(account_code__startswith='705')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    yp_eur__f30 = objs.filter(
+        Q(currency__code='EUR') &
+        (
+            Q(account_code__startswith='549') |
+            Q(account_code__startswith='583') |
+            Q(account_code__startswith='705')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    return {
+        "tp" : tp,
+        "yp_usd" : (yp_usd__f12['total_sum'] or Decimal('0.00')) - (yp_usd__f30['total_sum'] or Decimal('0.00')),
+        "yp_eur" : (yp_eur__f12['total_sum'] or Decimal('0.00')) - (yp_eur__f30['total_sum'] or Decimal('0.00')),
+        "yp" : ((yp_usd__f12['total_sum_tp'] or Decimal('0.00')) - (yp_usd__f30['total_sum_tp'] or Decimal('0.00'))) + ((yp_eur__f12['total_sum_tp'] or Decimal('0.00')) - (yp_eur__f30['total_sum_tp'] or Decimal('0.00')))
+    }
+    

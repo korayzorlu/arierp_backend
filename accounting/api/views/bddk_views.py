@@ -20,7 +20,7 @@ from datetime import date
 
 from ..serializers.trial_balances_serializers import *
 from ..filters.trial_balances_filters import *
-from ...utils.bddk_utils import bl222af_row_names, kz222af_row_names
+from ...utils.bddk_utils import bl222af_row_names, kz222af_row_names, brut_kz
 
 
 class QueryListAPIView(generics.ListAPIView):
@@ -334,54 +334,21 @@ class Kz222afList(ModelViewSet, QueryListAPIView):
                 toplam = ''
                 toplam_tp = ''
                 bos = True
-            elif row_name['title']['text'] == 'III. BRÜT K/Z (I+IIsss)':
+            elif row_name['title']['text'] == 'III. BRÜT K/Z (I+II)':
                 sira_no = seq
                 seq += 1
 
                 tp = Decimal('0.00')
-                yp_usd = Decimal('0.00')
-                yp_eur = Decimal('0.00')
                 yp = Decimal('0.00')
 
-                tp_e12 = objs.filter(
-                    Q(account_code__startswith='548') |
-                    Q(account_code__startswith='582') |
-                    Q(account_code__startswith='704')
-                ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+                data = brut_kz(objs)
 
-                tp_e30 = objs.filter(
-                    Q(account_code__startswith='622.00') |
-                    Q(account_code__startswith='622.09') |
-                    Q(account_code__startswith='644.00') |
-                    Q(account_code__startswith='698.99.00') |
-                    Q(account_code__startswith='840')
-                ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
-
-                tp = tp_e12 - tp_e30
-
-                yp_usd__f12 = objs.filter(
-                    Q(currency__code='USD') &
-                    (
-                        Q(account_code__startswith='549') |
-                        Q(account_code__startswith='583') |
-                        Q(account_code__startswith='705')
-                    )
-                ).aggregate(
-                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
-                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
-                )
-
-                yp_usd__f30 = objs.filter(
-                    Q(currency__code='USD') &
-                    (
-                        Q(account_code__startswith='549') |
-                        Q(account_code__startswith='583') |
-                        Q(account_code__startswith='705')
-                    )
-                ).aggregate(
-                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
-                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
-                )
+                tp = data['tp'] / Decimal('1000.00')
+                yp_usd = data['yp_usd'] / Decimal('1000.00')
+                yp_eur = data['yp_eur'] / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + data['yp']
+                bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
 
             else:
                 sira_no = seq

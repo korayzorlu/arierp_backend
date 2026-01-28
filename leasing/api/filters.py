@@ -59,7 +59,7 @@ class LeaseFilter(FilterSet):
         
     def filter_overdue(self, queryset, overdue, value):
         if value:
-            return queryset.filter(overdue_amount__gt=0)
+            return queryset.filter(overdue_amount__gt=0,overdue_days__gt=0,is_last_project=True)
         else:
             return queryset.filter()
         

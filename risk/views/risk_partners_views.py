@@ -91,3 +91,36 @@ class RiskPartnersExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
 
+class ExportOverdueLeasesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="risk",
+            model_name="OverdueLease",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-vadesi-gecmisler-ham-data.xlsx",
+            export_url="/risk/overdue_leases_excel",
+            params={"project":data.get('project')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class OverdueLeasesExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "overdue_leases", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-vadesi-gecmisler-ham-data.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+

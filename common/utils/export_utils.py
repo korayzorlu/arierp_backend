@@ -168,3 +168,6 @@ class BaseExporter():
 
     def export_finmaksbankaccountbalance(self):
         export_finmaks_bank_account_balances(self)
+
+    def export_overduelease(self):
+        export_overdue_leases(self)
