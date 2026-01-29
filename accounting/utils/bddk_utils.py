@@ -987,4 +987,37 @@ def brut_kz(objs):
         "yp_eur" : (yp_eur__f12['total_sum'] or Decimal('0.00')) - (yp_eur__f30['total_sum'] or Decimal('0.00')),
         "yp" : ((yp_usd__f12['total_sum_tp'] or Decimal('0.00')) - (yp_usd__f30['total_sum_tp'] or Decimal('0.00'))) + ((yp_eur__f12['total_sum_tp'] or Decimal('0.00')) - (yp_eur__f30['total_sum_tp'] or Decimal('0.00')))
     }
-    
+
+def esas_faaliyet(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='810') |
+        Q(account_code__startswith='820.01') |
+        Q(account_code__startswith='820.03.9.00') |
+        Q(account_code__startswith='830') |
+        Q(account_code__startswith='850') |
+        Q(account_code__startswith='880') |
+        Q(account_code__startswith='882')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    return {
+        "tp" : tp,
+        "yp_usd" : Decimal('0.00'),
+        "yp_eur" : Decimal('0.00'),
+        "yp" : Decimal('0.00')
+    }
+
+def brut_faaliyet_kz(objs):
+    data_brut_kz = brut_kz(objs)
+    data_esas_faaliyet = esas_faaliyet(objs)
+
+    tp = data_brut_kz['tp'] - data_esas_faaliyet['tp']
+    yp_usd = data_brut_kz['yp_usd'] - data_esas_faaliyet['yp_usd']
+    yp_eur = data_brut_kz['yp_eur'] - data_esas_faaliyet['yp_eur']
+    yp = data_brut_kz['yp'] - data_esas_faaliyet['yp']
+
+    return {
+        "tp" : tp, 
+        "yp_usd" : yp_usd,
+        "yp_eur" : yp_eur,
+        "yp" : yp
+    }

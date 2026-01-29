@@ -20,7 +20,7 @@ from datetime import date
 
 from ..serializers.trial_balances_serializers import *
 from ..filters.trial_balances_filters import *
-from ...utils.bddk_utils import bl222af_row_names, kz222af_row_names, brut_kz
+from ...utils.bddk_utils import bl222af_row_names, kz222af_row_names, brut_kz,esas_faaliyet,brut_faaliyet_kz
 
 
 class QueryListAPIView(generics.ListAPIView):
@@ -348,7 +348,23 @@ class Kz222afList(ModelViewSet, QueryListAPIView):
                 yp_eur = data['yp_eur'] / Decimal('1000.00')
                 toplam = tp + yp_usd + yp_eur
                 toplam_tp = tp + data['yp']
-                bos = True if len(row_name['tps']) == 0 and len(row_name['yps']) == 0 else False
+                bos = False
+
+            elif row_name['title']['text'] == 'V. BRÜT FAALİYET K/Z (III+IV)':
+                sira_no = seq
+                seq += 1
+
+                tp = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                data = brut_faaliyet_kz(objs)
+
+                tp = data['tp'] / Decimal('1000.00')
+                yp_usd = data['yp_usd'] / Decimal('1000.00')
+                yp_eur = data['yp_eur'] / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + data['yp']
+                bos = False
 
             else:
                 sira_no = seq
