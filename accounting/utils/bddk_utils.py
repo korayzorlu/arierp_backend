@@ -845,8 +845,8 @@ def kz222af_row_names():
                 {
                     'type': '',
                     'title': {'text': 'IX. NET FAALİYET K/Z (V+…+VIII)', 'font_weight': 'bold'},
-                    'tps': [],
-                    'yps': [],
+                    'tps': ['999'],
+                    'yps': ['999'],
                 },
                 {
                     'type': '',
@@ -869,8 +869,8 @@ def kz222af_row_names():
                 {
                     'type': '',
                     'title': {'text': 'XIII. SÜRDÜRÜLEN FAALİYETLER VERGİ ÖNCESİ K/Z (IX+X+XI+XII)', 'font_weight': 'bold'},
-                    'tps': [],
-                    'yps': [],
+                    'tps': ['999'],
+                    'yps': ['999'],
                 },
                 {
                     'type': '',
@@ -881,38 +881,38 @@ def kz222af_row_names():
                 {
                     'type': '',
                     'title': {'text': '14.1 Cari Vergi Karşılığı', 'font_weight': 'normal'},
-                    'tps': [],
+                    'tps': ['820.02'],
                     'yps': [],
                 },
                 {
                     'type': '',
                     'title': {'text': '14.2 Ertelenmiş Vergi Gider Etkisi (+)', 'font_weight': 'normal'},
-                    'tps': [],
+                    'tps': ['896'],
                     'yps': [],
                 },
                 {
                     'type': '',
                     'title': {'text': '14.3 Ertelenmiş Vergi Gelir Etkisi (-)', 'font_weight': 'normal'},
-                    'tps': [],
+                    'tps': ['794'],
                     'yps': [],
                 },
                 {
                     'type': '',
                     'title': {'text': 'XV. SÜRDÜRÜLEN FAALİYETLER DÖNEM NET K/Z (XIII±XIV)', 'font_weight': 'bold'},
-                    'tps': [],
-                    'yps': [],
+                    'tps': ['999'],
+                    'yps': ['999'],
                 },
                 {
                     'type': '',
                     'title': {'text': 'XX. DURDURULAN FAALİYETLER DÖNEM NET K/Z (XVIII±XIX)', 'font_weight': 'bold'},
-                    'tps': [],
-                    'yps': [],
+                    'tps': ['999'],
+                    'yps': ['999'],
                 },
                 {
                     'type': '',
                     'title': {'text': 'XXI. DÖNEM NET KARI/ZARARI (XV+XX)', 'font_weight': 'bold'},
-                    'tps': [],
-                    'yps': [],
+                    'tps': ['999'],
+                    'yps': ['999'],
                 },
     ]
 
@@ -1020,4 +1020,145 @@ def brut_faaliyet_kz(objs):
         "yp_usd" : yp_usd,
         "yp_eur" : yp_eur,
         "yp" : yp
+    }
+
+def diger_faaliyet_gelirleri(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='570') |
+        Q(account_code__startswith='780.09.001') |
+        Q(account_code__startswith='790') |
+        Q(account_code__startswith='792')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    yp_usd = objs.filter(
+        Q(currency__code='USD') &
+        (
+            Q(account_code__startswith='571') |
+            Q(account_code__startswith='861') |
+            Q(account_code__startswith='599') |
+            Q(account_code__startswith='791')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    yp_eur = objs.filter(
+        Q(currency__code='EUR') &
+        (
+            Q(account_code__startswith='571') |
+            Q(account_code__startswith='861') |
+            Q(account_code__startswith='599') |
+            Q(account_code__startswith='791')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    return {
+        "tp" : tp,
+        "yp_usd" : yp_usd['total_sum'] or Decimal('0.00'),
+        "yp_eur" : yp_eur['total_sum'] or Decimal('0.00'),
+        "yp" : (yp_usd['total_sum_tp'] or Decimal('0.00')) + (yp_eur['total_sum_tp'] or Decimal('0.00'))
+    }
+
+def karsilik_giderleri(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='820.00')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    yp_usd = objs.filter(
+        Q(currency__code='USD') &
+        (
+            Q(account_code__startswith='821.00')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    yp_eur = objs.filter(
+        Q(currency__code='EUR') &
+        (
+            Q(account_code__startswith='821.00')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    return {
+        "tp" : tp,
+        "yp_usd" : yp_usd['total_sum'] or Decimal('0.00'),
+        "yp_eur" : yp_eur['total_sum'] or Decimal('0.00'),
+        "yp" : (yp_usd['total_sum_tp'] or Decimal('0.00')) + (yp_eur['total_sum_tp'] or Decimal('0.00'))
+    }
+
+def diger_faaliyet_giderleri(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='820.03.1')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    yp_usd = objs.filter(
+        Q(currency__code='USD') &
+        (
+            Q(account_code__startswith='861')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    yp_eur = objs.filter(
+        Q(currency__code='EUR') &
+        (
+            Q(account_code__startswith='861')
+        )
+    ).aggregate(
+        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+    )
+
+    return {
+        "tp" : tp,
+        "yp_usd" : yp_usd['total_sum'] or Decimal('0.00'),
+        "yp_eur" : yp_eur['total_sum'] or Decimal('0.00'),
+        "yp" : (yp_usd['total_sum_tp'] or Decimal('0.00')) + (yp_eur['total_sum_tp'] or Decimal('0.00'))
+    }
+
+def cari_vergi_karsiligi(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='820.02')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    return {
+        "tp" : tp,
+        "yp_usd" : Decimal('0.00'),
+        "yp_eur" : Decimal('0.00'),
+        "yp" : Decimal('0.00')
+    }
+
+def ertelenmis_vergi_gider_etkisi(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='896')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    return {
+        "tp" : tp,
+        "yp_usd" : Decimal('0.00'),
+        "yp_eur" : Decimal('0.00'),
+        "yp" : Decimal('0.00')
+    }
+
+def ertelenmis_vergi_gelir_etkisi(objs):
+    tp = objs.filter(
+        Q(account_code__startswith='794')
+    ).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+
+    return {
+        "tp" : tp,
+        "yp_usd" : Decimal('0.00'),
+        "yp_eur" : Decimal('0.00'),
+        "yp" : Decimal('0.00')
     }

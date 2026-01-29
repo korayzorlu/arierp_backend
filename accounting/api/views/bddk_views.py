@@ -20,7 +20,7 @@ from datetime import date
 
 from ..serializers.trial_balances_serializers import *
 from ..filters.trial_balances_filters import *
-from ...utils.bddk_utils import bl222af_row_names, kz222af_row_names, brut_kz,esas_faaliyet,brut_faaliyet_kz
+from ...utils.bddk_utils import *
 
 
 class QueryListAPIView(generics.ListAPIView):
@@ -364,6 +364,62 @@ class Kz222afList(ModelViewSet, QueryListAPIView):
                 yp_eur = data['yp_eur'] / Decimal('1000.00')
                 toplam = tp + yp_usd + yp_eur
                 toplam_tp = tp + data['yp']
+                bos = False
+            elif row_name['title']['text'] == 'IX. NET FAALİYET K/Z (V+…+VIII)' or row_name['title']['text'] == 'XIII. SÜRDÜRÜLEN FAALİYETLER VERGİ ÖNCESİ K/Z (IX+X+XI+XII)':
+                sira_no = seq
+                seq += 1
+
+                tp = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                data1 = brut_faaliyet_kz(objs)
+                data2 = diger_faaliyet_gelirleri(objs)
+                data3 = karsilik_giderleri(objs)
+                data4 = diger_faaliyet_giderleri(objs)
+
+                tp = (data1['tp'] + data2['tp'] - data3['tp'] - data4['tp']) / Decimal('1000.00')
+                yp_usd = (data1['yp_usd'] + data2['yp_usd'] - data3['yp_usd'] - data4['yp_usd']) / Decimal('1000.00')
+                yp_eur = (data1['yp_eur'] + data2['yp_eur'] - data3['yp_eur'] - data4['yp_eur']) / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + (data1['yp'] + data2['yp'] - data3['yp'] - data4['yp'])
+                bos = False
+            elif row_name['title']['text'] == 'XIV. SÜRDÜRÜLEN FAALİYETLER VERGİ KARŞILIĞI (±)':
+                sira_no = seq
+                seq += 1
+
+                tp = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                data1 = cari_vergi_karsiligi(objs)
+                data2 = ertelenmis_vergi_gider_etkisi(objs)
+                data3 = ertelenmis_vergi_gelir_etkisi(objs)
+
+                tp = (data1['tp'] + data2['tp'] - data3['tp']) / Decimal('1000.00')
+                yp_usd = (data1['yp_usd'] + data2['yp_usd'] - data3['yp_usd']) / Decimal('1000.00')
+                yp_eur = (data1['yp_eur'] + data2['yp_eur'] - data3['yp_eur']) / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + (data1['yp'] + data2['yp'] - data3['yp'])
+                bos = False
+            elif row_name['title']['text'] == 'XV. SÜRDÜRÜLEN FAALİYETLER DÖNEM NET K/Z (XIII±XIV)' or row_name['title']['text'] == 'XXI. DÖNEM NET KARI/ZARARI (XV+XX)':
+                sira_no = seq
+                seq += 1
+
+                tp = Decimal('0.00')
+                yp = Decimal('0.00')
+
+                data1 = brut_faaliyet_kz(objs)
+                data2 = diger_faaliyet_gelirleri(objs)
+                data3 = karsilik_giderleri(objs)
+                data4 = diger_faaliyet_giderleri(objs)
+                data5 = cari_vergi_karsiligi(objs)
+                data6 = ertelenmis_vergi_gider_etkisi(objs)
+                data7 = ertelenmis_vergi_gelir_etkisi(objs)
+
+                tp = ((data1['tp'] + data2['tp'] - data3['tp'] - data4['tp']) - (data5['tp'] + data6['tp'] - data7['tp'])) / Decimal('1000.00')
+                yp_usd = ((data1['yp_usd'] + data2['yp_usd'] - data3['yp_usd'] - data4['yp_usd']) - (data5['yp_usd'] + data6['yp_usd'] - data7['yp_usd'])) / Decimal('1000.00')
+                yp_eur = ((data1['yp_eur'] + data2['yp_eur'] - data3['yp_eur'] - data4['yp_eur']) - (data5['yp_eur'] + data6['yp_eur'] - data7['yp_eur'])) / Decimal('1000.00')
+                toplam = tp + yp_usd + yp_eur
+                toplam_tp = tp + ((data1['yp'] + data2['yp'] - data3['yp'] - data4['yp']) - (data5['yp'] + data6['yp'] - data7['yp']))
                 bos = False
 
             else:
