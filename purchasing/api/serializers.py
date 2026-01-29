@@ -47,7 +47,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
                 "lease_status" : obj.lease.get_lease_status_display(),
                 "status" : obj.lease.status.name if obj.lease.status else "",
                 "vat" : obj.lease.vat,
-                "bbsn" : obj.lease.bbsn,
+                "bbsn" : obj.lease.bbsn if obj.lease.bbsn is not None or obj.lease.bbsn == "None" else "",
                 "ifs_tahsilat" : obj.lease.ifs_tahsilat,
                 "is_tufe" : obj.lease.is_tufe,
             }
