@@ -129,6 +129,51 @@ class TradeAccountList(ModelViewSet, QueryListAPIView):
         return queryset
     
 class TradeTransactionList(ModelViewSet, QueryListAPIView):
+    serializer_class = TradeTransaction1ListSerializer
+    filterset_class = TradeTransactionFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    #ordering_fields = '__all__'
+    #ordering_fields = list(TradeTransaction._meta.get_fields()) + ['total_tl']
+    ordering_fields = [f.name for f in TradeTransaction._meta.get_fields() if hasattr(f, 'name')]
+    ordering = ['posting_group_id','due_date','record_date','trade_transaction_id']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [AllowAny]
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","partner","lease","currency"]
+        
+        queryset = TradeTransaction.objects.select_related(*custom_related_fields).filter(
+            Q(company=active_company.company if active_company else None) &
+            ~Q(delete_status__in=['2'])
+        ).exclude(delete_status__in=['2'])
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["trade_transaction_id","partner__name","lease__code","posting_group_id","posting_group_name","description","document_no","amount_type","currency__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+    
+class TradeTransactionForLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = TradeTransactionListSerializer
     filterset_class = TradeTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
