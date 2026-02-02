@@ -9,6 +9,7 @@ from accounting.utils.common_utils import trial_balance_main_account_codes
 class InvoiceFilter(FilterSet):
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
     lease = CharFilter(field_name='lease__code', lookup_expr='icontains')
+    lease_uuid = CharFilter(field_name='lease__uuid', lookup_expr='exact')
     invoice_no = CharFilter(field_name='invoice_no', lookup_expr='icontains')
     type = CharFilter(field_name='type', lookup_expr='icontains')
     date = CharFilter(field_name='date', lookup_expr='icontains')
