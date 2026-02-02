@@ -72,24 +72,22 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ["company","partner","type","currency","amount"]
+    list_display = ["company","lease","partner","trn_id","invoice_no","amount","currency","type","date"]
     list_display_links = ["partner"]
-    search_fields = ["company__name","partner__name","type","currency__code","amount"]
+    search_fields = ["company__name","partner__name","lease__code","type","lease__currency__code","date"]
     list_filter = []
     inlines = []
-    ordering = ["company__name","partner__name"]
+    ordering = ["company__name","-date"]
+    autocomplete_fields = ["partner","lease","currency"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
     def partner(self,obj):
         return obj.partner.name if obj.partner else ""
     def currency(self,obj):
-        return obj.currency.code if obj.currency else ""
-    
-    def delete_queryset(self, request, queryset):
-        for obj in queryset:
-            obj.delete()
-    
+        return obj.lease.currency.code if obj.lease and obj.lease.currency else ""
+    def lease(self,obj):
+        return obj.lease.code if obj.lease else ""
     class Meta:
         model = Invoice
 

@@ -3,5 +3,4 @@ FROM
     TradeTransactionAllInvoices (NOLOCK)
 WHERE
     TrnOprLeasingOperationPrjId = '86649'
-
     

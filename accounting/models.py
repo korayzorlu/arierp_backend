@@ -10,6 +10,7 @@ from partners.models import Partner
 from common.models import Currency
 from companies.models import Company
 from contracts.models import Contract
+from leasing.models import Lease
 
 # Create your models here.
 
@@ -190,6 +191,7 @@ class Invoice(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="invoices")
 
+    trn_id = models.CharField(_("Trn ID"), max_length=25, blank = True, null=True)
     invoice_no = models.CharField(_("Invoice No"), max_length=140, blank = True, null=True)
 
     TYPES = [
@@ -199,63 +201,17 @@ class Invoice(models.Model):
     type = models.CharField(_("Type"), max_length=10, choices=TYPES, default = "sale")
 
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_invoices")
+    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, related_name="lease_invoices", null=True, blank=True)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_invoices")
 
     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
-    date = models.DateTimeField(_("Date"), auto_now_add=True, null=True)
+    date = models.DateTimeField(_("Date"), blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(f"{self.partner.name} - {self.invoice_no}")
-    
-    def save(self, *args, **kwargs):
-        with transaction.atomic():
-            is_new = self._state.adding
-
-            if is_new:
-                self._get_or_create_acc_txn()
-            else:
-                txns = Transaction.objects.filter(ref_uuid = str(self.uuid))
-                old_invoice = Invoice.objects.get(pk=self.pk)
-
-                partner_changed = self.partner != old_invoice.partner
-                currency_changed = self.currency != old_invoice.currency
-
-                if partner_changed or currency_changed:
-                    # Eski Transaction'ın etkisini kaldır
-                    for txn in txns:
-                        txn.delete()
-
-                    self._get_or_create_acc_txn()
-
-                else:
-                    for txn in txns:
-                        txn.amount = self.amount
-                        txn.save()
-
-            super().save(*args, **kwargs)
-    
-    def delete(self, *args, **kwargs):
-        with transaction.atomic():
-            txns = Transaction.objects.filter(ref_uuid = str(self.uuid))
-            for txn in txns:
-                txn.delete()
-            super().delete(*args, **kwargs)
-
-    def _get_or_create_acc_txn(self):
-        description = f"{self.get_type_display()} - {self.invoice_no or ''}"
-        if self.type == 'sale':
-            receivable_account = get_or_create_account(self.company, self.currency, "receivable", self.partner)
-            sales_account = get_or_create_account(self.company, self.currency, "sales")
-            receivable_txn = create_transaction(self.company, "debit", receivable_account, self.amount, self.uuid,description)
-            sales_txn = create_transaction(self.company, "credit", sales_account, self.amount, self.uuid,description)
-        elif self.type == 'purchase':
-            payable_account = get_or_create_account(self.company, self.currency, "payable", self.partner)
-            expense_account = get_or_create_account(self.company, self.currency, "expense")
-            payable_txn = create_transaction(self.company, "credit", payable_account, self.amount, self.uuid,description)
-            expense_txn = create_transaction(self.company, "debit", expense_account, self.amount, self.uuid,description)
+        return str(f"{self.lease.code} - {self.invoice_no}")
 
 class Payment(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -394,4 +350,5 @@ class TrialBalanceTransaction(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(f"{self.transaction_id} - {self.trial_balance.account_code if self.trial_balance else ''} - {self.trial_balance.account_name if self.trial_balance else ''}")  
+        return str(f"{self.transaction_id} - {self.trial_balance.account_code if self.trial_balance else ''} - {self.trial_balance.account_name if self.trial_balance else ''}") 
+    

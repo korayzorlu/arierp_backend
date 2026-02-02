@@ -15,6 +15,8 @@ urlpatterns = [
     path('add_invoice/', AddInvoiceView.as_view(), name="add_invoice"),
     path('update_invoice/', UpdateInvoiceView.as_view(), name="update_invoice"),
     path('delete_invoice/', DeleteInvoiceView.as_view(), name="delete_invoice"),
+    path('export_invoices/', ExportInvoicesView.as_view(), name="export_invoices"),
+    path('invoices_excel/', InvoicesExcelView.as_view(), name="invoices_excel"),
 
     path('add_payment/', AddPaymentView.as_view(), name="add_payment"),
     path('update_payment/', UpdatePaymentView.as_view(), name="update_payment"),

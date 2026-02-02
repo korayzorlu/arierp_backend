@@ -4,6 +4,7 @@ from rest_framework import routers
 from .views.accounts_views import *
 from .views.trial_balances_views import *
 from .views.trial_balance_transactions_views import *
+from .views.invoices_views import *
 from .views.bddk_views import *
 
 router = routers.DefaultRouter()

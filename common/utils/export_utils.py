@@ -32,6 +32,7 @@ from contracts.utils.contract_utils import export_contract_payments
 from operation.utils import export_partner_advance_activities,export_partner_advances
 from partners.utils.common_utils import export_partners
 from accounting.utils.trial_balance_utils import export_trial_balances
+from accounting.utils.invoice_utils import export_invoices
 from finance.utils import export_finmaks_bank_account_balances
 
 from dotenv import load_dotenv
@@ -165,6 +166,9 @@ class BaseExporter():
 
     def export_trialbalance(self):
         export_trial_balances(self)
+
+    def export_invoice(self):
+        export_invoices(self)
 
     def export_finmaksbankaccountbalance(self):
         export_finmaks_bank_account_balances(self)

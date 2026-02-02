@@ -13,6 +13,7 @@ from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from accounting.utils.trial_balance_utils import fetch_trial_balances_from_leaseflex,fetch_trial_balance_transactions_from_leaseflex
+from accounting.utils.invoice_utils import fetch_invoices_from_leaseflex
 
 @shared_task()
 def fetch_trial_balances(company):
@@ -21,3 +22,7 @@ def fetch_trial_balances(company):
 @shared_task()
 def fetch_trial_balance_transactions(company):
     fetch_trial_balance_transactions_from_leaseflex(company)
+
+@shared_task()
+def fetch_invoices(company):
+    fetch_invoices_from_leaseflex(company)

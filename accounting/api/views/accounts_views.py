@@ -221,7 +221,7 @@ class InvoiceFilter(FilterSet):
     def filter_partner(self, queryset, partner, value):
         return queryset.filter(partner__uuid = value)
     
-class InvoiceList(ModelViewSet, QueryListAPIView):
+class InvoiceeList(ModelViewSet, QueryListAPIView):
     serializer_class = InvoiceListSerializer
     filterset_class = InvoiceFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
