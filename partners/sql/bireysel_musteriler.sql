@@ -44,4 +44,8 @@ LEFT OUTER JOIN dbo.CrmTaxDepartment
 LEFT OUTER JOIN dbo.CrmAddressDefaultContactList ca
     ON dbo.CrmContact.ContactId = ca.ObjectId
 LEFT OUTER JOIN dbo.CrmTaxDepartment td
-    ON dbo.CrmIndividualCustomer.CommercialTaxDepartment = td.TaxDepartmentId;
+    ON dbo.CrmIndividualCustomer.CommercialTaxDepartment = td.TaxDepartmentId
+-- WHERE
+--     dbo.CrmContact.PepList = '1'
+-- ORDER BY
+--     dbo.CrmContact.FullName ASC

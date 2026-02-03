@@ -1,3 +1,10 @@
-SELECT TOP 1000 *
+SELECT TrnId,
+        TrnOprLeasingOperationPrjId,
+        CustomerId,
+        InvoiceDate,
+        InvoiceNumber,
+        InvoiceAmount
 FROM
-    FoundationUserList
+    TradeTransactionAllInvoices (NOLOCK)
+WHERE
+    TrnOprLeasingOperationPrjId = '98395'

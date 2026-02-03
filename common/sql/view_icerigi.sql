@@ -1,3 +1,3 @@
-SELECT definition AS FoundationUserRoleList
+SELECT definition AS CrmContact
 FROM sys.sql_modules
-WHERE object_id = OBJECT_ID('FoundationUserRoleList');
+WHERE object_id = OBJECT_ID('CrmContact');

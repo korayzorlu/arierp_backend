@@ -21,12 +21,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-c', type=str, help='Company to associate with operation')
+        parser.add_argument('-l', type=str, help='Lease ID to associate with operation')
 
     def handle(self, *args, **options):
         company = options.get('c')
+        lease_id = options.get('l')
 
         print("processing...")
         
-        fetch_installments.delay(company)
+        fetch_installments.delay(company,lease_id=lease_id)
         
         print("done!")

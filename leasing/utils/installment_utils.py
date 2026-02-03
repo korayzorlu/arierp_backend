@@ -20,16 +20,19 @@ from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal,has_more_than_two_decimal_places
 from partners.models import Partner
 
-def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000):
+def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000, lease_id=None):
     try:
         conn = pyodbc.connect(settings.ARI_CONNECTION_STRING)
 
-        SQL_PATH = os.path.join(settings.BASE_DIR, "leasing","sql","taksitler.sql")
+        SQL_PATH = os.path.join(settings.BASE_DIR, "leasing","sql",f"taksitler.sql" if not lease_id else f"taksitler_filtreli.sql")
         with open(SQL_PATH, "r", encoding="utf-8") as file:
             SQL_QUERY = file.read()
 
         cursor = conn.cursor()
-        cursor.execute(SQL_QUERY)
+        if lease_id:
+            cursor.execute(SQL_QUERY,[lease_id] )
+        else:
+            cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
         # Installment.objects.select_related().filter(sequency = 0).delete()

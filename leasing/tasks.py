@@ -119,8 +119,8 @@ def fetch_interest_rates(company):
 
 
 @shared_task()
-def fetch_installments(company):
-    fetch_installments_from_leaseflex(company)
+def fetch_installments(company, lease_id=None):
+    fetch_installments_from_leaseflex(company, lease_id=lease_id)
     update_first_installment_date(company)
 
 
