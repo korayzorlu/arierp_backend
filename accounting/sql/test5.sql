@@ -1,9 +1,4 @@
-SELECT TrnId,
-        TrnOprLeasingOperationPrjId,
-        CustomerId,
-        InvoiceDate,
-        InvoiceNumber,
-        InvoiceAmount
+SELECT *
 FROM
     TradeTransactionAllInvoices (NOLOCK)
 WHERE
