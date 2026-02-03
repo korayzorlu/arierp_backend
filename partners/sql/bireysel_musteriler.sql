@@ -29,6 +29,7 @@ SELECT TOP 100 PERCENT
     dbo.CrmContact.PepList,
     dbo.CrmContact.PepListDegree,
     dbo.CrmContact.PepListDescription,
+    sgk.JOB_CODE_DESCRIPTION,
     ca.CountryCode,
     ca.Email,
     PassportNo,
@@ -45,6 +46,8 @@ LEFT OUTER JOIN dbo.CrmAddressDefaultContactList ca
     ON dbo.CrmContact.ContactId = ca.ObjectId
 LEFT OUTER JOIN dbo.CrmTaxDepartment td
     ON dbo.CrmIndividualCustomer.CommercialTaxDepartment = td.TaxDepartmentId
+LEFT OUTER JOIN dbo.CRM_SGK_JOB_CODE_COMBO sgk
+    ON dbo.CrmContact.SgkJobCode = sgk.SgkJobCode
 -- WHERE
 --     dbo.CrmContact.PepList = '1'
 -- ORDER BY
