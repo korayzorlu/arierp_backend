@@ -249,6 +249,63 @@ class ActiveLeaseList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
 
+class UnderReviewLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = ActiveLeaseListSerializer
+    filterset_class = ActiveLeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn']
+    ordering = ['-activation_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
+
+        queryset = Lease.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            (
+                (
+                    Q(lease_status='aktiflestirildi') &
+                    Q(lease_invoices__isnull=True)
+                ) |
+                (
+                    Q(lease_status='planlandi') &
+                    Q(lease_invoices__isnull=False)
+                )
+            ) &
+            Q(is_last_project=True)
+        ).exclude(
+            Q(contract__partner__types__contains=['special'])
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+
 
 class LeaseSummaryList(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseListSerializer

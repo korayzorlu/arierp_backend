@@ -35,6 +35,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : ["default"], "label" : "Yürürlükteki Kira Planları", "icon" : "description", "route" : "/active-leases"},
                 {"type" : "item", "class" : ["default"], "label" : "Kira Planları Detaylı", "icon" : "description", "route" : "/installments"},
+                {"type" : "item", "class" : ["default"], "label" : "Hatalı Kira Planları", "icon" : "description", "route" : "/under-review-leases"},
             ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Gayrimenkul", "icon" : "in_home_mode", "items" : [
             #     {"type" : "item", "class" : ["admin"], "label" : "Tapu Gayrimenkulleri", "icon" : "paid", "route" : "/krs-notifications"},
