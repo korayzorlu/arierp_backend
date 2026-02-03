@@ -181,8 +181,9 @@ class GetWarningNoticeView(LoginRequiredMixin,View):
 
         lease = Lease.objects.select_related().filter(uuid = uuid).first()
 
-        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "warned_risk_partners", "documents",f"{lease.contract.code}.docx")
-        print(file_path)
+        file_name = lease.contract.code.replace("/","-")
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "warned_risk_partners", "documents",f"{file_name}.docx")
+        
         if not os.path.exists(file_path):
             return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
         
