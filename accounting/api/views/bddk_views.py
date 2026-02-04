@@ -443,11 +443,11 @@ class Kz222afList(ModelViewSet, QueryListAPIView):
                 #     yp_usd += objs.filter(Q(account_code__startswith=y) & Q(currency__code='USD')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
                 #     yp_eur += objs.filter(Q(account_code__startswith=y) & Q(currency__code='EUR')).aggregate(total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')))['total_sum'] or Decimal('0.00')
 
-                yp_query = Q()
-                for code in row_name['yps']:
-                    yp_query |= Q(account_code__startswith=code)
-
                 if row_name['yps']:
+                    yp_query = Q()
+                    for code in row_name['yps']:
+                        yp_query |= Q(account_code__startswith=code)
+                        
                     yp_usd_agg = objs.filter(yp_query, currency__code='USD').aggregate(
                         total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
                         total_sum_tp=Sum(F('total_debit') - F('total_credit'))
