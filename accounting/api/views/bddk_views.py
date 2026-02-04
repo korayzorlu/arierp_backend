@@ -447,14 +447,15 @@ class Kz222afList(ModelViewSet, QueryListAPIView):
                 for code in row_name['yps']:
                     yp_query |= Q(account_code__startswith=code)
 
-                yp_usd_agg = objs.filter(yp_query, currency__code='USD').aggregate(
-                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
-                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
-                )
-                yp_eur_agg = objs.filter(yp_query, currency__code='EUR').aggregate(
-                    total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
-                    total_sum_tp=Sum(F('total_debit') - F('total_credit'))
-                )
+                if row_name['yps']:
+                    yp_usd_agg = objs.filter(yp_query, currency__code='USD').aggregate(
+                        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                    )
+                    yp_eur_agg = objs.filter(yp_query, currency__code='EUR').aggregate(
+                        total_sum=Sum(F('total_debit_alternate') - F('total_credit_alternate')),
+                        total_sum_tp=Sum(F('total_debit') - F('total_credit'))
+                    )
 
                 yp_usd = yp_usd_agg['total_sum'] or Decimal('0.00')
                 yp_eur = yp_eur_agg['total_sum'] or Decimal('0.00')

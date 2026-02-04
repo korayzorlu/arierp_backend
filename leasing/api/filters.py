@@ -305,6 +305,7 @@ class DeliveryConfirmFilter(FilterSet):
     def filter_the_project(self, queryset, the_project, value):
         print("the_project",value)
         return queryset.filter(partner_contracts__project_obj__uuid=value) 
+    
 class DepositPartnerFilter(FilterSet):
     name = CharFilter(method = 'filter_name')
     special = CharFilter(method = 'filter_special')
