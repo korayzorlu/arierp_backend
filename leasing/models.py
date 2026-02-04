@@ -134,6 +134,7 @@ class Lease(models.Model):
     is_agreed_terminated = models.BooleanField(default=False)
     is_credit = models.BooleanField(default=False)
     is_under_review = models.BooleanField(default=False)
+    is_invoice = models.BooleanField(default=False)
     
     WARNING_NOTICE_STATUS_CHOICES = (
         ('ihtar_yok', ('İhtar Yok')),
