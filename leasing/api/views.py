@@ -279,17 +279,18 @@ class UnderReviewLeaseList(ModelViewSet, QueryListAPIView):
 
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            (
-                (
-                    Q(lease_status='aktiflestirildi') &
-                    Q(lease_invoices__isnull=True)
-                ) |
-                (
-                    Q(lease_status='planlandi') &
-                    Q(lease_invoices__isnull=False)
-                )
-            ) &
-            Q(is_last_project=True)
+            Q(is_not_invoice=True)
+            # (
+            #     (
+            #         Q(lease_status='aktiflestirildi') &
+            #         Q(lease_invoices__isnull=True)
+            #     ) |
+            #     (
+            #         Q(lease_status='planlandi') &
+            #         Q(lease_invoices__isnull=False)
+            #     )
+            # ) &
+            # Q(is_last_project=True)
         ).exclude(
             Q(contract__partner__types__contains=['special'])
         )
