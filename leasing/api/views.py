@@ -277,33 +277,19 @@ class UnderReviewLeaseList(ModelViewSet, QueryListAPIView):
         
         custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
 
-        # Create a subquery to check if any lease with the same main_lease_id has invoices
-        has_invoices_subquery = Lease.objects.select_related().filter(
-            main_lease_id=OuterRef('main_lease_id')
-        ).filter(
-            lease_invoices__isnull=False
-        ).values('main_lease_id')
-
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi')
-            ) &
-            Q(is_last_project=True)
-        ).annotate(
-            main_lease_has_invoices=Exists(has_invoices_subquery)
-        ).filter(
-            (
                 (
                     Q(lease_status='aktiflestirildi') &
-                    Q(main_lease_has_invoices=False)
+                    Q(lease_invoices__isnull=True)
                 ) |
                 (
                     Q(lease_status='planlandi') &
-                    Q(main_lease_has_invoices=True)
+                    Q(lease_invoices__isnull=False)
                 )
-            )  
+            ) &
+            Q(is_last_project=True)
         ).exclude(
             Q(contract__partner__types__contains=['special'])
         )

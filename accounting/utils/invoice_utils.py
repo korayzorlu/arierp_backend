@@ -28,6 +28,8 @@ def fetch_invoices_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
+        all_leases = Lease.objects.select_related().filter(is_last_project=True)
+        all_leases_dict = {l.main_lease_id: l for l in all_leases}
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         update_progress = 0
@@ -57,41 +59,49 @@ def fetch_invoices_from_leaseflex(company,BATCH_SIZE=1000):
                     obj = None
 
                 if obj:
-                    # if obj.lease.is_last_project:
-                    #     obj.trn_id = str(data.TrnId) or ""
-                    #     obj.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
-                    #     obj.partner = partner_dict.get(str(data.CustomerId))
-                    #     obj.invoice_no = str(data.InvoiceNumber) or ""
-                    #     obj.type = "sale"
-                    #     obj.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
-                    #     obj.amount = safe_decimal(data.InvoiceAmount)
-                    #     update_objs.append(obj)
-                    # else:
-                    #     last_lease = Lease.objects.select_related().filter(main_lease_id=obj.lease.main_lease_id,is_last_project=True).first()
-                    #     last_lease.trn_id = str(data.TrnId) or ""
-                    #     last_lease.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
-                    #     last_lease.partner = partner_dict.get(str(data.CustomerId))
-                    #     last_lease.invoice_no = str(data.InvoiceNumber) or ""
-                    #     last_lease.type = "sale"
-                    #     last_lease.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
-                    #     last_lease.amount = safe_decimal(data.InvoiceAmount)
-                    #     update_objs.append(last_lease)
-                    obj.trn_id = str(data.TrnId) or ""
-                    obj.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
-                    obj.partner = partner_dict.get(str(data.CustomerId))
-                    obj.invoice_no = str(data.InvoiceNumber) or ""
-                    obj.type = "sale"
-                    obj.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
-                    obj.amount = safe_decimal(data.InvoiceAmount)
-                    update_objs.append(obj)
+                    if obj.lease.is_last_project:
+                        obj.trn_id = str(data.TrnId) or ""
+                        obj.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
+                        obj.partner = partner_dict.get(str(data.CustomerId))
+                        obj.invoice_no = str(data.InvoiceNumber) or ""
+                        obj.type = "sale"
+                        obj.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
+                        obj.amount = safe_decimal(data.InvoiceAmount)
+                        update_objs.append(obj)
+                    else:
+                        last_lease = all_leases_dict.get(obj.lease.main_lease_id)
+                        last_lease.trn_id = str(data.TrnId) or ""
+                        last_lease.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
+                        last_lease.partner = partner_dict.get(str(data.CustomerId))
+                        last_lease.invoice_no = str(data.InvoiceNumber) or ""
+                        last_lease.type = "sale"
+                        last_lease.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
+                        last_lease.amount = safe_decimal(data.InvoiceAmount)
+                        update_objs.append(last_lease)
+                    # obj.trn_id = str(data.TrnId) or ""
+                    # obj.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
+                    # obj.partner = partner_dict.get(str(data.CustomerId))
+                    # obj.invoice_no = str(data.InvoiceNumber) or ""
+                    # obj.type = "sale"
+                    # obj.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
+                    # obj.amount = safe_decimal(data.InvoiceAmount)
+                    # update_objs.append(obj)
                     update_progress += 1
                 else:
                     lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
+                    if lease:
+                        if lease.is_last_project:
+                            use_lease = lease
+                        else:
+                            use_lease = all_leases_dict.get(lease.main_lease_id)
+                    else:
+                        use_lease = None
+
                     create_objs.append(Invoice(
                         company = company_obj,
                         trn_id = str(data.TrnId) or "",
-                        #lease = lease if lease.is_last_project else Lease.objects.select_related().filter(main_lease_id=lease.main_lease_id,is_last_project=True).first(),
-                        lease = lease,
+                        lease = use_lease,
+                        #lease = lease,
                         partner = partner_dict.get(str(data.CustomerId)),
                         invoice_no = str(data.InvoiceNumber) or "",
                         type = "sale",
