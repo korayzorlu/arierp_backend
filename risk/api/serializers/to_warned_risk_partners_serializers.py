@@ -57,33 +57,14 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=25) &
-            (
-                Q(overdue_31_60__gt=0) |
-                Q(overdue_61_90__gt=0) |
-                Q(overdue_91_120__gt=0) |
-                Q(overdue_121_150__gt=0) |
-                Q(overdue_151_180__gt=0) |
-                Q(overdue_181_gte__gt=0)
-            ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            to_warned_filters_for_serializers()
         )
 
         leases = leases.annotate(
             overdue_days_int=Cast(
                 F('overdue_days'),
                 output_field=IntegerField()
-            )
-        ).annotate(
+            ),
             expected_payment_date=ExpressionWrapper(
                 today - (F('overdue_days_int') * timedelta(days=1)),
                 output_field=DateField()
@@ -91,18 +72,50 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
             first_installment_payment_date=Max(
                 'lease_installments__payment_date',
                 filter=Q(lease_installments__sequency=0)
-            )
-        ).filter(
-            first_installment_payment_date=F('expected_payment_date')
+            ),
+            first_installment_payment=Max(
+                'lease_installments__payment',
+                filter=Q(lease_installments__sequency=0)
+            ),
+            total_contract_payments=Sum(
+                'contract__contract_contract_payments__credit_amount'
+            ),
+            # total_trade_transactions=Sum(
+            #     Case(
+            #         When(
+            #             lease_trade_transactions__posting_group_name='Kira',
+            #             lease_trade_transactions__amount_type=0,
+            #             then='lease_trade_transactions__amount'
+            #         ),
+            #         output_field=models.DecimalField(),
+            #     )
+            # ),
+            # count_trade_transaction=Count(
+            #     'lease_trade_transactions__id'
+            # )
         )
+        # .filter(
+        #     # (
+        #     #     Q(first_installment_payment_date=F('expected_payment_date')) &
+        #     #     Q(first_installment_payment__lte=20000)
+        #     # ) |
+        #     Q(first_installment_payment_date=F('expected_payment_date')) |
+        #     Q(total_contract_payments__lte=20000) |
+        #     Q(total_trade_transactions__lte=20000) |
+        #     (
+        #         Q(count_trade_transaction__gt=0) &
+        #         Q(is_last_project=True) &
+        #         Q(odenen_yerel__lte=20000)
+        #     )
+        # )
 
-        latest_lease = leases.filter(
-            contract__code=OuterRef('contract__code')
-        ).order_by('-activation_date')
+        # latest_lease = leases.filter(
+        #     contract__code=OuterRef('contract__code')
+        # ).order_by('-activation_date')
 
-        leases = leases.filter(
-            id=Subquery(latest_lease.values('id')[:1])
-        )
+        # leases = leases.filter(
+        #     id=Subquery(latest_lease.values('id')[:1])
+        # )
 
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:

@@ -148,25 +148,7 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-            (
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True)
+            to_warned_filters_for_views()
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
