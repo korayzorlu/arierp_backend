@@ -32,7 +32,7 @@ router.register(r'tufe_exchanged_leases',TufeExchangedLeaseList, "tufe_exchanged
 router.register(r'tomorrow_partners',TomorrowPartnerList, "tomorrow_partners_api")
 router.register(r'today_partners',TodayPartnerList, "today_partners_api")
 router.register(r'to_be_transferred',ToBeTransferredList, "to_be_transferred_api")
-router.register(r'title_deed_confirm',TitleDeedConfirmList, "title_deed_confirm_api")
+router.register(r'title_deed_confirms',TitleDeedConfirmList, "title_deed_confirms_api")
 
 urlpatterns = [
     path('',include(router.urls)),

@@ -102,6 +102,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Teslim", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Teslim Onay", "icon" : "policy", "route" : "/delivery-confirm"},
                     {"type" : "item", "class" : ["default"], "label" : "Devredilecekler", "icon" : "policy", "route" : "/to-be-transferred"},
+                    {"type" : "item", "class" : ["default"], "label" : "Tapu Teslim Onay", "icon" : "policy", "route" : "/title-deed-confirm"},
                 ]},
                 {"type" : "item", "class" : ["default"], "label" : "Kaporalar", "icon" : "policy", "route" : "/deposit-partners"},
                 #{"type" : "item", "class" : ["default"], "label" : "1 Gün Gecikenler", "icon" : "policy", "route" : "/yesterday-partners"},

@@ -111,7 +111,7 @@ class DatatablesPagination(LimitOffsetPagination):
         })
 
 
-class TitleDeedConfirmList(ModelViewSet, QueryListAPIView):
+class TitleDeedConfirm2List(ModelViewSet, QueryListAPIView):
     serializer_class = TitleDeedConfirmListSerializer
     filterset_class = TitleDeedConfirmFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
@@ -167,3 +167,56 @@ class TitleDeedConfirmList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
  
+class TitleDeedConfirmList(ModelViewSet, QueryListAPIView):
+    serializer_class = TitleDeedConfirmListSerializer
+    filterset_class = TitleDeedConfirmFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn']
+    ordering = ['-activation_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
+
+        queryset = Lease.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            # (
+            #     Q(lease_status='aktiflestirildi') |
+            #     Q(lease_status='planlandi') |
+            #     Q(lease_status='durduruldu') |
+            #     Q(lease_status='feshedildi') |
+            #     Q(lease_status='devredildi')
+            # ) &
+            Q(is_last_project=True)
+        ).exclude(
+            Q(contract__partner__types__contains=['special'])
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset

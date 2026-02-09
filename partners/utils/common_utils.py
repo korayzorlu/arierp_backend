@@ -35,7 +35,12 @@ def get_partner_types(data):
     return types
 
 def export_partners(self):
-    objs = Partner.objects.select_related().filter()
+    objs = Partner.objects.select_related().filter(
+        Q(partner__contracts__isnull=False) &
+        Q(partner__contracts__lease__activation_date__gte=date(2021, 1, 1)) &
+        ~Q(partner__contracts__lease__lease_status='feshedildi') &
+        ~Q(partner__contracts__lease__lease_status='baskasina_transfer_edildi')
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
