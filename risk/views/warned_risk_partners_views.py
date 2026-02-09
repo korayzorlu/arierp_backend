@@ -130,7 +130,7 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                     tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
 
                 gecikme_bakiye = lease.overdue_amount
-                masraf_bakiye = (gecikme_bakiye / 100) * 10
+                masraf_bakiye = (gecikme_bakiye / 100) * 15
                 toplam_borc_bakiye = gecikme_bakiye + masraf_bakiye
                 gelecek_bakiye = get_future_payments(lease.lease_id)
                 toplam_bakiye = toplam_borc_bakiye + gelecek_bakiye
