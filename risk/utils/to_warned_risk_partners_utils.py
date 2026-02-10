@@ -16,6 +16,7 @@ from leasing.models import Lease
 from partners.models import Partner
 
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
+from risk.utils.filter_utils import to_warned_filters_for_views_lease
 
 def export_to_warned_risk_partners_for_sms(self):
     objs = Partner.objects.select_related().filter(
@@ -191,26 +192,7 @@ def export_to_warned_risk_partners_for_sms(self):
 def export_to_warned_risk_partners(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
         vendor_filter_for_serializers(self.params) &
-        (
-            Q(lease_status='aktiflestirildi') |
-            Q(lease_status='planlandi') |
-            Q(lease_status='durduruldu')
-        ) &
-        Q(contract__currency__code="TRY") &
-        Q(is_last_project=True) &
-        Q(is_kdv_diff=False) &
-        Q(is_credit=False) &
-        Q(is_under_review=False) &
-        Q(overdue_days__gt=25) &
-        (
-            Q(overdue_31_60__gt=0) |
-            Q(overdue_61_90__gt=0) |
-            Q(overdue_91_120__gt=0) |
-            Q(overdue_121_150__gt=0) |
-            Q(overdue_151_180__gt=0) |
-            Q(overdue_181_gte__gt=0)
-        ) &
-        Q(contract__contract_warning_notices__isnull=True)
+        to_warned_filters_for_views_lease()
     ).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |

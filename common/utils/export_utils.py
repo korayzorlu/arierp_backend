@@ -110,8 +110,8 @@ class BaseExporter():
     def export_kdvriskpartner(self):
         export_kdv_risk_partners(self)
 
-    def export_towarnedriskpartnerforsms(self):
-        export_to_warned_risk_partners_for_sms(self)
+    def export_towarnedriskpartner(self):
+        export_to_warned_risk_partners(self)
 
     def export_depositetowarnedriskpartner(self):
         export_deposite_to_warned_risk_partners(self)
