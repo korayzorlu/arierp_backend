@@ -161,6 +161,10 @@ class TitleDeedConfirmListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
+    odenmesi_gereken_yerel = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenen_yerel = serializers.DecimalField(max_digits=14,decimal_places=2)
+    invoices_total = serializers.SerializerMethodField()
+    tapu_harci = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -207,6 +211,13 @@ class TitleDeedConfirmListSerializer(serializers.Serializer):
             "id" : obj.item.uuid if obj.item else "",
             "name" : obj.item.stock_name if obj.item else "",
         }
+    
+    def get_invoices_total(self, obj):
+        return obj.lease_invoices.all().aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
+    
+    def get_tapu_harci(self, obj):
+        return obj.odenmesi_gereken_yerel * Decimal("0.02")
+
     
     # def get_block(self, obj):
     #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
