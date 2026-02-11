@@ -807,3 +807,52 @@ class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class VPosTransactionList(ModelViewSet, QueryListAPIView):
+    serializer_class = VPosTransactionListSerializer
+    filterset_class = VPosTransactionFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['id']
+    ordering = ['-transaction_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering') or "-created_date"
+        
+        custom_related_fields = ["company"]
+
+        queryset = VPosTransaction.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
+        ).order_by(str(ordering))
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            # Modelin tüm alanlarını otomatik olarak ekle, ForeignKey alanları hariç
+            search_fields = [
+                field.name for field in queryset.model._meta.get_fields()
+                if not (field.is_relation and field.many_to_one)
+            ]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    

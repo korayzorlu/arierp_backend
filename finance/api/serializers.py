@@ -226,3 +226,10 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
                 })
         return lease_dict
     
+class VPosTransactionListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+      

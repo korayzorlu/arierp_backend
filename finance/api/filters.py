@@ -84,3 +84,11 @@ class BankAccountTransactionFilter(FilterSet):
             q &= Q(transaction_date__year=parts[2])
         return queryset.filter(q)
 
+class VPosTransactionFilter(FilterSet):
+    uuid = CharFilter(field_name='uuid', lookup_expr='exact')
+
+    class Meta:
+        model = VPosTransaction
+        fields = ['uuid']
+
+
