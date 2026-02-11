@@ -380,6 +380,11 @@ if not DEBUG:
             "schedule": crontab(minute=59, hour='23'),
             "args": [2],
         },
+        "set_daily_morning_task": {
+            "task": "finance.tasks.set_bank_activities_date",
+            "schedule": crontab(minute=0, hour='7'),
+            "args": [2],
+        },
     }
 else:
     CELERY_BEAT_SCHEDULE = {

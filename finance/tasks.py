@@ -12,6 +12,7 @@ import pyodbc
 import os
 import traceback
 import logging
+from datetime import datetime, date
 
 from .models import *
 from users.models import User
@@ -20,6 +21,7 @@ from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts,get_finmaks_transactions
 from django.db.models import Q
+from leasing.models import BankActivity
 
 @shared_task()
 def fetch_partner_advances(company):
@@ -529,5 +531,18 @@ def add_finmaks_bank_account_daily_record(company,BATCH_SIZE = 1000):
 
         print(f"Toplam {create_progress} finmaks banka hesap günlük kaydı oluşturuldu.")
         print("--------")
+    except Exception as e:
+        traceback.print_exc()
+
+@shared_task()
+def set_bank_activities_date(company):
+    try:
+        objs = BankActivity.objects.filter(company_id=int(company), third_person_status='need_document')
+        new_date = date.today()
+        for obj in objs:
+            current_date=obj.created_date
+            updated_date=datetime.combine(new_date,current_date.time())
+            obj.created_date=updated_date
+            obj.save()
     except Exception as e:
         traceback.print_exc()
