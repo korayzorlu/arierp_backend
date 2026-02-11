@@ -61,16 +61,25 @@ class MenuItemListSerializer(serializers.Serializer):
                 ]},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Finans", "icon" : "paid", "items" : [
-                {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Bakiyeleri", "icon" : "description", "route" : "/bank-account-balances"},
-                {"type" : "item", "class" : ["finans"], "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
-                {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Hareketleri", "icon" : "description", "route" : "/bank-account-transactions"},
-                {"type" : "item", "class" : ["default"], "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
-                {"type" : "item", "class" : ["finans"], "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
-                {"type" : "item", "class" : ["default"], "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
-                {"type" : "item", "class" : ["default"], "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
-                {"type" : "item", "class" : ["default"], "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
-                {"type" : "item", "class" : ["default"], "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},
-                {"type" : "item", "class" : ["default"], "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Banka", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Bakiyeleri", "icon" : "description", "route" : "/bank-account-balances"},
+                    {"type" : "item", "class" : ["finans"], "label" : "Banka Hesapları", "icon" : "description", "route" : "/bank-accounts"},
+                    {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Hareketleri", "icon" : "description", "route" : "/bank-account-transactions"},
+                ]},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Tahsilat", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Tahsilatlar", "icon" : "paid", "route" : "/contract-payments"},
+                    {"type" : "item", "class" : ["finans"], "label" : "Tahsilat İşleme", "icon" : "paid", "route" : "/collections"},
+                    {"type" : "item", "class" : ["default"], "label" : "İşlenen Tahsilatlar", "icon" : "paid", "route" : "/bank-activities"},
+                ]},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Satın Alma", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Satıcı Ödemeleri", "icon" : "description", "route" : "/purchase-payments"},
+                    {"type" : "item", "class" : ["default"], "label" : "Satıcı Ödemeleri Özet", "icon" : "description", "route" : "/finance-summary"},
+                    {"type" : "item", "class" : ["default"], "label" : "Statüsü Hatalı Olanlar", "icon" : "description", "route" : "/status-control"},
+                    {"type" : "item", "class" : ["default"], "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
+                ]},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Sanal Pos", "icon" : "description", "items" : [
+
+                ]},
                 #{"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
             {"type" : "sub_menu", "class" : ["default","operasyon"], "label" : "Risk", "icon" : "report", "items" : [

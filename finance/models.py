@@ -123,3 +123,15 @@ class FinmaksTransaction(models.Model):
 
     def __str__(self):
         return str(self.transaction_id)
+    
+class VPosTransaction(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_transactions")
+
+
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.company.name)   
