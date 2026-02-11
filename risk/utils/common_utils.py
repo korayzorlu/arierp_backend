@@ -5,6 +5,7 @@ from django.utils.timezone import now
 
 from datetime import date,timedelta,datetime
 
+from risk.utils.filter_utils import to_warned_filters_for_views
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
 from leasing.models import Lease, Installment
@@ -29,6 +30,17 @@ def partners_for_project(params):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
+        ).exclude(
+            Q(types__contains=["special"]) |
+            Q(types__contains=["barter"]) |
+            Q(types__contains=["virman"])
+        )
+    elif params.get("risk_status") == "to_warned":
+        today = now().date()
+
+        objs = Partner.objects.select_related().filter(
+            vendor_filter_for_views(params) &
+            to_warned_filters_for_views()
         ).exclude(
             Q(types__contains=["special"]) |
             Q(types__contains=["barter"]) |
