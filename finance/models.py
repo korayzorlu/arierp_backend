@@ -88,7 +88,7 @@ class FinmaksTransaction(models.Model):
     amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
     sender_vkn = models.CharField(_("Sender VKN"), max_length=50, null=True, blank=True)
     sender_iban = models.CharField(_("Sender IBAN"), max_length=50, null=True, blank=True)
-    sender_account_name = models.CharField(_("SenderAccountName"), max_length=50, null=True, blank=True)
+    sender_account_name = models.CharField(_("SenderAccountName"), max_length=250, null=True, blank=True)
     receiver_vkn = models.CharField(_("Receiver VKN"), max_length=50, null=True, blank=True)
     receiver_iban = models.CharField(_("Receiver IBAN"), max_length=50, null=True, blank=True)
     receipt_number = models.CharField(_("Receipt Number"), max_length=50, null=True, blank=True)
