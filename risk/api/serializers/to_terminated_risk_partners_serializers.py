@@ -65,7 +65,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            #Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
+            Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
