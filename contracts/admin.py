@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Contract,ContractPayment
+from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice
 
 # Register your models here.
 
@@ -50,3 +50,39 @@ class ContractPaymentAdmin(admin.ModelAdmin):
     
     class Meta:
         model = ContractPayment
+
+@admin.register(WarningNotice)
+class WarningNoticeAdmin(admin.ModelAdmin):
+    list_display = ["company","contract","state","official_cancellation_date","process_start_date","service_date"]
+    list_display_links = ["contract"]
+    search_fields = ["company__name","contract__code","state__name","official_cancellation_date","process_start_date","service_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["-official_cancellation_date"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def contract(self,obj):
+        return obj.contract.code if obj.contract else ""
+    
+    class Meta:
+        model = WarningNotice
+
+@admin.register(ComprehensiveWarningNotice)
+class ComprehensiveWarningNoticeAdmin(admin.ModelAdmin):
+    list_display = ["company","contract","state","official_cancellation_date","process_start_date","service_date"]
+    list_display_links = ["contract"]
+    search_fields = ["company__name","contract__code","state__name","official_cancellation_date","process_start_date","service_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["-official_cancellation_date"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def contract(self,obj):
+        return obj.contract.code if obj.contract else ""
+    
+    class Meta:
+        model = ComprehensiveWarningNotice

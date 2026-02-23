@@ -17,6 +17,7 @@ from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
 from leasing.models import Lease
 from leasing.utils.lease_utils import get_future_payments
+from contracts.models import ComprehensiveWarningNotice
 
 import os
 import json
@@ -112,6 +113,8 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                 lease.warning_notice_status = 'kapsamli_ihtar'
                 lease.save()
 
+                
+
                 # word işlemleri
                 file_name = lease.contract.code.replace("/","-")
                 doc = DocxTemplate(f"files/ihtar-{'ticari' if lease.contract.partner.is_commercial else 'tuketici'}.docx")
@@ -130,7 +133,7 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                     tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
 
                 gecikme_bakiye = lease.overdue_amount
-                masraf_bakiye = (gecikme_bakiye / 100) * 15
+                masraf_bakiye = (gecikme_bakiye / Decimal('100')) * Decimal('15')
                 toplam_borc_bakiye = gecikme_bakiye + masraf_bakiye
                 gelecek_bakiye = get_future_payments(lease.lease_id)
                 toplam_bakiye = toplam_borc_bakiye + gelecek_bakiye
@@ -160,6 +163,14 @@ class UpdateWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredM
                 doc.save(files_path)
 
                 files.append(files_path)
+
+                # kapsamlı ihtar model işlemleri
+                if not ComprehensiveWarningNotice.objects.filter(contract = lease.contract).exists():
+                    ComprehensiveWarningNotice.objects.create(
+                        company = lease.company,
+                        contract = lease.contract,
+                        debit_amount = toplam_bakiye,
+                    )
 
         # zip işlemleri
         buffer = io.BytesIO()

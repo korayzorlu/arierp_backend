@@ -477,7 +477,7 @@ def fetch_purchase_payments_from_ifs(company,BATCH_SIZE=1000):
         print(e)
         print(traceback.format_exc())
 
-def get_future_payments(lease_id, from_date=None) -> QuerySet:
+def get_future_payments(lease_id, from_date=None):
     """
     Belirtilen tarihten (varsayılan: bugün) itibaren gelecekteki ödemeleri getirir.
     """
