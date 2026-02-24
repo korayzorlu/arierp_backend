@@ -218,6 +218,7 @@ class ComprehensiveWarningNoticeInformationView(LoginRequiredMixin,View):
             'service_date': obj.service_date.strftime('%d.%m.%Y') if obj.service_date else "",
             'official_cancellation_date': obj.official_cancellation_date.strftime('%d.%m.%Y') if obj.official_cancellation_date else "",
             'termination_days': (obj.official_cancellation_date - obj.service_date).days if obj.official_cancellation_date and obj.service_date else "",
+            'days_remaining': (obj.official_cancellation_date - datetime.today().date()).days if obj.official_cancellation_date else "",
         }
 
         return JsonResponse({'comprehensive_warning_notice':comprehensive_warning_notice_data}, status=200)
