@@ -498,6 +498,15 @@ def fetch_warning_notices_from_leaseflex(company,BATCH_SIZE=1000):
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 WarningNotice.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
+        
+        wns = WarningNotice.objects.select_related("contract").filter(company__id=int(company))
+        for wn in wns:
+            if wn.contract.contract_comprehensive_warning_notices.all().exists():
+                cwn=wn.contract.contract_comprehensive_warning_notices.all().first()
+                cwn.service_date=wn.service_date
+                cwn.official_cancellation_date=wn.official_cancellation_date
+                cwn.save()
+
         print(f"Toplam {update_progress} ihtar güncellendi.")
         print(f"Toplam {create_progress} ihtar oluşturuldu.")
         print("--------")
