@@ -167,9 +167,7 @@ class WarningNoticeInformationView(LoginRequiredMixin,View):
         contract = data.get('contract')
 
         active_company_uuid = data.get('active_company')
-        print(active_company_uuid)
         active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
-        print(active_company)
         
         obj = WarningNotice.objects.filter(company = active_company.company, contract__code = contract).first()
 
@@ -196,6 +194,32 @@ class WarningNoticeInformationView(LoginRequiredMixin,View):
         }
 
         return JsonResponse({'warning_notice':warning_notice_data}, status=200)
+
+class ComprehensiveWarningNoticeInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        contract = data.get('contract')
+
+        active_company_uuid = data.get('active_company')
+        active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
+        
+        obj = ComprehensiveWarningNotice.objects.filter(company = active_company.company, contract__code = contract).first()
+
+        if not obj:
+            return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
+        
+        comprehensive_warning_notice_data = {
+            'partner': obj.contract.partner.name if obj.contract else "",
+            'contract': obj.contract.code if obj.contract else "",
+            'currency': obj.contract.currency.code if obj.contract else "",
+            'debit_amount': obj.debit_amount,
+            'process_start_date': obj.process_start_date.strftime('%d.%m.%Y') if obj.process_start_date else "",
+            'service_date': obj.service_date.strftime('%d.%m.%Y') if obj.service_date else "",
+            'official_cancellation_date': obj.official_cancellation_date.strftime('%d.%m.%Y') if obj.official_cancellation_date else "",
+            'termination_days': (obj.official_cancellation_date - obj.service_date).days if obj.official_cancellation_date and obj.service_date else "",
+        }
+
+        return JsonResponse({'comprehensive_warning_notice':comprehensive_warning_notice_data}, status=200)
     
 class ExportContractPaymentsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):

@@ -14,6 +14,7 @@ urlpatterns = [
     path('contracts_template/', ContractsTemplateView.as_view(), name="contracts_template"),
     path('import_contracts/', ImportContractsView.as_view(), name="import_contracts"),
     path('warning_notice_information/', WarningNoticeInformationView.as_view(), name="warning_notice_information"),
+    path('comprehensive_warning_notice_information/', ComprehensiveWarningNoticeInformationView.as_view(), name="comprehensive_warning_notice_information"),
 
     path('export_contract_payments/', ExportContractPaymentsView.as_view(), name="export_contract_payments"),
     path('contract_payments_excel/', ContractPaymentsExcelView.as_view(), name="contract_payments_excel"),
