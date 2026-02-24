@@ -23,7 +23,7 @@ from companies.models import UserCompany
 import os
 import json
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Create your views here.
 
@@ -209,6 +209,7 @@ class ComprehensiveWarningNoticeInformationView(LoginRequiredMixin,View):
             return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
         
         comprehensive_warning_notice_data = {
+            'uuid': obj.uuid,
             'partner': obj.contract.partner.name if obj.contract else "",
             'contract': obj.contract.code if obj.contract else "",
             'currency': obj.contract.currency.code if obj.contract else "",
@@ -220,6 +221,31 @@ class ComprehensiveWarningNoticeInformationView(LoginRequiredMixin,View):
         }
 
         return JsonResponse({'comprehensive_warning_notice':comprehensive_warning_notice_data}, status=200)
+    
+class UpdateComprehensiveWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = ComprehensiveWarningNotice
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if request.user.authorization.department != 'kredi_risk_izleme':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        obj = ComprehensiveWarningNotice.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj:
+            return JsonResponse({'message': 'Bir sorun oluştu!','status':'error'}, status=400)
+        
+        service_date_str = data.get('service_date')
+        if service_date_str:
+            try:
+                obj.service_date = datetime.strptime(service_date_str, '%d.%m.%Y').date()
+                obj.official_cancellation_date = obj.service_date + timedelta(days=60)
+            except ValueError:
+                return JsonResponse({'message': 'Tarih formatı geçersiz! Lütfen GG.AA.YYYY formatında giriniz.','status':'error'}, status=400)
+        obj.save()
+
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
     
 class ExportContractPaymentsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):

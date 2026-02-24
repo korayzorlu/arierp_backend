@@ -200,23 +200,3 @@ class GetWarningNoticeView(LoginRequiredMixin,View):
         
         return FileResponse(open(file_path, 'rb'))
     
-class UpdateComprehensiveWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
-    model = ComprehensiveWarningNotice
-    
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-
-        obj = ComprehensiveWarningNotice.objects.filter(uuid = data.get('uuid')).first()
-
-        if not obj:
-            return JsonResponse({'message': 'Bir sorun oluştu!','status':'error'}, status=400)
-        
-        service_date_str = data.get('service_date')
-        if service_date_str:
-            try:
-                obj.service_date = datetime.strptime(service_date_str, '%d.%m.%Y').date()
-            except ValueError:
-                return JsonResponse({'message': 'Tarih formatı geçersiz! Lütfen GG.AA.YYYY formatında giriniz.','status':'error'}, status=400)
-        obj.save()
-
-        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
