@@ -562,7 +562,8 @@ def get_leases_excel_file(company):
     company = Company.objects.select_related().filter(id=int(company)).first()
 
     objs = Lease.objects.select_related("contract","currency").filter(
-        Q(activation_date__gte=date(2025, 1, 1))
+        Q(activation_date__gte=date(2025, 1, 1)) &
+        Q(activation_date__lte=date(2025, 12, 31))
     ).order_by("activation_date")
     data = {
         "Kira Planı": [],
