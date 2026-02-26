@@ -565,7 +565,8 @@ def get_leases_excel_file(company):
         Q(activation_date__gte=date(2025, 1, 1))
     )
     data = {
-        "Müşteri": [],
+        "Müşteri İsim": [],
+        "Müşteri TC/VKN": [],
         "Proje": [],
         "Sözleşme Bedeli": [],
         "Döviz Cinsi": [],
@@ -573,7 +574,14 @@ def get_leases_excel_file(company):
     }
 
     for index,obj in enumerate(objs):
-        data["Müşteri"].append(obj.contract.partner.name)
+        if obj.contract and obj.contract.partner:
+            if obj.contract.partner.tc_vkn_no and obj.contract.partner.tc_vkn_no != "":
+                data["Müşteri TC/VKN"].append(obj.contract.partner.tc_vkn_no)
+            elif obj.contract.partner.vat_no and obj.contract.partner.vat_no != "":
+                data["Müşteri TC/VKN"].append(obj.contract.partner.vat_no)
+            else:
+                    data["Müşteri TC/VKN"].append("")
+        data["Müşteri İsim"].append(obj.contract.partner.name if obj.contract and obj.contract.partner else "")
         data["Proje"].append(obj.item.stock_name if obj.item else "")
         data["Sözleşme Bedeli"].append(obj.total_payment)
         data["Döviz Cinsi"].append(obj.currency.code)
