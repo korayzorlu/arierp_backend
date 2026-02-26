@@ -556,3 +556,54 @@ def get_faulty_lease(company):
         print(f"Kira: {obj.lease.code} - Taksit No: {obj.sequency} - Tutar: {obj.payment} - KDV Tutarı: {obj.vat_amount} - Toplam Tutar: {obj.amount}")
 
     print(f"Toplam {objs.count()} hatalı kira taksiti bulundu.")
+
+
+def get_leases_excel_file(company):
+    company = Company.objects.select_related().filter(id=int(company)).first()
+
+    objs = Lease.objects.select_related("contract","currency").filter(
+        Q(activation_date__gte=date(2025, 1, 1))
+    )
+    data = {
+        "Müşteri": [],
+        "Proje": [],
+        "Sözleşme Bedeli": [],
+        "Döviz Cinsi": [],
+        "Sözleşme Tarihi": [],
+    }
+
+    for index,obj in enumerate(objs):
+        data["Müşteri"].append(obj.contract.partner.name)
+        data["Proje"].append(obj.item.stock_name if obj.item else "")
+        data["Sözleşme Bedeli"].append(obj.total_payment)
+        data["Döviz Cinsi"].append(obj.currency.code)
+        data["Sözleşme Tarihi"].append(obj.activation_date)
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+
+    numeric_columns = [
+        "Sözleşme Bedeli",
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(company.uuid), "leasing", "leases", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-kira-planlari-ozel.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+        # Workbook'u al
+        workbook = writer.book
+        worksheet = writer.sheets['Sayfa']
+
+        # Kolon isimlerine göre format uygula
+        for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+            if col in numeric_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = '#,##0.00'   # İstediğin format

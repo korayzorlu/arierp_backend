@@ -15,12 +15,17 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 from common.utils.export_utils import BaseExporter
 from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
+from leasing.models import Lease
+from leasing.utils.lease_utils import get_future_payments
+from contracts.models import TerminationWarningNotice
 
 import os
 import json
 import pandas as pd
 from decimal import Decimal
 from datetime import datetime
+from docxtpl import DocxTemplate
+import io, zipfile
 
 # Create your views here.
 
@@ -90,3 +95,47 @@ class ToTerminatedRiskPartnersExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+
+class CreateTerminationWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        lease = Lease.objects.select_related().filter(uuid = data.get('uuid')).first()
+
+        if lease:
+            # kapsamlı ihtar model işlemleri
+            if not TerminationWarningNotice.objects.filter(contract = lease.contract).exists():
+                obj = TerminationWarningNotice.objects.create(
+                    company = lease.company,
+                    contract = lease.contract,
+                )
+            else:
+                obj = TerminationWarningNotice.objects.filter(contract = lease.contract).first()
+
+            # word işlemleri
+            file_name = lease.contract.code.replace("/","-")
+            doc = DocxTemplate(f"files/fesih-ihtar.docx")
+
+            def format_currency(value):
+                    return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+
+            context = {
+                "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+                "sozlesme_no": lease.contract.code,
+                "odenen_tutar": format_currency(obj.paid_amount),
+                "kesinti_tutar": format_currency(obj.deduction_amount),
+                "toplam_tutar": format_currency(obj.paid_amount - obj.deduction_amount),
+            }
+            doc.render(context)
+
+            files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+            doc.save(files_path)
+
+            
+
+        if files_path:
+            return FileResponse(open(files_path, 'rb'), as_attachment=True)
+        
+        return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=400)

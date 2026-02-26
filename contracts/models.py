@@ -131,3 +131,23 @@ class ComprehensiveWarningNotice(models.Model):
 
     def __str__(self):
         return str(self.contract.code)
+    
+class TerminationWarningNotice(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_termination_warning_notices")
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_termination_warning_notices")
+    risk_id = models.CharField(_("Risk ID"), max_length=25, null=True, blank=True)
+    customer_id = models.CharField(_("Customer ID"), max_length=25, null=True, blank=True)
+    paid_amount = models.DecimalField(_("Debit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    deduction_amount = models.DecimalField(_("Debit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    daily_wages_date = models.DateField(_("Daily Wages Date"), blank=True, null=True)
+    process_start_date = models.DateField(_("Process Start Date"), blank=True, null=True)
+    service_date = models.DateField(_("Service Date"), blank=True, null=True)
+    official_cancellation_date = models.DateField(_("Official Cancellation Date"), blank=True, null=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.contract.code)

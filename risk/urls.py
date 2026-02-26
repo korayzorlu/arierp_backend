@@ -56,7 +56,7 @@ urlpatterns = [
     path('export_amount_debit_transactions/', ExportAmountDebitTransactionsView.as_view(), name="export_amount_debit_transactions"),
     path('amount_debit_transactions_excel/', AmountDebitTransactionsExcelView.as_view(), name="amount_debit_transactions_excel"),
 
-    
+    path('create_termination_warning_notice_status/', CreateTerminationWarningNoticeStatusView.as_view(), name="create_termination_warning_notice_status"),
     
     path('', include("risk.api.urls")),
 ]

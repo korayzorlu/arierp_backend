@@ -247,7 +247,9 @@ class UpdateComprehensiveWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRe
         obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
-    
+
+
+
 class ExportContractPaymentsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
