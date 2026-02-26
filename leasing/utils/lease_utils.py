@@ -563,7 +563,7 @@ def get_leases_excel_file(company):
 
     objs = Lease.objects.select_related("contract","currency").filter(
         Q(activation_date__gte=date(2025, 1, 1))
-    )
+    ).order_by("activation_date")
     data = {
         "Kira Planı": [],
         "Sözleşme No": [],
@@ -590,7 +590,7 @@ def get_leases_excel_file(company):
         data["Döviz Cinsi"].append(obj.currency.code)
         data["Kira Planı"].append(obj.code)
         data["Sözleşme No"].append(obj.contract.code if obj.contract else "")
-        data["Sözleşme Tarihi"].append(obj.activation_date)
+        data["Sözleşme Tarihi"].append(obj.activation_date.strftime('%d.%m.%Y') if obj.activation_date else "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
