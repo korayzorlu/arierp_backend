@@ -573,6 +573,7 @@ def get_leases_excel_file(company):
         "Proje": [],
         "Sözleşme Bedeli": [],
         "Döviz Cinsi": [],
+        "Statü": [],
         
     }
 
@@ -591,6 +592,7 @@ def get_leases_excel_file(company):
         data["Kira Planı"].append(obj.code)
         data["Sözleşme No"].append(obj.contract.code if obj.contract else "")
         data["Sözleşme Tarihi"].append(obj.activation_date.strftime('%d.%m.%Y') if obj.activation_date else "")
+        data["Statü"].append(obj.get_lease_status_display())
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
