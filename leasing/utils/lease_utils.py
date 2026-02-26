@@ -565,12 +565,15 @@ def get_leases_excel_file(company):
         Q(activation_date__gte=date(2025, 1, 1))
     )
     data = {
+        "Kira Planı": [],
+        "Sözleşme No": [],
+        "Sözleşme Tarihi": [],
         "Müşteri İsim": [],
         "Müşteri TC/VKN": [],
         "Proje": [],
         "Sözleşme Bedeli": [],
         "Döviz Cinsi": [],
-        "Sözleşme Tarihi": [],
+        
     }
 
     for index,obj in enumerate(objs):
@@ -585,6 +588,8 @@ def get_leases_excel_file(company):
         data["Proje"].append(obj.item.stock_name if obj.item else "")
         data["Sözleşme Bedeli"].append(obj.total_payment)
         data["Döviz Cinsi"].append(obj.currency.code)
+        data["Kira Planı"].append(obj.code)
+        data["Sözleşme No"].append(obj.contract.code if obj.contract else "")
         data["Sözleşme Tarihi"].append(obj.activation_date)
 
     df = pd.DataFrame(data)
