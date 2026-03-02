@@ -557,7 +557,6 @@ def get_faulty_lease(company):
 
     print(f"Toplam {objs.count()} hatalı kira taksiti bulundu.")
 
-
 def get_leases_excel_file(company):
     company = Company.objects.select_related().filter(id=int(company)).first()
 
@@ -578,7 +577,7 @@ def get_leases_excel_file(company):
         
     }
 
-    for index,obj in enumerate(objs):
+    for obj in objs:
         if obj.contract and obj.contract.partner:
             if obj.contract.partner.tc_vkn_no and obj.contract.partner.tc_vkn_no != "":
                 data["Müşteri TC/VKN"].append(obj.contract.partner.tc_vkn_no)

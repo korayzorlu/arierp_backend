@@ -24,6 +24,8 @@ import os
 import json
 import pandas as pd
 from datetime import datetime, timedelta
+from decimal import Decimal
+from docxtpl import DocxTemplate
 
 # Create your views here.
 
@@ -248,7 +250,81 @@ class UpdateComprehensiveWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRe
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
 
+class TerminationWarningNoticeInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        contract = data.get('contract')
 
+        active_company_uuid = data.get('active_company')
+        active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
+        
+        obj = TerminationWarningNotice.objects.filter(company = active_company.company, contract__code = contract).first()
+
+        if not obj:
+            return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
+        
+        termination_warning_notice_data = {
+            'uuid': obj.uuid,
+            'partner': obj.contract.partner.name if obj.contract else "",
+            'contract': obj.contract.code if obj.contract else "",
+            'currency': obj.contract.currency.code if obj.contract else "",
+            'paid_amount': f"{float(obj.paid_amount):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+            'deduction_amount': f"{float(obj.deduction_amount):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+            'total_amount': f"{float(obj.paid_amount - obj.deduction_amount):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        }
+
+        return JsonResponse({'termination_warning_notice':termination_warning_notice_data}, status=200)
+    
+class UpdateTerminationWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = TerminationWarningNotice
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if request.user.authorization.department != 'kredi_risk_izleme':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        obj = TerminationWarningNotice.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj:
+            return JsonResponse({'message': 'Bir sorun oluştu!','status':'error'}, status=400)
+        
+        paid_amount_str = data.get('paid_amount', '0,00').replace('.', '').replace(',', '.')
+        paid_amount = Decimal(str(paid_amount_str))
+
+        deduction_amount_str = data.get('deduction_amount', '0,00').replace('.', '').replace(',', '.')
+        deduction_amount = Decimal(str(deduction_amount_str))
+
+        try:
+            obj.paid_amount = paid_amount
+            obj.deduction_amount = deduction_amount
+        except ValueError:
+            return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+        
+        obj.save()
+
+        # word işlemleri
+        lease = obj.contract.contract_leases.filter(is_last_project=True).first()
+        file_name = obj.contract.code.replace("/","-")
+        doc = DocxTemplate(f"files/fesih-ihtar.docx")
+
+        def format_currency(value):
+                return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+        
+        context = {
+            "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+            "sozlesme_no": lease.contract.code,
+            "odenen_tutar": format_currency(obj.paid_amount),
+            "kesinti_tutar": format_currency(obj.deduction_amount),
+            "toplam_tutar": format_currency(obj.paid_amount - obj.deduction_amount),
+        }
+        doc.render(context)
+
+        files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+        doc.save(files_path)
+        # word işlemleri - end
+
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
 
 class ExportContractPaymentsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):

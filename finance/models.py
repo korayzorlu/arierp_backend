@@ -129,7 +129,6 @@ class VPosTransaction(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_transactions")
 
 
-
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

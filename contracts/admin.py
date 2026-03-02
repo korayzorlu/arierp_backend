@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice
+from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice,TerminationWarningNotice
 
 # Register your models here.
 
@@ -59,6 +59,7 @@ class WarningNoticeAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["-official_cancellation_date"]
+    autocomplete_fields = ["contract"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
@@ -77,7 +78,8 @@ class ComprehensiveWarningNoticeAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["-official_cancellation_date"]
-    
+    autocomplete_fields = ["contract"]
+
     def company(self,obj):
         return obj.company.name if obj.company else ""
     
@@ -86,3 +88,22 @@ class ComprehensiveWarningNoticeAdmin(admin.ModelAdmin):
     
     class Meta:
         model = ComprehensiveWarningNotice
+
+@admin.register(TerminationWarningNotice)
+class TerminationWarningNoticeAdmin(admin.ModelAdmin):
+    list_display = ["company","contract"]
+    list_display_links = ["contract"]
+    search_fields = ["company__name","contract__code",]
+    list_filter = []
+    inlines = []
+    ordering = ["-id"]
+    autocomplete_fields = ["contract"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def contract(self,obj):
+        return obj.contract.code if obj.contract else ""
+    
+    class Meta:
+        model = TerminationWarningNotice

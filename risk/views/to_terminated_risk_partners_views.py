@@ -133,9 +133,22 @@ class CreateTerminationWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnersh
             files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
             doc.save(files_path)
 
-            
-
         if files_path:
             return FileResponse(open(files_path, 'rb'), as_attachment=True)
         
         return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=400)
+
+class GetTerminationWarningNoticeView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuid = data.get('uuid')
+
+        lease = Lease.objects.select_related().filter(uuid = uuid).first()
+
+        file_name = lease.contract.code.replace("/","-")
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+        
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+        
+        return FileResponse(open(file_path, 'rb'))
