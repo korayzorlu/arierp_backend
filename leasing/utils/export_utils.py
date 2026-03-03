@@ -916,6 +916,7 @@ def export_active_leases(self):
     self.process.save()
     
     data = {
+        "Teklif": [],
         "Sözleşme": [],
         "Kira Planı": [],
         "Müşteri İsmi": [],
@@ -941,6 +942,7 @@ def export_active_leases(self):
             previous_progress = current_progress
 
 
+        data["Teklif"].append(obj.contract.quotation_obj.code if obj.contract.quotation_obj else "")
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
         data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
