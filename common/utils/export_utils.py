@@ -29,6 +29,7 @@ from risk.utils.tomorrow_partners_utils import *
 from risk.utils.risk_utils import export_amount_debit_transactions
 from risk.utils.under_reviews_utils import export_under_reviews
 from contracts.utils.contract_utils import export_contract_payments
+from contracts.utils.export_utils import export_warning_notices
 from operation.utils import export_partner_advance_activities,export_partner_advances
 from partners.utils.common_utils import export_partners
 from accounting.utils.trial_balance_utils import export_trial_balances
@@ -175,3 +176,6 @@ class BaseExporter():
 
     def export_overduelease(self):
         export_overdue_leases(self)
+
+    def export_warningnotice(self):
+        export_warning_notices(self)

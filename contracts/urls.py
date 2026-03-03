@@ -22,5 +22,8 @@ urlpatterns = [
     path('export_contract_payments/', ExportContractPaymentsView.as_view(), name="export_contract_payments"),
     path('contract_payments_excel/', ContractPaymentsExcelView.as_view(), name="contract_payments_excel"),
 
+    path('export_warning_notices/', ExportWarningNoticesView.as_view(), name="export_warning_notices"),
+    path('warning_notices_excel/', WarningNoticesExcelView.as_view(), name="warning_notices_excel"),
+
     path('', include("contracts.api.urls")),
 ]
