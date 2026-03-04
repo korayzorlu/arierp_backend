@@ -186,7 +186,7 @@ def send_email_for_third_person_to_cleared(name,tc_vkn_no):
 
     send_outlook_email(subject, message, from_email, recipient_list)
 
-def check_third_person_in_partners():
+def check_third_person_in_partners(company):
     objs = ThirdPerson.objects.select_related().filter(
         (
             Q(status = 'pending') |
@@ -195,6 +195,7 @@ def check_third_person_in_partners():
         Q(is_vpos = False)
     )
     for obj in objs:
+        print(obj)
         check_partners = Partner.objects.select_related().filter(
             (
                 Q(tc_vkn_no=obj.tc_vkn_no) |

@@ -71,4 +71,4 @@ def update_ignored_partners(company):
 
 @shared_task()
 def check_third_person_in_partnerss(company):
-    check_third_person_in_partners()
+    check_third_person_in_partners(company)
