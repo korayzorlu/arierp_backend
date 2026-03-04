@@ -188,8 +188,10 @@ def send_email_for_third_person_to_cleared(name,tc_vkn_no):
 
 def check_third_person_in_partners():
     objs = ThirdPerson.objects.select_related().filter(
-        (Q(status = 'pending') |
-        Q(status = 'need_document')) &
+        (
+            Q(status = 'pending') |
+            Q(status = 'need_document')
+        ) &
         Q(is_vpos = False)
     )
     for obj in objs:
@@ -201,6 +203,7 @@ def check_third_person_in_partners():
             ~Q(tc_vkn_no__startswith='9999')
         )
         if check_partners.exists() and obj.tc_vkn_no and obj.tc_vkn_no != "":
+            print(check_partners)
             obj.status = 'cleared'
             obj.save()
             bank_activities = obj.bank_activities.select_related().all()
