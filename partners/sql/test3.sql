@@ -1,4 +1,6 @@
-SELECT TOP 100 *
+SELECT *
 
 FROM
-    CRM_SGK_JOB_CODE_COMBO
+    CrmContact
+WHERE
+    ContactId = '30455'

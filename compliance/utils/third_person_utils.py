@@ -193,14 +193,25 @@ def check_third_person_in_partners():
         Q(is_vpos = False)
     )
     for obj in objs:
-        if Partner.objects.select_related().filter(Q(tc_vkn_no=obj.tc_vkn_no) | Q(vat_no=obj.tc_vkn_no)).exists() and obj.tc_vkn_no and obj.tc_vkn_no != "":
+        check_partners = Partner.objects.select_related().filter(
+            (
+                Q(tc_vkn_no=obj.tc_vkn_no) |
+                Q(vat_no=obj.tc_vkn_no)
+            ) &
+            ~Q(tc_vkn_no__startswith='9999')
+        )
+        if check_partners.exists() and obj.tc_vkn_no and obj.tc_vkn_no != "":
             obj.status = 'cleared'
             obj.save()
             bank_activities = obj.bank_activities.select_related().all()
-            bank_activities.update(
-                is_reliable_person = True,
-                third_person_status = 'cleared'
-            )
+            for bank_activity in bank_activities:
+                bank_activity.is_reliable_person = True
+                bank_activity.third_person_status = 'cleared'
+                bank_activity.save()
+            # bank_activities.update(
+            #     is_reliable_person = True,
+            #     third_person_status = 'cleared'
+            # )
             send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
 
         time.sleep(1)   
