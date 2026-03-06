@@ -1,9 +1,10 @@
 from celery import shared_task
 from core.celery import app
 from django.http import JsonResponse
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum,F
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum,F,ExpressionWrapper, DecimalField
 from django.db.models.functions import TruncDate
 from django.utils.timezone import make_aware
+from django.utils import timezone
 
 import pandas as pd
 import io
@@ -29,8 +30,7 @@ from common.models import Currency,ExchangeRate,TufeRate
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from trade.models import TradeTransaction
-from django.utils import timezone
-from django.db.models import ExpressionWrapper, DecimalField, F, Q
+from contracts.models import WarningNotice,ComprehensiveWarningNotice
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -45,8 +45,12 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.fast_executemany = True
 
         currencies = Currency.objects.select_related().all()
+        warning_notices = WarningNotice.objects.select_related().all()
+        comprehensive_warning_notices = ComprehensiveWarningNotice.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
         currencies_dict = {c.code: c for c in currencies}
+        warning_notices_dict = {w.contract.contract_id: w for w in warning_notices}
+        comprehensive_warning_notices_dict = {cw.contract.contract_id: cw for cw in comprehensive_warning_notices}
 
         update_progress = 0
         create_progress = 0
@@ -120,6 +124,16 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
                     update_objs.append(obj)
                     update_progress += 1
+
+                    #ihtar kontrolü
+                    wns = warning_notices_dict.get(obj.contract.contract_id)
+                    cwns = comprehensive_warning_notices_dict.get(obj.contract.contract_id)
+                    if not wns and not cwns:
+                        obj.warning_notice_status = 'ihtar_yok'
+                    elif wns and not cwns:
+                        obj.warning_notice_status = 'normal_ihtar'
+                    elif cwns:
+                        obj.warning_notice_status = 'kapsamli_ihtar'
                 else:
                     create_objs.append(Lease(
                         company = company_obj,

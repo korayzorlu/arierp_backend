@@ -286,7 +286,7 @@ class ComprehensiveWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Subquery(max_overdue_days),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
             # overdue_check=Case(
             #     When(
             #         customer_type='individual',
