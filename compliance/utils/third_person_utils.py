@@ -35,6 +35,8 @@ def create_third_person(self,scan_result):
     old_obj = ThirdPerson.objects.filter(tc_vkn_no = self.tc_vkn_no).first()
     if old_obj:
         old_obj.bank_activities.add(self)
+        if scan_result["status"] != 'cleared':
+            old_obj.status = 'pending'
         old_obj.save()
 
         return {"is_new": False, "status": old_obj.status}

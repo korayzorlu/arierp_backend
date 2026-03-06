@@ -75,9 +75,7 @@ class UpdateThirdPersonIsCustomerSentView(LoginRequiredMixin,View):
 
         if request.user.authorization.department != 'finans' and request.user.authorization.department != 'operasyon' and request.user.authorization.department != 'kredi_risk_izleme':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
-
         
-
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
         obj.is_customer_sent = True
         obj.save()

@@ -354,7 +354,7 @@ class BankActivity(models.Model):
                         if third_person["is_new"]:
                             self.third_person_status = 'need_document'
                         else:
-                            self.third_person_status = 'cleared' if third_person["status"] == 'cleared' else 'need_document'
+                            self.third_person_status = 'cleared' if third_person["status"] == 'cleared' else third_person["status"]
                     else:
                         self.third_person_status = 'pending'
                     self.is_third_person = True
