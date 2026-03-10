@@ -33,10 +33,14 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
-        if obj.status == 'need_document':
+
+        if ThirdPersonDocument.objects.filter(third_person = obj).exists() and data.get('status') == 'cleared':
+            obj.status = 'cleared'
+        elif obj.status == 'need_document':
             obj.status = data.get('status')
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
+
         if data.get('status') == 'cleared':
             send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
             obj.is_email_sent = True
