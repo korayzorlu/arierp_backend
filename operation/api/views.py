@@ -307,13 +307,6 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
 
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            # (
-            #     Q(lease_status='aktiflestirildi') |
-            #     Q(lease_status='planlandi') |
-            #     Q(lease_status='durduruldu') |
-            #     Q(lease_status='feshedildi') |
-            #     Q(lease_status='devredildi')
-            # ) &
             Q(is_last_project=True)
         ).exclude(
             Q(contract__partner__types__contains=['special'])

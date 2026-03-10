@@ -118,6 +118,7 @@ class Lease(models.Model):
     leasing_type = models.CharField(_("Leasing Type"), max_length=25, blank=True, null=True)
     application_no = models.CharField(_("Application No"), max_length=25, blank=True, null=True)
     is_last_project = models.BooleanField(default=False)
+    is_last_project_arinet = models.BooleanField(default=False)
     current_request = models.CharField(_("Current Request"), max_length=25, blank=True, null=True)
     finansman_kurum = models.CharField(_("Finansman Kurum"), max_length=25, blank=True, null=True)
     is_tufe = models.BooleanField(default=False)

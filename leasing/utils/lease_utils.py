@@ -636,3 +636,21 @@ def get_leases_excel_file(company):
                 for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
                     for c in cell:
                         c.number_format = '#,##0.00'   # İstediğin format
+
+def fix_last_projects_arinet(company):
+    try:
+        objs = Lease.objects.select_related().filter(is_last_project = True)
+
+        for obj in objs:
+            last_lease = Lease.objects.select_related().filter(main_lease_id=obj.main_lease_id).order_by("-lease_id").first()
+
+            if last_lease.lease_id == obj.lease_id:
+                obj.is_last_project_arinet = True
+                obj.save()
+            else:
+                last_lease.is_last_project_arinet = True
+                last_lease.save()
+
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
