@@ -292,6 +292,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
+    old_leases = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -338,3 +339,14 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             "id" : obj.item.uuid if obj.item else "",
             "name" : obj.item.stock_name if obj.item else "",
         }
+
+    def get_old_leases(self, obj):
+        old_leases = Lease.objects.filter(main_lease_id=obj.main_lease_id).order_by('-lease_id')
+        
+        old_leases_list = []
+        for old_lease in old_leases:
+            old_leases_list.append({
+                "id": old_lease.uuid,
+                "code": old_lease.code,
+            })
+        return old_leases_list
