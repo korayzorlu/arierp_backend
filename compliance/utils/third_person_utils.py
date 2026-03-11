@@ -220,4 +220,4 @@ def check_third_person_in_partners(company):
             # )
             send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
 
-        time.sleep(2)   
+        time.sleep(3)   
