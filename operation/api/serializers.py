@@ -10,6 +10,7 @@ from django.utils import timezone
 from contracts.models import *
 from companies.models import Company,UserCompany
 from operation.models import *
+from accounting.models import Invoice
     
 class ContractInSupplierListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -293,6 +294,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
     old_leases = serializers.SerializerMethodField()
+    invoices = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -350,3 +352,11 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
                 "code": old_lease.code,
             })
         return old_leases_list
+
+    def get_invoices(self, obj):
+        invoices = Invoice.objects.filter(lease=obj)
+
+        if invoices.exists():
+            return "Kesildi"
+        else:
+            return "Fatura Yok"
