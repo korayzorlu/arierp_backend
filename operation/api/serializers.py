@@ -295,6 +295,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     lease_status_update_date = serializers.DateTimeField()
     old_leases = serializers.SerializerMethodField()
     invoices = serializers.SerializerMethodField()
+    vendor = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -308,6 +309,9 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     
     def get_contract_uuid(self, obj):
         return obj.contract.uuid if obj.contract else ""
+
+    def get_vendor(self, obj):
+        return obj.contract.vendor.name if obj.contract and obj.contract.vendor else ""
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
