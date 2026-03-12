@@ -48,7 +48,7 @@ def fetch_data_from_leaseflex(company):
     fetch_phone_numbers_from_leaseflex(company)
     fetch_phone_numbersi_from_leaseflex(company)
     fetch_partner_advances_from_leaseflex(company)
-    check_third_person_in_partners()
+    check_third_person_in_partners(company)
     fetch_projects_from_leaseflex(company)
     fetch_items_from_leaseflex(company)
     fetch_parcels_from_leaseflex(company)
