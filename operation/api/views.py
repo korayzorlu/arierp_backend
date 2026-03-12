@@ -303,9 +303,14 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         ordering = self.request.query_params.get('ordering')
         
-        custom_related_fields = ["company","contract","currency","status","contract__quotation_obj","contract__quotation_obj__quick_quotation"]
+        custom_related_fields = [
+            "company", "contract", "currency", "status", "item",
+            "contract__quotation_obj", "contract__quotation_obj__quick_quotation",
+            "contract__partner",  
+            "contract__vendor",    
+        ]
 
-        queryset = Lease.objects.select_related(*custom_related_fields).filter(
+        queryset = Lease.objects.select_related(*custom_related_fields).prefetch_related("lease_invoices").filter(
             Q(company = active_company.company if active_company else None) &
             Q(is_last_project_arinet=True)
         ).exclude(
@@ -323,3 +328,26 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        # Tüm main_lease_id'leri topla, tek sorguda çek
+        main_lease_ids = [obj.main_lease_id for obj in objects if obj.main_lease_id]
+        all_old_leases = Lease.objects.filter(
+            main_lease_id__in=main_lease_ids
+        ).only('uuid', 'code', 'main_lease_id').order_by('-lease_id')
+        
+        old_leases_map = {}
+        for lease in all_old_leases:
+            old_leases_map.setdefault(lease.main_lease_id, []).append(lease)
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context(), 'old_leases_map': old_leases_map}
+        )
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)

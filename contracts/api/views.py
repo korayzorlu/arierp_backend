@@ -116,7 +116,7 @@ class ContractList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('active_company')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
-        custom_related_fields = ["company","partner","status"]
+        custom_related_fields = ["company","partner","status","quotation_obj","vendor"]
         
         queryset = Contract.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)

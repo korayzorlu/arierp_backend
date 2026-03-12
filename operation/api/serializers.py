@@ -346,7 +346,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             "name" : obj.item.stock_name if obj.item else "",
         }
 
-    def get_old_leases(self, obj):
+    def get_old_leasess(self, obj):
         old_leases = Lease.objects.select_related().filter(main_lease_id=obj.main_lease_id).order_by('-lease_id')
         
         old_leases_list = []
@@ -356,6 +356,11 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
                 "code": old_lease.code,
             })
         return old_leases_list
+    
+    def get_old_leases(self, obj):
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
+        return [{"id": l.uuid, "code": l.code} for l in old_leases]
 
     def get_invoices(self, obj):
         invoices = obj.lease_invoices.all()
