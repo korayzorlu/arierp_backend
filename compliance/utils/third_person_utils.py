@@ -32,8 +32,10 @@ def create_third_person(self,scan_result):
         send_email_for_third_person_document(name,self.tc_vkn_no or "")
     
     #old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name, is_vpos=self.is_vpos).first()
-    self_tc_vkn_no = self.tc_vkn_no if self.tc_vkn_no and self.tc_vkn_no != "" else ""
-    old_obj = ThirdPerson.objects.filter(tc_vkn_no = self_tc_vkn_no).first()
+    if self.tc_vkn_no and self.tc_vkn_no != "":
+        old_obj = ThirdPerson.objects.filter(tc_vkn_no = self.tc_vkn_no).first()
+    else:
+        old_obj = None
     if old_obj:
         old_obj.bank_activities.add(self)
         if scan_result["status"] != 'cleared':
