@@ -513,7 +513,7 @@ def fetch_warning_notices_from_leaseflex(company,BATCH_SIZE=1000):
             if not cwn.contract.contract_warning_notices.all().exists():
                 lease = Lease.objects.select_related("contract").filter(contract = cwn.contract).first()
                 if lease:
-                    lease.warning_notice_status = "normal_ihtar"
+                    lease.warning_notice_status = "ihtar_yok"
                     lease.save()
                 cwn.delete()
 
