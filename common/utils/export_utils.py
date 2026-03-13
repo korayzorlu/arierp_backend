@@ -35,6 +35,7 @@ from partners.utils.common_utils import export_partners
 from accounting.utils.trial_balance_utils import export_trial_balances
 from accounting.utils.invoice_utils import export_invoices
 from finance.utils import export_finmaks_bank_account_balances
+from compliance.utils.export_utils import export_third_persons
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -179,3 +180,6 @@ class BaseExporter():
 
     def export_warningnotice(self):
         export_warning_notices(self)
+
+    def export_thirdperson(self):
+        export_third_persons(self)

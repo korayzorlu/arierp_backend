@@ -22,6 +22,8 @@ from .utils.black_list_person_utils import is_valid_black_list_person_data
 from .utils.third_person_utils import send_email_for_third_person_cleared,send_email_for_third_person_to_cleared
 from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
+from common.models import ExportProcess
+from common.utils.export_utils import BaseExporter
 
 # Create your views here.
 
@@ -194,3 +196,37 @@ class ImportVPosThirdPersonsView(LoginRequiredMixin,View):
         importer.start_import(df_json)
 
         return HttpResponse(status=200)
+    
+class ExportThirdPersonsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="compliance",
+            model_name="ThirdPerson",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-ucuncu-kisiler.xlsx",
+            export_url="/compliance/third_persons_excel",
+            params={"status":data.get('status')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class ThirdPersonsExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "compliance", "third_persons", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-ucuncu-kisiler.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+ 

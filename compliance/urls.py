@@ -14,5 +14,8 @@ urlpatterns = [
     path('vpos_third_persons_template/', views.VPosThirdPersonsTemplateView.as_view(), name="vpos_third_persons_template"),
     path('import_vpos_third_persons/', views.ImportVPosThirdPersonsView.as_view(), name="import_vpos_third_persons"),
 
+    path('export_third_persons/', views.ExportThirdPersonsView.as_view(), name="export_third_persons"),
+    path('third_persons_excel/', views.ThirdPersonsExcelView.as_view(), name="third_persons_excel"),
+
     path('', include("compliance.api.urls")),
 ]

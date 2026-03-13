@@ -19,7 +19,7 @@ from common.models import Status
 from partners.models import Partner
 
 
-def export_active_leases(self):
+def export_third_persons(self):
     objs = ThirdPerson.objects.select_related().filter().order_by("-created_date")
 
     self.process.status = "in_progress"
@@ -37,7 +37,6 @@ def export_active_leases(self):
     }
 
     previous_progress = 0
-    metin = ""
     for index,obj in enumerate(objs):
         current_progress = ((index + 1)/len(objs))*100
 
@@ -46,25 +45,35 @@ def export_active_leases(self):
             self.process.save()
             previous_progress = current_progress
 
-        ba_objs = obj.bank_activities.all()
+        ba_objs = obj.bank_activities.select_related("finmaks_transaction").all()
+        odeme_detay = ""
         if ba_objs.exists():
-            for ba in ba_objs:
-                metin += f"Bank Activity: {ba.activity_date} - {ba.amount} - {ba.description}\n"
+            for index,ba in enumerate(ba_objs):
+                odeme_detay = f"{ba.finmaks_transaction.bank_account.bank_name} - {ba.finmaks_transaction.transaction_date.strftime('%d.%m.%Y %H:%M') if ba.finmaks_transaction.transaction_date else ''} - {ba.finmaks_transaction.explanation_field} - {ba.description}\n"
 
-        data["Teklif"].append(obj.contract.quotation_obj.code if obj.contract.quotation_obj else "")
-        data["Sözleşme"].append(obj.contract.code)
-        data["Kira Planı"].append(obj.code)
-        data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
-        data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
-        data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
-        data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
-        data["Proje"].append(obj.contract.project if obj.contract else "")
-        data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
-        data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
-        data["Alt Statü"].append(obj.status.name if obj.status else "")
-        data["Statü"].append(obj.lease_status if obj.lease_status else "")
-        data["Statü Değişme Tarihi"].append(obj.lease_status_update_date)
+                if index == 0:
+                    status_map = {
+                        "pending": "Kontrol Edilecek",
+                        "cleared": "Temiz",
+                        "flagged": "Yasaklı",
+                        "need_document": "Belge Gerekli",
+                    }
 
+                    data["Sorgu Tarihi"].append(obj.created_date.strftime("%d.%m.%Y"))
+                    data["İsim"].append(obj.name)
+                    data["TC/VKN No"].append(obj.tc_vkn_no)
+                    data["Ödeme Detayı"].append(odeme_detay)
+                    data["Durum"].append(status_map.get(obj.status, obj.status))
+                    data["Email Gönderildi mi?"].append("Evet" if obj.is_email_sent else "Hayır")
+                    data["Belge"].append("Evet" if obj.third_person_third_person_documents.all().exists() else "Hayır")
+                else:
+                    data["Sorgu Tarihi"].append("")
+                    data["İsim"].append("")
+                    data["TC/VKN No"].append("")
+                    data["Ödeme Detayı"].append(odeme_detay)
+                    data["Durum"].append("")
+                    data["Email Gönderildi mi?"].append("")
+                    data["Belge"].append("")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -78,13 +87,13 @@ def export_active_leases(self):
     for col in numeric_columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     
-    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "leasing", "active_leases", "documents")
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "compliance", "third_persons", "documents")
     if not os.path.exists(base_path):
             os.makedirs(base_path)
 
 
 
-    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-kira-planlari.xlsx"
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-ucuncu-kisiler.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Sayfa', index=False)
 
