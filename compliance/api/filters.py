@@ -64,14 +64,14 @@ class PepPartnerFilter(FilterSet):
 
 class ThirdPersonFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
-    name = CharFilter(method='name')
+    name = CharFilter(method='filter_name')
     tc_vkn_no = CharFilter(field_name='tc_vkn_no', lookup_expr='icontains')
     status = CharFilter(method='filter_status')
     is_email_sent = CharFilter(method='filter_is_email_sent')
 
     class Meta:
         model = ThirdPerson
-        fields = ['uuid']
+        fields = ['uuid','name','tc_vkn_no','status','is_email_sent']
 
     def filter_name(self, queryset, name, value):
         return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
