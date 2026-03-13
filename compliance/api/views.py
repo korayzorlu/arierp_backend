@@ -274,10 +274,7 @@ class ThirdPersonList(ModelViewSet, QueryListAPIView):
     def get_queryset(self):
         user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        if user.is_authenticated:
-            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        else:
-            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
         # Use prefetch_related for partner_contracts to reduce DB hits
         custom_related_fields = []
