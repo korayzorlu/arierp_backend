@@ -1011,7 +1011,7 @@ def fetch_overdue_leases(company):
     file_data = pd.read_excel("files/vadesi-gecmis-borc.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    leases = Lease.objects.select_related().all()
+    leases = Lease.objects.select_related().filter(is_last_project = True)
     leases.update(overdue_days = 0)
 
     lease_by_code = {l.code: l for l in leases if l.code}
