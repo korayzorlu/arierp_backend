@@ -295,6 +295,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     lease_status_update_date = serializers.DateTimeField()
     old_leases = serializers.SerializerMethodField()
     invoices = serializers.SerializerMethodField()
+    purchase_documents = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
@@ -366,6 +367,14 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
         invoices = obj.lease_invoices.all()
 
         if invoices.exists():
+            return "Kesildi"
+        else:
+            return "Fatura Yok"
+
+    def get_purchase_documents(self, obj):
+        purchase_documents = obj.lease_purchase_documents.all()
+
+        if purchase_documents.exists():
             return "Kesildi"
         else:
             return "Fatura Yok"
