@@ -178,6 +178,7 @@ class PartnerAdvancesExcelView(LoginRequiredMixin,View):
         return FileResponse(open(file_path, 'rb'))
 
 
+
 class UpdateContractOperationStatusView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Contract
 
@@ -193,3 +194,38 @@ class UpdateContractOperationStatusView(LoginRequiredMixin,CompanyOwnershipRequi
                 contract.save()
 
         return JsonResponse({'message': 'Kaydedildi!','status':'success'}, status=200)
+    
+
+class ExportTitleDeedInvoiceControlsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="operation",
+            model_name="TitleDeedInvoiceControl",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-tapu-fatura-kontrol.xlsx",
+            export_url="/operation/title_deed_invoice_controls_excel",
+            params={"status":data.get('status')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class TitleDeedInvoiceControlsExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "operation", "title_deed_invoice_controls", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-tapu-fatura-kontrol.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+ 

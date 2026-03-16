@@ -36,6 +36,7 @@ from accounting.utils.trial_balance_utils import export_trial_balances
 from accounting.utils.invoice_utils import export_invoices
 from finance.utils import export_finmaks_bank_account_balances
 from compliance.utils.export_utils import export_third_persons
+from operation.utils import export_title_deed_invoice_controls
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -183,3 +184,6 @@ class BaseExporter():
 
     def export_thirdperson(self):
         export_third_persons(self)
+
+    def export_titledeedinvoicecontrol(self):
+        export_title_deed_invoice_controls(self)
