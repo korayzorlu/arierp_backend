@@ -648,6 +648,8 @@ def fix_last_projects_arinet(company):
                 obj.is_last_project_arinet = True
                 obj.save()
             else:
+                obj.is_last_project_arinet = False
+                obj.save()
                 last_lease.is_last_project_arinet = True
                 last_lease.save()
 

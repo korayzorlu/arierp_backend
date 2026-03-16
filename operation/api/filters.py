@@ -78,6 +78,8 @@ class TitleDeedInvoiceControlFilter(FilterSet):
     leaseflex_automation = CharFilter(method = 'filter_leaseflex_automation')
     overdue = CharFilter(method = 'filter_overdue')
     item = CharFilter(method = 'filter_item')
+    invoices = CharFilter(method = 'filter_invoices')
+    purchase_documents = CharFilter(method = 'filter_purchase_documents')
 
     class Meta:
         model = Lease
@@ -112,10 +114,29 @@ class TitleDeedInvoiceControlFilter(FilterSet):
             return queryset.filter()
         
     def filter_item(self, queryset, item, value):
-        print(value)
         if value == 'all':
             return queryset
         return queryset.filter(item__uuid = value)
+    
+    def filter_invoices(self, queryset, invoices, value):
+        if value == 'all':
+            return queryset
+        elif value == 'kesildi':
+            return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count__gt=0)
+        elif value == 'fatura_yok':
+            return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count=0)
+        else:
+            return queryset
+        
+    def filter_purchase_documents(self, queryset, purchase_documents, value):
+        if value == 'all':
+            return queryset
+        elif value == 'kesildi':
+            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count__gt=0)
+        elif value == 'fatura_yok':
+            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count=0)
+        else:
+            return queryset
 
 class UntitleDeedLeaseFilter(FilterSet):
     uuid = CharFilter(field_name='uuid', lookup_expr='exact')
@@ -138,6 +159,8 @@ class UntitleDeedLeaseFilter(FilterSet):
     leaseflex_automation = CharFilter(method = 'filter_leaseflex_automation')
     overdue = CharFilter(method = 'filter_overdue')
     item = CharFilter(method = 'filter_item')
+    invoices = CharFilter(method = 'filter_invoices')
+    purchase_documents = CharFilter(method = 'filter_purchase_documents')
 
     class Meta:
         model = Lease
@@ -176,3 +199,23 @@ class UntitleDeedLeaseFilter(FilterSet):
         if value == 'all':
             return queryset
         return queryset.filter(item__uuid = value)
+    
+    def filter_invoices(self, queryset, invoices, value):
+        if value == 'all':
+            return queryset
+        elif value == 'kesildi':
+            return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count__gt=0)
+        elif value == 'fatura_yok':
+            return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count=0)
+        else:
+            return queryset
+        
+    def filter_purchase_documents(self, queryset, purchase_documents, value):
+        if value == 'all':
+            return queryset
+        elif value == 'kesildi':
+            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count__gt=0)
+        elif value == 'fatura_yok':
+            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count=0)
+        else:
+            return queryset
