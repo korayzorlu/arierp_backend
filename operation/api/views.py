@@ -19,6 +19,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from django.db.models import Count, Sum, Q, F, Case, When, Value, IntegerField
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -351,3 +352,131 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
+    
+class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
+    serializer_class = UntitleDeedLeaseListSerializer
+    filterset_class = UntitleDeedLeaseFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn']
+    ordering = ['-activation_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = [
+            "company", "contract", "currency", "status", "item",
+            "contract__quotation_obj", "contract__quotation_obj__quick_quotation",
+            "contract__partner",  
+            "contract__vendor",    
+        ]
+
+        # TradeTransaction için filtre kriterlerinizi burada tanımlayın
+        trade_transaction_filter = Q(
+            lease_trade_transactions__amount_type='0',
+            lease_trade_transactions__posting_group_name='Kira'
+        )
+
+        installment_filter = Q(
+            lease_installments__type='5',
+        )
+
+        queryset = Lease.objects.select_related(*custom_related_fields).prefetch_related("lease_invoices","lease_trade_transactions","lease_installments").filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lease_status__in=['aktiflestirildi']) &
+            Q(is_last_project_arinet=True)
+        ).annotate(
+            lease_invoices_count=Count('lease_invoices', distinct=True),
+            # total_paid_amount=Sum(
+            #     Case(
+            #         When(trade_transaction_filter, then=F('lease_trade_transactions__amount')),
+            #         default=Value(0),
+            #         output_field=IntegerField()
+            #     )
+            # ),
+            # total_installment_amount=Sum(
+            #     Case(
+            #         When(installment_filter, then=F('lease_installments__amount')),
+            #         default=Value(0),
+            #         output_field=IntegerField()
+            #     )
+            # ),
+            # total_invoice_amount=Sum('lease_invoices__amount'),
+            # invoice_paid_diff=Case(
+            #     When(
+            #         total_invoice_amount__isnull=False,
+            #         then=F('total_invoice_amount') - F('total_paid_amount')
+            #     ),
+            #     default=Value(0),
+            #     output_field=IntegerField()
+            # )
+        ).filter(
+            lease_invoices_count__gt=0,
+            #invoice_paid_diff__lt=100000
+        ).exclude(
+            Q(contract__partner__types__contains=['special'])
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code","contract__partner__name","contract__project","type","activation_date","lease_status","currency__code","project_no","status__name","leasing_type","application_no","current_request","finansman_kurum","bbsn"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        # Tüm main_lease_id'leri topla, tek sorguda çek
+        main_lease_ids = [obj.main_lease_id for obj in objects if obj.main_lease_id]
+        all_old_leases = Lease.objects.filter(
+            main_lease_id__in=main_lease_ids
+        ).only('uuid', 'code', 'main_lease_id').order_by('-lease_id')
+        
+        old_leases_map = {}
+        for lease in all_old_leases:
+            old_leases_map.setdefault(lease.main_lease_id, []).append(lease)
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context(), 'old_leases_map': old_leases_map}
+        )
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

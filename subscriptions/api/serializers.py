@@ -60,6 +60,7 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Arşivde", "icon" : "paid", "route" : "/contract-in-archives"},
                 ]},
                 {"type" : "item", "class" : ["default"], "label" : "Tapu Fatura Kontrol", "icon" : "description", "route" : "/title-deed-invoice-control"},
+                {"type" : "item", "class" : ["default"], "label" : "Tapusu Olmayanlar", "icon" : "description", "route" : "/untitle-deed-leases"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Banka", "icon" : "description", "items" : [
