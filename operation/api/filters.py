@@ -131,10 +131,13 @@ class TitleDeedInvoiceControlFilter(FilterSet):
     def filter_purchase_documents(self, queryset, purchase_documents, value):
         if value == 'all':
             return queryset
-        elif value == 'kesildi':
-            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count__gt=0)
+        main_lease_ids_with_docs = Lease.objects.filter(
+            lease_purchase_documents__isnull=False
+        ).values_list('main_lease_id', flat=True).distinct()
+        if value == 'kesildi':
+            return queryset.filter(main_lease_id__in=main_lease_ids_with_docs)
         elif value == 'fatura_yok':
-            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count=0)
+            return queryset.exclude(main_lease_id__in=main_lease_ids_with_docs)
         else:
             return queryset
 
@@ -213,9 +216,12 @@ class UntitleDeedLeaseFilter(FilterSet):
     def filter_purchase_documents(self, queryset, purchase_documents, value):
         if value == 'all':
             return queryset
-        elif value == 'kesildi':
-            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count__gt=0)
+        main_lease_ids_with_docs = Lease.objects.filter(
+            lease_purchase_documents__isnull=False
+        ).values_list('main_lease_id', flat=True).distinct()
+        if value == 'kesildi':
+            return queryset.filter(main_lease_id__in=main_lease_ids_with_docs)
         elif value == 'fatura_yok':
-            return queryset.annotate(purchase_documents_count=Count('lease_purchase_documents', distinct=True),).filter(purchase_documents_count=0)
+            return queryset.exclude(main_lease_id__in=main_lease_ids_with_docs)
         else:
             return queryset

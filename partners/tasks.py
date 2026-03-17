@@ -169,6 +169,9 @@ def fix_partnerss(company):
                 obj.save()
     except Exception as e:
         print(e)
+@shared_task()
+def fetch_partner_advances(company):
+    fetch_partner_advances_from_leaseflex(company)
 
 @shared_task()
 def fetch_partners(company):

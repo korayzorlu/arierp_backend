@@ -372,9 +372,12 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             return "Fatura Yok"
 
     def get_purchase_documents(self, obj):
-        purchase_documents = obj.lease_purchase_documents.all()
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
 
-        if purchase_documents.exists():
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases)
+
+        if purchase_documents_exist:
             return "Kesildi"
         else:
             return "Fatura Yok"
