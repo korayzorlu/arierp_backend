@@ -7,6 +7,7 @@ import os
 import traceback
 import logging
 from datetime import datetime
+from decimal import Decimal
 
 from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
@@ -422,6 +423,8 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.save()
                     update_objs.append(obj)
                     update_progress += 1
+                else:
+                    obj.advance_amount = Decimal("0.00")
 
             if update_objs:
                 Partner.objects.bulk_update(update_objs, [
