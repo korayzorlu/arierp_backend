@@ -121,10 +121,13 @@ class TitleDeedInvoiceControlFilter(FilterSet):
     def filter_invoices(self, queryset, invoices, value):
         if value == 'all':
             return queryset
-        elif value == 'kesildi':
-            return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count__gt=0)
+        main_lease_ids_with_docs = Lease.objects.filter(
+            lease_invoices__isnull=False
+        ).values_list('main_lease_id', flat=True).distinct()
+        if value == 'kesildi':
+            return queryset.filter(main_lease_id__in=main_lease_ids_with_docs)
         elif value == 'fatura_yok':
-            return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count=0)
+            return queryset.exclude(main_lease_id__in=main_lease_ids_with_docs)
         else:
             return queryset
         
@@ -203,13 +206,26 @@ class UntitleDeedLeaseFilter(FilterSet):
             return queryset
         return queryset.filter(item__uuid = value)
     
-    def filter_invoices(self, queryset, invoices, value):
+    def filter_invoicessss(self, queryset, invoices, value):
         if value == 'all':
             return queryset
         elif value == 'kesildi':
             return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count__gt=0)
         elif value == 'fatura_yok':
             return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count=0)
+        else:
+            return queryset
+        
+    def filter_invoices(self, queryset, invoices, value):
+        if value == 'all':
+            return queryset
+        main_lease_ids_with_docs = Lease.objects.filter(
+            lease_invoices__isnull=False
+        ).values_list('main_lease_id', flat=True).distinct()
+        if value == 'kesildi':
+            return queryset.filter(main_lease_id__in=main_lease_ids_with_docs)
+        elif value == 'fatura_yok':
+            return queryset.exclude(main_lease_id__in=main_lease_ids_with_docs)
         else:
             return queryset
         

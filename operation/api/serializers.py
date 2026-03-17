@@ -363,10 +363,21 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
         old_leases = old_leases_map.get(obj.main_lease_id, [])
         return [{"id": l.uuid, "code": l.code} for l in old_leases]
 
-    def get_invoices(self, obj):
+    def get_invoicess(self, obj):
         invoices = obj.lease_invoices.all()
 
         if invoices.exists():
+            return "Kesildi"
+        else:
+            return "Fatura Yok"
+        
+    def get_invoices(self, obj):
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
+
+        invoices_exist = any(lease.lease_invoices.exists() for lease in old_leases)
+
+        if invoices_exist:
             return "Kesildi"
         else:
             return "Fatura Yok"
@@ -493,17 +504,23 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
         return [{"id": l.uuid, "code": l.code} for l in old_leases]
 
     def get_invoices(self, obj):
-        invoices = obj.lease_invoices.all()
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
 
-        if invoices.exists():
+        invoices_exist = any(lease.lease_invoices.exists() for lease in old_leases)
+
+        if invoices_exist:
             return "Kesildi"
         else:
             return "Fatura Yok"
 
     def get_purchase_documents(self, obj):
-        purchase_documents = obj.lease_purchase_documents.all()
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
 
-        if purchase_documents.exists():
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases)
+
+        if purchase_documents_exist:
             return "Kesildi"
         else:
             return "Fatura Yok"
