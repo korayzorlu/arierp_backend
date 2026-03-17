@@ -402,7 +402,7 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
         cursor.fast_executemany = True
 
         partners = Partner.objects.select_related().filter(company_id=int(company))
-        partners.update(advance_amount=0)
+        partners.update(advance_amount=Decimal("0.00"))
 
         partner_by_code = {p.crm_code: p for p in partners if p.crm_code}
         
@@ -419,12 +419,12 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
                     obj = None
 
                 if obj:
+                    if obj.name == "DENİZ OYTUN PEHLİVAN":
+                        print(f"Eski Avans: {obj.advance_amount} - Yeni Avans: {data.TrnAmountLocal}")
                     obj.advance_amount = safe_decimal(data.TrnAmountLocal)
                     obj.save()
                     update_objs.append(obj)
                     update_progress += 1
-                else:
-                    obj.advance_amount = Decimal("0.00")
 
             if update_objs:
                 Partner.objects.bulk_update(update_objs, [
