@@ -145,6 +145,7 @@ class BDDKHesaplarList(ModelViewSet, QueryListAPIView):
         result = []
         for idx, code in enumerate(account_codes, start=1):
             total = objs.filter(Q(account_code__startswith=code)).aggregate(total_sum=Sum(F('total_debit') - F('total_credit')))['total_sum'] or Decimal('0.00')
+            #currency = objs.filter(Q(account_code__startswith=code)).first().currency.code if objs.filter(Q(account_code__startswith=code)).exists() else 'TRY'
             result.append({
                 'id': idx,
                 'account_code': code,
