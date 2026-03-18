@@ -127,6 +127,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None
                     obj.bbsn = str(data.BBSN_NO) or ""
                     #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
+                    
                     #ödeme kontrolü
                     obj_trade_transactions = trade_transactions_dict.get(obj.lease_id, [])
                     if obj_trade_transactions:
@@ -134,8 +135,6 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     else:
                         paid_amount = Decimal('0.00')
                     obj.paid_amount = paid_amount
-                    update_objs.append(obj)
-                    update_progress += 1
 
                     #ihtar kontrolü
                     wns = warning_notices_dict.get(obj.contract.contract_id)
@@ -146,6 +145,9 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         obj.warning_notice_status = 'normal_ihtar'
                     elif cwns:
                         obj.warning_notice_status = 'kapsamli_ihtar'
+
+                    update_objs.append(obj)
+                    update_progress += 1
                 else:
                     create_objs.append(Lease(
                         company = company_obj,
