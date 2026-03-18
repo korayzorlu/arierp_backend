@@ -297,6 +297,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     invoices = serializers.SerializerMethodField()
     purchase_documents = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
+    paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -437,6 +438,7 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
     invoices = serializers.SerializerMethodField()
     purchase_documents = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
+    paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
