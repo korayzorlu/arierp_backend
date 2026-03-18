@@ -49,7 +49,7 @@ def export_third_persons(self):
         odeme_detay = ""
         if ba_objs.exists():
             for index,ba in enumerate(ba_objs):
-                odeme_detay = f"{ba.finmaks_transaction.bank_account.bank_name} - {ba.finmaks_transaction.transaction_date.strftime('%d.%m.%Y %H:%M') if ba.finmaks_transaction.transaction_date else ''} - {ba.finmaks_transaction.explanation_field} - {ba.description}\n"
+                odeme_detay = f"{ba.finmaks_transaction.bank_account.bank_name if ba.finmaks_transaction and ba.finmaks_transaction.bank_account else ''} - {ba.finmaks_transaction.transaction_date.strftime('%d.%m.%Y %H:%M') if ba.finmaks_transaction and ba.finmaks_transaction.transaction_date else ''} - {ba.finmaks_transaction.explanation_field if ba.finmaks_transaction else ''} - {ba.description}\n"
 
                 if index == 0:
                     status_map = {
