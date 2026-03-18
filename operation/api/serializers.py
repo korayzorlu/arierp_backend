@@ -298,6 +298,8 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     purchase_documents = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
     paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    installment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -439,6 +441,9 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
     purchase_documents = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
     paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    installment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    remaining_amount = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -526,6 +531,9 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
             return "Kesildi"
         else:
             return "Fatura Yok"
+        
+    def get_remaining_amount(self, obj):
+        return (obj.installment_amount + obj.transfer_amount) - obj.paid_amount
 
 
 

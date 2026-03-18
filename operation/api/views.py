@@ -399,9 +399,11 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
         queryset = Lease.objects.select_related(*custom_related_fields).prefetch_related("lease_invoices","lease_trade_transactions","lease_installments").filter(
             Q(company=active_company.company if active_company else None) &
             Q(lease_status__in=['aktiflestirildi']) &
-            Q(is_last_project_arinet=True)
+            Q(is_last_project_arinet=True) &
+            Q()
         ).annotate(
             lease_invoices_count=Count('lease_invoices', distinct=True),
+            remaining_amount=(F('installment_amount') + F('transfer_amount')) - F('paid_amount')
             # total_paid_amount=Sum(
             #     Case(
             #         When(trade_transaction_filter, then=F('lease_trade_transactions__amount')),
@@ -427,6 +429,7 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
             # )
         ).filter(
             lease_invoices_count__gt=0,
+            remaining_amount__lte=F('transfer_amount')
             #invoice_paid_diff__lt=100000
         ).exclude(
             Q(contract__partner__types__contains=['special'])

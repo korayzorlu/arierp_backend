@@ -47,7 +47,9 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         currencies = Currency.objects.select_related().all()
         warning_notices = WarningNotice.objects.select_related().all()
         comprehensive_warning_notices = ComprehensiveWarningNotice.objects.select_related().all()
-        trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name='Kira')
+        trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name='Kira').only("amount", "lease", "lease__lease_id")
+        installments = Installment.objects.select_related("lease").filter(type = '1').only("amount", "type", "lease", "lease__lease_id")
+        transfer_installments = Installment.objects.select_related("lease").filter(type = '5').only("amount", "type", "lease", "lease__lease_id")
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
         currencies_dict = {c.code: c for c in currencies}
         warning_notices_dict = {w.contract.contract_id: w for w in warning_notices}
@@ -56,6 +58,14 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         for tt in trade_transactions:
             if tt.lease and tt.lease.lease_id:
                 trade_transactions_dict[tt.lease.lease_id].append(tt)
+        installments_dict = defaultdict(list)
+        for installment in installments:
+            if installment.lease and installment.lease.lease_id:
+                installments_dict[installment.lease.lease_id].append(installment)
+        transfer_installments_dict = defaultdict(list)
+        for t_installment in transfer_installments:
+            if t_installment.lease and t_installment.lease.lease_id:
+                transfer_installments_dict[t_installment.lease.lease_id].append(t_installment)
 
         update_progress = 0
         create_progress = 0
@@ -136,6 +146,22 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         paid_amount = Decimal('0.00')
                     obj.paid_amount = paid_amount
 
+                    #taksit kontrolü
+                    obj_installments = installments_dict.get(obj.lease_id, [])
+                    if obj_installments:
+                        installment_amount = sum([inst.amount for inst in obj_installments], Decimal('0.00'))
+                    else:
+                        installment_amount = Decimal('0.00')
+                    obj.installment_amount = installment_amount
+
+                    #devir bedeli kontrolü
+                    obj_t_installments = transfer_installments_dict.get(obj.lease_id, [])
+                    if obj_t_installments:
+                        transfer_amount = sum([inst.amount for inst in obj_t_installments], Decimal('0.00'))
+                    else:
+                        transfer_amount = Decimal('0.00')
+                    obj.transfer_amount = transfer_amount
+
                     #ihtar kontrolü
                     wns = warning_notices_dict.get(obj.contract.contract_id)
                     cwns = comprehensive_warning_notices_dict.get(obj.contract.contract_id)
@@ -215,6 +241,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "notary_public_date",
                     "bbsn",
                     "paid_amount",
+                    "installment_amount",
+                    "transfer_amount",
                     "warning_notice_status"
                 ], batch_size=BATCH_SIZE)
             if create_objs:

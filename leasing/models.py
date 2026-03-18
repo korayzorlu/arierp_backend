@@ -106,6 +106,8 @@ class Lease(models.Model):
     tufe_reel_fark = models.DecimalField(_("Tüfe Reel Fark"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     paid_amount = models.DecimalField(_("Paid Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    installment_amount = models.DecimalField(_("Total Installment Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    transfer_amount = models.DecimalField(_("Transfer Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     item = models.ForeignKey(Item, on_delete=models.SET_NULL, blank=True, null=True, related_name="project_leases")
     block = models.CharField(_("Block"), max_length=50, null=True, blank=True)
