@@ -167,11 +167,10 @@ class UntitleDeedLeaseFilter(FilterSet):
     item = CharFilter(method = 'filter_item')
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
-
     class Meta:
         model = Lease
         fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status']
-    
+
     def filter_lease_status(self, queryset, lease_status, value):
         if value == 'all':
             return queryset

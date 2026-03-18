@@ -282,7 +282,7 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
     serializer_class = TitleDeedInvoiceControlListSerializer
     filterset_class = TitleDeedInvoiceControlFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn']
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn','paid_amount']
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
@@ -357,7 +357,7 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = UntitleDeedLeaseListSerializer
     filterset_class = UntitleDeedLeaseFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn']
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn','paid_amount']
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
