@@ -47,7 +47,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         currencies = Currency.objects.select_related().all()
         warning_notices = WarningNotice.objects.select_related().all()
         comprehensive_warning_notices = ComprehensiveWarningNotice.objects.select_related().all()
-        trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name = 'Kira')
+        trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0')
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
         currencies_dict = {c.code: c for c in currencies}
         warning_notices_dict = {w.contract.contract_id: w for w in warning_notices}
@@ -130,7 +130,10 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     #ödeme kontrolü
                     obj_trade_transactions = trade_transactions_dict.get(obj.lease_id, [])
                     if obj_trade_transactions:
-                        obj.paid_amount = sum([tt.amount for tt in obj_trade_transactions], Decimal('0.00'))
+                        paid_amount = sum([tt.amount for tt in obj_trade_transactions], Decimal('0.00'))
+                    else:
+                        paid_amount = Decimal('0.00')
+                    obj.paid_amount = paid_amount
                     update_objs.append(obj)
                     update_progress += 1
 
