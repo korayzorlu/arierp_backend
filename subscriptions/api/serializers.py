@@ -80,7 +80,7 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Satın Alma Belgeleri", "icon" : "description", "route" : "/purchase-documents"},
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Sanal Pos", "icon" : "description", "items" : [
-
+                    {"type" : "item", "class" : ["default"], "label" : "Sanal Pos Hareketleri", "icon" : "description", "route" : "/vpos-transactions"},
                 ]},
                 #{"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},

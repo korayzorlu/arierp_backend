@@ -813,7 +813,7 @@ class VPosTransactionList(ModelViewSet, QueryListAPIView):
     filterset_class = VPosTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['id']
-    ordering = ['-transaction_date']
+    ordering = ['-process_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -832,7 +832,7 @@ class VPosTransactionList(ModelViewSet, QueryListAPIView):
             return self._cached_queryset
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
-        ordering = self.request.query_params.get('ordering') or "-created_date"
+        ordering = self.request.query_params.get('ordering') or "-process_date"
         
         custom_related_fields = ["company"]
 

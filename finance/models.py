@@ -3,6 +3,7 @@ from django.db.models import Q,IntegerField
 from django.db.models.functions import Cast
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -128,9 +129,72 @@ class VPosTransaction(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_transactions")
 
+    process_date = models.DateTimeField(_("Process Date"), blank=True, null=True)
+    musteri_tipi = models.PositiveIntegerField(_("Customer Type"), default=0)
+
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, blank=True, null=True, related_name="currency_vpos_transactions")
+    paid_amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
+
+    lease_posting_group_id = models.BooleanField(default=False)
+
+    firma_adi = models.CharField(_("Firma Adı"), max_length=250, null=True, blank=True)
+    kurum_tipi = models.CharField(_("Kurum Tipi"), max_length=50, null=True, blank=True)
+    vergi_dairesi = models.CharField(_("Vergi Dairesi"), max_length=140, null=True, blank=True)
+    vergi_no = models.CharField(_("Vergi No"), max_length=50, null=True, blank=True)
+    web_sitesi = models.CharField(_("Web Sitesi"), max_length=250, null=True, blank=True)
+    adres = models.CharField(_("Adres"), max_length=250, null=True, blank=True)
+    ulke = models.CharField(_("Ülke"), max_length=140, null=True, blank=True)
+    sehir = models.CharField(_("Şehir"), max_length=50, null=True, blank=True)
+    ilce = models.CharField(_("İlçe"), max_length=50, null=True, blank=True)
+    posta = models.CharField(_("Posta"), max_length=50, null=True, blank=True)
+
+    ad = models.CharField(_("Ad"), max_length=140, null=True, blank=True)
+    ikinci_ad = models.CharField(_("İkinci Ad"), max_length=140, null=True, blank=True)
+    orta_ad = models.CharField(_("Orta Ad"), max_length=140, null=True, blank=True)
+    soyad = models.CharField(_("Soyad"), max_length=140, null=True, blank=True)
+    cinsiyet = models.CharField(_("Cinsiyet"), max_length=50, null=True, blank=True)
+    tc_kimlik_no = models.CharField(_("TC Kimlik No"), max_length=25, null=True, blank=True)
+    pasaport_no = models.CharField(_("Pasaport No"), max_length=25, null=True, blank=True)
+    uyruk = models.CharField(_("Uyruk"), max_length=50, null=True, blank=True)
+    dogum_tarihi = models.CharField(_("Doğum Tarihi"), max_length=50, null=True, blank=True)
+    vergi_dairesi_birey = models.CharField(_("Vergi Dairesi Birey"), max_length=140, null=True, blank=True)
+    vergi_no_birey = models.CharField(_("Vergi No Birey"), max_length=50, null=True, blank=True)
+    adres_birey = models.CharField(_("Adres Birey"), max_length=250, null=True, blank=True)
+    ulke_birey = models.CharField(_("Ülke Birey"), max_length=140, null=True, blank=True)
+    sehir_birey = models.CharField(_("Şehir Birey"), max_length=50, null=True, blank=True)
+    ilce_birey = models.CharField(_("İlçe Birey"), max_length=50, null=True, blank=True)
+    posta_birey = models.CharField(_("Posta Birey"), max_length=50, null=True, blank=True)
+    
+    username = models.CharField(_("User Name"), max_length=140, null=True, blank=True)
+    password = models.CharField(_("Password"), max_length=140, null=True, blank=True)
+    telefon = models.CharField(_("Telefon"), max_length=50, null=True, blank=True)
+    email = models.CharField(_("Email"), max_length=140, null=True, blank=True)
+    fax = models.CharField(_("Fax"), max_length=50, null=True, blank=True)
+    bank_code = models.CharField(_("Bank Code"), max_length=25, null=True, blank=True)
+    contract_code = models.CharField(_("Contract Code"), max_length=25, null=True, blank=True)
+    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.company.name)   
+        return f"{self.company.name} - {self.paid_amount} {self.currency}"
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+    
+class VPosIletisim(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_iletisims")
+
+    vpos_transaction = models.ForeignKey(VPosTransaction, on_delete=models.CASCADE, related_name="vpos_transaction_vpos_iletisims")
+    iletisim_turu = models.CharField(max_length=50, null=True, blank=True)
+    iletisim_degeri = models.CharField(max_length=250, null=True, blank=True)
+    TYPE_CHOICES = (
+        ('bireysel', ('Bireysel')),
+        ('kurumsal', ('Kurumsal')),
+    )
+    type = models.CharField(_("Type"), max_length=25, default='bireysel', choices=TYPE_CHOICES, blank=True, null=True)

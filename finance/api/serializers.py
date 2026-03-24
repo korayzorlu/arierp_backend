@@ -229,7 +229,26 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
 class VPosTransactionListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
+    currency = serializers.SerializerMethodField()
+    paid_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
+    process_date = serializers.DateTimeField()
+    musteri_tipi = serializers.IntegerField()
+    lease_posting_group_id = serializers.BooleanField()
+    firma_adi = serializers.CharField()
+    kurum_tipi = serializers.CharField()
+    vergi_dairesi = serializers.CharField()
+    vergi_no = serializers.CharField()
+    web_sitesi = serializers.CharField()
+    adres = serializers.CharField()
+    ulke = serializers.CharField()
+    sehir = serializers.CharField()
+    ilce = serializers.CharField()
+    posta = serializers.CharField()
+    created_date = serializers.DateTimeField()
+    updated_date = serializers.DateTimeField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
-      
+
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ''

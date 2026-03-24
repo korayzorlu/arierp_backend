@@ -9,6 +9,7 @@ router.register(r'bank_account_balances', BankAccountBalanceList, "bank_account_
 router.register(r'bank_account_daily_records', BankAccountDailyRecordList, "bank_account_daily_records_api")
 router.register(r'bank_account_transactions', BankAccountTransactionList, "bank_account_transactions_api")
 router.register(r'partner_advances', PartnerAdvanceList, "partner_advances_api")
+router.register(r'vpos_transactions', VPosTransactionList, "vpos_transactions_api")
 
 urlpatterns = [
     path('',include(router.urls)),

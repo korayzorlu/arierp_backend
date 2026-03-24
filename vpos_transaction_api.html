@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPos Transaction API — Dokümantasyon</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.6; }
+
+    header { background: #1a1a2e /*background: rgb(27,31,35)*/; color: #fff; padding: 32px 40px; }
+    header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    header p { color: #a0aec0; font-size: 14px; }
+
+    .badge { display: inline-block; background: #38a169; color: #fff; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 4px; margin-right: 8px; letter-spacing: 0.5px; }
+    .url { font-family: monospace; font-size: 14px; color: #e2e8f0; }
+
+    main { max-width: 900px; margin: 32px auto; padding: 0 24px 60px; }
+
+    section { background: #fff; border-radius: 8px; padding: 28px 32px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    section h2 { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #4a5568; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 18px; }
+    section h3 { font-size: 13px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.4px; margin: 22px 0 10px; }
+    section h3:first-of-type { margin-top: 0; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #f7fafc; text-align: left; padding: 9px 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #718096; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 9px 12px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7fafc; }
+
+    code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; background: #edf2f7; padding: 2px 6px; border-radius: 3px; color: #2d3748; }
+
+    .tag-required { display: inline-block; background: #fed7d7; color: #c53030; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 3px; }
+    .tag-optional { display: inline-block; background: #e9d8fd; color: #6b46c1; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 3px; }
+
+    .info-grid { display: grid; grid-template-columns: 140px 1fr; gap: 0; font-size: 14px; }
+    .info-grid .label { color: #718096; padding: 7px 0; font-weight: 600; }
+    .info-grid .value { padding: 7px 0; }
+    .info-grid .row { display: contents; }
+    .info-grid .row:not(:last-child) .label,
+    .info-grid .row:not(:last-child) .value { border-bottom: 1px solid #edf2f7; }
+
+    pre { background: #1a1a2e; color: #e2e8f0; padding: 18px 20px; border-radius: 6px; font-size: 13px; font-family: "SFMono-Regular", Consolas, monospace; overflow-x: auto; margin-top: 10px; line-height: 1.7; }
+    pre .comment { color: #718096; }
+    pre .key { color: #90cdf4; }
+    pre .string { color: #9ae6b4; }
+    pre .number { color: #fbd38d; }
+    pre .bool { color: #fc8181; }
+
+    .response-block { border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-top: 10px; }
+    .response-block .response-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f7fafc; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; }
+    .status-200 { background: #c6f6d5; color: #276749; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+    .status-400 { background: #fed7d7; color: #9b2c2c; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+    .response-block pre { border-radius: 0; margin: 0; }
+
+    .nested-table { margin-top: 12px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
+    .nested-table table { font-size: 13px; }
+    .nested-label { font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 14px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>VPos Transaction API</h1>
+  <p style="margin-top:12px;">
+    <span class="badge">POST</span>
+    <span class="url">/api/finance/add_vpos_transaction/</span>
+  </p>
+  <p style="margin-top:10px;">Sanal POS üzerinden gerçekleşen ödeme işlemlerini sisteme kaydetmek için kullanılır. Oturum gerektirmez.</p>
+</header>
+
+<main>
+
+  <!-- Genel Bilgiler -->
+  <section>
+    <h2>Genel Bilgiler</h2>
+    <div class="info-grid">
+      <div class="row"><div class="label">URL</div><div class="value"><code>/api/finance/add_vpos_transaction/</code></div></div>
+      <div class="row"><div class="label">Method</div><div class="value"><code>POST</code></div></div>
+      <div class="row"><div class="label">Content-Type</div><div class="value"><code>application/json</code></div></div>
+      <div class="row"><div class="label">Auth</div><div class="value">Oturum gerekmez — <code>CompanyId</code> ve <code>ValidationKey</code> ile doğrulanır</div></div>
+    </div>
+  </section>
+
+  <!-- Zorunlu Alanlar -->
+  <section>
+    <h2>Zorunlu Alanlar</h2>
+    <table>
+      <thead>
+        <tr><th>Alan</th><th>Tip</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>CompanyId</code></td><td>UUID</td></tr>
+        <tr><td><code>ValidationKey</code></td><td>string</td></tr>
+        <tr><td><code>ProcessDate</code></td><td>dateTime</td></tr>
+        <tr><td><code>MusteriTipi</code></td><td>integer</td></tr>
+        <tr><td><code>PaidAmount</code></td><td>decimal</td></tr>
+        <tr><td><code>LeasePostingGroupId</code></td><td>boolean</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Opsiyonel Alanlar -->
+  <section>
+    <h2>Opsiyonel Alanlar</h2>
+
+    <h3>Kurumsal Müşteri (MusteriTipi = 1)</h3>
+    <table>
+      <thead><tr><th>Alan</th><th>Tip</th></tr></thead>
+      <tbody>
+        <tr><td><code>FirmaAdi</code></td><td>string</td></tr>
+        <tr><td><code>KurumTipi</code></td><td>string</td></tr>
+        <tr><td><code>VergiDairesi</code></td><td>string</td></tr>
+        <tr><td><code>VergiNo</code></td><td>string</td></tr>
+        <tr><td><code>WebSitesi</code></td><td>string</td></tr>
+        <tr><td><code>Adres</code></td><td>string</td></tr>
+        <tr><td><code>Ulke</code></td><td>string</td></tr>
+        <tr><td><code>Sehir</code></td><td>string</td></tr>
+        <tr><td><code>Ilce</code></td><td>string</td></tr>
+        <tr><td><code>Posta</code></td><td>string</td></tr>
+        <tr>
+          <td><code>IletisimList</code></td>
+          <td>
+            array
+            <div class="nested-label">Eleman yapısı:</div>
+            <div class="nested-table">
+              <table>
+                <thead><tr><th>Alan</th><th>Tip</th></tr></thead>
+                <tbody>
+                  <tr><td><code>IletisimTuru</code></td><td>string</td></tr>
+                  <tr><td><code>IletisimDegeri</code></td><td>string</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Bireysel Müşteri (MusteriTipi = 2)</h3>
+    <table>
+      <thead><tr><th>Alan</th><th>Tip</th></tr></thead>
+      <tbody>
+        <tr><td><code>Ad</code></td><td>string</td></tr>
+        <tr><td><code>IkinciAd</code></td><td>string</td></tr>
+        <tr><td><code>OrtaAd</code></td><td>string</td></tr>
+        <tr><td><code>SoyAd</code></td><td>string</td></tr>
+        <tr><td><code>Cinsiyet</code></td><td>string</td></tr>
+        <tr><td><code>TCKimlikNo</code></td><td>string</td></tr>
+        <tr><td><code>PasaportNo</code></td><td>string</td></tr>
+        <tr><td><code>Uyruk</code></td><td>string</td></tr>
+        <tr><td><code>DogumTarih</code></td><td>date</td></tr>
+        <tr><td><code>VergiDairesi_Birey</code></td><td>string</td></tr>
+        <tr><td><code>VergiNo_Birey</code></td><td>string</td></tr>
+        <tr><td><code>Adres_Birey</code></td><td>string</td></tr>
+        <tr><td><code>Ulke_Birey</code></td><td>string</td></tr>
+        <tr><td><code>Sehir_Birey</code></td><td>string</td></tr>
+        <tr><td><code>Ilce_Birey</code></td><td>string</td></tr>
+        <tr><td><code>Posta_Birey</code></td><td>string</td></tr>
+        <tr>
+          <td><code>IletisimList_Birey</code></td>
+          <td>
+            array
+            <div class="nested-label">Eleman yapısı:</div>
+            <div class="nested-table">
+              <table>
+                <thead><tr><th>Alan</th><th>Tip</th></tr></thead>
+                <tbody>
+                  <tr><td><code>IletisimTuru</code></td><td>string</td></tr>
+                  <tr><td><code>IletisimDegeri</code></td><td>string</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Ortak</h3>
+    <table>
+      <thead><tr><th>Alan</th><th>Tip</th></tr></thead>
+      <tbody>
+        <tr><td><code>UserName</code></td><td>string</td></tr>
+        <tr><td><code>Password</code></td><td>string</td></tr>
+        <tr><td><code>Telefon</code></td><td>string</td></tr>
+        <tr><td><code>EMail</code></td><td>string</td></tr>
+        <tr><td><code>Fax</code></td><td>string</td></tr>
+        <tr><td><code>BankCode</code></td><td>string</td></tr>
+        <tr><td><code>ContractCode</code></td><td>string</td></tr>
+        <tr><td><code>CurrencyCode</code></td><td>string</td></tr>
+        <tr><td><code>ExtTransactionId</code></td><td>string</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Yanıtlar -->
+  <section>
+    <h2>Yanıtlar</h2>
+
+    <div class="response-block">
+      <div class="response-header"><span class="status-200">200 OK</span> Başarılı</div>
+<pre>{
+  <span class="key">"message"</span>: <span class="string">"Başarıyla kaydedildi!"</span>,
+  <span class="key">"status"</span>:  <span class="string">"success"</span>
+}</pre>
+    </div>
+
+    <div class="response-block" style="margin-top:12px;">
+      <div class="response-header"><span class="status-400">400 Bad Request</span> Hata</div>
+      <div style="padding: 10px 14px; font-size: 13px; color: #718096;">Zorunlu alanlardan herhangi biri eksik, geçersiz veya beklenen formatta değilse döner.</div>
+<pre>{
+  <span class="key">"message"</span>: <span class="string">"Hata açıklaması (AlanAdi)"</span>,
+  <span class="key">"status"</span>:  <span class="string">"error"</span>
+}</pre>
+    </div>
+  </section>
+
+  <!-- Örnek İstek -->
+  <section>
+    <h2>Örnek İstek</h2>
+
+    <h3>JSON Body</h3>
+<pre>{
+  <span class="comment">// Zorunlu</span>
+  <span class="key">"CompanyId"</span>:           <span class="string">"00000000-0000-0000-0000-000000000000"</span>,
+  <span class="key">"ValidationKey"</span>:       <span class="string">"your-validation-key"</span>,
+  <span class="key">"ProcessDate"</span>:         <span class="string">"2024-01-15T10:30:00"</span>,
+  <span class="key">"MusteriTipi"</span>:         <span class="number">1</span>,
+  <span class="key">"PaidAmount"</span>:          <span class="number">1500.00</span>,
+  <span class="key">"LeasePostingGroupId"</span>: <span class="bool">true</span>,
+
+  <span class="comment">// Opsiyonel — Kurumsal (MusteriTipi=1)</span>
+  <span class="key">"FirmaAdi"</span>:     <span class="string">"Örnek Firma A.Ş."</span>,
+  <span class="key">"KurumTipi"</span>:    <span class="string">"LimitedSirketi"</span>,
+  <span class="key">"VergiDairesi"</span>: <span class="string">"Kadıköy"</span>,
+  <span class="key">"VergiNo"</span>:      <span class="string">"1234567890"</span>,
+  <span class="key">"IletisimList"</span>: [
+    { <span class="key">"IletisimTuru"</span>: <span class="string">"Telefon"</span>, <span class="key">"IletisimDegeri"</span>: <span class="string">"+905001234567"</span> },
+    { <span class="key">"IletisimTuru"</span>: <span class="string">"Email"</span>,   <span class="key">"IletisimDegeri"</span>: <span class="string">"info@firma.com"</span> }
+  ],
+
+  <span class="comment">// Opsiyonel — Ortak</span>
+  <span class="key">"CurrencyCode"</span>:     <span class="string">"TRY"</span>,
+  <span class="key">"ExtTransactionId"</span>: <span class="string">"EXT-TX-001"</span>
+}</pre>
+
+    <h3>cURL</h3>
+<pre>curl -X POST https://arinet.arileasing.com.tr/api/finance/add_vpos_transaction/ \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{
+    "CompanyId": "00000000-0000-0000-0000-000000000000",
+    "ValidationKey": "your-validation-key",
+    "ProcessDate": "2024-01-15T10:30:00",
+    "MusteriTipi": 1,
+    "PaidAmount": 1500.00,
+    "LeasePostingGroupId": true,
+    "FirmaAdi": "Örnek Firma A.Ş.",
+    "CurrencyCode": "TRY"
+  }'</span></pre>
+
+    <h3>Python</h3>
+<pre>import requests
+
+url = <span class="string">"https://arinet.arileasing.com.tr/api/finance/add_vpos_transaction/"</span>
+
+payload = {
+    <span class="comment"># Zorunlu</span>
+    <span class="key">"CompanyId"</span>:           <span class="string">"00000000-0000-0000-0000-000000000000"</span>,
+    <span class="key">"ValidationKey"</span>:       <span class="string">"your-validation-key"</span>,
+    <span class="key">"ProcessDate"</span>:         <span class="string">"2024-01-15T10:30:00"</span>,
+    <span class="key">"MusteriTipi"</span>:         <span class="number">1</span>,
+    <span class="key">"PaidAmount"</span>:          <span class="number">1500.00</span>,
+    <span class="key">"LeasePostingGroupId"</span>: <span class="bool">True</span>,
+    <span class="comment"># Opsiyonel</span>
+    <span class="key">"FirmaAdi"</span>:     <span class="string">"Örnek Firma A.Ş."</span>,
+    <span class="key">"CurrencyCode"</span>: <span class="string">"TRY"</span>,
+}
+
+response = requests.post(url, json=payload)
+print(response.status_code, response.json())</pre>
+  </section>
+
+</main>
+</body>
+</html>

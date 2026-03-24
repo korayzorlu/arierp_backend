@@ -37,6 +37,11 @@ class Command(BaseCommand):
         transport = Transport(session=session, timeout=30)
 
         client = Client(wsdl=WSDL, transport=transport)
+        for service in client.wsdl.services.values():
+            for port in service.ports.values():
+                operations = port.binding._operations
+                for op_name in operations:
+                    print(op_name)
 
         result = client.service.Test()
         print("TestResult:", result)

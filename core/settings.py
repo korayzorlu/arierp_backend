@@ -640,3 +640,6 @@ else:
 
 # AI
 AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")
+
+# vpos
+VPOS_VALIDATION_KEY = os.getenv('VPOS_VALIDATION_KEY','')

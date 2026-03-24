@@ -1,0 +1,242 @@
+openapi: 3.0.3
+info:
+  title: VPos Transaction API
+  description: Sanal POS üzerinden gerçekleşen ödeme işlemlerini sisteme kaydetmek için kullanılır. Oturum gerektirmez.
+  version: 1.0.0
+
+servers:
+  - url: https://arinet.arileasing.com.tr
+    description: Production
+
+paths:
+  /api/finance/add_vpos_transaction/:
+    post:
+      summary: VPos İşlemi Kaydet
+      description: Sanal POS üzerinden gerçekleşen ödeme işlemini sisteme kaydeder. CompanyId ve ValidationKey ile doğrulanır.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPosTransactionRequest'
+            examples:
+              kurumsal:
+                summary: Kurumsal Müşteri (MusteriTipi=1)
+                value:
+                  CompanyId: "00000000-0000-0000-0000-000000000000"
+                  ValidationKey: "your-validation-key"
+                  ProcessDate: "2024-01-15T10:30:00"
+                  MusteriTipi: 1
+                  PaidAmount: 1500.00
+                  LeasePostingGroupId: true
+                  FirmaAdi: "Örnek Firma A.Ş."
+                  KurumTipi: "LimitedSirketi"
+                  VergiDairesi: "Kadıköy"
+                  VergiNo: "1234567890"
+                  IletisimList:
+                    - IletisimTuru: "Telefon"
+                      IletisimDegeri: "+905001234567"
+                    - IletisimTuru: "Email"
+                      IletisimDegeri: "info@firma.com"
+                  CurrencyCode: "TRY"
+                  ExtTransactionId: "EXT-TX-001"
+              bireysel:
+                summary: Bireysel Müşteri (MusteriTipi=2)
+                value:
+                  CompanyId: "00000000-0000-0000-0000-000000000000"
+                  ValidationKey: "your-validation-key"
+                  ProcessDate: "2024-01-15T10:30:00"
+                  MusteriTipi: 2
+                  PaidAmount: 1500.00
+                  LeasePostingGroupId: true
+                  Ad: "Ahmet"
+                  SoyAd: "Yılmaz"
+                  TCKimlikNo: "12345678901"
+                  DogumTarih: "1990-05-15"
+                  IletisimList_Birey:
+                    - IletisimTuru: "Telefon"
+                      IletisimDegeri: "+905001234567"
+                  CurrencyCode: "TRY"
+      responses:
+        '200':
+          description: İşlem başarıyla kaydedildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                message: "Başarıyla kaydedildi!"
+                status: "success"
+        '400':
+          description: Zorunlu alan eksik veya geçersiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Hata açıklaması (AlanAdi)"
+                status: "error"
+
+components:
+  schemas:
+
+    VPosTransactionRequest:
+      type: object
+      required:
+        - CompanyId
+        - ValidationKey
+        - ProcessDate
+        - MusteriTipi
+        - PaidAmount
+        - LeasePostingGroupId
+      properties:
+
+        # --- Zorunlu ---
+        CompanyId:
+          type: string
+          format: uuid
+          description: İşlemin ilişkilendirileceği şirket UUID'si
+          example: "00000000-0000-0000-0000-000000000000"
+        ValidationKey:
+          type: string
+          description: Sunucu tarafında doğrulanan gizli anahtar
+        ProcessDate:
+          type: string
+          format: date-time
+          description: İşlem tarihi (ISO 8601)
+          example: "2024-01-15T10:30:00"
+        MusteriTipi:
+          type: integer
+          enum: [1, 2]
+          description: "1: Kurumsal, 2: Bireysel"
+        PaidAmount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Ödenen tutar
+          example: 1500.00
+        LeasePostingGroupId:
+          type: boolean
+          description: Leasing posting grup ID
+
+        # --- Kurumsal (MusteriTipi=1) ---
+        FirmaAdi:
+          type: string
+        KurumTipi:
+          type: string
+        VergiDairesi:
+          type: string
+        VergiNo:
+          type: string
+        WebSitesi:
+          type: string
+        Adres:
+          type: string
+        Ulke:
+          type: string
+        Sehir:
+          type: string
+        Ilce:
+          type: string
+        Posta:
+          type: string
+        IletisimList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Iletisim'
+
+        # --- Bireysel (MusteriTipi=2) ---
+        Ad:
+          type: string
+        IkinciAd:
+          type: string
+        OrtaAd:
+          type: string
+        SoyAd:
+          type: string
+        Cinsiyet:
+          type: string
+          enum: ["E", "K"]
+        TCKimlikNo:
+          type: string
+        PasaportNo:
+          type: string
+        Uyruk:
+          type: string
+        DogumTarih:
+          type: string
+          format: date
+          example: "1990-05-15"
+        VergiDairesi_Birey:
+          type: string
+        VergiNo_Birey:
+          type: string
+        Adres_Birey:
+          type: string
+        Ulke_Birey:
+          type: string
+        Sehir_Birey:
+          type: string
+        Ilce_Birey:
+          type: string
+        Posta_Birey:
+          type: string
+        IletisimList_Birey:
+          type: array
+          items:
+            $ref: '#/components/schemas/Iletisim'
+
+        # --- Ortak opsiyonel ---
+        UserName:
+          type: string
+        Password:
+          type: string
+          format: password
+        Telefon:
+          type: string
+        EMail:
+          type: string
+          format: email
+        Fax:
+          type: string
+        BankCode:
+          type: string
+        ContractCode:
+          type: string
+        CurrencyCode:
+          type: string
+          example: "TRY"
+        ExtTransactionId:
+          type: string
+
+    Iletisim:
+      type: object
+      properties:
+        IletisimTuru:
+          type: string
+          description: İletişim türü
+          example: "Telefon"
+        IletisimDegeri:
+          type: string
+          description: İletişim değeri
+          example: "+905001234567"
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Başarıyla kaydedildi!"
+        status:
+          type: string
+          example: "success"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Hata açıklaması (AlanAdi)"
+        status:
+          type: string
+          example: "error"

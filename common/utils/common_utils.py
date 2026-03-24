@@ -1,3 +1,5 @@
+from django.utils.timezone import make_aware, is_aware
+
 from unidecode import unidecode
 from decimal import Decimal,InvalidOperation
 from datetime import timedelta
@@ -8,6 +10,8 @@ import xml.etree.ElementTree as ET
 import traceback
 import time
 import re
+from dateutil import parser as dateutil_parser
+
 
 def normalize(name):
     return unidecode(name or "").strip().lower()
@@ -187,3 +191,11 @@ def catch_name_from_finmaks_transaction(self):
         name = None
     print(name)
     return name
+
+def parse_datetime(datetime_str):
+    try:
+        dt = dateutil_parser.parse(datetime_str)
+        return dt if is_aware(dt) else make_aware(dt)
+    except Exception as e:
+        print(f"Error parsing datetime: {datetime_str} - {str(e)}")
+        return None
