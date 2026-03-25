@@ -12,7 +12,8 @@ from collections import defaultdict
 
 from .models import *
 from partners.models import Partner
-from .utils.third_person_utils import check_third_person_in_partners
+from leasing.models import BankActivity
+from .utils.third_person_utils import check_third_person_in_partners,fix_third_person_bank_activity_date
 
 @shared_task()
 def fetch_black_list_partners(company):
@@ -72,3 +73,7 @@ def update_ignored_partners(company):
 @shared_task()
 def check_third_person_in_partnerss(company):
     check_third_person_in_partners(company)
+
+@shared_task()
+def fix_third_person_bank_activity_datee(company):
+    fix_third_person_bank_activity_date(company)

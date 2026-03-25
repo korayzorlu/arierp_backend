@@ -29,7 +29,7 @@ from accounting.utils.trial_balance_utils import fetch_trial_balances_from_lease
 from accounting.utils.invoice_utils import fetch_invoices_from_leaseflex
 from trade.utils.trade_transaction_utils import fetch_trade_transactions_from_leaseflex
 from inventory.utils.item_utils import fetch_items_from_leaseflex
-from compliance.utils.third_person_utils import check_third_person_in_partners
+from compliance.utils.third_person_utils import check_third_person_in_partners,fix_third_person_bank_activity_date
 
 @shared_task(bind=True)
 def importData(self,df_json,user_id,app,model_name):
@@ -79,7 +79,9 @@ def fetch_data_for_daily_services(company):
 def fetch_big_data_for_daily_services(company):
     fetch_installments_from_leaseflex(company)
 
-
+@shared_task()
+def run_morning_servies(company):
+    fix_third_person_bank_activity_date(company)
 
 @shared_task()
 def fetch_exchange_rates(target_currency):

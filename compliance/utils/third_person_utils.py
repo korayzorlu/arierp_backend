@@ -7,8 +7,10 @@ from django.conf import settings
 
 import re
 import time
+from datetime import datetime,date
 
 from partners.models import Partner
+from leasing.models import BankActivity
 
 def create_third_person(self,scan_result):
     if self.name is not None and self.name != "" and self.name != "None":
@@ -224,3 +226,14 @@ def check_third_person_in_partners(company):
             send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
 
         time.sleep(3)   
+
+
+def fix_third_person_bank_activity_date(company):
+    objs=BankActivity.objects.filter(third_person_status__in=['need_document','pending'],bank_activities_third_persons__isnull=False)
+
+    new_date = date.today()
+    for obj in objs:
+        current_date=obj.created_date
+        updated_date=datetime.combine(new_date,current_date.time())
+        obj.created_date=updated_date
+        obj.save()
