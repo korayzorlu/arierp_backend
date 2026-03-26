@@ -152,6 +152,7 @@ class Lease(models.Model):
     notary_public_date = models.DateField(_("Notary Public Date"), blank=True, null=True)
 
     transfer_count = models.PositiveIntegerField(_("Transfer Count"), default=0)
+    is_title_deed_delivered = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -245,6 +246,7 @@ class BankActivity(models.Model):
     is_processed = models.BooleanField(default=False)
     is_third_person = models.BooleanField(default=False)
     is_reliable_person = models.BooleanField(default=False)
+    
     THIRD_PERSON_STATUS_CHOICES = (
         ('pending', ('Pending')),
         ('cleared', ('Cleared')),

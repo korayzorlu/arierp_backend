@@ -1,5 +1,7 @@
-SELECT TOP 1000 *
+SELECT TOP 10000 *
 FROM
     TradeTransaction
 WHERE
-    TrnFromLedgerAccountId = '710880'
+    --TrnDescription LIKE '%SANAL POS%'
+TrnFromLedgerAccountId = '710880'
+

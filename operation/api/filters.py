@@ -80,6 +80,7 @@ class TitleDeedInvoiceControlFilter(FilterSet):
     item = CharFilter(method = 'filter_item')
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
+    is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
 
     class Meta:
         model = Lease
@@ -117,6 +118,16 @@ class TitleDeedInvoiceControlFilter(FilterSet):
         if value == 'all':
             return queryset
         return queryset.filter(item__uuid = value)
+    
+    def filter_is_title_deed_delivered(self, queryset, is_title_deed_delivered, value):
+        if value == 'all':
+            return queryset
+        if value == 'verildi':
+            return queryset.filter(is_title_deed_delivered=True)
+        elif value == 'verilmedi':
+            return queryset.filter(is_title_deed_delivered=False)
+        else:
+            return queryset
     
     def filter_invoices(self, queryset, invoices, value):
         if value == 'all':

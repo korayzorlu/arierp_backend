@@ -1,3 +1,5 @@
 SELECT TOP 1000 *
 FROM
-    InsuranceIntegrationLog
+    LeasingOperationPaymentRawList
+ORDER BY
+    ActivationDate DESC
