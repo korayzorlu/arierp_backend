@@ -83,7 +83,7 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                     obj.amount = safe_decimal(data.TrnAmount)
                     obj.local_amount = safe_decimal(data.TrnAmountLocal)
                     obj.exchange_rate = safe_decimal(data.TrnExchangeRateLocal)
-                    obj.delete_status = str(data.TrnIsDeleted) or ""
+                    obj.delete_status = str(data.TrnIsDeleted) if data.TrnIsDeleted else ""
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -103,7 +103,7 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                         amount = safe_decimal(data.TrnAmount),
                         local_amount = safe_decimal(data.TrnAmountLocal),
                         exchange_rate = safe_decimal(data.TrnExchangeRateLocal),
-                        delete_status = str(data.TrnIsDeleted) or ""
+                        delete_status = str(data.TrnIsDeleted) if data.TrnIsDeleted else ""
                     ))
                     create_progress += 1
 
