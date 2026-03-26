@@ -68,16 +68,16 @@ def fetch_invoices_from_leaseflex(company,BATCH_SIZE=1000):
                         obj.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
                         obj.amount = safe_decimal(data.InvoiceAmount)
                         update_objs.append(obj)
-                    else:
-                        last_lease = all_leases_dict.get(obj.lease.main_lease_id)
-                        last_lease.trn_id = str(data.TrnId) or ""
-                        last_lease.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
-                        last_lease.partner = partner_dict.get(str(data.CustomerId))
-                        last_lease.invoice_no = str(data.InvoiceNumber) or ""
-                        last_lease.type = "sale"
-                        last_lease.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
-                        last_lease.amount = safe_decimal(data.InvoiceAmount)
-                        update_objs.append(last_lease)
+                    # else:
+                    #     last_lease = all_leases_dict.get(obj.lease.main_lease_id)
+                    #     last_lease.trn_id = str(data.TrnId) or ""
+                    #     last_lease.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
+                    #     last_lease.partner = partner_dict.get(str(data.CustomerId))
+                    #     last_lease.invoice_no = str(data.InvoiceNumber) or ""
+                    #     last_lease.type = "sale"
+                    #     last_lease.date = make_aware(data.InvoiceDate) if data.InvoiceDate else None
+                    #     last_lease.amount = safe_decimal(data.InvoiceAmount)
+                    #     update_objs.append(last_lease)
                     # obj.trn_id = str(data.TrnId) or ""
                     # obj.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
                     # obj.partner = partner_dict.get(str(data.CustomerId))
