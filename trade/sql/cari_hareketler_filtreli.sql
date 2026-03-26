@@ -12,7 +12,8 @@ SELECT TOP 2000
     TrnCreateDate,
     TrnAmountType,
     TrnAmount,
-    TrnAmountLocal
+    TrnAmountLocal,
+    TrnIsDeleted
 FROM
     TradeTransaction (NOLOCK)
     LEFT JOIN LOPRevisionJoinMainList lopStatu (NOLOCK)
