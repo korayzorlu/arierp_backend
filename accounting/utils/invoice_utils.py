@@ -58,7 +58,7 @@ def fetch_invoices_from_leaseflex(company,BATCH_SIZE=1000):
                 else:
                     obj = None
 
-                if obj:
+                if obj and obj.lease:
                     if obj.lease.is_last_project:
                         obj.trn_id = str(data.TrnId) or ""
                         obj.lease = lease_dict.get(str(data.TrnOprLeasingOperationPrjId))
