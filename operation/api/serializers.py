@@ -451,6 +451,7 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
     installment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     remaining_amount = serializers.SerializerMethodField()
+    is_title_deed_delivered = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -542,6 +543,11 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
     def get_remaining_amount(self, obj):
         return (obj.installment_amount + obj.transfer_amount) - obj.paid_amount
 
+    def get_is_title_deed_delivered(self, obj):
+        if obj.is_title_deed_delivered:
+            return "Verildi"
+        else:
+            return "Verilmedi"
 
 
 

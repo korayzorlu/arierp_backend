@@ -178,6 +178,7 @@ class UntitleDeedLeaseFilter(FilterSet):
     item = CharFilter(method = 'filter_item')
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
+    is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
     class Meta:
         model = Lease
         fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status']
@@ -223,6 +224,16 @@ class UntitleDeedLeaseFilter(FilterSet):
             return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count__gt=0)
         elif value == 'fatura_yok':
             return queryset.annotate(lease_invoices_count=Count('lease_invoices', distinct=True),).filter(lease_invoices_count=0)
+        else:
+            return queryset
+
+    def filter_is_title_deed_delivered(self, queryset, is_title_deed_delivered, value):
+        if value == 'all':
+            return queryset
+        if value == 'verildi':
+            return queryset.filter(is_title_deed_delivered=True)
+        elif value == 'verilmedi':
+            return queryset.filter(is_title_deed_delivered=False)
         else:
             return queryset
         

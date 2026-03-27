@@ -709,30 +709,40 @@ def set_title_deed_delivery(company):
     file_data = pd.read_excel("files/tapusu-cikanlar.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    leases = Lease.objects.select_related().filter(is_last_project = True)
-    leases.update(is_title_deed_delivered = False)
-
-    contracts = Contract.objects.select_related().prefetch_related("contract_leases").filter()
-
-    #lease_by_code = {l.contract.code: l for l in leases if l.contract and l.contract.code}
-    contracts_dict = {c.code: c for c in contracts if c.code}
-
-    previous_progress = 0
-    old_obj_count = 0
+    olmayanlar = 0
     for index,row in df.iterrows():
-        current_progress = ((index + 1)/len(df))*100
+        if Contract.objects.filter(code = str(row['Kira plani kodu']).replace(".0","")).exists():
+            if not Lease.objects.filter(contract__code = str(row['Kira plani kodu']).replace(".0",""), is_last_project=True).exists():
+                print(str(row['Kira plani kodu']))
+                olmayanlar += 1
+    print(olmayanlar)
+            
 
-        if current_progress - previous_progress >= 1:
-            previous_progress = current_progress
-            print(f"{int(current_progress)} %")
+    # leases = Lease.objects.select_related().filter(is_last_project = True)
+    # leases.update(is_title_deed_delivered = False)
 
-        obj = (contracts_dict.get(str(row['Kira plani kodu']).replace(".0","")))
+    # contracts = Contract.objects.select_related().prefetch_related("contract_leases").filter()
 
-        if obj:
-            lease = obj.contract_leases.filter(is_last_project=True).first()
-            if lease:
-                old_obj_count += 1
-                lease.is_title_deed_delivered = True
-                lease.save()
+    # #lease_by_code = {l.contract.code: l for l in leases if l.contract and l.contract.code}
+    # contracts_dict = {c.code: c for c in contracts if c.code}
 
-    print(f"{old_obj_count} objects updated for leases.")
+    # previous_progress = 0
+    # old_obj_count = 0
+    # for index,row in df.iterrows():
+    #     current_progress = ((index + 1)/len(df))*100
+
+    #     if current_progress - previous_progress >= 1:
+    #         previous_progress = current_progress
+    #         print(f"{int(current_progress)} %")
+
+    #     obj = (contracts_dict.get(str(row['Kira plani kodu']).replace(".0","")))
+
+    #     if obj:
+    #         lease = obj.contract_leases.filter(is_last_project=True).first()
+    #         if lease:
+    #             old_obj_count += 1
+    #             lease.is_title_deed_delivered = True
+    #             lease.save()
+
+    # print(f"{old_obj_count} objects updated for leases.")
+
