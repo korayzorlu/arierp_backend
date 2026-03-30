@@ -180,16 +180,16 @@ def catch_name_from_finmaks_transaction(self):
         pattern = re.compile(r"^(.+?)\s+\1\b", re.IGNORECASE)
         catched_name = pattern.match(self.explanation_field)
     elif self.bank_account.bank_code == '0067': # yapı kredi hepsi
-        print(re.search(r"-\s*(.*?)\s*-", self.explanation_field))
+        #print(re.search(r"-\s*(.*?)\s*-", self.explanation_field))
         catched_name = re.search(r"-\s*(.*?)\s*-", self.explanation_field)
     else:
         catched_name = None
 
     if catched_name:
-        name = catched_name.group(1)
+        captured = catched_name.group(1)
+        name = None if captured and captured[0].isdigit() else captured
     else:
         name = None
-    print(name)
     return name
 
 def parse_datetime(datetime_str):
