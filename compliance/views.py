@@ -31,7 +31,7 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        if request.user.authorization.department != 'kredi_tahsis':
+        if request.user.authorization.department != 'kredi_tahsiss':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()

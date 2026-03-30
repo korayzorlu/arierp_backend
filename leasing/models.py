@@ -152,6 +152,7 @@ class Lease(models.Model):
     notary_public_date = models.DateField(_("Notary Public Date"), blank=True, null=True)
 
     transfer_count = models.PositiveIntegerField(_("Transfer Count"), default=0)
+    is_delivery = models.BooleanField(default=False)
     is_title_deed_delivered = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)

@@ -130,7 +130,6 @@ class UpdateLeaseflexAutomationBankActivityLeasesView(LoginRequiredMixin,Company
 
         for uuid in uuids:
             obj = BankActivityLease.objects.filter(uuid = uuid).first()
-            print(obj)
             obj.leaseflex_automation = data.get('select') or False
             obj.save()
 

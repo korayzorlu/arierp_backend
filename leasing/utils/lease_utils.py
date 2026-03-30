@@ -746,3 +746,6 @@ def set_title_deed_delivery(company):
 
     print(f"{old_obj_count} objects updated for leases.")
 
+
+def set_delivery(company):
+    pass
