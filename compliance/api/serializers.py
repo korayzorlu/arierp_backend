@@ -62,6 +62,7 @@ class ThirdPersonListSerializer(serializers.Serializer):
     tc_vkn_no = serializers.CharField()
     status = serializers.CharField()
     created_date = serializers.DateTimeField()
+    updated_date = serializers.DateTimeField()
     results = serializers.JSONField()
     third_person_documents = serializers.SerializerMethodField()
     finmaks_transactions = serializers.SerializerMethodField()
