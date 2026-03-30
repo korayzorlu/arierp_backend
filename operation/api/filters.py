@@ -69,6 +69,7 @@ class TitleDeedInvoiceControlFilter(FilterSet):
     project_name = CharFilter(field_name='contract__quotation_obj__quick_quotation__project', lookup_expr='icontains')
     block = CharFilter(field_name='contract__quotation_obj__quick_quotation__block', lookup_expr='icontains')
     unit = CharFilter(field_name='contract__quotation_obj__quick_quotation__unit', lookup_expr='icontains')
+    bbsn = CharFilter(field_name='bbsn', lookup_expr='icontains')
     vade = CharFilter(field_name='vade', lookup_expr='icontains')
     leasing_rate = CharFilter(field_name='leasing_rate', lookup_expr='icontains')
     vat = CharFilter(field_name='vat', lookup_expr='icontains')
@@ -84,7 +85,7 @@ class TitleDeedInvoiceControlFilter(FilterSet):
 
     class Meta:
         model = Lease
-        fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status']
+        fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status','bbsn']
     
     def filter_lease_status(self, queryset, lease_status, value):
         if value == 'all':
@@ -167,6 +168,7 @@ class UntitleDeedLeaseFilter(FilterSet):
     project_name = CharFilter(field_name='contract__quotation_obj__quick_quotation__project', lookup_expr='icontains')
     block = CharFilter(field_name='contract__quotation_obj__quick_quotation__block', lookup_expr='icontains')
     unit = CharFilter(field_name='contract__quotation_obj__quick_quotation__unit', lookup_expr='icontains')
+    bbsn = CharFilter(field_name='bbsn', lookup_expr='icontains')
     vade = CharFilter(field_name='vade', lookup_expr='icontains')
     leasing_rate = CharFilter(field_name='leasing_rate', lookup_expr='icontains')
     vat = CharFilter(field_name='vat', lookup_expr='icontains')
@@ -181,7 +183,7 @@ class UntitleDeedLeaseFilter(FilterSet):
     is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
     class Meta:
         model = Lease
-        fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status']
+        fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status','bbsn']
 
     def filter_lease_status(self, queryset, lease_status, value):
         if value == 'all':

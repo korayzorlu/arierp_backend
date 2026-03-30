@@ -41,6 +41,8 @@ def create_third_person(self,scan_result):
         old_obj.bank_activities.add(self)
         if scan_result["status"] != 'cleared':
             old_obj.status = 'pending'
+        # if scan_result["status"] == 'cleared':
+        #     old_obj.status = 'cleared'
         old_obj.save()
 
         return {"is_new": False, "status": old_obj.status}
@@ -201,7 +203,6 @@ def check_third_person_in_partners(company):
         Q(is_vpos = False)
     )
     for obj in objs:
-        print(obj)
         check_partners = Partner.objects.select_related().filter(
             (
                 Q(tc_vkn_no=obj.tc_vkn_no) |
@@ -210,7 +211,6 @@ def check_third_person_in_partners(company):
             ~Q(tc_vkn_no__startswith='9999')
         )
         if check_partners.exists() and obj.tc_vkn_no and obj.tc_vkn_no != "":
-            print(check_partners)
             obj.status = 'cleared'
             obj.save()
             bank_activities = obj.bank_activities.select_related().all()
