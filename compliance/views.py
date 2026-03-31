@@ -39,6 +39,7 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
         if ThirdPersonDocument.objects.filter(third_person = obj).exists() and data.get('status') == 'cleared':
             if obj.third_person_third_person_documents.all().exists():
                 obj.status = 'cleared'
+                send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
             else:
                 obj.status = 'need_document'
         elif data.get('status') == 'need_document':
@@ -46,9 +47,9 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
 
-        if data.get('status') == 'cleared':
-            send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
-            obj.is_email_sent = True
+        # if data.get('status') == 'cleared':
+        #     send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
+        #     obj.is_email_sent = True
         obj.save()
 
         bank_activities = obj.bank_activities.select_related().all()
