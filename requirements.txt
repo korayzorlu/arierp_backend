@@ -103,3 +103,4 @@ weasyprint==67.0
 docxtpl==0.20.2
 xmltodict==1.0.2
 zeep==4.3.2
+django-auditlog==3.4.1
