@@ -401,7 +401,8 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
             Q(lease_status__in=['aktiflestirildi']) &
             Q(is_last_project_arinet=True) &
             Q(installment_amount__gt=3) &
-            Q(is_title_deed_delivered=False)
+            Q(is_title_deed_delivered=False) &
+            Q(is_delivery=True)
         ).annotate(
             lease_invoices_count=Count('lease_invoices', distinct=True),
             remaining_amount=(F('installment_amount') + F('transfer_amount')) - F('paid_amount')
