@@ -754,10 +754,10 @@ def set_delivery(company):
     file_data = pd.read_excel("files/teslim-edilenler.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    leases = Lease.objects.select_related().filter(is_last_project = True)
+    leases = Lease.objects.select_related().filter(is_last_project_arinet=True)
     leases.update(is_delivery = False)
 
-    leases_dict = {(l.contract.partner.name, l.item.stock_name, l.block, l.unit, l.activation_date): l for l in leases if l.contract and l.contract.partner and l.contract.partner.name and l.item and l.block and l.unit and l.activation_date}
+    leases_dict = {(l.contract.partner.name, l.item.stock_name, l.block, l.unit): l for l in leases if l.contract and l.contract.partner and l.contract.partner.name and l.item and l.block and l.unit}
 
     previous_progress = 0
     old_obj_count = 0
@@ -773,9 +773,10 @@ def set_delivery(company):
             activation_date_key = datetime.strptime(raw_date, "%Y-%m-%d %H:%M:%S").date()
         except (ValueError, TypeError):
             activation_date_key = None
-        obj = (leases_dict.get((str(row['Müşteri1 (Satış) (Satış)']).replace(".0","").translate(str.maketrans("iı", "İI")).upper(), str(row['project_name']).replace(".0",""), str(row['Blok (Satış) (Satış)']).replace(".0",""), str(row['Daire (BB No)']).replace(".0",""), activation_date_key)))
+        obj = (leases_dict.get((str(row['Müşteri1 (Satış) (Satış)']).replace(".0","").translate(str.maketrans("iı", "İI")).upper(), str(row['project_name']).replace(".0",""), str(row['Blok (Satış) (Satış)']).replace(".0",""), str(row['Daire (BB No)']).replace(".0",""))))
         #print(f"{str(row['Müşteri1 (Satış) (Satış)']).replace('.0','').translate(str.maketrans('iı', 'İI')).upper()} - {str(row['project_name']).replace('.0','')} - {str(row['Blok (Satış) (Satış)']).replace('.0','')} - {str(row['Daire (BB No)']).replace('.0','')} - {activation_date_key}")
         if obj:
+            old_obj_count += 1
             obj.is_delivery = True
             obj.save()
             # lease = obj.contract_leases.filter(is_last_project=True).first()
