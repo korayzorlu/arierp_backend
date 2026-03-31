@@ -174,13 +174,13 @@ class LeaseList(ModelViewSet, QueryListAPIView):
 
         if ordering:
             queryset = Lease.objects.select_related(*custom_related_fields).filter(
-                Q(company = active_company.company if active_company else None) &
-                vendor_filter_for_serializers(self.request.query_params)
+                Q(company = active_company.company if active_company else None)
+                #vendor_filter_for_serializers(self.request.query_params)
             ).order_by(str(ordering))
         else:
             queryset = Lease.objects.select_related(*custom_related_fields).filter(
-                Q(company = active_company.company if active_company else None) &
-                vendor_filter_for_serializers(self.request.query_params)
+                Q(company = active_company.company if active_company else None)
+                #vendor_filter_for_serializers(self.request.query_params)
             ).order_by("-activation_date")
 
         query = self.request.query_params.get('search[value]', None)

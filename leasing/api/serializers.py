@@ -93,7 +93,10 @@ class LeaseListSerializer(serializers.Serializer):
         return obj.contract.kof if obj.contract else ""
     
     def get_item(self, obj):
-        return obj.item.stock_name if obj.item else ""
+        return {
+            "id" : obj.item.uuid if obj.item else "",
+            "name" : obj.item.stock_name if obj.item else "",
+        }
     
     # def get_block(self, obj):
     #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""

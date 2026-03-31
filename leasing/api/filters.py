@@ -64,7 +64,6 @@ class LeaseFilter(FilterSet):
             return queryset.filter()
         
     def filter_item(self, queryset, item, value):
-        print(value)
         if value == 'all':
             return queryset
         return queryset.filter(item__uuid = value)
@@ -124,7 +123,6 @@ class ActiveLeaseFilter(FilterSet):
             return queryset.filter()
         
     def filter_item(self, queryset, item, value):
-        print(value)
         if value == 'all':
             return queryset
         return queryset.filter(item__uuid = value)
