@@ -82,6 +82,7 @@ class TitleDeedInvoiceControlFilter(FilterSet):
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
     is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
+    is_delivery = CharFilter(method = 'filter_is_delivery')
 
     class Meta:
         model = Lease
@@ -127,6 +128,16 @@ class TitleDeedInvoiceControlFilter(FilterSet):
             return queryset.filter(is_title_deed_delivered=True)
         elif value == 'verilmedi':
             return queryset.filter(is_title_deed_delivered=False)
+        else:
+            return queryset
+        
+    def filter_is_delivery(self, queryset, is_delivery, value):
+        if value == 'all':
+            return queryset
+        if value == 'teslim_edildi':
+            return queryset.filter(is_delivery=True)
+        elif value == 'teslim_edilmedi':
+            return queryset.filter(is_delivery=False)
         else:
             return queryset
     
@@ -181,6 +192,7 @@ class UntitleDeedLeaseFilter(FilterSet):
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
     is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
+    is_delivery = CharFilter(method = 'filter_is_delivery')
     class Meta:
         model = Lease
         fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status','bbsn']
@@ -236,6 +248,16 @@ class UntitleDeedLeaseFilter(FilterSet):
             return queryset.filter(is_title_deed_delivered=True)
         elif value == 'verilmedi':
             return queryset.filter(is_title_deed_delivered=False)
+        else:
+            return queryset
+        
+    def filter_is_delivery(self, queryset, is_delivery, value):
+        if value == 'all':
+            return queryset
+        if value == 'teslim_edildi':
+            return queryset.filter(is_delivery=True)
+        elif value == 'teslim_edilmedi':
+            return queryset.filter(is_delivery=False)
         else:
             return queryset
         

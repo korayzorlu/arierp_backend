@@ -301,6 +301,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     installment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     is_title_deed_delivered = serializers.SerializerMethodField()
+    is_delivery = serializers.BooleanField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -452,6 +453,7 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
     transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     remaining_amount = serializers.SerializerMethodField()
     is_title_deed_delivered = serializers.SerializerMethodField()
+    is_delivery = serializers.BooleanField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):

@@ -748,4 +748,40 @@ def set_title_deed_delivery(company):
 
 
 def set_delivery(company):
-    pass
+    excel_file = pd.ExcelFile("files/teslim-edilenler.xlsx")
+    sheet_name = excel_file.sheet_names[0]
+
+    file_data = pd.read_excel("files/teslim-edilenler.xlsx", sheet_name)
+    df = pd.DataFrame(file_data)
+
+    leases = Lease.objects.select_related().filter(is_last_project = True)
+    leases.update(is_delivery = False)
+
+    leases_dict = {(l.contract.partner.name, l.item.stock_name, l.block, l.unit, l.activation_date): l for l in leases if l.contract and l.contract.partner and l.contract.partner.name and l.item and l.block and l.unit and l.activation_date}
+
+    previous_progress = 0
+    old_obj_count = 0
+    for index,row in df.iterrows():
+        current_progress = ((index + 1)/len(df))*100
+
+        if current_progress - previous_progress >= 1:
+            previous_progress = current_progress
+            print(f"{int(current_progress)} %")
+
+        raw_date = str(row['Anahtar Teslim Tarihi (Satış) (Satış)'])
+        try:
+            activation_date_key = datetime.strptime(raw_date, "%Y-%m-%d %H:%M:%S").date()
+        except (ValueError, TypeError):
+            activation_date_key = None
+        obj = (leases_dict.get((str(row['Müşteri1 (Satış) (Satış)']).replace(".0","").translate(str.maketrans("iı", "İI")).upper(), str(row['project_name']).replace(".0",""), str(row['Blok (Satış) (Satış)']).replace(".0",""), str(row['Daire (BB No)']).replace(".0",""), activation_date_key)))
+        #print(f"{str(row['Müşteri1 (Satış) (Satış)']).replace('.0','').translate(str.maketrans('iı', 'İI')).upper()} - {str(row['project_name']).replace('.0','')} - {str(row['Blok (Satış) (Satış)']).replace('.0','')} - {str(row['Daire (BB No)']).replace('.0','')} - {activation_date_key}")
+        if obj:
+            obj.is_delivery = True
+            obj.save()
+            # lease = obj.contract_leases.filter(is_last_project=True).first()
+            # if lease:
+            #     old_obj_count += 1
+            #     lease.is_title_deed_delivered = True
+            #     lease.save()
+
+    print(f"{old_obj_count} objects updated for leases.")
