@@ -37,8 +37,11 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
 
         if ThirdPersonDocument.objects.filter(third_person = obj).exists() and data.get('status') == 'cleared':
-            obj.status = 'cleared'
-        elif obj.status == 'need_document':
+            if obj.third_person_third_person_documents.all().exists():
+                obj.status = 'cleared'
+            else:
+                obj.status = 'need_document'
+        elif data.get('status') == 'need_document':
             obj.status = data.get('status')
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
