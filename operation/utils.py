@@ -164,8 +164,13 @@ def export_title_deed_invoice_controls(self):
         old_leases = old_leases_dict.get(obj.main_lease_id, [])
 
         old_leases_list = []
+        old_lease_serializerss = []
         for old_lease in old_leases:
             old_leases_list.append(old_lease.code)
+            old_lease_serializerss.append(old_lease)
+
+        invoices_exist = any(lease.lease_invoices.exists() for lease in old_lease_serializerss)
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_lease_serializerss)
 
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
@@ -180,8 +185,8 @@ def export_title_deed_invoice_controls(self):
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.get_lease_status_display())
         data["Tapu Durumu"].append("Verildi" if obj.is_title_deed_delivered else "Verilmedi")
-        data["Fatura Durumu"].append("Kesildi" if obj.lease_invoices.select_related().all().only("id").exists() else "Fatura Yok")
-        data["Satıcı Fatura Durumu"].append("Kesildi" if obj.lease_purchase_documents.select_related().all().only("id").exists() else "Fatura Yok")
+        data["Fatura Durumu"].append("Kesildi" if invoices_exist else "Fatura Yok")
+        data["Satıcı Fatura Durumu"].append("Kesildi" if purchase_documents_exist else "Fatura Yok")
 
 
     df = pd.DataFrame(data)
