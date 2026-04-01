@@ -280,6 +280,61 @@ class ToTerminatedRiskPartnerFilter(FilterSet):
         else:
             return queryset.filter() 
 
+class NeedsToTerminatedRiskPartnerFilter(FilterSet):
+    name = CharFilter(method = 'filter_name')
+    special = CharFilter(method = 'filter_special')
+    barter = CharFilter(method = 'filter_barter')
+    virman = CharFilter(method = 'filter_virman')
+    overdue_amount = CharFilter(method = 'filter_overdue_amount')
+    bigger_than_100 = CharFilter(method = 'filter_bigger_than_100')
+    overdue_terminated = CharFilter(method = 'filter_overdue_terminated')
+    class Meta:
+        model = Partner
+        fields = ['uuid','name','tc_vkn_no','is_commercial']
+
+    def filter_name(self, queryset, name, value):
+        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(
+            Q(lowercase__icontains = value) |
+            Q(uppercase__icontains = value)
+        )
+    
+    def filter_overdue_amount(self, queryset, overdue_amount, value):
+        if value == "true":
+            return queryset.filter(partner_contracts__contract_leases__overdue_amount__gt=0)
+        else:
+            return queryset.filter()
+        
+    def filter_bigger_than_100(self, queryset, bigger_than_100, value):
+        if value == "true":
+            return queryset.filter(partner_contracts__contract_leases__overdue_amount__gt=100)
+        else:
+            return queryset.filter()
+    
+    def filter_special(self, queryset, special, value):
+        if value == "true":
+            return queryset.filter(types__contains=["special"])
+        else:
+            return queryset.exclude(types__contains=["special"])
+        
+    def filter_barter(self, queryset, barter, value):
+        if value == "true":
+            return queryset.filter(types__contains=["barter"])
+        else:
+            return queryset.exclude(types__contains=["barter"])
+        
+    def filter_virman(self, queryset, virman, value):
+        if value == "true":
+            return queryset.filter(types__contains=["virman"])
+        else:
+            return queryset.exclude(types__contains=["virman"])
+        
+    def filter_overdue_terminated(self, queryset, overdue_terminated, value):
+        if value == "true":
+            today = timezone.localdate()
+            return queryset.filter(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today())
+        else:
+            return queryset.filter() 
+
 class TerminatedLeaseFilter(FilterSet):
     uuid = CharFilter(field_name='uuid', lookup_expr='exact')
     code = CharFilter(field_name='code', lookup_expr='icontains')

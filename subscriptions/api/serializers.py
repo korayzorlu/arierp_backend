@@ -105,6 +105,7 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Bugün Ödenecekler", "icon" : "policy", "route" : "/today-partners"},
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Fesih", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Fesih Edilmesi Gerekenler", "icon" : "policy", "route" : "/needs-to-terminated-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "Fesih İadeleri", "icon" : "policy", "route" : "/terminated-leases"},
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "SMS", "icon" : "description", "items" : [

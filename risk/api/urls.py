@@ -3,6 +3,7 @@ from rest_framework import routers
 
 from risk.api.views.to_be_transferred_views import *
 from risk.api.views.to_terminated_risk_partners_views import *
+from risk.api.views.needs_to_terminated_risk_partners_views import *
 from risk.api.views.terminated_leases_views import *
 from risk.api.views.exchanged_leases_views import *
 from risk.api.views.tufe_exchanged_leases_views import *
@@ -26,6 +27,7 @@ router.register(r'posta_to_warned_risk_partners',PostaToWarnedRiskPartnerList, "
 router.register(r'warned_risk_partners',WarnedRiskPartnerList, "warned_risk_partners_api")
 router.register(r'comprehensive_warned_risk_partners',ComprehensiveWarnedRiskPartnerList, "comprehensive_warned_risk_partners_api")
 router.register(r'to_terminated_risk_partners',ToTerminatedRiskPartnerList, "to_terminated_risk_partners_api")
+router.register(r'needs_to_terminated_risk_partners',NeedsToTerminatedRiskPartnerList, "needs_to_terminated_risk_partners_api")
 router.register(r'terminated_leases',TerminatedLeaseList, "terminated_leases_api")
 router.register(r'exchanged_leases',ExchangedLeaseList, "exchanged_leases_api")
 router.register(r'tufe_exchanged_leases',TufeExchangedLeaseList, "tufe_exchanged_leases_api")
