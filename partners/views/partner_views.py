@@ -10,7 +10,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.core.mail import EmailMessage, send_mail
 
-from utils.mixins import CompanyOwnershipRequiredMixin
+from utils.mixins import CompanyOwnershipRequiredMixin,ActivityLogMixin
 
 from partners.models import *
 from partners.tasks import importPartners
@@ -81,7 +81,6 @@ class AddPartnerView(LoginRequiredMixin,View):
     
 class UpdatePartnerView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
     model = Partner
-    
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 

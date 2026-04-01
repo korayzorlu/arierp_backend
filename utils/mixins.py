@@ -43,3 +43,12 @@ class CompanyOwnershipRequiredMixin:
                 raise PermissionDenied("Bu objeleri düzenleme yetkiniz yok.")
         
         return super().dispatch(request, *args, **kwargs)
+    
+class ActivityLogMixin:
+    log_action = None
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        if self.log_action:
+            print(self)
+        return response

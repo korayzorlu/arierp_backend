@@ -14,6 +14,7 @@ from .models import ExchangeRate, ImportProcess, Currency
 from .utils.import_utils import BaseImporter
 from .utils.export_utils import BaseExporter
 from .utils.common_utils import get_exchange_rate_for_date
+from .utils.activity_utils import log_user_activity
 from users.models import User
 from partners.utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex,fetch_partner_advances_from_leaseflex
 from projects.utils.project_utils import fetch_projects_from_leaseflex
@@ -30,6 +31,7 @@ from accounting.utils.invoice_utils import fetch_invoices_from_leaseflex
 from trade.utils.trade_transaction_utils import fetch_trade_transactions_from_leaseflex
 from inventory.utils.item_utils import fetch_items_from_leaseflex
 from compliance.utils.third_person_utils import check_third_person_in_partners,fix_third_person_bank_activity_date
+
 
 @shared_task(bind=True)
 def importData(self,df_json,user_id,app,model_name):
@@ -122,3 +124,8 @@ def fetch_exchange_rates(target_currency):
             new_obj.save()
 
         current_date += timedelta(days=1)
+
+@shared_task()
+def log_user_activity_task(user_id, action, obj=None, extra=None, request_meta=None):
+    user = User.objects.filter(uuid=user_id).first()
+    log_user_activity(user, action, obj=obj, extra=extra, request=request_meta)

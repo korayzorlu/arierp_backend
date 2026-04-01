@@ -457,6 +457,7 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
     paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     installment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    transfer_date = serializers.SerializerMethodField()
     remaining_amount = serializers.SerializerMethodField()
     is_title_deed_delivered = serializers.SerializerMethodField()
     is_delivery = serializers.SerializerMethodField()
@@ -562,6 +563,13 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
             return "Teslim Edildi"
         else:
             return "Teslim Edilmedi"
+        
+    def get_transfer_date(self, obj):
+        transfer_installment = obj.lease_installments.filter(type='5').first()
+        if transfer_installment and transfer_installment.payment_date:
+            return transfer_installment.payment_date.strftime("%d.%m.%Y")
+        else:
+            return ""
 
 
 

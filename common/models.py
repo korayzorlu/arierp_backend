@@ -4,6 +4,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from companies.models import Company
+from django.contrib.contenttypes.models import ContentType
 
 import uuid
 
@@ -156,3 +157,25 @@ class Status(models.Model):
 
     def __str__(self):
         return str(self.name)
+    
+class UserActivity(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank = True, null = True, related_name="user_activities")
+    action = models.CharField(max_length=100)
+    content_type = models.ForeignKey(ContentType, null=True, on_delete=models.SET_NULL, related_name="content_type_user_activities")
+    object_id = models.PositiveIntegerField(null=True)
+    object_uuid = models.CharField(_("Object UUID"), max_length=50, null=True, blank=True)
+    object_repr = models.CharField(_("Object Representation"), max_length=200, null=True, blank=True)
+    
+    extra_data = models.JSONField(default=dict)
+    ip_address = models.GenericIPAddressField(null=True)
+    session_key = models.CharField(_("Session Key"), max_length=50, null=True, blank=True)
+    
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "created_date"]),
+            models.Index(fields=["content_type", "object_id"]),
+            models.Index(fields=["action", "created_date"]),
+        ]
