@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 from django.utils.translation import gettext_lazy as _
+
+from auditlog.registry import auditlog
+from auditlog.models import AuditlogHistoryField
+
 import uuid
 
 from companies.models import Company
@@ -136,3 +140,6 @@ class PartnerNote(models.Model):
 
     def __str__(self):
         return str(f"{self.user.get_full_name()} - {self.title}")
+    
+#log
+auditlog.register(Partner)

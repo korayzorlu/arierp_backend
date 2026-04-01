@@ -249,6 +249,38 @@ class ActiveLeaseList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
 
+class LeaseNoteList(ModelViewSet, QueryListAPIView):
+    serializer_class = LeaseNoteListSerializer
+    filterset_class = LeaseNoteFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company","user"]
+
+        # crm_code alanını integer olarak sıralamak için annotate ile dönüştür
+
+        queryset = LeaseNote.objects.select_related(*custom_related_fields).filter(
+            company=active_company.company if active_company else None
+        ).order_by('-created_date')
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["user__get_full_name","title","text"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
 class UnderReviewLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = ActiveLeaseListSerializer
     filterset_class = ActiveLeaseFilter

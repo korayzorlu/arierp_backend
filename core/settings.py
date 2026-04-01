@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_extensions",
+    "auditlog",
     "users",
     "common",
     "subscriptions",
@@ -107,6 +108,7 @@ MIDDLEWARE = [
     'common.middleware.ThreadLocalMiddleware',
     'core.middleware.CurrentUserMiddleware',
     'core.middleware.CurrentRequestMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

@@ -127,6 +127,17 @@ class ActiveLeaseFilter(FilterSet):
             return queryset
         return queryset.filter(item__uuid = value)
 
+class LeaseNoteFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    user = CharFilter(field_name='user__get_full_name', lookup_expr='icontains')
+    lease_id = CharFilter(field_name='lease__uuid', lookup_expr='iexact')
+    title = CharFilter(field_name='title', lookup_expr='icontains')
+    text = CharFilter(field_name='text', lookup_expr='icontains')
+
+    class Meta:
+        model = LeaseNote
+        fields = ['uuid']
+
 
 class InstallmentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')

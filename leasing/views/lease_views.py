@@ -244,11 +244,11 @@ class ImportLeasesView(LoginRequiredMixin,View):
 class LeaseInformationView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        
+
         if data.get('partner_uuid'):
             objs = Lease.objects.filter(contract__partner__uuid = str(data.get('partner_uuid'))).order_by("-overdue_amount")
-
-            
+        elif data.get('lease_id'):
+            objs = Lease.objects.filter(uuid = data.get('lease_id'))
     
         if not objs:
             return JsonResponse({'installment':[]}, status=200)
@@ -270,7 +270,7 @@ class LeaseInformationView(LoginRequiredMixin,View):
                 'block': obj.contract.quotation_obj.quick_quotation.block if obj.contract and obj.contract.quotation_obj.quick_quotation else "",
                 'unit' : obj.contract.quotation_obj.quick_quotation.unit if obj.contract and obj.contract.quotation_obj.quick_quotation else "",
                 'overdue_amount':obj.overdue_amount,
-                'temerrut_amount':get_temerrut_amount(obj),
+                'temerrut_amount':get_temerrut_amount(obj) if data.get('partner_uuid') else Decimal("0.00"),
                 'pb':obj.currency.code if obj.currency else "",
                 'overdue_days':obj.overdue_days,
                 'is_kdv_diff':obj.is_kdv_diff,

@@ -1,6 +1,7 @@
 from django.urls import path, include
 
 from .views.lease_views import *
+from .views.lease_note_views import *
 from .views.manager_summary_views import *
 from .views.installments_views import *
 from .views.bank_activity_views import *
@@ -23,6 +24,10 @@ urlpatterns = [
     path('overdue_information/', OverdueInformationView.as_view(), name="overdue_information"),
     path('lease_information/', LeaseInformationView.as_view(), name="lease_information"),
     path('change_partner/', ChangePartnerView.as_view(), name="change_partner"),
+
+    path('add_lease_note/', AddLeaseNoteView.as_view(), name="add_lease_note"),
+    path('update_lease_note/', UpdateLeaseNoteView.as_view(), name="update_lease_note"),
+    path('delete_lease_note/', DeleteLeaseNoteView.as_view(), name="delete_lease_note"),
 
     path('add_installment/', AddInstallmentView.as_view(), name="add_installment"),
     path('update_installment/', UpdateInstallmentView.as_view(), name="update_installment"),

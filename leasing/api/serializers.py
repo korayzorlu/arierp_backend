@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
+from django.utils.timezone import localtime
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
@@ -223,6 +224,26 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     #             if diff > overdue_days:
     #                 overdue_days = diff
     #     return overdue_days
+
+class LeaseNoteListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    user = serializers.SerializerMethodField()
+    lease = serializers.SerializerMethodField()
+    title = serializers.CharField()
+    text = serializers.CharField()
+    date = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.get_full_name() if obj.user else ''
+    
+    def get_lease(self, obj):
+        return obj.lease.code if obj.lease else ''
+    
+    def get_date(self, obj):
+        if obj.created_date:
+            return localtime(obj.created_date).strftime("%d.%m.%Y %H:%M")
+        return ''
 
 
 class InstallmentListSerializer(serializers.Serializer):

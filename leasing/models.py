@@ -161,6 +161,21 @@ class Lease(models.Model):
     def __str__(self):
         return str(self.code)
     
+class LeaseNote(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="lease_notes")
+
+    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, blank=True, null=True, related_name="lease_lease_notes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name="user_lease_notes")
+    title = models.CharField(_("Title"), max_length=140, blank=True, null=True)
+    text = models.CharField(_("Text"), max_length=1000, blank=True, null=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.user.get_full_name()} - {self.title}")
+    
 class Installment(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="installments")

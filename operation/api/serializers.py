@@ -302,6 +302,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     transfer_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     is_title_deed_delivered = serializers.SerializerMethodField()
     is_delivery = serializers.SerializerMethodField()
+    lease_note_count = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -409,6 +410,9 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             return "Teslim Edildi"
         else:
             return "Teslim Edilmedi"
+        
+    def get_lease_note_count(self, obj):
+        return obj.lease_lease_notes.count() if obj.lease_lease_notes.exists() else 0
 
 class UntitleDeedLeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
