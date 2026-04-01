@@ -36,8 +36,8 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
 
-        if ThirdPersonDocument.objects.filter(third_person = obj).exists() and data.get('status') == 'cleared':
-            if obj.third_person_third_person_documents.all().exists():
+        if data.get('status') == 'cleared':
+            if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
                 obj.status = 'cleared'
                 send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
             else:
