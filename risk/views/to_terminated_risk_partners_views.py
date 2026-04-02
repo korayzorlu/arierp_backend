@@ -120,8 +120,21 @@ class CreateTerminationWarningNoticeStatusView(LoginRequiredMixin,CompanyOwnersh
 
             def format_currency(value):
                     return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+            
+            if lease.contract.partner.is_commercial:
+                if lease.contract.partner.tc_vkn_no and len(lease.contract.partner.tc_vkn_no) > 0:
+                    tc_vkn_no = lease.contract.partner.tc_vkn_no
+                elif lease.contract.partner.vat_no and len(lease.contract.partner.vat_no) > 0:
+                    tc_vkn_no = lease.contract.partner.vat_no
+                else:
+                    tc_vkn_no = ''
+            else:
+                tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
 
             context = {
+                "isim": lease.contract.partner.name,
+                "tc_vkn_no": tc_vkn_no,
+                "adres": lease.contract.partner.address,
                 "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
                 "sozlesme_no": lease.contract.code,
                 "odenen_tutar": format_currency(obj.paid_amount),
