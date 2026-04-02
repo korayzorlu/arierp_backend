@@ -157,7 +157,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__is_kdv_diff=False) &
                 Q(partner_contracts__contract_leases__is_credit=False) &
                 Q(partner_contracts__contract_leases__is_under_review=False) &
-                Q(partner_contracts__contract_warning_notices__isnull=True) &
+                ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
                 Q(partner_contracts__contract_leases__overdue_days__gt=0) &
                 Q(partner_contracts__contract_leases__overdue_days__lte=25) &
                 Q(partner_contracts__contract_leases__overdue_amount__gt=100)
@@ -178,7 +178,7 @@ class RiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__is_kdv_diff=False) &
                 Q(partner_contracts__contract_leases__is_credit=False) &
                 Q(partner_contracts__contract_leases__is_under_review=False) &
-                Q(partner_contracts__contract_warning_notices__isnull=True) &
+                ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
                 Q(partner_contracts__contract_leases__overdue_days__gt=0) &
                 Q(partner_contracts__contract_leases__overdue_days__lte=25) &
                 Q(partner_contracts__contract_leases__overdue_amount__gt=100)

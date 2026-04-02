@@ -39,7 +39,7 @@ def export_to_warned_risk_partners_for_sms(self):
             Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
             Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
         ) &
-        Q(partner_contracts__contract_warning_notices__isnull=True)
+        ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -92,7 +92,7 @@ def export_to_warned_risk_partners_for_sms(self):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).exclude(
              Q(contract__partner__types__contains=["special"]) |
              Q(contract__partner__types__contains=["barter"]) |
@@ -331,7 +331,7 @@ def export_deposite_to_warned_risk_partners(self):
             Q(overdue_151_180__gt=0) |
             Q(overdue_181_gte__gt=0)
         ) &
-        Q(contract__contract_warning_notices__isnull=True)
+        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
     ).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -488,7 +488,7 @@ def export_kep_to_warned_risk_partners(self):
             Q(overdue_151_180__gt=0) |
             Q(overdue_181_gte__gt=0)
         ) &
-        Q(contract__contract_warning_notices__isnull=True) &
+        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli']) &
         Q(contract__partner__is_turkkep=True)
     ).exclude(
             Q(contract__partner__types__contains=["special"]) |
@@ -646,7 +646,7 @@ def export_posta_to_warned_risk_partners(self):
             Q(overdue_151_180__gt=0) |
             Q(overdue_181_gte__gt=0)
         ) &
-        Q(contract__contract_warning_notices__isnull=True) &
+        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli']) &
         Q(contract__partner__is_turkkep=False)
     ).exclude(
             Q(contract__partner__types__contains=["special"]) |

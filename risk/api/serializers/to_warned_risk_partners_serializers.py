@@ -120,7 +120,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
@@ -273,7 +273,7 @@ class DepositeToWarnedRiskPartnerListSerializer(serializers.Serializer):
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
@@ -421,7 +421,7 @@ class KepToWarnedRiskPartnerListSerializer(serializers.Serializer):
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
@@ -570,7 +570,7 @@ class PostaToWarnedRiskPartnerListSerializer(serializers.Serializer):
         lease_dict = {"leases": [],"total_overdue_amount": total_overdue_amount(leases), "max_overdue_days": max_overdue_days(leases) }
         if leases:
             for lease in leases:
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"

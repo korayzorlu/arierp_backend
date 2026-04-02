@@ -55,7 +55,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
             Q(overdue_days__lte=25) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
             (
                 Q(lease_status='aktiflestirildi') |
@@ -79,7 +79,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
         if leases:
             for lease in leases:
 
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"

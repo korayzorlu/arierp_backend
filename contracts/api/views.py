@@ -361,7 +361,8 @@ class WarningNoticeSummaryListt(ModelViewSet, QueryListAPIView):
         warning_notices = WarningNotice.objects.filter(
             Q(company=active_company.company if active_company else None) &
             Q(process_start_date__gte=start_date) &
-            Q(process_start_date__lte=today)
+            Q(process_start_date__lte=today) &
+            Q(state__in=['Yeni', 'Geçerli'])
         ).order_by('process_start_date')
 
         warning_notices_daily_amounts = (

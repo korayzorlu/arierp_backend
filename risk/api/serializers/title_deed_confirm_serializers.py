@@ -91,7 +91,7 @@ class TitleDeedConfirm2ListSerializer(serializers.Serializer):
                     total=Sum('overdue_interest_rate')
                 )['total'] or Decimal("0")
                 
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"

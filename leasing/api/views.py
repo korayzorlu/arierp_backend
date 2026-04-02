@@ -972,7 +972,7 @@ class DepositPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).filter(contract_warning_notices__isnull=True)
+        contracts_without_warning = Contract.objects.filter(partner=OuterRef('pk')).exclude(contract_warning_notices__state__in=['Yeni','Geçerli'])
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &

@@ -27,7 +27,7 @@ def export_risk_partners_for_sms(self):
         Q(partner_contracts__contract_leases__is_kdv_diff=False) &
         Q(partner_contracts__contract_leases__is_credit=False) &
         Q(partner_contracts__contract_leases__is_under_review=False) &
-        Q(partner_contracts__contract_warning_notices__isnull=True) &
+        ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
         Q(partner_contracts__contract_leases__overdue_days__gt=0) &
         Q(partner_contracts__contract_leases__overdue_days__lte=30) &
         Q(partner_contracts__contract_leases__overdue_amount__gt=100)
@@ -74,7 +74,7 @@ def export_risk_partners_for_sms(self):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -185,7 +185,7 @@ def export_risk_partners(self):
         Q(overdue_amount__gt=100) &
         Q(overdue_days__gt=0) &
         Q(overdue_days__lte=25) &
-        Q(contract__contract_warning_notices__isnull=True) &
+        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli']) &
         (
             Q(lease_status='aktiflestirildi') |
             Q(lease_status='planlandi') |

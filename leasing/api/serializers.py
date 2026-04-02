@@ -583,7 +583,7 @@ class RiskPartnerKDVListSerializer(serializers.Serializer):
                         if diff > overdue_days:
                             overdue_days = diff
 
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
@@ -714,7 +714,7 @@ class DeliveryConfirmListSerializer(serializers.Serializer):
                     total=Sum('overdue_interest_rate')
                 )['total'] or Decimal("0")
                 
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
@@ -877,7 +877,7 @@ class DepositPartnerListSerializer(serializers.Serializer):
         if leases:
             for lease in leases:
 
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"
@@ -982,7 +982,7 @@ class AgreedTerminatedPartnerListSerializer(serializers.Serializer):
         if leases:
             for lease in leases:
 
-                if lease.contract.contract_warning_notices.all():
+                if lease.contract.contract_warning_notices.filter(Q(state__in=['Yeni', 'Geçerli'])).exists():
                     status = "İhtar Çekildi"
                 elif lease.is_kdv_diff:
                     status = "KDV Farkı"

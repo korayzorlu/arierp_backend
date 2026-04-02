@@ -21,7 +21,7 @@ def to_warned_filters_for_views():
             Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
             Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
         ) &
-        Q(partner_contracts__contract_warning_notices__isnull=True)
+        ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
     )
 
 def to_warned_filters_for_views_lease():
@@ -45,7 +45,7 @@ def to_warned_filters_for_views_lease():
             Q(overdue_151_180__gt=0) |
             Q(overdue_181_gte__gt=0)
         ) &
-        Q(contract__contract_warning_notices__isnull=True)
+        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
     )
 
 def to_warned_filters_for_serializers():
@@ -69,5 +69,5 @@ def to_warned_filters_for_serializers():
             Q(overdue_151_180__gt=0) |
             Q(overdue_181_gte__gt=0)
         ) &
-        Q(contract__contract_warning_notices__isnull=True)
+        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
     )

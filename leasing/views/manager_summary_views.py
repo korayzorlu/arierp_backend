@@ -50,7 +50,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
             Q(overdue_days__lte=25) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -77,7 +77,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
             Q(overdue_days__lte=25) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -104,7 +104,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
             Q(overdue_days__lte=25) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -131,7 +131,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
             Q(overdue_days__lte=25) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -171,9 +171,9 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -204,9 +204,9 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -237,9 +237,9 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -270,9 +270,9 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -306,12 +306,12 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
             overdue_days_int=Cast(
                 F('overdue_days'),
                 output_field=IntegerField()
@@ -356,12 +356,12 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         deposite_to_warned_leases_try = deposite_to_warned_leases_try.annotate(
             overdue_days_int=Cast(
@@ -408,12 +408,12 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         deposite_to_warned_leases_usd = deposite_to_warned_leases_usd.annotate(
             overdue_days_int=Cast(
@@ -460,12 +460,12 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         deposite_to_warned_leases_eur = deposite_to_warned_leases_eur.annotate(
             overdue_days_int=Cast(
@@ -512,13 +512,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=True) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         kep_to_warned_leases = kep_to_warned_leases.annotate(
             overdue_days_int=Cast(
@@ -565,13 +565,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=True) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         kep_to_warned_leases_try = kep_to_warned_leases_try.annotate(
             overdue_days_int=Cast(
@@ -618,13 +618,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=True) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         kep_to_warned_leases_usd = kep_to_warned_leases_usd.annotate(
             overdue_days_int=Cast(
@@ -671,13 +671,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=True) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         kep_to_warned_leases_eur = kep_to_warned_leases_eur.annotate(
             overdue_days_int=Cast(
@@ -724,13 +724,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=False) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         posta_to_warned_leases = posta_to_warned_leases.annotate(
             overdue_days_int=Cast(
@@ -777,13 +777,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=False) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         posta_to_warned_leases_try = posta_to_warned_leases_try.annotate(
             overdue_days_int=Cast(
@@ -830,13 +830,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=False) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         posta_to_warned_leases_usd = posta_to_warned_leases_usd.annotate(
             overdue_days_int=Cast(
@@ -883,13 +883,13 @@ class ManagerSummaryView(LoginRequiredMixin,View):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
             Q(contract__partner__is_turkkep=False) &
             ~Q(contract__partner__types__contains=["special"]) &
             ~Q(contract__partner__types__contains=["barter"]) &
             ~Q(contract__partner__types__contains=["virman"])
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True)
         ).filter(warning_notice_count=0)
         posta_to_warned_leases_eur = posta_to_warned_leases_eur.annotate(
             overdue_days_int=Cast(
@@ -929,7 +929,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
         ).filter(warning_notice_count__gt=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -956,7 +956,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
         ).filter(warning_notice_count__gt=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -983,7 +983,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
         ).filter(warning_notice_count__gt=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -1010,7 +1010,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
         ).filter(warning_notice_count__gt=0).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |
@@ -1041,7 +1041,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
             overdue_check=Case(
                 When(
                     contract__partner__customer_type='individual',
@@ -1093,7 +1093,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
             overdue_check=Case(
                 When(
                     contract__partner__customer_type='individual',
@@ -1145,7 +1145,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
             overdue_check=Case(
                 When(
                     contract__partner__customer_type='individual',
@@ -1197,7 +1197,7 @@ class ManagerSummaryView(LoginRequiredMixin,View):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count('contract__contract_warning_notices', filter=Q(contract__contract_warning_notices__state='Yeni'), distinct=True),
             overdue_check=Case(
                 When(
                     contract__partner__customer_type='individual',

@@ -23,7 +23,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_warning_notices__isnull=True) &
+            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
             Q(partner_contracts__contract_leases__overdue_days__gt=0) &
             Q(partner_contracts__contract_leases__overdue_days__lte=30) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100)
@@ -69,7 +69,7 @@ def partners_for_project(params):
                 Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
             ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True)
+            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -129,7 +129,7 @@ def partners_for_project(params):
                 Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
             ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True)
+            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -189,7 +189,7 @@ def partners_for_project(params):
                 Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
             ) &
-            Q(partner_contracts__contract_warning_notices__isnull=True)
+            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -386,7 +386,7 @@ def leases_for_project(params):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(contract__contract_warning_notices__isnull=True) &
+            ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli']) &
             (
                 Q(lease_status='aktiflestirildi') |
                 Q(lease_status='planlandi') |
@@ -422,7 +422,7 @@ def leases_for_project(params):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).exclude(
              Q(contract__partner__types__contains=["special"]) |
              Q(contract__partner__types__contains=["barter"]) |
@@ -482,7 +482,7 @@ def leases_for_project(params):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).exclude(
              Q(contract__partner__types__contains=["special"]) |
              Q(contract__partner__types__contains=["barter"]) |
@@ -541,7 +541,7 @@ def leases_for_project(params):
                 Q(overdue_151_180__gt=0) |
                 Q(overdue_181_gte__gt=0)
             ) &
-            Q(contract__contract_warning_notices__isnull=True)
+            ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).exclude(
              Q(contract__partner__types__contains=["special"]) |
              Q(contract__partner__types__contains=["barter"]) |
