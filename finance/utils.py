@@ -597,7 +597,7 @@ def export_finmaks_bank_account_balances(self):
 def is_valid_vpos_transaction_data(data):
     parameters = [
         'CompanyId', 'ValidationKey', 'ProcessDate', 'MusteriTipi', 'PaidAmount',
-         'FirmaAdi', 'KurumTipi', 'VergiDairesi', 'VergiNo',
+        'LeasePostingGroupId', 'FirmaAdi', 'KurumTipi', 'VergiDairesi', 'VergiNo',
         'WebSitesi', 'Adres', 'Ulke', 'Sehir', 'Ilce', 'Posta', 'IletisimList',
         'Ad', 'IkinciAd', 'OrtaAd', 'SoyAd', 'Cinsiyet', 'TCKimlikNo', 'PasaportNo',
         'Uyruk', 'DogumTarih', 'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
@@ -631,8 +631,8 @@ def is_valid_vpos_transaction_data(data):
     if not data.get('CurrencyCode') or not Currency.objects.filter(code='TRY' if data.get('CurrencyCode') == 'TL' else data.get('CurrencyCode')).exists():
         return False, JsonResponse({'message': 'Para birimi eksik veya geçersiz! (CurrencyCode)','status':'error'}, status=400)
     
-    # if not data.get('LeasePostingGroupId') or not isinstance(data.get('LeasePostingGroupId'), bool):
-    #     return False, JsonResponse({'message': 'İşlem grubu eksik veya geçersiz! (LeasePostingGroupId)','status':'error'}, status=400)
+    if not isinstance(data.get('LeasePostingGroupId'), bool):
+        return False, JsonResponse({'message': 'İşlem grubu eksik veya geçersiz! (LeasePostingGroupId)','status':'error'}, status=400)
 
     str_fields = [
         'FirmaAdi', 'KurumTipi', 'VergiDairesi', 'VergiNo', 'WebSitesi',
