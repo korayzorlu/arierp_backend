@@ -166,7 +166,6 @@ class NeedsToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             (
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=1000) |
                 Q(partner_contracts__contract_leases__overdue_61_90__gt=1000) |
                 Q(partner_contracts__contract_leases__overdue_91_120__gt=1000) |
                 Q(partner_contracts__contract_leases__overdue_121_150__gt=1000) |
