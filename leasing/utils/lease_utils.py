@@ -683,11 +683,17 @@ def get_leases_excel_file(company):
 
 def fix_last_projects_arinet(company):
     try:
-        objs = Lease.objects.select_related().filter(is_last_project = True)
+        objs = Lease.objects.select_related().filter(
+            ~Q(lease_status__in=['iptal_edildi']) &
+            Q(is_last_project = True)
+        )
         objs.update(is_last_project_arinet = False)
 
         for obj in objs:
-            last_lease = Lease.objects.select_related().filter(main_lease_id=obj.main_lease_id).annotate(lease_id_int=Cast("lease_id", IntegerField())).order_by("-lease_id_int").first()
+            last_lease = Lease.objects.select_related().filter(
+                ~Q(lease_status__in=['iptal_edildi']) &
+                Q(main_lease_id=obj.main_lease_id)
+            ).annotate(lease_id_int=Cast("lease_id", IntegerField())).order_by("-lease_id_int").first()
 
             if last_lease.lease_id == obj.lease_id:
                 obj.is_last_project_arinet = True
@@ -718,7 +724,10 @@ def set_title_deed_delivery(company):
     # print(olmayanlar)
             
 
-    leases = Lease.objects.select_related().filter(is_last_project = True)
+    leases = Lease.objects.select_related().filter(
+        ~Q(lease_status__in=['iptal_edildi']) &
+       Q( is_last_project = True)
+    )
     leases.update(is_title_deed_delivered = False)
 
     contracts = Contract.objects.select_related().prefetch_related("contract_leases").filter()
