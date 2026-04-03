@@ -36,10 +36,7 @@ def get_partner_types(data):
 
 def export_partners(self):
     objs = Partner.objects.select_related().filter(
-        Q(partner__contracts__isnull=False) &
-        Q(partner__contracts__lease__activation_date__gte=date(2021, 1, 1)) &
-        ~Q(partner__contracts__lease__lease_status='feshedildi') &
-        ~Q(partner__contracts__lease__lease_status='baskasina_transfer_edildi')
+        Q(is_special=True) &
     )
 
     self.process.status = "in_progress"
@@ -48,23 +45,23 @@ def export_partners(self):
 
     
     
-    # data = {
-    #     "İsim": [],
-    #     "TC/VKN": [],
-    #     "CRM Kodu": [],
-    #     "Tel": [],
-    #     "Email": [],
-    #     "Doğum Tarihi": [],
-    #     "Doğum Yeri": [],
-    # }
-
     data = {
-        "isim": [],
-        "tc_vkn_no": [],
-        "crm_kodu": [],
-        "email": [],
-        "tel": [],
+        "İsim": [],
+        "TC/VKN": [],
+        "CRM Kodu": [],
+        "Tel": [],
+        "Email": [],
+        "Doğum Tarihi": [],
+        "Doğum Yeri": [],
     }
+
+    # data = {
+    #     "isim": [],
+    #     "tc_vkn_no": [],
+    #     "crm_kodu": [],
+    #     "email": [],
+    #     "tel": [],
+    # }
 
     previous_progress = 0
     metin = ""
@@ -76,20 +73,20 @@ def export_partners(self):
             self.process.save()
             previous_progress = current_progress
 
-        # data["İsim"].append(obj.name or "")
-        # data["TC/VKN"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no or "")
-        # data["CRM Kodu"].append(obj.crm_code or "")
-        # data["Tel"].append(obj.phone_number or "")
-        # data["Email"].append(obj.email or "")
-        # data["Doğum Tarihi"].append(obj.birthday.strftime("%d.%m.%Y") if obj.birthday else "")
-        # data["Doğum Yeri"].append(obj.birth_place or "")
+        data["İsim"].append(obj.name or "")
+        data["TC/VKN"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no or "")
+        data["CRM Kodu"].append(obj.crm_code or "")
+        data["Tel"].append(obj.phone_number or "")
+        data["Email"].append(obj.email or "")
+        data["Doğum Tarihi"].append(obj.birthday.strftime("%d.%m.%Y") if obj.birthday else "")
+        data["Doğum Yeri"].append(obj.birth_place or "")
 
         
-        data["isim"].append(obj.name)
-        data["tc_vkn_no"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no)
-        data["crm_kodu"].append(obj.crm_code)
-        data["email"].append(obj.email)
-        data["tel"].append(obj.phone_number)
+        # data["isim"].append(obj.name)
+        # data["tc_vkn_no"].append(obj.tc_vkn_no if obj.customer_type == "individual" else obj.vat_no)
+        # data["crm_kodu"].append(obj.crm_code)
+        # data["email"].append(obj.email)
+        # data["tel"].append(obj.phone_number)
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
