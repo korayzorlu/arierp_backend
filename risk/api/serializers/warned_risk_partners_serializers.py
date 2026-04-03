@@ -66,7 +66,11 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_amount__gt=1000) &
             ~Q(warning_notice_status='kapsamli_ihtar')
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
         ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("overdue_days")
 
         # latest_lease = leases.filter(

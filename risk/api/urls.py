@@ -10,6 +10,8 @@ from risk.api.views.tufe_exchanged_leases_views import *
 from risk.api.views.warned_risk_partners_views import *
 from risk.api.views.risk_partners_views import *
 from risk.api.views.to_warned_risk_partnes_views import *
+from risk.api.views.monthly_warned_risk_partnes_views import *
+from risk.api.views.annual_warned_risk_partnes_views import *
 from risk.api.views.today_partners_views import *
 from risk.api.views.tomorrow_partners_views import *
 from risk.api.views.title_deed_confirm_views import *
@@ -21,6 +23,8 @@ router.register(r'amount_debit_transactions',AmountDebitTransactionList, "amount
 router.register(r'under_reviews', UnderReviewList, "under_reviews_api")
 router.register(r'risk_partners',RiskPartnerList, "risk_partners_api")
 router.register(r'to_warned_risk_partners',ToWarnedRiskPartnerList, "to_warned_risk_partners_api")
+router.register(r'monthly_warned_risk_partners',MonthlyWarnedRiskPartnerList, "monthly_warned_risk_partners_api")
+router.register(r'annual_warned_risk_partners',AnnualWarnedRiskPartnerList, "annual_warned_risk_partners_api")
 router.register(r'deposite_to_warned_risk_partners',DepositeToWarnedRiskPartnerList, "deposite_to_warned_risk_partners_api")
 router.register(r'kep_to_warned_risk_partners',KepToWarnedRiskPartnerList, "kep_to_warned_risk_partners_api")
 router.register(r'posta_to_warned_risk_partners',PostaToWarnedRiskPartnerList, "posta_to_warned_risk_partners_api")

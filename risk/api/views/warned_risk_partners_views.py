@@ -158,7 +158,11 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(overdue_amount__gt=1000) &
             ~Q(warning_notice_status='kapsamli_ihtar')
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
         ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("-overdue_days").annotate(max_overdue_days=Max('overdue_days')).values('max_overdue_days')[:1]
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
@@ -184,7 +188,11 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Subquery(max_overdue_days),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+            warning_notice_count=Count(
+                'partner_contracts__contract_warning_notices',
+                distinct=True,
+                filter=Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
             # overdue_check=Case(
             #     When(
             #         customer_type='individual',
@@ -265,7 +273,11 @@ class ComprehensiveWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(overdue_amount__gt=1000) &
             Q(warning_notice_status='kapsamli_ihtar')
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True)
+            warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
         ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("-overdue_days").annotate(max_overdue_days=Max('overdue_days')).values('max_overdue_days')[:1]
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(

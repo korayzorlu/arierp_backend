@@ -94,7 +94,11 @@ def export_warned_risk_partners_for_sms(self):
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
             overdue_check=Case(
             When(
                 contract__partner__customer_type='individual',
@@ -224,7 +228,11 @@ def export_warned_risk_partners(self):
         Q(overdue_days__gt=25) &
         Q(overdue_amount__gt=1000)
     ).annotate(
-        warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+        warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
     ).filter(warning_notice_count__gt=0)
 
     self.process.status = "in_progress"

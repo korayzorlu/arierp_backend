@@ -490,7 +490,11 @@ def export_to_terminated_risk_partners(self):
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-        warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+        warning_notice_count=Count(
+            'partner_contracts__contract_warning_notices',
+            distinct=True,
+            filter=Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+        ),
         overdue_check=Case(
             When(
                 customer_type='individual',
@@ -559,7 +563,11 @@ def export_to_terminated_risk_partners(self):
             Q(overdue_days__gt=30) &
             Q(overdue_amount__gt=1000)
         ).annotate(
-            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
+            warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            ),
             overdue_check=Case(
                 When(
                     contract__partner__customer_type='individual',
