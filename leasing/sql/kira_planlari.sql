@@ -79,7 +79,7 @@ FROM
     LEFT JOIN RPR_PROJECT_LIST pl ON qi.PROJECT_ID = pl.PROJECT_ID
     LEFT JOIN LeasingOperationProjectList lw ON lop.OperationProjectId = lw.OperationProjectId
 -- WHERE
---     lop.OperationProjectId = '99148'
+--     ch.ContractHeaderCode = '61267'
 -- WHERE
 --     lw.BBSN_NO IS NULL
 --     AND lop.IS_LAST_PROJECT = 1
