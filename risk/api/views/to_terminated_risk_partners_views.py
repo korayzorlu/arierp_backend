@@ -153,10 +153,10 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 Q(partner_contracts__contract_leases__lease_status='planlandi') |
                 Q(partner_contracts__contract_leases__lease_status='durduruldu')
             ) &
-            # (
-            #     Q(partner_contracts__contract_warning_notices__state='Yeni') |
-            #     Q(partner_contracts__contract_warning_notices__state='Geçerli')
-            # ) &
+            (
+                Q(partner_contracts__contract_warning_notices__state='Yeni') |
+                Q(partner_contracts__contract_warning_notices__state='Geçerli')
+            ) &
             Q(partner_contracts__contract_leases__is_last_project=True) &
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
