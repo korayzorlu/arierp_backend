@@ -36,7 +36,7 @@ def get_partner_types(data):
 
 def export_partners(self):
     objs = Partner.objects.select_related().filter(
-        Q(is_special=True)
+        Q(types__in=['special'])
     )
 
     self.process.status = "in_progress"
