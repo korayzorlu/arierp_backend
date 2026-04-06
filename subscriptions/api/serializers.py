@@ -49,7 +49,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Kam. Nüfuz Sahibi Kişiler", "icon" : "paid", "route" : "/pep-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Kişiler", "icon" : "paid", "route" : "/third-persons"},
-                {"type" : "item", "class" : ["default"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
+                {"type" : "item", "class" : ["admin"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
             ]},
             {"type" : "sub_menu", "class" : ["default"], "label" : "Operasyon", "icon" : "hub", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
