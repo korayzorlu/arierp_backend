@@ -934,6 +934,7 @@ def export_active_leases(self):
         "Proje": [],
         "Blok": [],
         "Bağımsız Bölüm": [],
+        "BBSN": [],
         "Alt Statü": [],
         "Statü": [],
         "Statü Değişme Tarihi": []
@@ -960,6 +961,7 @@ def export_active_leases(self):
         data["Proje"].append(obj.contract.project if obj.contract else "")
         data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
+        data["BBSN"].append(obj.bbsn if obj.bbsn else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.lease_status if obj.lease_status else "")
         data["Statü Değişme Tarihi"].append(obj.lease_status_update_date)

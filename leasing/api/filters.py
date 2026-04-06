@@ -12,10 +12,11 @@ from decimal import Decimal
 
 from .serializers import *
 
+
+
 class LeaseFilter(FilterSet):
-    uuid = CharFilter(field_name='uuid', lookup_expr='exact')
     code = CharFilter(field_name='code', lookup_expr='icontains')
-    contract = CharFilter(field_name='contract__code', lookup_expr='icontains')
+    contract = CharFilter(field_name='contract__code', lookup_expr='exact')
     partner = CharFilter(field_name='contract__partner__name', lookup_expr='icontains')
     partner_tc = CharFilter(field_name='contract__partner__tc_vkn_no', lookup_expr='icontains')
     activation_date = CharFilter(field_name='activation_date', lookup_expr='icontains')
@@ -36,7 +37,7 @@ class LeaseFilter(FilterSet):
 
     class Meta:
         model = Lease
-        fields = ['uuid','code','contract','partner','activation_date','quotation','kof','project_name','block','unit','vade','leasing_rate','vat','currency','lease_status']
+        fields = '__all__'
     
     def filter_lease_status(self, queryset, lease_status, value):
         return queryset.annotate(lowercase=Lower('lease_status'),uppercase=Upper('lease_status')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
