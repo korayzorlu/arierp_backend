@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,F,ExpressionWrapper,DecimalField
-from django.db.models.functions import Lower,Upper
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,F,ExpressionWrapper,DecimalField,Sum
+from django.db.models.functions import Lower,Upper,Coalesce
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -111,7 +111,7 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
     serializer_class = PurchasePaymentListSerializer
     filterset_class = PurchasePaymentFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['total_purchase_document','diff','total_contract_amount','total_vendor_payment','before_total_payment','after_total_payment',
+    ordering_fields = ['total_purchase_document_amount','diff','total_contract_amount','total_vendor_payment','before_total_payment','after_total_payment',
                        'managing_expense','lease_payment_amount','vendor_payment_with_report_date','next_payment','purchasing']
     ordering = ['-diff']
     pagination_class = DatatablesPagination
@@ -143,7 +143,7 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
             ~Q(lease__contract__partner__types__contains=['special']) &
             ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
         ).annotate(
-            total_purchase_document=Sum('lease__lease_purchase_documents__total_amount'),
+            total_purchase_document_amount=Sum(Coalesce('lease__lease_purchase_documents__total_amount', Value(0), output_field=DecimalField(max_digits=14, decimal_places=2))),
             diff=ExpressionWrapper(
                 F('lease_payment_amount') - F('before_total_payment'),
                 output_field=DecimalField(max_digits=14, decimal_places=2)
