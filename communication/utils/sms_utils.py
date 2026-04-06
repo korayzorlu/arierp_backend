@@ -51,7 +51,7 @@ def send_turatel_sms_for_check(params):
 
     data = {
         "messageText" : SMS_TEXT,
-        "receiverList" : ["05357750255","05332260858","05456227095","05548919220","05413831801","05534565457"],
+        "receiverList" : ["05357750255","05332260858","05456227095","05548919220"],
     }
 
     send_turatel_sms(data)
