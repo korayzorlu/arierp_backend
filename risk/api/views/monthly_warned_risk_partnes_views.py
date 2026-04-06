@@ -155,7 +155,7 @@ class MonthlyWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
                 distinct=True,
                 filter=(
                     Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
-                    Q(partner_contracts__contract_warning_notices__service_date__gte=now()-timedelta(days=30)) &
+                    Q(partner_contracts__contract_warning_notices__service_date__gte=now()-timedelta(days=31)) &
                     Q(partner_contracts__contract_warning_notices__service_date__lte=now())
                 )
             ),
