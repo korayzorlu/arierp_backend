@@ -180,7 +180,7 @@ def fetch_partners(company):
     fetch_phone_numbers_from_leaseflex(company)
     fetch_phone_numbersi_from_leaseflex(company)
     fetch_partner_advances_from_leaseflex(company)
-    check_third_person_in_partners()
+    check_third_person_in_partners(company)
 
 @shared_task()
 def fetch_special_partners(company):
