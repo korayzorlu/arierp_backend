@@ -296,6 +296,8 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     old_leases = serializers.SerializerMethodField()
     invoices = serializers.SerializerMethodField()
     purchase_documents = serializers.SerializerMethodField()
+    purchase_documents_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    purchase_documents_currency = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
     paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     installment_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -398,6 +400,33 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             return "Kesildi"
         else:
             return "Fatura Yok"
+        
+    def get_purchase_documents_amount(self, obj):
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
+
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases)
+        total_amount = Decimal('0.00')
+
+        if purchase_documents_exist:
+            for lease in old_leases:
+                purchase_documents = lease.lease_purchase_documents.all()
+                for purchase_document in purchase_documents:
+                    total_amount += purchase_document.total_amount
+        return total_amount
+    
+    def get_purchase_documents_currency(self, obj):
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
+
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases)
+
+        if purchase_documents_exist:
+            for lease in old_leases:
+                purchase_documents = lease.lease_purchase_documents.all()
+                if purchase_documents.exists():
+                    return purchase_documents.first().currency.code if purchase_documents.first().currency else ""
+        return ""
         
     def get_is_title_deed_delivered(self, obj):
         if obj.is_title_deed_delivered:

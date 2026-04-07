@@ -31,6 +31,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
 from trade.models import TradeTransaction
 from contracts.models import WarningNotice,ComprehensiveWarningNotice
+from purchasing.models import PurchaseDocument
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -48,6 +49,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         warning_notices = WarningNotice.objects.select_related().filter(Q(state__in=['Yeni', 'Geçerli']))
         comprehensive_warning_notices = ComprehensiveWarningNotice.objects.select_related().all()
         trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name='Kira').only("amount", "lease", "lease__lease_id")
+        purchase_documents = PurchaseDocument.objects.select_related("lease").filter(lease__isnull=False).only("total_amount", "lease", "lease__lease_id")
         installments = Installment.objects.select_related("lease").filter(type__in = ['1','2']).only("amount", "type", "lease", "lease__lease_id")
         transfer_installments = Installment.objects.select_related("lease").filter(type = '5').only("amount", "type", "lease", "lease__lease_id")
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
@@ -58,6 +60,11 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         for tt in trade_transactions:
             if tt.lease and tt.lease.lease_id:
                 trade_transactions_dict[tt.lease.lease_id].append(tt)
+        purchase_documents_dict = defaultdict(list)
+        for pd in purchase_documents:
+            if pd.lease and pd.lease.lease_id:
+                key = pd.lease.main_lease_id or pd.lease.lease_id
+                purchase_documents_dict[key].append(pd)
         installments_dict = defaultdict(list)
         for installment in installments:
             if installment.lease and installment.lease.lease_id:
@@ -145,6 +152,15 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     else:
                         paid_amount = Decimal('0.00')
                     obj.paid_amount = paid_amount
+
+                    #satıcı fatura kontrolü
+                    purchase_key = obj.main_lease_id or obj.lease_id
+                    obj_purchase_documents = purchase_documents_dict.get(purchase_key, [])
+                    if obj_purchase_documents:
+                        purchase_amount = sum([pd.total_amount for pd in obj_purchase_documents], Decimal('0.00'))
+                    else:
+                        purchase_amount = Decimal('0.00')
+                    obj.purchase_document_amount = purchase_amount
 
                     #taksit kontrolü
                     obj_installments = installments_dict.get(obj.lease_id, [])
@@ -244,6 +260,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "installment_amount",
                     "transfer_amount",
                     "warning_notice_status"
+                    "purchase_document_amount",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Lease.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)

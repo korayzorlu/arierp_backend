@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,F
-from django.db.models.functions import Lower,Upper
+from django.db.models import QuerySet, Q,F, Count, Sum, Case, When, Value, IntegerField, DecimalField, Subquery, OuterRef
+from django.db.models.functions import Lower,Upper,Coalesce
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -17,9 +17,11 @@ from rest_framework.pagination import LimitOffsetPagination
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
+from decimal import Decimal
+
 from .serializers import *
 from .filters import *
-from django.db.models import Count, Sum, Q, F, Case, When, Value, IntegerField
+
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -282,7 +284,9 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
     serializer_class = TitleDeedInvoiceControlListSerializer
     filterset_class = TitleDeedInvoiceControlFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request','finansman_kurum','bbsn','paid_amount']
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name',
+                       'leasing_type','application_no','current_request','finansman_kurum','bbsn','paid_amount',
+                       ]
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
@@ -308,7 +312,7 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
             "company", "contract", "currency", "status", "item",
             "contract__quotation_obj", "contract__quotation_obj__quick_quotation",
             "contract__partner",  
-            "contract__vendor",    
+            "contract__vendor", 
         ]
 
         queryset = Lease.objects.select_related(*custom_related_fields).prefetch_related("lease_invoices").filter(

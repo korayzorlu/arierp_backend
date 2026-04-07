@@ -91,6 +91,8 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
             return queryset.exclude(main_lease_id__in=main_lease_ids_with_docs)
         else:
             return queryset
+        
+
 
 class UntitleDeedLeaseFilter(LeaseFilter):
     invoices = CharFilter(method = 'filter_invoices')
