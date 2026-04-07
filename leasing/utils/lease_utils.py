@@ -259,7 +259,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "paid_amount",
                     "installment_amount",
                     "transfer_amount",
-                    "warning_notice_status"
+                    "warning_notice_status",
                     "purchase_document_amount",
                 ], batch_size=BATCH_SIZE)
             if create_objs:

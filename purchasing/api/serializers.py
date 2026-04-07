@@ -145,6 +145,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
             return {
                 "code" : obj.lease.code,
                 "contract" : obj.lease.contract.code if obj.lease.contract else "",
+                "bbsn" : obj.lease.bbsn if obj.lease.bbsn is not None or obj.lease.bbsn == "None" else "",
             }
         else:
             return ""
