@@ -171,7 +171,7 @@ class WarningNoticeInformationView(LoginRequiredMixin,View):
         active_company_uuid = data.get('active_company')
         active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
         
-        obj = WarningNotice.objects.filter(company = active_company.company, contract__code = contract).first()
+        obj = WarningNotice.objects.filter(company = active_company.company, contract__code = contract, state__in=['Yeni', 'Geçerli']).first()
 
         if not obj:
             return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
