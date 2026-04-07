@@ -180,7 +180,7 @@ def export_purchase_payments(self):
     self.process.save()
 
 def export_purchase_documents(self):
-    objs = PurchaseDocument.objects.select_related().filter()
+    objs = PurchaseDocument.objects.select_related("lease","lease__contract","lease__contract__partner","lease__contract__vendor","lease__currency").filter()
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -211,19 +211,19 @@ def export_purchase_documents(self):
             self.process.save()
             previous_progress = current_progress
 
-            data["Sözleşme No"].append(obj.lease.contract.code if obj.lease and obj.lease.contract else "")
-            data["Kira Planı"].append(obj.lease.code if obj.lease else "")
-            data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease and obj.lease.contract and obj.lease.contract.partner else "")
-            data["Satıcı"].append(obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "")
-            data["BBSN"].append(obj.lease.bbsn if obj.lease else "")
-            data["Döküman No"].append(obj.document_number or "")
-            data["Döküman Tarihi"].append(obj.document_date or "")
-            data["Toplam Tutar"].append(obj.amount)
-            data["KDV Toplam"].append(obj.vat_amount)
-            data["Genel Toplam"].append(obj.total_amount)
-            data["PB"].append(obj.lease.currency.code if obj.lease and obj.lease.currency else "")
-            data["Kur"].append(obj.exchange_rate)
-            data["Statü"].append(obj.document_status or "")
+        data["Sözleşme No"].append(obj.lease.contract.code if obj.lease and obj.lease.contract else "")
+        data["Kira Planı"].append(obj.lease.code if obj.lease else "")
+        data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease and obj.lease.contract and obj.lease.contract.partner else "")
+        data["Satıcı"].append(obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "")
+        data["BBSN"].append(obj.lease.bbsn if obj.lease else "")
+        data["Döküman No"].append(obj.document_number or "")
+        data["Döküman Tarihi"].append(obj.document_date or "")
+        data["Toplam Tutar"].append(obj.amount)
+        data["KDV Toplam"].append(obj.vat_amount)
+        data["Genel Toplam"].append(obj.total_amount)
+        data["PB"].append(obj.lease.currency.code if obj.lease and obj.lease.currency else "")
+        data["Kur"].append(obj.exchange_rate)
+        data["Statü"].append(obj.document_status or "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
