@@ -112,10 +112,23 @@ def get_ldap_user_department(username):
         data = fetch_ldap_user_info(username)
         if data and len(data) > 0:
             department_value = data[0][1]["department"][0]
+            position_value = data[0][1]["title"][0]
             if isinstance(department_value, bytes):
                 department_value = department_value.decode("utf-8")
-            return department_value
+                position_value = position_value.decode("utf-8")
+            return {"department": department_value, "position": position_value}
     except Exception as e:
         print(e)
         traceback.print_exc()
 
+def get_ldap_user_position(username):
+    try:
+        data = fetch_ldap_user_info(username)
+        if data and len(data) > 0:
+            position_value = data[0][1]["title"][0]
+            if isinstance(position_value, bytes):
+                position_value = position_value.decode("utf-8")
+            return position_value
+    except Exception as e:
+        print(e)
+        traceback.print_exc()

@@ -41,6 +41,7 @@ class Authorization(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, blank=True, related_name="authorization")
     department = models.CharField(_("Department"), max_length=25, default='default', choices=DEPARTMENT_CHOICES)
+    
 
     def __str__(self):
         return f"{self.user} | {self.department}"

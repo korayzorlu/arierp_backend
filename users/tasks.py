@@ -43,7 +43,8 @@ def fetch_ldap_data(company):
                 print(f"{int(current_progress)} %")
 
             data = fetch_ldap_user_info(user.username)
-            
+            if user.username == 'koray.zorlu':
+                print(data)
             if data and len(data) > 0:
                 department_value = data[0][1]["department"][0]
                 if isinstance(department_value, bytes):

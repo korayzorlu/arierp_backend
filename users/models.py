@@ -18,6 +18,7 @@ class User(AbstractUser):
     phone_number = models.CharField(_("Phone Number"), max_length=25, blank=True, null=True)
     verify_sid = models.CharField(_("Verify SID"), max_length=50, blank=True, null=True)
     leaseflex_id = models.CharField(_("Leaseflex ID"), max_length=50, blank=True, null=True)
+    position = models.CharField(_("Position"), max_length=255, blank=True, null=True)
 
     class Meta:
         constraints = [

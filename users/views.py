@@ -36,7 +36,7 @@ from twilio.rest import Client
 import ldap
 
 from .models import *
-from .utils import get_client_ip,get_client_country,fetch_ldap_user_info,get_ldap_user_department
+from .utils import get_client_ip,get_client_country,fetch_ldap_user_info,get_ldap_user_department,get_ldap_user_position
 from .tasks import fetch_ldap_user_department
 from subscriptions.models import Subscription,Authorization
 from common.models import Country,Currency
@@ -122,9 +122,11 @@ class UserLoginView(View):
             ip = get_client_ip(request)
             country = get_client_country(ip)
             currency = Currency.objects.filter(countries__iso2=country).first()
-            curr = currency.code if currency else ""
+            curr = currency.code if currency else """"""
 
-            department = get_ldap_user_department(user.username)
+            ldap_data = get_ldap_user_department(user.username)
+            department = ldap_data.get("department") if ldap_data else None
+            position = ldap_data.get("position") if ldap_data else None
             matched_choice = None
             if department:
                 for value, display in Authorization._meta.get_field('department').choices:
@@ -142,6 +144,9 @@ class UserLoginView(View):
                         matched_choice = "admin"
                     auth.department = matched_choice
                     auth.save()
+            if position:
+                user.position = position
+                user.save()
             
             user_data = {
                 'id': user.id,
@@ -157,6 +162,7 @@ class UserLoginView(View):
                 'userSourceCompanies': [],
                 'subscription' : user.subscription.get_type_display(),
                 'authorization' : user.authorization.get_department_display(),
+                'position' : user.position,
                 'location' : {"country":country,"currency":curr}
             }
             return JsonResponse({'user':user_data, 'theme': user.profile.theme}, status=200)

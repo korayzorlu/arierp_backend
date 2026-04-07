@@ -178,4 +178,85 @@ def export_purchase_payments(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+
+def export_purchase_documents(self):
+    objs = PurchaseDocument.objects.select_related().filter()
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
     
+    data = {
+        "Sözleşme No": [],
+        "Kira Planı": [],
+        "Müşteri": [],
+        "Satıcı": [],
+        "BBSN": [],
+        "Döküman No": [],
+        "Döküman Tarihi": [],
+        "Toplam Tutar": [],
+        "KDV Toplam": [],
+        "Genel Toplam": [],
+        "PB": [],
+        "Kur": [],
+        "Statü": [],
+    }
+
+    previous_progress = 0
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+
+            data["Sözleşme No"].append(obj.lease.contract.code if obj.lease and obj.lease.contract else "")
+            data["Kira Planı"].append(obj.lease.code if obj.lease else "")
+            data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease and obj.lease.contract and obj.lease.contract.partner else "")
+            data["Satıcı"].append(obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "")
+            data["BBSN"].append(obj.lease.bbsn if obj.lease else "")
+            data["Döküman No"].append(obj.document_number or "")
+            data["Döküman Tarihi"].append(obj.document_date or "")
+            data["Toplam Tutar"].append(obj.amount)
+            data["KDV Toplam"].append(obj.vat_amount)
+            data["Genel Toplam"].append(obj.total_amount)
+            data["PB"].append(obj.lease.currency.code if obj.lease and obj.lease.currency else "")
+            data["Kur"].append(obj.exchange_rate)
+            data["Statü"].append(obj.document_status or "")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+
+    numeric_columns = [
+        "Toplam Tutar",
+        "KDV Toplam",
+        "Genel Toplam",
+        "Kur",
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "purchasing", "purchase_documents", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-satin-alma-belgeleri.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+        # Workbook'u al
+        workbook = writer.book
+        worksheet = writer.sheets['Sayfa']
+
+        # Kolon isimlerine göre format uygula
+        for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+            if col in numeric_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = '#,##0.00'   # İstediğin format
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()

@@ -62,3 +62,39 @@ class PurchasePaymentsExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+    
+class ExportPurchaseDocumentsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if ExportProcess.objects.filter(user=request.user,model_name="PurchaseDocument",status__in=["pending","in_progress"]).exists():
+            return JsonResponse({'message':'Bu tablo için başka bir dışarı aktarma işlemi devam ediyor! Lütfen bekleyin.','status':'error'}, status=400)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="purchasing",
+            model_name="PurchaseDocument",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-satin-alma-belgeleri.xlsx",
+            export_url="/purchasing/purchase_documents_excel",
+            params={"project":data.get('project')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class PurchaseDocumentsExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "purchasing", "purchase_documents", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-satin-alma-belgeleri.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb')) 

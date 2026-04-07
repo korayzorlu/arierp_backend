@@ -92,3 +92,4 @@ def fetch_purchase_payments(company):
 @shared_task()
 def fetch_purchase_documents(company):
     fetch_purchase_documents_from_leaseflex(company)
+
