@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,F, ExpressionWrapper, DateField,IntegerField
+from django.db.models import QuerySet, Q,Max,F, ExpressionWrapper, DateField,IntegerField, Subquery, Exists
 from django.db.models.functions import Lower,Upper,Cast
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -22,7 +22,7 @@ import traceback
 from datetime import datetime,timedelta
 
 
-
+from contracts.models import Contract, WarningNotice
 from leasing.models import Installment
 from leasing.api.filters import LeaseFilter
 from leasing.api.serializers import LeaseListSerializer
@@ -145,23 +145,38 @@ class AnnualWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
+        contracts_with_multiple_notices = Contract.objects.filter(
+            partner=OuterRef('pk')
+        ).annotate(
+            notice_count=Count(
+                'contract_warning_notices',
+                distinct=True,
+                filter=(
+                    Q(contract_warning_notices__service_date__isnull=False) &
+                    Q(contract_warning_notices__service_date__gte=now()-timedelta(days=365)) &
+                    Q(contract_warning_notices__service_date__lte=now())
+                )
+            )
+        ).filter(notice_count__gt=1)
+        
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            to_warned_filters_for_views()
+            to_warned_filters_for_views() &
+            Exists(contracts_with_multiple_notices)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count(
-                'partner_contracts__contract_warning_notices',
-                distinct=True,
-                filter=(
-                    Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
-                    Q(partner_contracts__contract_warning_notices__service_date__gte=now()-timedelta(days=365)) &
-                    Q(partner_contracts__contract_warning_notices__service_date__lte=now())
-                )
-            ),
-        ).filter(warning_notice_count__gt=1).exclude(types__contains=["special"])
+            # warning_notice_count=Count(
+            #     'partner_contracts__contract_warning_notices',
+            #     distinct=True,
+            #     filter=(
+            #         Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
+            #         Q(partner_contracts__contract_warning_notices__service_date__gte=now()-timedelta(days=365)) &
+            #         Q(partner_contracts__contract_warning_notices__service_date__lte=now())
+            #     )
+            # ),
+        ).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
