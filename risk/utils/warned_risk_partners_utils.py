@@ -356,6 +356,10 @@ def set_comprehensive_warning_notices(company):
             Q(lease_status='planlandi') |
             Q(lease_status='durduruldu')
         ) &
+        (
+            Q(contract__contract_warning_notices__state='Yeni') |
+            Q(contract__contract_warning_notices__state='Geçerli')
+        ) &
         Q(is_last_project=True) &
         Q(is_kdv_diff=False) &
         Q(is_credit=False) &
