@@ -10,9 +10,14 @@ import re
 import os
 import random
 import string
+from docxtpl import DocxTemplate
+from django.conf import settings
 
 from leasing.models import Lease
 from partners.models import Partner
+from leasing.utils.lease_utils import get_future_payments
+from contracts.models import ComprehensiveWarningNotice,WarningNotice
+from companies.models import Company
 
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 
@@ -343,3 +348,90 @@ def export_warned_risk_partners(self):
     #self.process.status = "completed"
     self.process.save()
 
+def set_comprehensive_warning_notices(company):
+    leases = Lease.objects.select_related("contract","contract__partner").filter(
+        vendor_filter_for_serializers({"project":"all"}) &
+        (
+            Q(lease_status='aktiflestirildi') |
+            Q(lease_status='planlandi') |
+            Q(lease_status='durduruldu')
+        ) &
+        Q(is_last_project=True) &
+        Q(is_kdv_diff=False) &
+        Q(is_credit=False) &
+        Q(is_under_review=False) &
+        Q(overdue_days__gt=25) &
+        Q(overdue_amount__gt=1000) &
+        ~Q(warning_notice_status='kapsamli_ihtar') &
+        Q(contract__contract_warning_notices__service_date__isnull=False)
+    ).annotate(
+        warning_notice_count=Count(
+            'contract__contract_warning_notices',
+            distinct=True,
+            filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+        ),
+    ).filter(warning_notice_count__gt=0)
+    print(f"Toplam {len(leases)} adet kapsamlı ihtar çekilecek müşteri var.")
+    for lease in leases:
+        lease.warning_notice_status = 'kapsamli_ihtar'
+        lease.save()
+
+        # word işlemleri
+        file_name = lease.contract.code.replace("/","-")
+        doc = DocxTemplate(f"files/ihtar-{'ticari' if lease.contract.partner.is_commercial else 'tuketici'}.docx")
+    
+        def format_currency(value):
+            return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+        
+        if lease.contract.partner.is_commercial:
+            if lease.contract.partner.tc_vkn_no and len(lease.contract.partner.tc_vkn_no) > 0:
+                tc_vkn_no = lease.contract.partner.tc_vkn_no
+            elif lease.contract.partner.vat_no and len(lease.contract.partner.vat_no) > 0:
+                tc_vkn_no = lease.contract.partner.vat_no
+            else:
+                tc_vkn_no = ''
+        else:
+            tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
+
+        gecikme_bakiye = lease.overdue_amount
+        masraf_bakiye = (gecikme_bakiye / Decimal('100')) * Decimal('10')
+        toplam_borc_bakiye = gecikme_bakiye + masraf_bakiye
+        gelecek_bakiye = get_future_payments(lease.lease_id)
+        toplam_bakiye = toplam_borc_bakiye + gelecek_bakiye
+
+        context = {
+            "tarih": datetime.today().strftime('%d.%m.%Y'),
+            "isim": lease.contract.partner.name,
+            "tc_vkn_no": tc_vkn_no,
+            "adres": lease.contract.partner.address,
+            "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+            "sozlesme_no": lease.contract.code,
+            "il": f"{lease.city} ili, " if lease.city else '',
+            "ilce": f"{lease.district} ilçesi, " if lease.district else '',
+            "ada": f"{lease.island} ada, " if lease.island else '',
+            "parsel": f"{lease.parcel} parsel, " if lease.parcel else '',
+            "blok": f"{lease.block} blok, " if lease.block else '',
+            "bagimsiz_bolum": f"{lease.unit} numaralı bağımsız bölüm " if lease.unit else '',
+            "gecikme_bakiye": format_currency(gecikme_bakiye),
+            "masraf_bakiye": format_currency(masraf_bakiye),
+            "toplam_borc_bakiye": format_currency(toplam_borc_bakiye),
+            "gelecek_bakiye": format_currency(gelecek_bakiye),
+            "toplam_bakiye": format_currency(toplam_bakiye),
+        }
+        doc.render(context)
+
+        company_obj = Company.objects.filter(id=int(company)).first()
+
+        files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(company_obj.uuid), "risk", "warned_risk_partners", "documents",f"{file_name}.docx")
+        doc.save(files_path)
+
+        warning_notice = WarningNotice.objects.filter(contract=lease.contract, service_date__isnull=False, state__in=['Yeni', 'Geçerli']).first()
+        # kapsamlı ihtar model işlemleri
+        if not ComprehensiveWarningNotice.objects.filter(contract = lease.contract).exists():
+            ComprehensiveWarningNotice.objects.create(
+                company = lease.company,
+                contract = lease.contract,
+                debit_amount = toplam_bakiye,
+                service_date = warning_notice.service_date if warning_notice else None,
+                official_cancellation_date = warning_notice.official_cancellation_date if warning_notice else None,
+            )

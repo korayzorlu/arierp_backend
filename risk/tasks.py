@@ -16,6 +16,7 @@ from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from risk.utils.sql_utils import fetch_amounts_and_debits_sql,fetch_amounts_and_debits_sql_bulk
+from risk.utils.warned_risk_partners_utils import set_comprehensive_warning_notices
 
 def to_date(dt):
     if dt is None:
@@ -507,3 +508,7 @@ def fetch_amounts_and_debitss(company):
     except Exception as e:
         print(e)
         traceback.print_exc()
+
+@shared_task()
+def set_comprehensive_warning_notices_task(company):
+    set_comprehensive_warning_notices(company)
