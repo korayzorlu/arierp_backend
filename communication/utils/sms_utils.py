@@ -13,8 +13,9 @@ from leasing.models import Lease
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from risk.utils.common_utils import partners_for_project,leases_for_project
 
-def sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date):
+def sms_text_for_risk_status(params,contracts,total_overdue_amount,overdue_start_date):
     tomorrow = date.today() + timedelta(days=1)
+    contract_label = "sözleşmenize" if len(contracts) == 1 else "sözleşmelerinize"
     if params.get("risk_status") == "risk_partners":
         SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksiti bulunmaktadır. Bugün ödenmesi hususunda gereğini rica ederiz. {"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680/rig@arileasing.com.tr)Mernis No: 0147005285500018"
     elif params.get("risk_status") == "to_warned":
@@ -22,7 +23,7 @@ def sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date):
     elif params.get("risk_status") == "warned":
         SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesi’ne ait {overdue_start_date.strftime("%d.%m.%Y")} son ödeme tarihli {format_currency_tr(total_overdue_amount)} TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:4447680 Mernis No:0147005285500018"
     elif params.get("risk_status") == "to_terminated":
-        SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesi’ne ait {format_currency_tr(total_overdue_amount)} TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:4447680 Mernis No:0147005285500018"
+        SMS_TEXT = F"Değerli müşterimiz, {', '.join(contracts)} No.lu {contract_label} ilişkin {format_currency_tr(total_overdue_amount)} TL borcunuz bulunmaktadır. {date.today().strftime('%d.%m.%Y')} tarihi itibarıyla sonlandırılacağını üzülerek bilgilerinize sunarız. Herhangi bir sorunuz olması halinde bizimle 4447680 no.lu telefondan ulaşabilirsiniz. Arı Finansal Kiralama Mersis No: 0147005285500018"
     elif params.get("risk_status") == "today_partners":
         SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.{"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680/rig@arileasing.com.tr)Mernis No: 0147005285500018"
     elif params.get("risk_status") == "tomorrow_partners":
@@ -41,7 +42,7 @@ def send_turatel_sms_for_check(params):
     elif params.get("risk_status") == "warned":
         SMS_TEXT = f"Değerli müşterimiz, {project_text(params)} projesi’ne ait 01.01.2026 son ödeme tarihli 50.000,00 TL ödenmemiş taksitiniz bulunmaktadır. Takip sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:4447680 Mernis No:0147005285500018"
     elif params.get("risk_status") == "to_terminated":
-        SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesi’ne ait 50.000,00 TL ihtar bakiyeniz bulunmaktadır. Fesih sürecindeki ödemenizi gerçekleştirmenizi rica ederiz. Ödeme yapıldıysa mesajı dikkate almayınız. Arı Finansal Kiralama Tel:4447680 Mernis No:0147005285500018"
+        SMS_TEXT = F"Değerli müşterimiz, 99999 No.lu sözleşmenize ilişkin 50.000,00 TL TL borcunuz bulunmaktadır. {date.today().strftime('%d.%m.%Y')} tarihi itibarıyla sonlandırılacağını üzülerek bilgilerinize sunarız. Herhangi bir sorunuz olması halinde bizimle 4447680 no.lu telefondan ulaşabilirsiniz. Arı Finansal Kiralama Mersis No: 0147005285500018"
     elif params.get("risk_status") == "today_partners":
         SMS_TEXT = F"Değerli müşterimiz, {project_text(params)} projesinde bulunan sözleşmelerinizin ödemelerini hatırlatmak isteriz.{"Ödemelerinizi online sistemden kontrol edip ödeme yapabilirsiniz. " if params.get('project') == 'kizilbuk' or params.get('project') =='kasaba' else ""}ÖDEME YAPILDIYSA MESAJI DİKKATE ALMAYINIZ. Arı Finansal Kiralama(İletişim: 4447680/rig@arileasing.com.tr)Mernis No: 0147005285500018"
     elif params.get("risk_status") == "tomorrow_partners":
@@ -74,14 +75,16 @@ def send_sms_with_turatel(params):
             total_overdue_amount = 0
             max_overdue_days = 0
             if leases:
+                contracts = []
                 for lease in leases:
                     total_overdue_amount += lease.overdue_amount
                     if lease.overdue_days > max_overdue_days:
                         max_overdue_days = lease.overdue_days
+                    contracts.append(lease.contract.code)
                 if max_overdue_days > 0:
                     overdue_start_date = date.today() - timedelta(days=max_overdue_days)
 
-                SMS_TEXT = sms_text_for_risk_status(params,total_overdue_amount,overdue_start_date)
+                SMS_TEXT = sms_text_for_risk_status(params,contracts,total_overdue_amount,overdue_start_date)
                 
                 data = {
                     "messageText" : SMS_TEXT,

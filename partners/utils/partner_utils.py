@@ -450,7 +450,7 @@ def set_partner_scores(company, partner=None):
             ps = partner_scores_dict.get(partner.id)
             update_progress += 1
 
-        print(f"Toplam {update_progress} bireysel partner güncellendi.")
+        print(f"Toplam {update_progress} partner skoru güncellendi.")
     except Exception as e:
         print(e)
         traceback.print_exc()

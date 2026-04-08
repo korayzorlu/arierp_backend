@@ -142,6 +142,29 @@ class PartnerNote(models.Model):
     def __str__(self):
         return str(f"{self.user.get_full_name()} - {self.title}")
 
+class PartnerFinancialProfile(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_financial_profiles")
+
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_financial_profiles")
+
+    INCOME_TYPES_CHOICES = (
+        ('maas', ('Maaş')),
+        ('ticari', ('Ticari Kazanç')),
+        ('kira', ('Kira Geliri')),
+        ('yatirim', ('Yatırım Geliri')),
+        ('diger', ('Diğer')),
+    )
+    income_type = models.CharField(_("Income Type"), max_length=25, default='maas', choices=INCOME_TYPES_CHOICES, blank=True, null=True)
+    other_income = models.CharField(_("Other Income"), max_length=140, blank=True, null=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.partner.name}")
+
+
 class PartnerScore(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_scores")
@@ -149,6 +172,136 @@ class PartnerScore(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_scores")
     score = models.DecimalField(_("Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     description = models.TextField(_("Description"), max_length=5000, blank = True, null = True)
+
+    #risk yönetim programı >> ekran: Risk Yönetimi
+        #3 seviye olacak, düşük/orta/yüksek
+            #müşteri riski
+                #birey
+                    #meslek/çalıştığı kurum >> meslek listesi içeriye eklenecek ve gruplanacak
+                    #yerleşim yeri >> şehir listesi gruplanacak
+                        #hatay,kilis,gaziantep,ş.urfa,mardin,şırnak,hakkari,van,ağrı,ığdır,kars,ardahan >> bu şehirlerde ekstra risk puanı yükselecek, diğer tüm şehirler risksiz
+                    #yaş >> 18-25 yaş arası risk yüksek, 65 yaş üstü yüksek riskli. diğerlerinde risk yok.
+                    #pep grubu >> kendisi, birinci derece yakını, ikinci derece yakını riskli olacak.
+                    #gerçek faydalanıcı belirli ya da belirsiz >> gerçek faydalanıcı belirli ise riski az değilse riski yüksek olacak
+                    #olumsuz haber >> olumsuz haber varsa risk yüksek olacak
+                    #şüpheli işlem bildirimi >> şüpheli işlem bildirimi varsa risk yüksek olacak
+                    #uyruk >> riskli ülkeler listesi oluşturulacak, o ülkelerden olan müşterilerin riski yüksek olacak
+                    #mali profil >> risk merkezinden çekilen mali profil arınet üzerinde hazırlanacak bir ekrana girilecek. bu veri oradan beslenecek.
+                        #gelir türü (tik/select)
+                            #maaş
+                            #ticari kazanç
+                            #kira geliri
+                            #yatırım geliri
+                            #diğer(doldurulabilri olacak)
+                        #iş ve meslek 
+                            #meslek/sektör (seçmeli/select box)
+                            #çalıştığı kurum (seçmeli/select box)
+                            #pozisyon(çalışan,yönetici,ortak) (seçmeli/select box)
+                        #varlıklar 
+                            #taşınmaz (seçmeli/gruplama)
+                            #araçlar (seçmeli/gruplama)
+                            #banka mevduatı (seçmeli/gruplama)
+                            #yatırımlar(altın,hisse senedi vb.) (seçmeli/gruplama)
+                            #diğer (açık uçlu doldurulabilir)
+                        #fon kaynağı 
+                            #satış geliri (tik/select)
+                            #maaş birikimi (tik/select)
+                            #kira geliri (tik/select)
+                            #miras (tik/select)
+                            #şirket kazancı (tik/select)
+                            #yurt dışı transfer (tik/select)
+                            #diğer (açık uçlu doldurulabilir)
+                        #işlem davranışı
+                            #ortalama işlem tutarı (seçmeli/gruplama)
+                            #işlem sıklığı (seçmeli/gruplama)
+                            #gelire göre normal/anormal (seçmeli/gruplama) >> profil işlem uyumundaki seçenekler gelecek
+                            #gelir meslek uyumlu mu? (seçmeli/gruplama)
+                        #müşteri tipi
+                            #bireysel (tik/select)
+                            #tüzel (tik/select)
+                            #yabancı uyruk (tik/select)
+                            #nihai faydalanıcı mı? (tik/select)
+                        #şirket yapısı
+                            #şeffaf (tik/select)
+                            #yabancı ortaklı (tik/select)
+                            #çok ortaklı karmaşık (tik/select)
+                        #şirket türü
+                            #a.ş. (tik/select)
+                            #ltd. şirket (tik/select)
+                            #şahıs şirketi (tik/select)
+                            #kollektif şirket (tik/select)
+                        #pep ve itibar kontrolü
+                            #pep grubu mu? (tik/select)
+                            #olumsuz haber var mı? (tik/select)
+                        #ödeme davranışı
+                            #nakit ödeme (tik/select)
+                            #3.kişi kullanımı (tik/select) >> kendi, 3. kişi ve yakını(aile bağı) olarak seçenek koyulacak
+                            #parçalı ödeme(balon ödeme) (tik/select)
+                        #kritik alan kontrolü
+                            #şüpheli işlem bildirimi var mı? (tik/select)
+                            #yasaklı listesinde yer alıyor mu? (tik/select)
+                        #profil işlem uyumu
+                            #gelir > işlem tutarı & gelir = işlem tutarı >> risksiz (tik/select)
+                            #gelir < işlem tutarı >> riskli (tik/select)
+                        #ödeme performansı
+                            #birey
+                                #ihtar var mı?(arı ihtarı) (tik/select)
+                                #gecikme var mı? (tik/select)
+                                #kkb puanı (seçmeli/gruplama)
+                                #idari,kanuni takip ve varlık yönetim şirketine devir var mı? (tik/select)
+                            #tüzel
+                                #ihtar var mı? (tik/select)
+                                #gecikme var mı? (tik/select)
+                                #kkb puanı (seçmeli/gruplama)
+                                #idari,kanuni takip ve konkordata var mı? (tik/select)
+                                #çek senet riski var mı? (tik/select)
+
+                    #yaptırım listeleri >> yaptırım listelerinde yer alıyorsa riskli, değilse risk yok
+                #tüzel
+                    #kuruluş yılı >> kuruluş yılı 2 yıldan az ise risk yüksek, 10 yıldan fazla ise risk düşük, diğerlerinde risk yok
+                    #kuruluş yeri >> kuruluş yeri şehir olarak gruplanacak, hatay,kilis,gaziantep,ş.urfa,mardin,şırnak,hakkari,van,ağrı,ığdır,kars,ardahan >> bu şehirlerde ekstra risk puanı yükselecek, diğer tüm şehirler risksiz
+                    #gerçek faydalanıcı belirli ya da belirsiz >> gerçek faydalanıcı belirli ise riski az değilse riski yüksek olacak
+                    #olumsuz haber >> olumsuz haber varsa risk yüksek olacak
+                    #şüpheli işlem bildirimi >> şüpheli işlem bildirimi varsa risk yüksek olacak
+                    #yaptırım listeleri >> yaptırım listelerinde yer alıyorsa riskli, değilse risk yok
+                    #faaliyet işlem uyumu >> tam uyumlu,kısmi uyumlu, ciddi uyumsuzluk şeklinde gruplanacak. düşük/orta/yüksek şeklinde.
+                    #sektör riski >> sektötler nace üzerinden gruplandı bu veriler içeriye aktarılacak, sektör riski barındıranların riski yüksek
+                    #ortaklık yapısı >> şeffaf yapı, yabancı ortak, çok ortaklı karmaşık yapı şeklinde gruplanacak. karmaşık en riskli, yabancı ortak orta, şeffaf yapı düşük riskli.
+                    #şirket türü >> anonim şirket,limited şirket düşük, şahıs şirketi orta, kollektif şirket yüksek riskli olacak
+            #ürün hizmet riski
+                #erken kapama ya da tadil riski >> erken kapama ya da tadil riski yüksek olan ürünler belirlenecek, o ürünlerde yapılan işlemler riskli olacak
+                #kiracı değişikliği >> kiracı değişikliği riski arttıracak değişiklik yok ise risk düşük(devreden taraf)
+                #vekaletle işlemler >> vekaletle yapılan işlemler riskli olacak
+                #lüks segment >> 20 milyon tl üstü işlemler yüksek riskli olacak
+                #ticari alımlar >> ticari alımlar riskli olacak
+                #yabancıya satış >> yabancıya satış riskli olacak(çok yüksek)
+                #sat geri kirala >> sat geri kirala işlemi riskli olacak
+            #coğrafi risk
+                #ülke ve şehir riski >> 12 şehir varsa yüksek grup, riskli ülkeler de riskli grup olacak
+            #ödeme ve dağıtım kanalları riski
+                #sanal pos >> sanal pos kullanımı riskli olacak
+                #muhabir banka >> muhabir banka kullanımı riskli olacak
+                #ödeme kuruluşu >> ödeme kuruluşu kullanımı riskli olacak
+                #nakit işlem >> nakit işlem riski yüksek olacak
+                #anonim ödeme >> 3. kişi ödemeleri riskli olacak(en riskli alan)
+                #havale/eft >> havale/eft işlemleri riskli değil(kendisi yapıyorsa)
+                #çek senet >> çek ve senet işlemleri riskli olacak
+            #işlem/limit/işlem hacmi riski
+                #işlem hacmi
+                    #düşük hacim(düşük risk)
+                        #devremülk/paylı
+                        #işlem adedi 3 altı(3 dahil değil)
+                        #işlem miktarı 10 milyon altı(10 dahil değil)
+                    #orta hacim(orta risk)
+                        #konut/devremülk
+                        #işlem adedi 3-5 arası(5 dahil değil)
+                        #işlem limiti 10-15 milyon arası(15 dahil değil)
+                    #yüksek hacim(yüksek risk)
+                        #tam mülkiyet/konut
+                        #işlem adedi 5 ve üzeri
+                        #işlem limiti 15 milyon ve üzeri
+
+    #izleme ve kontrol alanı
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
