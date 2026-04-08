@@ -93,7 +93,7 @@ class Currency(models.Model):
 
     def __str__(self):
         return str(self.code)
-    
+
 class ExchangeRate(models.Model):
     base_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name="base_currency_exchange_rates", null=True, blank=True)
     target_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name="target_currency_exchange_rates", null=True, blank=True)
@@ -179,3 +179,12 @@ class UserActivity(models.Model):
             models.Index(fields=["content_type", "object_id"]),
             models.Index(fields=["action", "created_date"]),
         ]
+
+class Profession(models.Model):
+    name = models.CharField(_("Name"), max_length=140, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
