@@ -80,6 +80,15 @@ class MonthlyWarnedRiskPartnerListSerializer(serializers.Serializer):
             total_contract_payments=Sum(
                 'contract__contract_contract_payments__credit_amount'
             ),
+            warning_notice_count=Count(
+                'contract__contract_warning_notices',
+                distinct=True,
+                filter=(
+                    Q(contract__contract_warning_notices__service_date__isnull=False) &
+                    Q(contract__contract_warning_notices__service_date__gte=now()-timedelta(days=30)) &
+                    Q(contract__contract_warning_notices__service_date__lte=now())
+                )
+            ),
             # total_trade_transactions=Sum(
             #     Case(
             #         When(
@@ -93,7 +102,7 @@ class MonthlyWarnedRiskPartnerListSerializer(serializers.Serializer):
             # count_trade_transaction=Count(
             #     'lease_trade_transactions__id'
             # )
-        )
+        ).filter(warning_notice_count__gt=1)
         # .filter(
         #     # (
         #     #     Q(first_installment_payment_date=F('expected_payment_date')) &
@@ -129,6 +138,12 @@ class MonthlyWarnedRiskPartnerListSerializer(serializers.Serializer):
                 else:
                     status = "SMS"
 
+                monthly_wn_count = lease.contract.contract_warning_notices.filter(
+                    service_date__isnull=False,
+                    service_date__gte=now()-timedelta(days=30),
+                    service_date__lte=now()
+                ).count()
+
                 lease_dict["leases"].append({
                     "id" : lease.uuid,
                     "code" : lease.code,
@@ -148,6 +163,7 @@ class MonthlyWarnedRiskPartnerListSerializer(serializers.Serializer):
                     "is_kdv_diff" : lease.is_kdv_diff,
                     "paid_rate" : lease.paid_rate,
                     "status" : status,
+                    "monthly_wn_count" : monthly_wn_count,
                     "overdues" : [
                         {   
                             'id': lease.code,
