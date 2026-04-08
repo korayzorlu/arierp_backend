@@ -71,3 +71,5 @@ class ThirdPersonDocument(models.Model):
 
     def __str__(self):
         return str(f"{self.label}")
+    
+    

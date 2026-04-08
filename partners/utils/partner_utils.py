@@ -435,6 +435,25 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
     except Exception as e:
         traceback.print_exc()
 
+def set_partner_scores(company, partner=None):
+    try:
+        if partner:
+            partners = Partner.objects.select_related().filter(company_id=int(company), id=partner)
+        else:
+            partners = Partner.objects.select_related().filter(company_id=int(company))
+        
+        partner_scores = PartnerScore.objects.select_related().filter(company_id=int(company))
+        partner_scores_dict = {ps.partner.id: ps for ps in partner_scores if ps.partner}
+
+        update_progress = 0
+        for index,partner in enumerate(partners):
+            ps = partner_scores_dict.get(partner.id)
+            update_progress += 1
+
+        print(f"Toplam {update_progress} bireysel partner güncellendi.")
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
 
 
 def send_warning_email_for_ignored_partners(params):

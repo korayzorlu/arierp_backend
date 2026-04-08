@@ -7,6 +7,7 @@ from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
 
 import uuid
+from decimal import Decimal
 
 from companies.models import Company
 from common.models import Country,City
@@ -140,6 +141,23 @@ class PartnerNote(models.Model):
 
     def __str__(self):
         return str(f"{self.user.get_full_name()} - {self.title}")
-    
+
+class PartnerScore(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_scores")
+
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_scores")
+    score = models.DecimalField(_("Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    description = models.TextField(_("Description"), max_length=5000, blank = True, null = True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.partner.name} - {self.score}")
+
+
+
+
 #log
 auditlog.register(Partner)

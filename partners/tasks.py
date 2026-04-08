@@ -21,7 +21,7 @@ from common.utils.common_utils import normalize
 from users.models import User
 from .models import *
 from leasing.models import Lease
-from .utils.partner_utils import fetch_partners_from_leaseflex,fetch_partnersi_from_leaseflex,fetch_phone_numbers_from_leaseflex,fetch_phone_numbersi_from_leaseflex,fetch_partner_advances_from_leaseflex
+from .utils.partner_utils import *
 from compliance.utils.third_person_utils import check_third_person_in_partners
 
 #tekrar eden düzeltme
@@ -270,4 +270,6 @@ def fetch_phone_numbers(company):
                 obj.email = str(row['Email']) if not pd.isna(row['Email']) else ""
                 obj.save()
 
-
+@shared_task()
+def set_partner_scores_task(company, partner=None):
+    set_partner_scores(company, partner)
