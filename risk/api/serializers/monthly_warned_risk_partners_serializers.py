@@ -57,7 +57,25 @@ class MonthlyWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            to_warned_filters_for_serializers()
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_last_project=True) &
+            Q(is_kdv_diff=False) &
+            Q(is_credit=False) &
+            Q(is_under_review=False) &
+            Q(overdue_days__gt=25) &
+            (
+                Q(overdue_0_30__gt=0) |
+                Q(overdue_31_60__gt=0) |
+                Q(overdue_61_90__gt=0) |
+                Q(overdue_91_120__gt=0) |
+                Q(overdue_121_150__gt=0) |
+                Q(overdue_151_180__gt=0) |
+                Q(overdue_181_gte__gt=0)
+            )
         )
 
         leases = leases.annotate(
