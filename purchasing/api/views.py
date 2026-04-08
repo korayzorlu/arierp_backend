@@ -141,7 +141,7 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             ~Q(lease__contract__partner__types__contains=['special'])
-            #~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
+            ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
         ).annotate(
             total_purchase_document_amount=Sum(Coalesce('lease__lease_purchase_documents__total_amount', Value(0), output_field=DecimalField(max_digits=14, decimal_places=2))),
             diff=ExpressionWrapper(
