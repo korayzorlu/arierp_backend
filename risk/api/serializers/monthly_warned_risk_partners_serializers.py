@@ -58,9 +58,7 @@ class MonthlyWarnedRiskPartnerListSerializer(serializers.Serializer):
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
             to_warned_filters_for_serializers()
-        )
-
-        leases = leases.annotate(
+        ).annotate(
             warning_notice_count=Count(
                 'contract__contract_warning_notices',
                 distinct=True,
