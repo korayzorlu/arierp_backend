@@ -145,8 +145,10 @@ class AnnualWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        contracts_with_multiple_notices = Lease.objects.filter(
-            contract__partner=OuterRef('pk')
+        contracts_with_multiple_notices = Lease.objects.select_related().filter(
+            Q(contract__partner=OuterRef('pk')) &
+            vendor_filter_for_serializers(self.request.query_params) &
+            to_warned_filters_for_serializers()
         ).annotate(
             notice_count=Count(
                 'contract__contract_warning_notices',
