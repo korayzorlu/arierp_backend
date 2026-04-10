@@ -30,6 +30,17 @@ RUN apt-get update && apt-get install -y \
     libsasl2-dev \
     && rm -rf /var/lib/apt/lists/*
 RUN apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libffi-dev
+#oracle
+RUN apt-get update && apt-get install -y libaio1t64 wget unzip && \
+    ln -sf /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1 && \
+    mkdir -p /opt/oracle && \
+    wget -q https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip \
+         -O /tmp/instantclient.zip && \
+    unzip /tmp/instantclient.zip -d /opt/oracle/ && \
+    rm /tmp/instantclient.zip
+
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_23_26:$LD_LIBRARY_PATH
+#oracle-end
 ENV PATH="$PATH:/opt/mssql-tools18/bin"
 COPY requirements.txt /app/
 RUN pip install --upgrade pip

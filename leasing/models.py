@@ -157,6 +157,19 @@ class Lease(models.Model):
     is_delivery = models.BooleanField(default=False)
     is_title_deed_delivered = models.BooleanField(default=False)
 
+    #ifs-crm
+    crm_contract_code = models.CharField(_("CRM Contract Code"), max_length=25, blank=True, null=True)
+    crm_project_id = models.CharField(_("CRM Project ID"), max_length=25, blank=True, null=True)
+    crm_bbsn = models.CharField(_("CRM BBSN"), max_length=25, blank=True, null=True)
+    crm_durum = models.CharField(_("CRM Durum"), max_length=25, blank=True, null=True)
+    crm_satici = models.CharField(_("CRM Satici"), max_length=250, blank=True, null=True)
+    crm_invoice_date = models.DateField(_("CRM Invoice Date"), blank=True, null=True)
+    crm_invoice_no = models.CharField(_("CRM Invoice No"), max_length=50, blank=True, null=True)
+    crm_invoice_amount = models.DecimalField(_("CRM Invoice Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    crm_invoice_kdv_amount = models.DecimalField(_("CRM Invoice KDV Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    crm_invoice_total_amount = models.DecimalField(_("CRM Invoice Total Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    #ifs-crm-end
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

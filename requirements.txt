@@ -71,7 +71,7 @@ sqlparse==0.5.3
 tinycss2==1.5.0
 Twisted==24.11.0
 txaio==23.1.1
-typing_extensions==4.12.2
+typing_extensions==4.15.0
 tzdata==2024.2
 uvicorn==0.34.0
 vine==5.1.0
@@ -104,3 +104,4 @@ docxtpl==0.20.2
 xmltodict==1.0.2
 zeep==4.3.2
 django-auditlog==3.4.1
+oracledb==3.4.2

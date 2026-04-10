@@ -143,7 +143,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     finansman_kurum = serializers.CharField()
     is_tufe = serializers.BooleanField()
     is_musterek = serializers.BooleanField()
-    bbsn = serializers.CharField()
+    bbsn = serializers.SerializerMethodField()
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
     partner_crm_code = serializers.SerializerMethodField()
@@ -156,6 +156,16 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
+    crm_contract_code = serializers.CharField()
+    crm_project_id = serializers.CharField()
+    crm_bbsn = serializers.CharField()
+    crm_durum = serializers.CharField()
+    crm_satici = serializers.CharField()
+    crm_invoice_date = serializers.DateField()
+    crm_invoice_no = serializers.CharField()
+    crm_invoice_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    crm_invoice_kdv_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    crm_invoice_total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -196,6 +206,9 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     
     def get_kof(self, obj):
         return obj.contract.kof if obj.contract else ""
+    
+    def get_bbsn(self, obj):
+        return obj.bbsn if obj.bbsn and obj.bbsn != "None" else ''
     
     def get_item(self, obj):
         return {

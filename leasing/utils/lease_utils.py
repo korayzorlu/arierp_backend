@@ -20,6 +20,8 @@ import random
 import requests
 import xmltodict
 import json
+import oracledb
+import collections
 
 from leasing.models import *
 from leasing.utils.common_utils import get_lease_status_value,status_filter_for_leases,days_in_month
@@ -272,6 +274,88 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         print(e)
         print(traceback.format_exc())
 
+def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
+    try:
+        oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient_23_26")
+
+        conn = oracledb.connect(
+            user="AALKAN",
+            password="ALEV75",
+            dsn="192.168.48.20:1521/PROD"
+        )
+
+        SQL_PATH = os.path.join(settings.BASE_DIR, "leasing","sql","ifs-sozlesmeler.sql")
+        with open(SQL_PATH, "r", encoding="utf-8") as file:
+            SQL_QUERY = file.read()
+
+        cursor = conn.cursor()
+        cursor.execute(SQL_QUERY)
+        cursor.fast_executemany = True
+
+        col_names = [col[0].lower() for col in cursor.description]
+        Row = collections.namedtuple("Row", col_names)
+        cursor.rowfactory = Row
+
+        currencies = Currency.objects.select_related().all()
+        company_obj = Company.objects.select_related().filter(id=int(company)).first()
+        currencies_dict = {c.code: c for c in currencies}
+
+        update_progress = 0
+        while True:
+            records = cursor.fetchmany(BATCH_SIZE)
+            if not records:
+                break
+            update_objs = []
+            # 1. codes
+            contract_codes = [r.ari_sozlesme_no for r in records]
+            contract_codess = [r.ari_sozlesme_no for r in records]
+            # 2. querysets
+            leases = Lease.objects.select_related().filter(contract__code__isnull = False, contract__code__in=contract_codes, is_last_project=True)
+            contracts = Contract.objects.select_related().filter(code__in=contract_codess)
+            # 3. dicts
+            lease_dict = {l.contract.code: l for l in leases}
+            contracts_dict = {c.code: c for c in contracts}
+            for index,data in enumerate(records):
+                if str(data.ari_sozlesme_no):
+                    obj = (lease_dict.get(str(data.ari_sozlesme_no)))
+                else:
+                    obj = None
+
+                if obj:
+                    obj.crm_contract_code = str(data.sozlesme_no) or ""
+                    obj.crm_project_id = str(data.proje_id) or ""
+                    obj.crm_bbsn = str(data.stok_no) or ""
+                    obj.crm_durum = str(data.durum) or ""
+                    obj.crm_satici = str(data.sirket_unvani) or ""
+                    obj.crm_invoice_date = data.fatura_tarihi.date() if data.fatura_tarihi else None
+                    obj.crm_invoice_no = str(data.fatura_no) or ""
+                    obj.crm_invoice_amount = safe_decimal(data.fatura_tutari)
+                    obj.crm_invoice_kdv_amount = safe_decimal(data.fatura_kdv_tutari)
+                    obj.crm_invoice_total_amount = safe_decimal(data.fatura_tutari) + safe_decimal(data.fatura_kdv_tutari)
+
+                    update_objs.append(obj)
+                    update_progress += 1
+            if update_objs:
+                Lease.objects.bulk_update(update_objs, [
+                    "crm_contract_code",
+                    "crm_project_id",
+                    "crm_bbsn",
+                    "crm_durum",
+                    "crm_satici",
+                    "crm_invoice_date",
+                    "crm_invoice_no",
+                    "crm_invoice_amount",
+                    "crm_invoice_kdv_amount",
+                    "crm_invoice_total_amount",
+                ], batch_size=BATCH_SIZE)
+
+        print(f"Toplam {update_progress} kira planı güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
+
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass
 
@@ -490,7 +574,7 @@ def fetch_tufe_exchanged_amounts_utilss(company,BATCH_SIZE=1000):
         print(e)
         print(traceback.format_exc())
 
-def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
+def fetch_leases_from_ifs_api(company,BATCH_SIZE=1000):
     try:
         objs = Lease.objects.select_related().filter(is_last_project=True,bbsn__isnull=False).exclude(bbsn="").only('bbsn')
 
