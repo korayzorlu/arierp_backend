@@ -81,7 +81,7 @@ FROM
 -- WHERE
 --     ch.ContractHeaderCode = '61267'
 -- WHERE
---     lw.BBSN_NO IS NULL
+-- lw.BBSN_NO = 'BBSN.140915'
 --     AND lop.IS_LAST_PROJECT = 1
 --     AND (
 --         RiskIncludingTypeName = 'Aktifleştirildi'
