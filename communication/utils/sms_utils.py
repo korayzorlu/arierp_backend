@@ -67,7 +67,7 @@ def send_sms_with_turatel(params):
     
     try:
         for obj in objs:
-            if obj.tc_vkn_no in ["35263659368","35236660292","35227660584","35221660702"]:
+            if obj.tc_vkn_no in ["35263659368","35236660292","35227660584","35221660702","20416138364"]:
                 continue
 
             leases = leases_for_project({**params, "partner_id": obj.uuid})
