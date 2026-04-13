@@ -374,7 +374,8 @@ def match_lease_bbsn(company,BATCH_SIZE=1000):
         if update_objs:
             Lease.objects.bulk_update(update_objs, [
                 "ari_bbsn",
-            ])
+                ], batch_size=BATCH_SIZE
+            )
 
         print(f"Toplam {update_progress} kira planı güncellendi.")
         print("--------")
