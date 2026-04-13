@@ -36,6 +36,10 @@ def fetch_leases_ifs_api(company):
     fetch_leases_from_ifs_api(company)
 
 @shared_task()
+def match_lease_bbsn_task(company):
+    match_lease_bbsn(company)
+
+@shared_task()
 def fetch_purchase_payments_ifs(company):
     fetch_purchase_payments_from_ifs(company)
 

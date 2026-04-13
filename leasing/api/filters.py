@@ -24,6 +24,8 @@ class LeaseFilter(FilterSet):
     block = CharFilter(field_name='contract__quotation_obj__quick_quotation__block', lookup_expr='icontains')
     unit = CharFilter(field_name='contract__quotation_obj__quick_quotation__unit', lookup_expr='icontains')
     bbsn = CharFilter(field_name='bbsn', lookup_expr='icontains')
+    crm_bbsn = CharFilter(field_name='crm_bbsn', lookup_expr='icontains')
+    ari_bbsn = CharFilter(field_name='ari_bbsn', lookup_expr='icontains')
     vade = CharFilter(field_name='vade', lookup_expr='icontains')
     leasing_rate = CharFilter(field_name='leasing_rate', lookup_expr='icontains')
     vat = CharFilter(field_name='vat', lookup_expr='icontains')

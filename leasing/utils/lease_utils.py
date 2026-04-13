@@ -355,6 +355,27 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
         print(e)
         print(traceback.format_exc())
 
+def match_lease_bbsn(company,BATCH_SIZE=1000):
+    try:
+        objs = Lease.objects.select_related().filter(company__id=int(company)).only("id", "bbsn","crm_bbsn")
+
+        update_progress = 0
+        update_objs = []
+        for obj in objs:
+            if obj.bbsn == "BBSN.140915":
+                obj.ari_bbsn = obj.crm_bbsn
+            elif (obj.bbsn is None or obj.bbsn == "") and (obj.crm_bbsn is not None and obj.crm_bbsn != ""):
+                obj.ari_bbsn = obj.crm_bbsn
+            else:
+                obj.ari_bbsn = obj.bbsn
+            obj.save()
+            update_progress += 1
+        
+        print(f"Toplam {update_progress} kira planı güncellendi.")
+        print("--------")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
 
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass

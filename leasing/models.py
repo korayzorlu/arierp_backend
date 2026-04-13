@@ -170,6 +170,10 @@ class Lease(models.Model):
     crm_invoice_total_amount = models.DecimalField(_("CRM Invoice Total Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     #ifs-crm-end
 
+    #arinet
+    ari_bbsn = models.CharField(_("Arı BBSN"), max_length=25, blank=True, null=True)
+    #arinet-end
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

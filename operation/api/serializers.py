@@ -281,6 +281,8 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     is_tufe = serializers.BooleanField()
     is_musterek = serializers.BooleanField()
     bbsn = serializers.CharField()
+    crm_bbsn = serializers.CharField()
+    ari_bbsn = serializers.CharField()
     partner = serializers.SerializerMethodField()
     partner_tc = serializers.SerializerMethodField()
     partner_crm_code = serializers.SerializerMethodField()
