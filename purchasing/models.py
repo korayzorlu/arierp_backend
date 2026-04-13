@@ -58,4 +58,25 @@ class PurchaseDocument(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.lease.code)
+        return str(self.document_number)
+    
+class PurchaseDocumentItem(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="purchase_document_items")
+
+    document_line_id = models.CharField(_("Document Line ID"), max_length=25, null=True, blank=True)
+
+    purchase_document = models.ForeignKey(PurchaseDocument, on_delete=models.CASCADE, related_name="purchase_document_purchase_document_items", null=True, blank=True)
+    stock_name = models.CharField(_("Stock Name"), max_length=250, null=True, blank=True)
+    description = models.CharField(_("Description"), max_length=500, null=True, blank=True)
+    unit_amount = models.DecimalField(_("Unit Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    amount = models.DecimalField(_("Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    vat_amount = models.DecimalField(_("Vat Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    total_amount = models.DecimalField(_("Total Amount"), default = 0.00, max_digits=14, decimal_places=2)
+    quantity = models.PositiveIntegerField(_("Quantity"), default=0)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.purchase_document.code} - {self.document_line_id}")

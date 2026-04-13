@@ -18,7 +18,7 @@ from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from partners.models import Partner
-from .utils.purchase_document_utils import fetch_purchase_documents_from_leaseflex
+from .utils.purchase_document_utils import fetch_purchase_documents_from_leaseflex,fetch_purchase_document_items_from_leaseflex
 
 @shared_task()
 def fetch_purchase_payments(company):
@@ -92,4 +92,10 @@ def fetch_purchase_payments(company):
 @shared_task()
 def fetch_purchase_documents(company):
     fetch_purchase_documents_from_leaseflex(company)
+
+
+@shared_task()
+def fetch_purchase_document_items(company):
+    fetch_purchase_document_items_from_leaseflex(company)
+
 

@@ -25,7 +25,7 @@ from quotations.utils.quick_quotation_utils import fetch_quick_quotations_from_l
 from contracts.utils.contract_utils import fetch_contracts_from_leaseflex,fetch_contract_payments_from_leaseflex,fetch_warning_notices_from_leaseflex
 from leasing.utils.lease_utils import fetch_leases_from_leaseflex
 from leasing.utils.installment_utils import fetch_installments_from_leaseflex
-from purchasing.utils.purchase_document_utils import fetch_purchase_documents_from_leaseflex
+from purchasing.utils.purchase_document_utils import fetch_purchase_documents_from_leaseflex,fetch_purchase_document_items_from_leaseflex
 from accounting.utils.trial_balance_utils import fetch_trial_balances_from_leaseflex
 from accounting.utils.invoice_utils import fetch_invoices_from_leaseflex
 from trade.utils.trade_transaction_utils import fetch_trade_transactions_from_leaseflex
@@ -61,6 +61,7 @@ def fetch_data_from_leaseflex(company):
     fetch_warning_notices_from_leaseflex(company)
     fetch_leases_from_leaseflex(company)
     fetch_purchase_documents_from_leaseflex(company)
+    fetch_purchase_document_items_from_leaseflex(company)
     fetch_trial_balances_from_leaseflex(company)
 
 @shared_task()

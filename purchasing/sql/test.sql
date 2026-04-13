@@ -1,3 +1,3 @@
 SELECT TOP 1000 *
-FROM LeasePurchaseDocumentLine
-WHERE OperationProjectId = '50957'
+FROM LeasePurchaseDocumentLineList
+WHERE DocumentHeaderId = '44094'
