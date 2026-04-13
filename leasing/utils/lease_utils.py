@@ -357,7 +357,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
 
 def match_lease_bbsn(company,BATCH_SIZE=1000):
     try:
-        objs = Lease.objects.select_related().filter(company__id=int(company)).only("id", "bbsn","crm_bbsn")
+        objs = Lease.objects.select_related().filter(company__id=int(company)).only("id", "bbsn","crm_bbsn","ari_bbsn")
 
         update_progress = 0
         update_objs = []
@@ -368,9 +368,14 @@ def match_lease_bbsn(company,BATCH_SIZE=1000):
                 obj.ari_bbsn = obj.crm_bbsn
             else:
                 obj.ari_bbsn = obj.bbsn
-            obj.save()
+            update_objs.append(obj)
             update_progress += 1
         
+        if update_objs:
+            Lease.objects.bulk_update(update_objs, [
+                "ari_bbsn",
+            ])
+
         print(f"Toplam {update_progress} kira planı güncellendi.")
         print("--------")
     except Exception as e:
