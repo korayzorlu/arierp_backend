@@ -894,7 +894,8 @@ def set_delivery(company):
     leases = Lease.objects.select_related().filter(is_last_project_arinet=True)
     leases.update(is_delivery = False)
 
-    leases_dict = {(l.contract.partner.name, l.item.stock_name, l.block, l.unit): l for l in leases if l.contract and l.contract.partner and l.contract.partner.name and l.item and l.block and l.unit}
+    # leases_dict = {(l.contract.partner.name, l.item.stock_name, l.block, l.unit): l for l in leases if l.contract and l.contract.partner and l.contract.partner.name and l.item and l.block and l.unit}
+    leases_dict = {l.contract.code: l for l in leases if l.contract and l.contract.code}
 
     previous_progress = 0
     old_obj_count = 0
@@ -905,21 +906,30 @@ def set_delivery(company):
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
 
-        raw_date = str(row['Anahtar Teslim Tarihi (Satış) (Satış)'])
-        try:
-            activation_date_key = datetime.strptime(raw_date, "%Y-%m-%d %H:%M:%S").date()
-        except (ValueError, TypeError):
-            activation_date_key = None
-        obj = (leases_dict.get((str(row['Müşteri1 (Satış) (Satış)']).replace(".0","").translate(str.maketrans("iı", "İI")).upper(), str(row['project_name']).replace(".0",""), str(row['Blok (Satış) (Satış)']).replace(".0",""), str(row['Daire (BB No)']).replace(".0",""))))
-        #print(f"{str(row['Müşteri1 (Satış) (Satış)']).replace('.0','').translate(str.maketrans('iı', 'İI')).upper()} - {str(row['project_name']).replace('.0','')} - {str(row['Blok (Satış) (Satış)']).replace('.0','')} - {str(row['Daire (BB No)']).replace('.0','')} - {activation_date_key}")
-        if obj:
-            old_obj_count += 1
-            obj.is_delivery = True
-            obj.save()
-            # lease = obj.contract_leases.filter(is_last_project=True).first()
-            # if lease:
-            #     old_obj_count += 1
-            #     lease.is_title_deed_delivered = True
-            #     lease.save()
+        #eski yöntem
+        # raw_date = str(row['Anahtar Teslim Tarihi (Satış) (Satış)'])
+        # try:
+        #     activation_date_key = datetime.strptime(raw_date, "%Y-%m-%d %H:%M:%S").date()
+        # except (ValueError, TypeError):
+        #     activation_date_key = None
+        # obj = (leases_dict.get((str(row['Müşteri1 (Satış) (Satış)']).replace(".0","").translate(str.maketrans("iı", "İI")).upper(), str(row['project_name']).replace(".0",""), str(row['Blok (Satış) (Satış)']).replace(".0",""), str(row['Daire (BB No)']).replace(".0",""))))
+        # #print(f"{str(row['Müşteri1 (Satış) (Satış)']).replace('.0','').translate(str.maketrans('iı', 'İI')).upper()} - {str(row['project_name']).replace('.0','')} - {str(row['Blok (Satış) (Satış)']).replace('.0','')} - {str(row['Daire (BB No)']).replace('.0','')} - {activation_date_key}")
+        # if obj:
+        #     old_obj_count += 1
+        #     obj.is_delivery = True
+        #     obj.save()
+        #     # lease = obj.contract_leases.filter(is_last_project=True).first()
+        #     # if lease:
+        #     #     old_obj_count += 1
+        #     #     lease.is_title_deed_delivered = True
+        #     #     lease.save()
+        #eski yöntem end
+
+        if pd.notna(row['Sözleşme']) and str(row['Sözleşme']).strip() != '':
+            obj = (leases_dict.get(str(row['Sözleşme']).replace(".0","")))
+            if obj:
+                old_obj_count += 1
+                obj.is_delivery = True
+                obj.save()
 
     print(f"{old_obj_count} objects updated for leases.")
