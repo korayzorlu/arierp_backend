@@ -169,8 +169,18 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
     serializer_class = PurchaseDocumentListSerializer
     filterset_class = PurchaseDocumentFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = '__all__'
-    pagination_class = DatatablesPagination
+    ordering_fields = ['code','document_number','document_date','amount','vat_amount','total_amount','exchange_rate','crm_amount']
+    ordering = ['-document_date']
+
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
     required_subscription = "free"
     permission_classes = [SubscriptionPermission]
     
@@ -185,7 +195,9 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
 
         queryset = PurchaseDocument.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)
-        ).order_by("-document_date")
+        ).annotate(
+            crm_amount=Coalesce(F('lease__crm_invoice_total_amount'), Value(0), output_field=DecimalField(max_digits=14, decimal_places=2))
+        )
 
         query = self.request.query_params.get('search[value]', None)
         if query:

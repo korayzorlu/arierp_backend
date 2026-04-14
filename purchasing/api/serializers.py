@@ -137,6 +137,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     exchange_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     document_status = serializers.CharField()
     purchase_document_items = serializers.SerializerMethodField()
+    crm_amount = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -184,6 +185,9 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
                     "quantity" : purchase_document_item.quantity,
                 })
         return purchase_document_item_dict
+    
+    def get_crm_amount(self, obj):
+        return obj.lease.crm_invoice_total_amount if obj.lease else Decimal('0.00')
     
     
 class PurchaseDocumentItemListSerializer(serializers.Serializer):
