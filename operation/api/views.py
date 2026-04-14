@@ -333,6 +333,7 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+
     
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -354,7 +355,24 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
             context={**self.get_serializer_context(), 'old_leases_map': old_leases_map}
         )
         if page is not None:
-            return self.get_paginated_response(serializer.data)
+            #return self.get_paginated_response(serializer.data)
+            response = self.get_paginated_response(serializer.data)
+            warnings = []
+            null_ari_bbsn_count = queryset.filter(
+                (
+                    Q(ari_bbsn__isnull=True) |
+                    Q(ari_bbsn__exact='')
+                ) |
+                ~Q(ari_bbsn=F('crm_bbsn'))
+            ).count()
+            warnings.append({
+                'field': 'ari_bbsn',
+                'filter': 'ari_bbsn_warning',
+                'count': null_ari_bbsn_count,
+                'message': f"BBSN değeri olmayan veya CRM BBSN değerine eşit olmayan toplam {null_ari_bbsn_count} adet kayıt bulunmaktadır."
+            })
+            response.data['warnings'] = warnings
+            return response
         return Response(serializer.data)
     
 class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):

@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import Q,Sum
+from django.db.models import Q,Sum,F
 from django.db.models.functions import Lower,Upper
 
 from django_filters.rest_framework import FilterSet
@@ -61,6 +61,7 @@ class PartnerAdvanceActivityLeaseFilter(FilterSet):
 class TitleDeedInvoiceControlFilter(LeaseFilter):
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
+    ari_bbsn_warning = CharFilter(method = 'filter_ari_bbsn_warning')
 
     class Meta:
         model = Lease
@@ -92,6 +93,17 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
         else:
             return queryset
         
+    def filter_ari_bbsn_warning(self, queryset, ari_bbsn_warning, value):
+        if value == 'true':
+            return queryset.filter(
+                (
+                    Q(ari_bbsn__isnull=True) |
+                    Q(ari_bbsn__exact='')
+                ) |
+                ~Q(ari_bbsn=F('crm_bbsn'))
+            )
+        else:
+            return queryset
 
 
 class UntitleDeedLeaseFilter(LeaseFilter):

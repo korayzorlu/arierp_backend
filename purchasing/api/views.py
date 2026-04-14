@@ -211,6 +211,8 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
     
+    
+    
 class PurchaseDocumentItemList(ModelViewSet, QueryListAPIView):
     serializer_class = PurchaseDocumentItemListSerializer
     filterset_class = PurchaseDocumentItemFilter
