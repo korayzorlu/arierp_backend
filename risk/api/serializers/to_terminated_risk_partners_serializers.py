@@ -69,6 +69,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
+            warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             comprehensive_warning_notice_count=Count('contract__contract_comprehensive_warning_notices', distinct=True),
             # overdue_check=Case(
             #     When(
@@ -90,7 +91,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             #     default=Value(False),
             #     output_field=BooleanField()
             # )
-        ).filter(comprehensive_warning_notice_count__gt=0).order_by('-overdue_days')
+        ).filter(warning_notice_count__gt=0,comprehensive_warning_notice_count__gt=0).order_by('-overdue_days')
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')
