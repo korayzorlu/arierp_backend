@@ -185,7 +185,7 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
 
         queryset = PurchaseDocument.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)
-        ).order_by("lease__contract__code")
+        ).order_by("-document_date")
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -198,3 +198,38 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+    
+class PurchaseDocumentItemList(ModelViewSet, QueryListAPIView):
+    serializer_class = PurchaseDocumentItemListSerializer
+    filterset_class = PurchaseDocumentItemFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = PurchaseDocumentItem.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
+        ).order_by("-id")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = []
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    

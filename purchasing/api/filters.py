@@ -85,3 +85,14 @@ class PurchaseDocumentFilter(FilterSet):
     class Meta:
         model = PurchaseDocument
         fields = ['uuid']
+
+class PurchaseDocumentItemFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    document_line_id = CharFilter(field_name='document_line_id', lookup_expr='icontains')
+    purchase_document = CharFilter(field_name='purchase_document__code', lookup_expr='icontains')
+    stock_name = CharFilter(field_name='stock_name', lookup_expr='icontains')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
+
+    class Meta:
+        model = PurchaseDocumentItem
+        fields = ['uuid']

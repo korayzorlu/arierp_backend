@@ -171,6 +171,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+            warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
             comprehensive_warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
             # overdue_check=Case(
             #     When(
@@ -192,7 +193,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             #     default=Value(False),
             #     output_field=BooleanField()
             # )
-        ).filter(comprehensive_warning_notice_count__gt=0).exclude(types__contains=["special"])
+        ).filter(warning_notice_count__gt=0, comprehensive_warning_notice_count__gt=0).exclude(types__contains=["special"])
 
         #filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 

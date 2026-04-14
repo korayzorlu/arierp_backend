@@ -136,6 +136,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     currency = serializers.SerializerMethodField()
     exchange_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     document_status = serializers.CharField()
+    purchase_document_items = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -159,5 +160,47 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
     
+    def get_purchase_document_items(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+        
+        purchase_document_items = PurchaseDocumentItem.objects.select_related().prefetch_related().filter(
+            Q(purchase_document = obj)
+        ).order_by("id")
+
+        purchase_document_item_dict = {"purchase_document_items": []}
+        if purchase_document_items:
+            for purchase_document_item in purchase_document_items:
+                purchase_document_item_dict["purchase_document_items"].append({
+                    "id" : purchase_document_item.uuid,
+                    "document_line_id" : purchase_document_item.document_line_id,
+                    "purchase_document" : obj.document_number,
+                    "stock_name" : purchase_document_item.stock_name,
+                    "description" : purchase_document_item.description,
+                    "unit_amount" : purchase_document_item.unit_amount,
+                    "amount" : purchase_document_item.amount,
+                    "vat_amount" : purchase_document_item.vat_amount,
+                    "total_amount" : purchase_document_item.total_amount,
+                    "quantity" : purchase_document_item.quantity,
+                })
+        return purchase_document_item_dict
     
     
+class PurchaseDocumentItemListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    document_line_id = serializers.CharField()
+    purchase_document = serializers.SerializerMethodField()
+    stock_name = serializers.CharField()
+    description = serializers.CharField()
+    unit_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    vat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    quantity = serializers.IntegerField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_purchase_document(self, obj):
+        return obj.purchase_document.code if obj.purchase_document else ""
