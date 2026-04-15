@@ -310,7 +310,10 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
             contract_codes = [r.ari_sozlesme_no for r in records]
             contract_codess = [r.ari_sozlesme_no for r in records]
             # 2. querysets
-            leases = Lease.objects.select_related().filter(contract__code__isnull = False, contract__code__in=contract_codes, is_last_project=True)
+            query = Q()
+            for code in contract_codes:
+                query |= Q(contract__code__regex=rf"^{re.escape(code)}(/|$)")
+            leases = Lease.objects.select_related().filter(contract__code__isnull = False, is_last_project=True).filter(query)
             contracts = Contract.objects.select_related().filter(code__in=contract_codess)
             # 3. dicts
             lease_dict = {l.contract.code: l for l in leases}
