@@ -154,7 +154,7 @@ def export_purchase_payments(self):
             data["Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı"].append(obj.vendor_payment_with_report_date)
             data["Sonraki Ödeme"].append(obj.next_payment)
             data["Satın Alma"].append(obj.purchasing)
-            data["BBSN"].append(obj.lease.bbsn)
+            data["BBSN"].append(obj.lease.ari_bbsn)
             data["Satıcı Fatura Tutarı"].append(pds['total_total_amount'] if pds['total_total_amount'] and pds['total_total_amount'] > 0 else "")
             data["Fatura PB"].append(pd_currency)
             data["IFS Fatura Tutarı"].append(obj.lease.crm_invoice_total_amount if obj.lease.crm_invoice_total_amount else "")

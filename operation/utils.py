@@ -147,6 +147,7 @@ def export_title_deed_invoice_controls(self):
         "Bağımsız Bölüm": [],
         "Alt Statü": [],
         "Statü": [],
+        "Teslim Durumu" : [],
         "Tapu Durumu": [],
         "Fatura Durumu": [],
         "Satıcı Fatura Durumu": [],
@@ -197,6 +198,7 @@ def export_title_deed_invoice_controls(self):
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.get_lease_status_display())
+        data["Teslim Durumu"].append("Teslim Edildi" if obj.is_delivery else "Teslim Edilmedi")
         data["Tapu Durumu"].append("Verildi" if obj.is_title_deed_delivered else "Verilmedi")
         data["Fatura Durumu"].append("Kesildi" if invoices_exist else "Fatura Yok")
         data["Satıcı Fatura Durumu"].append("Kesildi" if purchase_documents_exist else "Fatura Yok")
