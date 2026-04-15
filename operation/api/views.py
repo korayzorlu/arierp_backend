@@ -308,6 +308,8 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
         active_company_uuid = self.request.query_params.get('ac')
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         ordering = self.request.query_params.get('ordering')
+
+        ari_bbsn_warning = self.request.query_params.get('ari_bbsn_warning')
         
         custom_related_fields = [
             "company", "contract", "currency", "status", "item",
@@ -321,6 +323,19 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
             ~Q(contract__partner__types__contains=['special']) &
             Q(is_last_project_arinet=True)
         )
+
+        if ari_bbsn_warning == 'true':
+            queryset = queryset.filter(
+                (
+                    Q(ari_bbsn__isnull=True) |
+                    Q(ari_bbsn__exact='')
+                ) |
+                (
+                    ~Q(ari_bbsn=F('crm_bbsn')) &
+                    Q(crm_bbsn__isnull=False) &
+                    Q(crm_bbsn__exact='')
+                )
+            )
 
         query = self.request.query_params.get('search[value]', None)
         if query:
