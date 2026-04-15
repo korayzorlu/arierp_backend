@@ -141,6 +141,7 @@ def export_title_deed_invoice_controls(self):
         "TC/VKN No": [],
         "Crm Kodu": [],
         "Satıcı": [],
+        "CRM Satıcı": [],
         "Proje": [],
         "Blok": [],
         "Bağımsız Bölüm": [],
@@ -149,6 +150,10 @@ def export_title_deed_invoice_controls(self):
         "Tapu Durumu": [],
         "Fatura Durumu": [],
         "Satıcı Fatura Durumu": [],
+        "Satıcı Fatura Tutarı": [],
+        "Satıcı Fatura PB": [],
+        "CRM Fatura Tutarı": [],
+        "CRM Fatura PB": []
     }
 
     previous_progress = 0
@@ -172,6 +177,13 @@ def export_title_deed_invoice_controls(self):
         invoices_exist = any(lease.lease_invoices.exists() for lease in old_lease_serializerss)
         purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_lease_serializerss)
 
+        pd_currency = ""
+        if purchase_documents_exist:
+            for lease in old_lease_serializerss:
+                purchase_documents = lease.lease_purchase_documents.all()
+                if purchase_documents.exists():
+                    pd_currency = purchase_documents.first().currency.code if purchase_documents.first().currency else ""
+
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
         data["Versiyon Geçmişi"].append(str(old_leases_list).replace("[","").replace("]","").replace("'",""))
@@ -179,6 +191,7 @@ def export_title_deed_invoice_controls(self):
         data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
         data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
         data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
+        data["CRM Satıcı"].append(obj.crm_satici if obj.crm_satici else "")
         data["Proje"].append(obj.contract.project if obj.contract else "")
         data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
@@ -187,6 +200,11 @@ def export_title_deed_invoice_controls(self):
         data["Tapu Durumu"].append("Verildi" if obj.is_title_deed_delivered else "Verilmedi")
         data["Fatura Durumu"].append("Kesildi" if invoices_exist else "Fatura Yok")
         data["Satıcı Fatura Durumu"].append("Kesildi" if purchase_documents_exist else "Fatura Yok")
+        data["Satıcı Fatura Tutarı"].append(obj.purchase_document_amount if obj.contract else 0)
+        data["Satıcı Fatura PB"].append(pd_currency)
+        data["CRM Fatura Tutarı"].append(obj.crm_invoice_total_amount if obj.contract else 0)
+        data["CRM Fatura PB"].append("TRY")
+
 
 
     df = pd.DataFrame(data)
