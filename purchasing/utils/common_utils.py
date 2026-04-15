@@ -87,7 +87,7 @@ def export_purchase_payments(self):
             
             purchase_documents = obj.lease.lease_purchase_documents.all().aggregate(total_total_amount=Sum('total_amount'))
 
-            old_leases = old_leases_dict.get(obj.main_lease_id, [])
+            old_leases = old_leases_dict.get(obj.lease.main_lease_id, [])
 
             old_leases_list = []
             for old_lease in old_leases:
