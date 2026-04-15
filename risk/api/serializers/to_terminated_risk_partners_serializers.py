@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,DateField,F
+from django.utils.timezone import now
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
@@ -67,17 +68,25 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_under_review=False) &
             Q(contract__contract_warning_notices__service_date__isnull=False) &
             (
-                Q(
-                    contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'],
-                    contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()
-                ) |
-                Q(contract__contract_comprehensive_warning_notices__official_cancellation_date__lte=datetime.today())
+                Q(contract__contract_warning_notices__official_cancellation_date__lte=now().date()) |
+                Q(contract__contract_comprehensive_warning_notices__official_cancellation_date__lte=now().date())
             ) &
             Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
             # warning_notice_count=Count('contract__contract_warning_notices', distinct=True),
             comprehensive_warning_notice_count=Count('contract__contract_comprehensive_warning_notices', distinct=True),
+            official_cancellation_date=Max(
+                Case(
+                    When(
+                        Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
+                        Q(contract__contract_warning_notices__official_cancellation_date__lte=now().date()),
+                        then=F('contract__contract_warning_notices__official_cancellation_date')
+                    ),
+                    default=None,
+                    output_field=DateField()
+                )
+            ),
             # overdue_check=Case(
             #     When(
             #         contract__partner__customer_type='individual',
@@ -98,7 +107,7 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             #     default=Value(False),
             #     output_field=BooleanField()
             # )
-        ).filter(comprehensive_warning_notice_count__gt=0).order_by('-overdue_days')
+        ).filter(comprehensive_warning_notice_count__gt=0,official_cancellation_date__lte=now().date()).order_by('-overdue_days')
 
         latest_lease = leases.filter(
             contract__code=OuterRef('contract__code')

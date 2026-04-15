@@ -299,6 +299,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     invoices = serializers.SerializerMethodField()
     purchase_documents = serializers.SerializerMethodField()
     purchase_document_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    crm_invoice_total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     purchase_documents_currency = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
     paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
