@@ -307,8 +307,8 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                 break
             update_objs = []
             # 1. codes
-            contract_codes = [r.ari_sozlesme_no for r in records]
-            contract_codess = [r.ari_sozlesme_no for r in records]
+            contract_codes = [r.ari_sozlesme_no for r in records if r.ari_sozlesme_no is not None]
+            contract_codess = [r.ari_sozlesme_no for r in records if r.ari_sozlesme_no is not None]
             # 2. querysets
             query = Q()
             for code in contract_codes:
