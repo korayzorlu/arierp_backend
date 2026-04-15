@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,F,DateField,Sum
 from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -163,10 +163,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__is_under_review=False) &
             Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
             (
-                Q(
-                    partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli'],
-                    partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()
-                ) |
+                Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) |
                 Q(partner_contracts__contract_comprehensive_warning_notices__official_cancellation_date__lte=now().date())
             ) &
             Q(partner_contracts__contract_leases__overdue_days__gt=25) &
@@ -179,6 +176,17 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             # warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
             comprehensive_warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
+            official_cancellation_date=Max(
+                Case(
+                    When(
+                        Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
+                        Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()),
+                        then=F('partner_contracts__contract_warning_notices__official_cancellation_date')
+                    ),
+                    default=None,
+                    output_field=DateField()
+                )
+            ),
             # overdue_check=Case(
             #     When(
             #         customer_type='individual',
@@ -199,7 +207,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             #     default=Value(False),
             #     output_field=BooleanField()
             # )
-        ).filter(comprehensive_warning_notice_count__gt=0).exclude(types__contains=["special"])
+        ).filter(comprehensive_warning_notice_count__gt=0,official_cancellation_date__lte=now().date()).exclude(types__contains=["special"])
 
         #filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 
