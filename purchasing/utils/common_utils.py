@@ -31,7 +31,7 @@ def export_purchase_payments(self):
         "Müşteri": [],
         "PB": [],
         "Satıcı": [],
-        "CRM satıcı": [],
+        "CRM Satıcı": [],
         "Proje": [],
         "Akticasyon Tarihi": [],
         "Sözleşme Tarihi": [],

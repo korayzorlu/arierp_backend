@@ -272,6 +272,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
     item = serializers.SerializerMethodField()
+    crm_satici = serializers.CharField()
     status = serializers.SerializerMethodField()
     leasing_type = serializers.CharField()
     application_no = serializers.CharField()
