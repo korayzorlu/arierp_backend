@@ -373,6 +373,7 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
             #return self.get_paginated_response(serializer.data)
             response = self.get_paginated_response(serializer.data)
             warnings = []
+            info = []
             null_ari_bbsn_count = queryset.filter(
                 (
                     Q(ari_bbsn__isnull=True) |
@@ -390,7 +391,14 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
                 'count': null_ari_bbsn_count,
                 'message': f"BBSN değeri olmayan veya CRM BBSN değerine eşit olmayan toplam {null_ari_bbsn_count} adet kayıt bulunmaktadır."
             })
+            info.append({
+                'field': 'agreement',
+                'filter': 'agreement_info',
+                'count': 1,
+                'message': f"Mutabakat (TRY) = Satıcı fatura tutarı (TRY) - CRM Fatura Tutarı (TRY)"
+            })
             response.data['warnings'] = warnings
+            response.data['info'] = info
             return response
         return Response(serializer.data)
     
