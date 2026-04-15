@@ -163,7 +163,10 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__is_under_review=False) &
             Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
             (
-                Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) |
+                Q(
+                    partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli'],
+                    partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()
+                ) |
                 Q(partner_contracts__contract_comprehensive_warning_notices__official_cancellation_date__lte=now().date())
             ) &
             Q(partner_contracts__contract_leases__overdue_days__gt=25) &

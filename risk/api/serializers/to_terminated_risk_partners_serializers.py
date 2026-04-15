@@ -67,7 +67,10 @@ class ToTerminatedRiskPartnerListSerializer(serializers.Serializer):
             Q(is_under_review=False) &
             Q(contract__contract_warning_notices__service_date__isnull=False) &
             (
-                Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) |
+                Q(
+                    contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'],
+                    contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()
+                ) |
                 Q(contract__contract_comprehensive_warning_notices__official_cancellation_date__lte=datetime.today())
             ) &
             Q(overdue_days__gt=25) &
