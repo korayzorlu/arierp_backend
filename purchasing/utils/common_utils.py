@@ -85,7 +85,7 @@ def export_purchase_payments(self):
             else:
                 talimat = obj.before_total_payment - obj.managing_expense - obj.total_vendor_payment
             
-            purchase_documents = obj.lease.lease_purchase_documents.all().aggregate(total_total_amount=Sum('total_amount'))
+            pds = obj.lease.lease_purchase_documents.all().aggregate(total_total_amount=Sum('total_amount'))
 
             old_leases = old_leases_dict.get(obj.lease.main_lease_id, [])
 
@@ -155,7 +155,7 @@ def export_purchase_payments(self):
             data["Sonraki Ödeme"].append(obj.next_payment)
             data["Satın Alma"].append(obj.purchasing)
             data["BBSN"].append(obj.lease.bbsn)
-            data["Satıcı Fatura Tutarı"].append(purchase_documents['total_total_amount'] if purchase_documents['total_total_amount'] and purchase_documents['total_total_amount'] > 0 else "")
+            data["Satıcı Fatura Tutarı"].append(pds['total_total_amount'] if pds['total_total_amount'] and pds['total_total_amount'] > 0 else "")
             data["Fatura PB"].append(pd_currency)
             data["IFS Fatura Tutarı"].append(obj.lease.crm_invoice_total_amount if obj.lease.crm_invoice_total_amount else "")
             data["IFS Fatura PB"].append("TRY" if obj.lease.crm_invoice_total_amount else "")
