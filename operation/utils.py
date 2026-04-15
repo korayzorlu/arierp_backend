@@ -215,7 +215,8 @@ def export_title_deed_invoice_controls(self):
         df["Statü Değişme Tarihi"] = pd.to_datetime(df["Statü Değişme Tarihi"]).dt.tz_localize(None)
 
     numeric_columns = [
-
+        "Satıcı Fatura Tutarı",
+        "CRM Fatura Tutarı"
     ]
 
     for col in numeric_columns:
