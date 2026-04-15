@@ -21,5 +21,6 @@ SELECT a.sozlesme_no,
        a.fatura_tutari,
        a.fatura_kdv_tutari
 FROM ifsapp.sincrm_sozlesme a
---WHERE a.objstate = 'Sozlesmeli'
+WHERE a.stok_no ='DTSN.A01336'
+--a.objstate = 'Sozlesmeli'
      --AND a.araci_kurum_tc_vergi_no = '30964162810'
