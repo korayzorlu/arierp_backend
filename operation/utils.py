@@ -200,10 +200,10 @@ def export_title_deed_invoice_controls(self):
         data["Tapu Durumu"].append("Verildi" if obj.is_title_deed_delivered else "Verilmedi")
         data["Fatura Durumu"].append("Kesildi" if invoices_exist else "Fatura Yok")
         data["Satıcı Fatura Durumu"].append("Kesildi" if purchase_documents_exist else "Fatura Yok")
-        data["Satıcı Fatura Tutarı"].append(obj.purchase_document_amount if obj.contract else 0)
+        data["Satıcı Fatura Tutarı"].append(obj.purchase_document_amount if obj.purchase_document_amount > 0 else "")
         data["Satıcı Fatura PB"].append(pd_currency)
-        data["CRM Fatura Tutarı"].append(obj.crm_invoice_total_amount if obj.contract else 0)
-        data["CRM Fatura PB"].append("TRY")
+        data["CRM Fatura Tutarı"].append(obj.crm_invoice_total_amount if obj.crm_invoice_total_amount > 0 else "")
+        data["CRM Fatura PB"].append("TRY" if obj.crm_invoice_total_amount > 0 else "")
 
 
 
