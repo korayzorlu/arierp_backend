@@ -25,14 +25,13 @@ def export_purchase_payments(self):
     self.process.items_count = len(objs)
     self.process.save()
 
-    
-    
     data = {
         "Sözleşme No": [],
         "Kira Planı": [],
         "Müşteri": [],
         "PB": [],
         "Satıcı": [],
+        "CRM satıcı": [],
         "Proje": [],
         "Akticasyon Tarihi": [],
         "Sözleşme Tarihi": [],
@@ -54,7 +53,10 @@ def export_purchase_payments(self):
         "Sonraki Ödeme": [],
         "Satın Alma": [],
         "BBSN": [],
-        "Toplam Fatura Tutarı": [],
+        "Satıcı Fatura Tutarı": [],
+        "Fatura PB": [],
+        "IFS Fatura Tutarı": [],
+        "IFS Fatura PB": [],
         "Tüfeli mi?": []
     }
 
@@ -109,6 +111,7 @@ def export_purchase_payments(self):
             data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease.contract.partner else "")
             data["PB"].append(obj.lease.currency.code or "")
             data["Satıcı"].append(obj.lease.contract.vendor.name if obj.lease.contract.vendor else "")
+            data["CRM Satıcı"].append(obj.lease.crm_satici if obj.lease.crm_satici else "")
             data["Proje"].append(obj.lease.contract.project or "")
             data["Akticasyon Tarihi"].append(obj.lease.activation_date or "")
             data["Sözleşme Tarihi"].append("")
@@ -130,7 +133,10 @@ def export_purchase_payments(self):
             data["Sonraki Ödeme"].append(obj.next_payment)
             data["Satın Alma"].append(obj.purchasing)
             data["BBSN"].append(obj.lease.bbsn)
-            data["Toplam Fatura Tutarı"].append(purchase_documents['total_total_amount'])
+            data["Toplam Fatura Tutarı"].append(purchase_documents['total_total_amount'] if purchase_documents['total_total_amount'] > 0 else "")
+            data["Fatura PB"].append(purchase_documents.first().currency.code if purchase_documents.first() and purchase_documents.first().currency else "")
+            data["IFS Fatura Tutarı"].append(obj.lease.crm_invoice_total_amount if obj.lease.crm_invoice_total_amount else "")
+            data["IFS Fatura PB"].append("TRY" if obj.lease.crm_invoice_total_amount else "")
             data["Tüfeli mi?"].append("Evet" if obj.lease.is_tufe else "")
 
     df = pd.DataFrame(data)
@@ -213,8 +219,6 @@ def export_purchase_documents(self):
             self.process.progress = int(current_progress)
             self.process.save()
             previous_progress = current_progress
-
-            
 
         data["Sözleşme No"].append(obj.lease.contract.code if obj.lease and obj.lease.contract else "")
         data["Kira Planı"].append(obj.lease.code if obj.lease else "")
