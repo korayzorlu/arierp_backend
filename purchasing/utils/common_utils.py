@@ -8,6 +8,8 @@ import os
 from decimal import Decimal
 
 from purchasing.models import PurchasePayment,PurchaseDocument
+from leasing.models import Lease
+from collections import defaultdict
 
 def export_purchase_payments(self):
     if self.params.get('project'):
@@ -20,6 +22,11 @@ def export_purchase_payments(self):
             ~Q(lease__contract__partner__types__contains=['special']) &
             ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"]) 
         )
+
+    old_leases = Lease.objects.filter().only('code','main_lease_id').order_by('-lease_id')
+    old_leases_dict = defaultdict(list)
+    for ol in old_leases:
+        old_leases_dict[ol.main_lease_id].append(ol)
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -80,6 +87,21 @@ def export_purchase_payments(self):
             
             purchase_documents = obj.lease.lease_purchase_documents.all().aggregate(total_total_amount=Sum('total_amount'))
 
+            old_leases = old_leases_dict.get(obj.main_lease_id, [])
+
+            old_leases_list = []
+            for old_lease in old_leases:
+                old_leases_list.append(old_lease)
+
+            purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases_list)
+
+            pd_currency = ""
+            if purchase_documents_exist:
+                for lease in old_leases_list:
+                    purchase_documents = lease.lease_purchase_documents.all()
+                    if purchase_documents.exists():
+                        pd_currency = purchase_documents.first().currency.code if purchase_documents.first().currency else ""
+
             #kdv farkı
             if obj.lease.activation_date and obj.lease.activation_date >= date(2023, 7, 10) and (obj.lease.vat == Decimal('18.00') or obj.lease.vat == Decimal('8.00')):
                 installments = obj.lease.lease_installments.select_related().filter(
@@ -134,7 +156,7 @@ def export_purchase_payments(self):
             data["Satın Alma"].append(obj.purchasing)
             data["BBSN"].append(obj.lease.bbsn)
             data["Satıcı Fatura Tutarı"].append(purchase_documents['total_total_amount'] if purchase_documents['total_total_amount'] > 0 else "")
-            data["Fatura PB"].append(purchase_documents.first().currency.code if purchase_documents.first() and purchase_documents.first().currency else "")
+            data["Fatura PB"].append(pd_currency)
             data["IFS Fatura Tutarı"].append(obj.lease.crm_invoice_total_amount if obj.lease.crm_invoice_total_amount else "")
             data["IFS Fatura PB"].append("TRY" if obj.lease.crm_invoice_total_amount else "")
             data["Tüfeli mi?"].append("Evet" if obj.lease.is_tufe else "")
