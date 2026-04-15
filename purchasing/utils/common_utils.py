@@ -133,7 +133,7 @@ def export_purchase_payments(self):
             data["Sonraki Ödeme"].append(obj.next_payment)
             data["Satın Alma"].append(obj.purchasing)
             data["BBSN"].append(obj.lease.bbsn)
-            data["Toplam Fatura Tutarı"].append(purchase_documents['total_total_amount'] if purchase_documents['total_total_amount'] > 0 else "")
+            data["Satıcı Fatura Tutarı"].append(purchase_documents['total_total_amount'] if purchase_documents['total_total_amount'] > 0 else "")
             data["Fatura PB"].append(purchase_documents.first().currency.code if purchase_documents.first() and purchase_documents.first().currency else "")
             data["IFS Fatura Tutarı"].append(obj.lease.crm_invoice_total_amount if obj.lease.crm_invoice_total_amount else "")
             data["IFS Fatura PB"].append("TRY" if obj.lease.crm_invoice_total_amount else "")
@@ -156,7 +156,8 @@ def export_purchase_payments(self):
         "Fark",
         "Temerrüt",
         "Rapor Tarihi İtibariyle Ödenecek Satıcı Tutarı",
-        "Toplam Fatura Tutarı"
+        "Satıcı Fatura Tutarı",
+        "IFS Fatura Tutarı",
     ]
 
     for col in numeric_columns:
