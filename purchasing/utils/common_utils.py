@@ -191,6 +191,7 @@ def export_purchase_documents(self):
         "Kira Planı": [],
         "Müşteri": [],
         "Satıcı": [],
+        "CRM satıcı": [],
         "BBSN": [],
         "Döküman No": [],
         "Döküman Tarihi": [],
@@ -198,6 +199,8 @@ def export_purchase_documents(self):
         "KDV Toplam": [],
         "Genel Toplam": [],
         "PB": [],
+        "IFS'ten Gelen Tutar": [],
+        "IFS'ten Gelen Tutar PB": [],
         "Kur": [],
         "Statü": [],
     }
@@ -211,17 +214,22 @@ def export_purchase_documents(self):
             self.process.save()
             previous_progress = current_progress
 
+            
+
         data["Sözleşme No"].append(obj.lease.contract.code if obj.lease and obj.lease.contract else "")
         data["Kira Planı"].append(obj.lease.code if obj.lease else "")
         data["Müşteri"].append(obj.lease.contract.partner.name if obj.lease and obj.lease.contract and obj.lease.contract.partner else "")
         data["Satıcı"].append(obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "")
+        data["CRM satıcı"].append(obj.lease.crm_satici if obj.lease and obj.lease.crm_satici else "")
         data["BBSN"].append(obj.lease.bbsn if obj.lease else "")
         data["Döküman No"].append(obj.document_number or "")
         data["Döküman Tarihi"].append(obj.document_date or "")
         data["Toplam Tutar"].append(obj.amount)
         data["KDV Toplam"].append(obj.vat_amount)
         data["Genel Toplam"].append(obj.total_amount)
-        data["PB"].append(obj.lease.currency.code if obj.lease and obj.lease.currency else "")
+        data["PB"].append(obj.currency.code if obj.currency else "")
+        data["IFS'ten Gelen Tutar"].append(obj.lease.crm_invoice_total_amount if obj.lease and obj.lease.crm_invoice_total_amount else Decimal("0.00"))
+        data["IFS'ten Gelen Tutar PB"].append("TRY")
         data["Kur"].append(obj.exchange_rate)
         data["Statü"].append(obj.document_status or "")
 
