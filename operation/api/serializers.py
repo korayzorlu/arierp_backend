@@ -310,6 +310,7 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     is_delivery = serializers.SerializerMethodField()
     lease_note_count = serializers.SerializerMethodField()
     agreement = serializers.SerializerMethodField()
+    is_agreement = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -461,6 +462,26 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
                 for purchase_document in purchase_documents:
                     total_amount += purchase_document.total_amount
         return total_amount - obj.crm_invoice_total_amount
+    
+    def get_is_agreement(self, obj):
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
+
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases)
+        total_amount = Decimal('0.00')
+
+        if purchase_documents_exist:
+            for lease in old_leases:
+                purchase_documents = lease.lease_purchase_documents.all()
+                for purchase_document in purchase_documents:
+                    total_amount += purchase_document.total_amount
+
+        agreement_amount = total_amount - obj.crm_invoice_total_amount
+        if -1000 < agreement_amount < 1000:
+            return "Mutabakat Var"
+        else:
+            return "Mutabakat Yok"
+        
 class UntitleDeedLeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()

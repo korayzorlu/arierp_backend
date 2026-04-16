@@ -1,5 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import Q,Sum
+from django.db.models import Q, Sum, F, Value, DecimalField, ExpressionWrapper
+from django.db.models.functions import Coalesce
 from django.db.models.functions import Lower,Upper
 
 from django_filters.rest_framework import FilterSet
@@ -92,7 +93,26 @@ class PurchaseDocumentItemFilter(FilterSet):
     purchase_document = CharFilter(field_name='purchase_document__code', lookup_expr='icontains')
     stock_name = CharFilter(field_name='stock_name', lookup_expr='icontains')
     description = CharFilter(field_name='description', lookup_expr='icontains')
+    crm_satici = CharFilter(field_name='lease__crm_satici', lookup_expr='icontains')
+    is_agreement = CharFilter(method='filter_is_agreement')
 
     class Meta:
         model = PurchaseDocumentItem
         fields = ['uuid']
+
+    def filter_is_agreement(self, queryset, _name, value):
+        if value == 'all':
+            return queryset
+
+        agreement_expr = ExpressionWrapper(
+            F('total_amount') - Coalesce(F('lease__crm_invoice_total_amount'), Value(Decimal('0.00'))),
+            output_field=DecimalField(max_digits=14, decimal_places=2)
+        )
+        queryset = queryset.annotate(agreement_amount=agreement_expr)
+
+        if value == 'var':
+            return queryset.filter(agreement_amount__gt=-1000, agreement_amount__lt=1000)
+        elif value == 'yok':
+            return queryset.exclude(agreement_amount__gt=-1000, agreement_amount__lt=1000)
+        else:
+            return queryset

@@ -130,6 +130,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     lease = serializers.SerializerMethodField()
     partner = serializers.SerializerMethodField()
     vendor = serializers.SerializerMethodField()
+    crm_satici = serializers.SerializerMethodField()
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     vat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -138,6 +139,8 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     document_status = serializers.CharField()
     purchase_document_items = serializers.SerializerMethodField()
     crm_amount = serializers.SerializerMethodField()
+    agreement = serializers.SerializerMethodField()
+    is_agreement = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -157,6 +160,9 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     
     def get_vendor(self, obj):
         return obj.vendor.name if obj.vendor else ""
+    
+    def get_crm_satici(self, obj):
+        return obj.lease.crm_satici if obj.lease else ""
     
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
@@ -188,6 +194,16 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     
     def get_crm_amount(self, obj):
         return obj.lease.crm_invoice_total_amount if obj.lease else Decimal('0.00')
+    
+    def get_agreement(self, obj):
+        return obj.total_amount - obj.lease.crm_invoice_total_amount if obj.lease else obj.total_amount
+    
+    def get_is_agreement(self, obj):
+        agreement_amount = obj.total_amount - obj.lease.crm_invoice_total_amount if obj.lease else obj.total_amount
+        if -1000 < agreement_amount < 1000:
+            return "Mutabakat Var"
+        else:
+            return "Mutabakat Yok"
     
     
 class PurchaseDocumentItemListSerializer(serializers.Serializer):

@@ -211,6 +211,29 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
     
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context()}
+        )
+        if page is not None:
+            #return self.get_paginated_response(serializer.data)
+            response = self.get_paginated_response(serializer.data)
+            info = []
+            info.append({
+                'field': 'agreement',
+                'filter': 'agreement_info',
+                'count': 1,
+                'message': f"Mutabakat (TRY) = Satıcı Fatura Genel Toplam (TRY) - IFS'ten Gelen Tutar (TRY)"
+            })
+            response.data['info'] = info
+            return response
+        return Response(serializer.data)
+    
     
     
 class PurchaseDocumentItemList(ModelViewSet, QueryListAPIView):
