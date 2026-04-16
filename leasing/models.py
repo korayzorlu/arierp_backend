@@ -114,6 +114,7 @@ class Lease(models.Model):
     item = models.ForeignKey(Item, on_delete=models.SET_NULL, blank=True, null=True, related_name="project_leases")
     block = models.CharField(_("Block"), max_length=50, null=True, blank=True)
     unit = models.CharField(_("Unit"), max_length=50, null=True, blank=True)
+    period = models.CharField(_("Period"), max_length=50, null=True, blank=True)
     island = models.CharField(_("Island"), max_length=50, null=True, blank=True)
     parcel = models.CharField(_("Parcel"), max_length=50, null=True, blank=True)
     city = models.CharField(_("City"), max_length=50, null=True, blank=True)

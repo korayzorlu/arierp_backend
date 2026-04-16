@@ -1,5 +1,5 @@
 SELECT TOP 1000 *
 FROM
-    InventoryStockCodeList
+    RPR_FREE_PART_LIST_FOR_DET
 WHERE
-    StockCodeId = '1334'
+    FREE_PART_ID = 11114

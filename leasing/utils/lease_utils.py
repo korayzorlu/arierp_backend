@@ -124,6 +124,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.item = items_dict.get(str(data.Project))
                     obj.block = str(data.BLOCK_NO) or ""
                     obj.unit = str(data.FREE_PART_NO) or ""
+                    obj.period = str(data.TIMESHARE_PERIOD) or ""
                     obj.island = str(data.ISLAND_NO) or ""
                     obj.parcel = str(data.PARCEL_NO) or ""
                     obj.city = str(data.CityName) or ""
@@ -203,6 +204,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         item = items_dict.get(str(data.Project)),
                         block = str(data.BLOCK_NO) or "",
                         unit = str(data.FREE_PART_NO) or "",
+                        period = str(data.TIMESHARE_PERIOD) or "",
                         island = str(data.ISLAND_NO) or "",
                         parcel = str(data.PARCEL_NO) or "",
                         city = str(data.CityName) or "",
@@ -237,6 +239,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "item",
                     "block",
                     "unit",
+                    "period",
                     "island",
                     "parcel",
                     "city",
