@@ -1,6 +1,7 @@
 from django.core.validators import EMPTY_VALUES
 from django.db.models import Q,Sum,F
 from django.db.models.functions import Lower,Upper
+from django.utils.dateparse import parse_datetime, parse_date
 
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter,DateFromToRangeFilter
@@ -62,6 +63,7 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
     invoices = CharFilter(method = 'filter_invoices')
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
     ari_bbsn_warning = CharFilter(method = 'filter_ari_bbsn_warning')
+    activation_date = CharFilter(method = 'filter_activation_date')
 
     class Meta:
         model = Lease
@@ -106,6 +108,15 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
             )
         else:
             return queryset
+        
+    def filter_activation_date(self, queryset, activation_date, value):
+        parsed = parse_datetime(value)
+        if parsed:
+            return queryset.filter(activation_date=parsed.date())
+        date_parsed = parse_date(value)
+        if date_parsed:
+            return queryset.filter(activation_date=date_parsed)
+        return queryset
 
 
 class UntitleDeedLeaseFilter(LeaseFilter):
