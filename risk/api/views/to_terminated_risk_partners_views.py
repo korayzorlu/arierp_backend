@@ -175,7 +175,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             # warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
-            comprehensive_warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
+            # comprehensive_warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
             official_cancellation_date=Max(
                 Case(
                     When(
@@ -207,7 +207,7 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
             #     default=Value(False),
             #     output_field=BooleanField()
             # )
-        ).filter(comprehensive_warning_notice_count__gt=0,official_cancellation_date__lte=now().date()).exclude(types__contains=["special"])
+        ).filter(official_cancellation_date__lte=now().date()).exclude(types__contains=["special"])
 
         #filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 
