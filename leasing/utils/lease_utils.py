@@ -366,7 +366,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
 
 def match_lease_bbsn(company,BATCH_SIZE=1000):
     try:
-        objs = Lease.objects.select_related().filter(company__id=int(company),is_last_project=True).only("id", "bbsn","crm_bbsn","ari_bbsn")
+        objs = Lease.objects.select_related().filter(company__id=int(company),is_last_project_arinet=True).only("id", "bbsn","crm_bbsn","ari_bbsn")
 
         update_progress = 0
         update_objs = []
