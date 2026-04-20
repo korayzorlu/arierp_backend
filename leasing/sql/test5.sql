@@ -1,4 +1,4 @@
-SELECT TOP 10 *
+SELECT TOP 1000 *
 
 FROM
-    RPR_QUO_ITEM
+    LeasingOperationProject

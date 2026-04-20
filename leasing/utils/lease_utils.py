@@ -146,6 +146,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.current_request = str(data.CurrentRequest) or ""
                     obj.notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None
                     obj.bbsn = str(data.BBSN_NO) or ""
+                    obj.is_lop_revision = True if str(data.IS_LOP_REVISION) == "1" else False
                     #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
 
                     #ödeme kontrolü
@@ -226,6 +227,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         current_request = str(data.CurrentRequest) or "",
                         notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None,
                         bbsn = str(data.BBSN_NO) or "",
+                        is_lop_revision = True if str(data.IS_LOP_REVISION) == "1" else False,
                         #transfer_count = leases_count - 1 if leases_count > 0 else 0,
                     ))
                     create_progress += 1
@@ -266,6 +268,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "transfer_amount",
                     "warning_notice_status",
                     "purchase_document_amount",
+                    "is_lop_revision",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Lease.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
