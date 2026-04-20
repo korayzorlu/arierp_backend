@@ -127,7 +127,7 @@ def export_title_deed_invoice_controls(self):
         (
             ~Q(ari_bbsn=F('crm_bbsn')) &
             Q(crm_bbsn__isnull=False) &
-            Q(crm_bbsn__exact='')
+            ~Q(crm_bbsn__exact='')
         )
     ).exclude(
         Q(contract__partner__types__contains=['special'])
