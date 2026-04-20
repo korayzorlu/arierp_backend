@@ -155,7 +155,7 @@ class PartnerFinancialProfile(models.Model):
         ('yatirim', ('Yatırım Geliri')),
         ('diger', ('Diğer')),
     )
-    income_type = models.CharField(_("Income Type"), max_length=25, default='maas', choices=INCOME_TYPES_CHOICES, blank=True, null=True)
+    income_types = ArrayField(models.CharField(_("Income Types"), max_length=25, choices=INCOME_TYPES_CHOICES), default=list, blank=True, null=True)
     other_income = models.CharField(_("Other Income"), max_length=140, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
