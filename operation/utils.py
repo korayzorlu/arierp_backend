@@ -153,6 +153,8 @@ def export_title_deed_invoice_controls(self):
         "CRM Satıcı": [],
         "Proje": [],
         "Blok": [],
+        "BBSN": [],
+        "CRM BBSN": [],
         "Bağımsız Bölüm": [],
         "Alt Statü": [],
         "Statü": [],
@@ -204,6 +206,8 @@ def export_title_deed_invoice_controls(self):
         data["CRM Satıcı"].append(obj.crm_satici if obj.crm_satici else "")
         data["Proje"].append(obj.contract.project if obj.contract else "")
         data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
+        data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
+        data["CRM BBSN"].append(obj.crm_bbsn if obj.crm_bbsn else "")
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.get_lease_status_display())
