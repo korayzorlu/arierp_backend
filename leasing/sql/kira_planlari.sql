@@ -81,8 +81,8 @@ FROM
     LEFT JOIN RPR_PROJECT_BLOCK_LIST pb (NOLOCK) ON qi.BLOCK_ID = pb.BLOCK_ID
     LEFT JOIN RPR_PROJECT_LIST pl ON qi.PROJECT_ID = pl.PROJECT_ID
     LEFT JOIN LeasingOperationProjectList lw ON lop.OperationProjectId = lw.OperationProjectId
-WHERE
-    ch.ContractHeaderCode = '61353'
+-- WHERE
+--     ch.ContractHeaderCode = '61353'
 -- WHERE
 -- lw.BBSN_NO = 'BBSN.140915'
 --     AND lop.IS_LAST_PROJECT = 1
