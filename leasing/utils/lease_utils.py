@@ -375,6 +375,8 @@ def match_lease_bbsn(company,BATCH_SIZE=1000):
                 obj.ari_bbsn = obj.crm_bbsn
             elif (obj.bbsn is None or obj.bbsn == "" or obj.bbsn == "None") and (obj.crm_bbsn is not None and obj.crm_bbsn != ""):
                 obj.ari_bbsn = obj.crm_bbsn
+            elif (obj.ari_bbsn is None or obj.ari_bbsn == "" or obj.ari_bbsn == "None") and (obj.crm_bbsn is not None and obj.crm_bbsn != ""):
+                obj.ari_bbsn = obj.crm_bbsn
             else:
                 obj.ari_bbsn = obj.bbsn
             update_objs.append(obj)
