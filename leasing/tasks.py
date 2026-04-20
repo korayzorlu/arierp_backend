@@ -1104,6 +1104,10 @@ def set_delivery_task(company):
     set_delivery(company)
 
 @shared_task()
+def set_bbsn_task(company):
+    set_bbsn(company)
+
+@shared_task()
 def test_scheduler_task():
     print(print(f"[{datetime.datetime.now()}] Zamanlanmış görev çalıştı!"))
 

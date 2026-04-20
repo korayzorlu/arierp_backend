@@ -290,8 +290,8 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     partner_special = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
-    block = serializers.CharField()
-    unit = serializers.CharField()
+    block = serializers.SerializerMethodField()
+    unit = serializers.SerializerMethodField()
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -360,6 +360,12 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             "id" : obj.item.uuid if obj.item else "",
             "name" : obj.item.stock_name if obj.item else "",
         }
+    
+    def get_block(self, obj):
+        return obj.block if obj.block and obj.block != "None" else ""
+    
+    def get_unit(self, obj):
+        return obj.unit if obj.unit and obj.unit != "None" else ""
 
     def get_old_leasess(self, obj):
         old_leases = Lease.objects.select_related().filter(main_lease_id=obj.main_lease_id).order_by('-lease_id')

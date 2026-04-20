@@ -1,4 +1,4 @@
 SELECT TOP 1000 *
 
 FROM
-    LeasingOperationProject
+    RPR_PROJECT_FREE_PART
