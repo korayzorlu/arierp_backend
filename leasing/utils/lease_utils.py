@@ -952,7 +952,7 @@ def set_bbsn(company):
     file_data = pd.read_excel("files/bbsn-eslestirme.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    leases = Lease.objects.select_related().filter(is_last_project_arinet=True)
+    leases = Lease.objects.select_related().filter(is_last_project_arinet=True,code__isnull=False)
     leases.update(is_delivery = False)
 
     leases_dict = {l.code: l for l in leases if l.code}
