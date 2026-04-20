@@ -119,16 +119,7 @@ def export_title_deed_invoice_controls(self):
     objs = Lease.objects.select_related(
         "contract","contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation"
     ).prefetch_related("lease_invoices","lease_purchase_documents").filter(
-        Q(is_last_project_arinet=True) &
-        (
-            Q(ari_bbsn__isnull=True) |
-            Q(ari_bbsn__exact='')
-        ) |
-        (
-            ~Q(ari_bbsn=F('crm_bbsn')) &
-            Q(crm_bbsn__isnull=False) &
-            ~Q(crm_bbsn__exact='')
-        )
+        Q(is_last_project_arinet=True)
     ).exclude(
         Q(contract__partner__types__contains=['special'])
     ).order_by("-activation_date")
