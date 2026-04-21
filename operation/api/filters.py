@@ -100,11 +100,11 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
             return queryset.filter(
                 (
                     Q(ari_bbsn__isnull=True) |
-                    Q(ari_bbsn__exact='')
+                    Q(ari_bbsn='')
                 ) |
                 ~Q(ari_bbsn=F('crm_bbsn')) &
                 Q(crm_bbsn__isnull=False) &
-                ~Q(crm_bbsn__exact='')
+                ~Q(crm_bbsn='')
             )
         else:
             return queryset
