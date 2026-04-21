@@ -1,3 +1,3 @@
 SELECT TOP 100 *
 FROM
-    CrmIndividualCustomer
+    CRM_SGK_JOB_CODE_COMBO

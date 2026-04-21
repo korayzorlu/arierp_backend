@@ -294,6 +294,10 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
         paginate = self.request.query_params.get('paginate')
         if paginate == 'false':
             return None
+        if self.request.query_params.get('ari_bbsn_warning') == 'true':
+            class LargeDatatablesPagination(DatatablesPagination):
+                default_limit = 1000
+            return LargeDatatablesPagination
         return DatatablesPagination
 
     @property
