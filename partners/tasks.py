@@ -176,6 +176,7 @@ def fetch_partner_advances(company):
 
 @shared_task()
 def fetch_partners(company):
+    fetch_sgk_jobs_from_leaseflex(company)
     fetch_partners_from_leaseflex(company)
     fetch_partnersi_from_leaseflex(company)
     fetch_phone_numbers_from_leaseflex(company)

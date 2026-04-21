@@ -121,6 +121,7 @@ class Partner(models.Model):
     is_reliable_person = models.BooleanField(default=False)
     is_commercial = models.BooleanField(default=False)
 
+    sgk_job = models.ForeignKey(SgkJob, on_delete=models.SET_NULL, blank=True, null=True, related_name="sgk_job_partners")
     sgk_job_code = models.CharField(_("SGK Job Code"), max_length=50, blank=True, null=True)
     salaried_title = models.CharField(_("Salaried Title"), max_length=250, blank=True, null=True)
     is_pep = models.BooleanField(default=False)

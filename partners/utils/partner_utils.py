@@ -31,6 +31,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
 
         partners = Partner.objects.select_related("sector","city","country").filter(company__id=int(company))
         sectors = Sector.objects.select_related().filter(company__id=int(company))
+        sgk_jobs = SgkJob.objects.select_related().filter(company__id=int(company))
         countries = Country.objects.select_related().all()
         cities = City.objects.select_related().all()
 
@@ -44,6 +45,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
         cities_dict = {normalize(c.name): c for c in cities}
         countries_dict = {c.iso2: c for c in countries}
         sectors_dict = {s.main_sector_code: s for s in sectors}
+        sgk_jobs_dict = {s.sgk_job_id: s for s in sgk_jobs}
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
         #BATCH_SIZE = 1000
@@ -90,6 +92,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.email = data.Email or ""
                     obj.passport_no = str(data.PassportNo) or ""
                     obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
+                    obj.sgk_job = sgk_jobs_dict.get(str(data.SgkJobId)) if data.SgkJobId else None
                     obj.sgk_job_code = data.SgkJobCode or ""
                     obj.is_pep = True if str(data.PepList) == "1" else False
                     obj.pep_degree = str(data.PepListDegree) or ""
@@ -123,6 +126,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         #phone_number = str(data["Phone"]) if data["Phone"] else "",
                         email = data.Email or "",
                         types = ["customer"],
+                        sgk_job = sgk_jobs_dict.get(str(data.SgkJobId)) if data.SgkJobId else None,
                         sgk_job_code = data.SgkJobCode or "",
                         is_pep = True if str(data.PepList) == "1" else False,
                         pep_degree = str(data.PepListDegree) or "",
@@ -153,6 +157,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     "email",
                     "passport_no",
                     "is_turkkep",
+                    "sgk_job",
                     "sgk_job_code",
                     "is_pep",
                     "pep_degree",
