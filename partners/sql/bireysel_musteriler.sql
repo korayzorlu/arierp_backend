@@ -29,6 +29,7 @@ SELECT TOP 100 PERCENT
     dbo.CrmContact.PepList,
     dbo.CrmContact.PepListDegree,
     dbo.CrmContact.PepListDescription,
+    sgk.ID,
     sgk.JOB_CODE_DESCRIPTION,
     ca.CountryCode,
     ca.Email,

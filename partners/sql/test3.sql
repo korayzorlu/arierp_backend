@@ -1,6 +1,4 @@
-SELECT *
+SELECT TOP 1000 *
 
 FROM
     CrmContact
-WHERE
-    ContactId = '30455'

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Partner,Sector,PartnerNote
+from .models import Partner,Sector,PartnerNote, SgkJob
 
 # Register your models here.
 
@@ -20,6 +20,22 @@ class SectorAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Sector
+
+@admin.register(SgkJob)
+class SgkJobAdmin(admin.ModelAdmin):
+    list_display = ["company","sgk_job_id","sgk_job_code","description","is_pep"]
+    list_display_links = ["sgk_job_code"]
+    search_fields = ["company__name","sgk_job_id","sgk_job_code","description"]
+    list_filter = []
+    inlines = []
+    ordering = ["sgk_job_code"]
+    
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    class Meta:
+        model = SgkJob
 
 class PartnerAdminForm(forms.ModelForm):
     TYPES_CHOICES = (

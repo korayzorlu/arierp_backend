@@ -31,6 +31,21 @@ class Sector(models.Model):
 
     def __str__(self):
         return str(self.name)
+    
+class SgkJob(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sgk_jobs")
+
+    sgk_job_id = models.CharField(_("SGK Job ID"), max_length=50, null=True, blank=True)
+    sgk_job_code = models.CharField(_("SGK Job Code"), max_length=50, null=True, blank=True)
+    description = models.CharField(_("Description"), max_length=250, null=True, blank=True)
+    is_pep = models.BooleanField(default=False)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.description)
 
 class Partner(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)

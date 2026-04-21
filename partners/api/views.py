@@ -148,6 +148,34 @@ class SectorList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         return queryset
 
+class SgkJobList(ModelViewSet, QueryListAPIView):
+    serializer_class = SgkJobListSerializer
+    filterset_class = SgkJobFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company"]
+
+        queryset = SgkJob.objects.select_related(*custom_related_fields).filter(company = active_company.company if active_company else None).order_by("sgk_job_id")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["sgk_job_id","sgk_job_code","description"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
+
 class PartnerFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     customerCode = CharFilter(method = 'filter_customer_code')

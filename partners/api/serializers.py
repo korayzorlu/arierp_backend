@@ -34,7 +34,13 @@ class SectorListSerializer(serializers.Serializer):
             field.set(value)
         
         return instance
-    
+
+class SgkJobListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    sgk_job_id = serializers.CharField()
+    sgk_job_code = serializers.CharField()
+    description = serializers.CharField()
+    is_pep = serializers.BooleanField()
 class PartnerListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     uuid = serializers.CharField()

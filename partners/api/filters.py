@@ -12,6 +12,17 @@ from decimal import Decimal
 
 from .serializers import *
 
+class SgkJobFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    sgk_job_id = CharFilter(field_name='sgk_job_id', lookup_expr='icontains')
+    sgk_job_code = CharFilter(field_name='sgk_job_code', lookup_expr='icontains')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
+    is_pep = CharFilter(field_name='is_pep')
+
+    class Meta:
+        model = SgkJob
+        fields = ['uuid','sgk_job_id','sgk_job_code','description','is_pep']
+
 class PartnerFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     name = CharFilter(field_name='name', lookup_expr='icontains')

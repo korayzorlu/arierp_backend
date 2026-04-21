@@ -22,6 +22,7 @@ from users.models import User
 from .models import *
 from leasing.models import Lease
 from .utils.partner_utils import *
+from .utils.sgk_job_utils import fetch_sgk_jobs_from_leaseflex
 from compliance.utils.third_person_utils import check_third_person_in_partners
 
 #tekrar eden düzeltme
@@ -273,3 +274,7 @@ def fetch_phone_numbers(company):
 @shared_task()
 def set_partner_scores_task(company, partner=None):
     set_partner_scores(company, partner)
+
+@shared_task()
+def fetch_sgk_jobs(company):
+    fetch_sgk_jobs_from_leaseflex(company)
