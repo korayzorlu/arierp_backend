@@ -80,6 +80,8 @@ class PartnerListSerializer(serializers.Serializer):
     is_commercial = serializers.BooleanField()
     is_turkkep = serializers.BooleanField()
     kep = serializers.CharField()
+    sgk_job = serializers.SerializerMethodField()
+    sgk_job_code = serializers.SerializerMethodField()
     
     def get_customer(self, obj):
         return True if "customer" in obj.types else False
@@ -119,6 +121,12 @@ class PartnerListSerializer(serializers.Serializer):
     
     def get_phoneCountry(self, obj):
         return obj.phone_country.iso2 if obj.phone_country else ''
+    
+    def get_sgk_job(self, obj):
+        return obj.sgk_job.description if obj.sgk_job else ''
+
+    def get_sgk_job_code(self, obj):
+        return obj.sgk_job.sgk_job_code if obj.sgk_job else ''
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)
@@ -137,6 +145,8 @@ class PartnerListSerializer(serializers.Serializer):
             field.set(value)
         
         return instance
+    
+
 
 
 class PartnerNoteListSerializer(serializers.Serializer):
