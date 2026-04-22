@@ -225,7 +225,8 @@ class ContractSummaryList(ModelViewSet, QueryListAPIView):
             queryset = Contract.objects.filter(
                 Q(company=active_company.company if active_company else None) &
                 Q(created_date_leaseflex__gte=datetime.strptime(month, "%m/%Y").strftime("%Y-%m-01")) &
-                Q(created_date_leaseflex__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01"))
+                Q(created_date_leaseflex__lt=(datetime.strptime(month, "%m/%Y") + relativedelta(months=1)).strftime("%Y-%m-01")) &
+                Q(contract_leases__is_last_project=True)
             )
             result.append({
                 'month': month,
