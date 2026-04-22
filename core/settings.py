@@ -551,6 +551,8 @@ EMAIL_HOST_USER = str(os.getenv('EMAIL_HOST_USER'))
 EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_HOST_PASSWORD'))
 DEFAULT_FROM_EMAIL = str(os.getenv('DEFAULT_FROM_EMAIL'))
 
+SETROW_API_KEY = str(os.getenv('SETROW_API_KEY'))
+
 if not DEBUG:
     THIRD_PERSON_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','arzu.sasmazer@arileasing.com.tr']
     THIRD_PERSON_DOCUMENT_EMAIL_LIST = ['koray.zorlu@arileasing.com.tr','operasyon@arileasing.com.tr','cem.disci@arileasing.com.tr']
