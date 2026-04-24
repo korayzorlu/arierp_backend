@@ -1,3 +1,5 @@
 SELECT *
 FROM
-    WMSYS.WM_EVENTS_INFO
+    IFSAPP.sincrm_sozlesme
+WHERE
+    STOK_NO = 'BBSN.119982'

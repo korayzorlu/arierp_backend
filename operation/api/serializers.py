@@ -447,6 +447,14 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             return "Verilmedi"
         
     def get_is_delivery(self, obj):
+        # old_leases_map = self.context.get('old_leases_map', {})
+        # old_leases = old_leases_map.get(obj.main_lease_id, [])
+
+        # purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_leases)
+        # invoices_exist = any(lease.lease_invoices.filter().exists() for lease in old_leases)
+        
+
+
         if obj.is_delivery:
             return "Teslim Edildi"
         else:

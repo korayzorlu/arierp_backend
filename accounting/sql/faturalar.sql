@@ -9,4 +9,4 @@ FROM
 WHERE
     DetailInformation = 'Kira'
     AND TrnOprLeasingOperationPrjId <> '0'
-    --AND TrnOprLeasingOperationPrjId = '82479'
+    --AND TrnOprLeasingOperationPrjId = '99180'

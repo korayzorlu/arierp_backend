@@ -1,4 +1,4 @@
-SELECT
+SELECT 
     lop.OperationTypeId,
     lop.OperationProjectId,
     lop.OperationProjectCode,

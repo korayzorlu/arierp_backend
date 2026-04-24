@@ -102,8 +102,8 @@ WHERE
     AND NOT (TrnIsDeleted = 2 AND TrnPostingType > 120 AND TrnPostingType < 110)
     -- AND TrnAccountId = 36077
     AND TrnPostingType <> 461
-    -- AND TrnOprContractId = 59061
-    -- AND TrnOprProjectId = 61034
+    -- AND TrnOprContractId = 63819
+    -- AND TrnOprProjectId = 99180
     -- AND TrnOprLeasingOperationPrjId = 251
     AND (
         lopStatu.LastSubStatuId IN (
