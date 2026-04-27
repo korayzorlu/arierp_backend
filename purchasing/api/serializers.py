@@ -40,7 +40,7 @@ class PurchasePaymentListSerializer(serializers.Serializer):
                 "contract" : obj.lease.contract.code if obj.lease.contract else "",
                 "partner" : obj.lease.contract.partner.name if obj.lease.contract.partner else "",
                 "currency" : obj.lease.currency.code if obj.lease.currency else "",
-                "vendor" : obj.lease.contract.supplier if obj.lease.contract else "",
+                "vendor" : obj.lease.contract.vendor.name if obj.lease.contract.vendor else "",
                 "project" : obj.lease.contract.project if obj.lease.contract else "",
                 "activation_date" : obj.lease.activation_date,
                 "contract_date" : "",

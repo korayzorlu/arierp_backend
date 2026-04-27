@@ -1,4 +1,5 @@
 from django.utils.timezone import make_aware, is_aware
+from django.db.models import QuerySet, Q
 
 from unidecode import unidecode
 from decimal import Decimal,InvalidOperation
@@ -199,3 +200,53 @@ def parse_datetime(datetime_str):
     except Exception as e:
         print(f"Error parsing datetime: {datetime_str} - {str(e)}")
         return None
+    
+def vendor_filter(filter_params, relation="partner_contracts"):
+    def q(**kwargs):
+        return Q(**{f"{relation}__{k}": v for k, v in kwargs.items()})
+    
+    if filter_params.get('project') == "all":
+        return Q()
+    elif filter_params.get('project') == "diger":
+        return (
+            ~q(vendor__crm_code__in=["11802","20559","1202","28974","6548","6546"]) &
+            ~q(project="SAKLI KORU KONAKLARI") &
+            ~q(project="SİNPAŞ KORU AURA") &
+            ~q(project="SİNPAŞ TABİAT VİLLALARI") &
+            ~q(project="METROLİFE PREMİUM") &
+            ~q(project="METROLİFE") &
+            ~q(project="METROLIFE PREMİUM") &
+            ~q(project="METROLIFE") &
+            ~q(project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") &
+            ~q(project="SİNPAŞ KASABA THERMAL WELLNESS RESORT-") &
+            ~q(project="BOULEVARD SEFAKÖY")
+        )
+    elif filter_params.get('project') == "kizilbuk":
+        return q(vendor__crm_code__in=["11802","20559"])
+    elif filter_params.get('project') == "sinpas":
+        return (
+            q(vendor__crm_code__in=["1202"]) |
+            q(project="SAKLI KORU KONAKLARI") |
+            q(project="SİNPAŞ KORU AURA") |
+            q(project="SİNPAŞ TABİAT VİLLALARI") |
+            q(project="METROLİFE PREMİUM") |
+            q(project="METROLİFE") |
+            q(project="METROLIFE PREMİUM") |
+            q(project="METROLIFE")
+        )
+    elif filter_params.get('project') == "kasaba":
+        return (
+            q(vendor__crm_code__in=["28974"]) |
+            q(project="SİNPAŞ KASABA THERMAL WELLNESS RESORT") |
+            q(project="SİNPAŞ KASABA THERMAL WELLNESS RESORT-")
+        )
+    elif filter_params.get('project') == "servet":
+        return (
+            (
+                q(vendor__crm_code__in=["6548","6546"]) |
+                q(project="BOULEVARD SEFAKÖY")
+            ) &
+            ~q(project="SİNPAŞ KORU AURA")
+        )
+    else:
+        return Q()

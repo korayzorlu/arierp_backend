@@ -27,6 +27,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
+from common.utils.common_utils import vendor_filter
 
 class QueryListAPIView(generics.ListAPIView):
     def get_queryset(self):
@@ -140,6 +141,7 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
 
         queryset = PurchasePayment.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
+            vendor_filter(self.request.query_params, relation="lease__contract") &
             ~Q(lease__contract__partner__types__contains=['special']) &
             ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
         ).annotate(
@@ -194,7 +196,8 @@ class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company"]
 
         queryset = PurchaseDocument.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None)
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter(self.request.query_params, relation="lease__contract")
         ).annotate(
             crm_amount=Coalesce(F('lease__crm_invoice_total_amount'), Value(0), output_field=DecimalField(max_digits=14, decimal_places=2))
         )

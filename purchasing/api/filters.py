@@ -21,7 +21,7 @@ class PurchasePaymentFilter(FilterSet):
     partner = CharFilter(field_name='lease__contract__partner__name', lookup_expr='icontains')
     vendor = CharFilter(field_name='lease__contract__vendor__name', lookup_expr='icontains')
     currency = CharFilter(field_name='lease__currency__code', lookup_expr='icontains')
-    project = CharFilter(field_name='lease__contract__project', lookup_expr='icontains')
+    project_name = CharFilter(field_name='lease__contract__project', lookup_expr='icontains')
     status = CharFilter(field_name='lease__status__name', lookup_expr='icontains')
     lease_status = CharFilter(field_name='lease__lease_status', lookup_expr='icontains')
     status_control = CharFilter(method = 'filter_status_control')
