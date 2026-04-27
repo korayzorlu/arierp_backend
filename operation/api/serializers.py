@@ -474,7 +474,12 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             for lease in old_leases:
                 purchase_documents = lease.lease_purchase_documents.all()
                 for purchase_document in purchase_documents:
-                    total_amount += purchase_document.total_amount
+                    pd_items = purchase_document.purchase_document_purchase_document_items.filter(c_type_id='2')
+                    if pd_items.exists():
+                        for pd_item in pd_items:
+                            total_amount += pd_item.total_amount
+                    else:
+                        total_amount += purchase_document.total_amount
         return total_amount - obj.crm_invoice_total_amount
     
     def get_is_agreement(self, obj):
@@ -488,7 +493,12 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
             for lease in old_leases:
                 purchase_documents = lease.lease_purchase_documents.all()
                 for purchase_document in purchase_documents:
-                    total_amount += purchase_document.total_amount
+                    pd_items = purchase_document.purchase_document_purchase_document_items.filter(c_type_id='2')
+                    if pd_items.exists():
+                        for pd_item in pd_items:
+                            total_amount += pd_item.total_amount
+                    else:
+                        total_amount += purchase_document.total_amount
 
         agreement_amount = total_amount - obj.crm_invoice_total_amount
         if -1000 < agreement_amount < 1000:
