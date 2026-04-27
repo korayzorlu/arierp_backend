@@ -147,6 +147,7 @@ def fetch_purchase_document_items_from_leaseflex(company,BATCH_SIZE=1000):
                 if obj:
                     if purchase_documents_dict.get(str(data.DocumentHeaderId)):
                         obj.document_line_id = str(data.DocumentLineId) or ""
+                        obj.c_type_id = str(data.CTypeId) or ""
                         obj.purchase_document = purchase_documents_dict.get(str(data.DocumentHeaderId))
                         obj.stock_name = str(data.StockName) or ""
                         obj.description = str(data.OffsetInfo) or ""
@@ -162,6 +163,7 @@ def fetch_purchase_document_items_from_leaseflex(company,BATCH_SIZE=1000):
                         create_objs.append(PurchaseDocumentItem(
                             company = company_obj,
                             document_line_id = str(data.DocumentLineId) or "",
+                            c_type_id = str(data.CTypeId) or "",
                             purchase_document = purchase_documents_dict.get(str(data.DocumentHeaderId)),
                             stock_name = str(data.StockName) or "",
                             description = str(data.OffsetInfo) or "",
@@ -175,6 +177,7 @@ def fetch_purchase_document_items_from_leaseflex(company,BATCH_SIZE=1000):
             if update_objs:
                 PurchaseDocumentItem.objects.bulk_update(update_objs, [
                     "document_line_id",
+                    "c_type_id",
                     "purchase_document",
                     "stock_name",
                     "description",

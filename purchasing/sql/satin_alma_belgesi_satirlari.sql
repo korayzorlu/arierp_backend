@@ -7,5 +7,6 @@ SELECT
     UnitPrice,
     TotalPrice,
     VatTotal,
-    GeneralTotal
+    GeneralTotal,
+    CTypeId
 FROM LeasePurchaseDocumentLineList

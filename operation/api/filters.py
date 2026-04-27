@@ -64,6 +64,7 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
     ari_bbsn_warning = CharFilter(method = 'filter_ari_bbsn_warning')
     activation_date = CharFilter(method = 'filter_activation_date')
+    overdue_amount = CharFilter(method = 'filter_overdue_amount')
 
     class Meta:
         model = Lease
@@ -119,6 +120,16 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
         if date_parsed:
             return queryset.filter(activation_date=date_parsed)
         return queryset
+    
+    def filter_overdue_amount(self, queryset, overdue_amount, value):
+        if value == 'all':
+            return queryset
+        if value == 'gecikme_var':
+            return queryset.filter(overdue_amount__gt=0)
+        elif value == 'gecikme_yok':
+            return queryset.filter(overdue_amount__lte=0)
+        else:
+            return queryset
 
 
 class UntitleDeedLeaseFilter(LeaseFilter):

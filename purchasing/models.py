@@ -65,6 +65,7 @@ class PurchaseDocumentItem(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="purchase_document_items")
 
     document_line_id = models.CharField(_("Document Line ID"), max_length=25, null=True, blank=True)
+    c_type_id = models.CharField(_("C Type ID"), max_length=25, null=True, blank=True)
 
     purchase_document = models.ForeignKey(PurchaseDocument, on_delete=models.CASCADE, related_name="purchase_document_purchase_document_items", null=True, blank=True)
     stock_name = models.CharField(_("Stock Name"), max_length=250, null=True, blank=True)
