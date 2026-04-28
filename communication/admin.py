@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import SMS,Email,EmailReceiver
+from .models import SMS,Email,EmailReceiver,SetrowEmail
 
 # Register your models here.
 
@@ -61,3 +61,22 @@ class EmailReceiverAdmin(admin.ModelAdmin):
     
     class Meta:
         model = EmailReceiver
+
+@admin.register(SetrowEmail)
+class SetrowEmailAdmin(admin.ModelAdmin):
+    list_display = ["company","sender","send_id","recipient","send_date","user"]
+    list_display_links = ["send_id"]
+    search_fields = ["company__name","send_date","user__name","recipient","sender"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["company","user"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def user(self,obj):
+        return obj.user.username if obj.user else ""
+    
+    class Meta:
+        model = SetrowEmail

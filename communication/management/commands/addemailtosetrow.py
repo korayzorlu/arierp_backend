@@ -7,6 +7,8 @@ import os
 import pyodbc
 import requests
 
+from common.utils.common_utils import LegacyTLSAdapter
+
 class Command(BaseCommand):
     help = 'Exports parts to JSON file'
     
@@ -18,26 +20,27 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-c', type=str, help='Company to associate with operation')
-        parser.add_argument('-g', type=str, help='Group ID to associate with operation')
         parser.add_argument('-e', type=str, help='Email to associate with operation')
 
     def handle(self, *args, **options):
         company = options.get('c')
-        group_id = options.get('g')
         email = options.get('e')
 
         print("processing...")
         
-        url = "https://rest.setrow.com/email/add"
+        url = f"https://api.setrow.com/V1/setrow_emailadres_tanimlama.php?k={settings.SETROW_API_KEY}&adres={email}"
 
         headers = {
             "Authorization": f"Bearer {settings.SETROW_API_KEY}",
         }
         payload = {
-            "email": email,
-            "groupId": group_id
+            "k" : settings.SETROW_API_KEY,
+            "adres" : email,
         }
-        response = requests.post(url, headers=headers, json=[payload])
-        print(response.status_code, response.json())
+        session = requests.Session()
+        session.mount("https://", LegacyTLSAdapter())
+
+        response = session.get(url, headers=headers)
+        print(response.status_code, response.text)
         
         print("done!")

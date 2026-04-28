@@ -91,4 +91,22 @@ class Email(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(f"{self.sender} - {self.send_date}") 
+        return str(f"{self.sender} - {self.send_date}")
+    
+class SetrowEmail(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="setrow_emails")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_setrow_emails", null=True, blank=True)
+    
+    send_id = models.CharField(_("Send ID"), max_length=140, null=True, blank=True)
+    status = models.CharField(_("Status"), max_length=25, null=True, blank=True)
+    recipient = models.CharField(_("Recipient"), max_length=250, null=True, blank=True)
+    send_date = models.DateTimeField(_("Send Date"), blank=True, null=True)
+    sender = models.CharField(_("Sender"), max_length=500, null=True, blank=True)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.send_id}")

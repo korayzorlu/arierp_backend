@@ -45,15 +45,25 @@ class LeaseFilter(FilterSet):
     def filter_lease_status(self, queryset, lease_status, value):
         return queryset.annotate(lowercase=Lower('lease_status'),uppercase=Upper('lease_status')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
     
+    # def filter_overdue_amount(self, queryset, overdue_amount, value):
+    #     if value == "true":
+    #         return queryset.annotate(
+    #             total_overdue=Sum('lease_installments__overdue_amount')
+    #         ).filter(total_overdue__gt=0)
+    #     else:
+    #         return queryset.annotate(
+    #             total_overdue=Sum('lease_installments__overdue_amount')
+    #         ).filter(Q(total_overdue__lte=0) | Q(total_overdue__isnull=True))
+        
     def filter_overdue_amount(self, queryset, overdue_amount, value):
-        if value == "true":
-            return queryset.annotate(
-                total_overdue=Sum('lease_installments__overdue_amount')
-            ).filter(total_overdue__gt=0)
+        if value == 'all':
+            return queryset
+        if value == 'gecikme_var':
+            return queryset.filter(overdue_amount__gt=0)
+        elif value == 'gecikme_yok':
+            return queryset.filter(overdue_amount__lte=0)
         else:
-            return queryset.annotate(
-                total_overdue=Sum('lease_installments__overdue_amount')
-            ).filter(Q(total_overdue__lte=0) | Q(total_overdue__isnull=True))
+            return queryset
         
     def filter_leaseflex_automation(self, queryset, leaseflex_automation, value):
         if value == "true":

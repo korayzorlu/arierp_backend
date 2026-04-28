@@ -7,6 +7,8 @@ import os
 import pyodbc
 import requests
 
+from common.utils.common_utils import LegacyTLSAdapter
+
 class Command(BaseCommand):
     help = 'Exports parts to JSON file'
     
@@ -24,12 +26,26 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        url = "https://rest.setrow.com/group/email"
+        url = f"https://www.setrowsend.com/email/sendV2.php?k={settings.SETROW_API_KEY}&ktemplate=b84e83786dbcbc132b0b25d293890ba6506ff7d0b474b2aa4e"
 
         headers = {
             "Authorization": f"Bearer {settings.SETROW_API_KEY}",
         }
-        response = requests.get(url, headers=headers)
+        payload = [
+            {
+                "to": "korayzorllu@gmail.com",
+                "variables": {
+                    "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+                    "proje": "SİNPAŞ KIZILBÜK",
+                    "tutar": "156.897,00",
+                },
+            },
+        ]
+
+        session = requests.Session()
+        session.mount("https://", LegacyTLSAdapter())
+
+        response = session.post(url, headers=headers, json=payload)
         print(response.status_code, response.text)
         
         print("done!")

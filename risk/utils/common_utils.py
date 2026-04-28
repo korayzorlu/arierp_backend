@@ -25,7 +25,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_under_review=False) &
             ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
             Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-            Q(partner_contracts__contract_leases__overdue_days__lte=30) &
+            Q(partner_contracts__contract_leases__overdue_days__lte=25) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
@@ -60,7 +60,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             (
                 Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
@@ -120,7 +120,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             (
                 Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
@@ -180,7 +180,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             (
                 Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
                 Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
@@ -238,7 +238,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_kdv_diff=False) &
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
@@ -286,7 +286,7 @@ def partners_for_project(params):
             Q(partner_contracts__contract_leases__is_credit=False) &
             Q(partner_contracts__contract_leases__is_under_review=False) &
             Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
@@ -385,7 +385,7 @@ def leases_for_project(params):
             vendor_filter_for_serializers(params) &
             Q(overdue_amount__gt=100) &
             Q(overdue_days__gt=0) &
-            Q(overdue_days__lte=30) &
+            Q(overdue_days__lte=25) &
             Q(is_last_project=True) &
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
@@ -417,7 +417,7 @@ def leases_for_project(params):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             (
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
@@ -477,7 +477,7 @@ def leases_for_project(params):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             (
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
@@ -536,7 +536,7 @@ def leases_for_project(params):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             (
                 Q(overdue_31_60__gt=0) |
                 Q(overdue_61_90__gt=0) |
@@ -593,7 +593,7 @@ def leases_for_project(params):
             Q(is_kdv_diff=False) &
             Q(is_credit=False) &
             Q(is_under_review=False) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count(
@@ -645,7 +645,7 @@ def leases_for_project(params):
             Q(is_credit=False) &
             Q(is_under_review=False) &
             Q(contract__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(overdue_days__gt=30) &
+            Q(overdue_days__gt=25) &
             Q(overdue_amount__gt=1000)
         ).annotate(
             warning_notice_count=Count(
@@ -659,3 +659,23 @@ def leases_for_project(params):
             Q(contract__partner__types__contains=["virman"])
         )
     return leases or []
+
+def template_for_risk_status(risk_status):
+    if risk_status == "risk_partners":
+        return "b84e83786dbcbc132b0b25d293890ba6506ff7d0b474b2aa4e"
+    elif risk_status == "to_warned":
+        return ""
+    elif risk_status == "to_warned_deposit":
+        return ""
+    elif risk_status == "to_warned_kep":
+        return ""
+    elif risk_status == "to_warned_posta":
+        return ""
+    elif risk_status == "warned":
+        return ""
+    elif risk_status == "to_terminated":
+        return ""
+    elif risk_status == "today_partners":
+        return ""
+    elif risk_status == "tomorrow_partners":
+        return ""

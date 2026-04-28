@@ -12,7 +12,15 @@ import traceback
 import time
 import re
 from dateutil import parser as dateutil_parser
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
+class LegacyTLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = create_urllib3_context()
+        ctx.set_ciphers("DEFAULT@SECLEVEL=1")  # daha geniş cipher desteği
+        kwargs["ssl_context"] = ctx
+        super().init_poolmanager(*args, **kwargs)
 
 def normalize(name):
     return unidecode(name or "").strip().lower()
