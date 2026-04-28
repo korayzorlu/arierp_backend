@@ -14,7 +14,7 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 
 from communication.models import SMS, Email
 from communication.utils.sms_utils import send_sms_with_turatel,check_sms_status
-from communication.utils.email_utils import send_email_with_setrow
+from communication.utils.email_utils import send_email_with_setrow,check_last_email
 from communication.tasks import send_email_with_setrow_task
 from partners.models import Partner
 from risk.utils.common_utils import partners_for_project,template_for_risk_status,leases_for_project
@@ -47,28 +47,30 @@ class SendRiskEmailView(LoginRequiredMixin,View):
         #     if partner.email and partner.email != "":
         #         leases = leases_for_project({**data, "partner_id": partner.uuid})
             
-        #         total_overdue_amount = 0
         #         if leases:
         #             for lease in leases:
-        #                 total_overdue_amount += lease.overdue_amount
+        #                 if lease.contract:
+        #                     if not check_last_email(partner.email):
+        #                         recepients.append(
+        #                             {
+        #                                 "email": partner.email,
+        #                                 "variables": {
+        #                                     "konu": data.get("subject"),
+        #                                     "proje": project_text(data),
+        #                                     "sozlesme": lease.contract.code if lease.contract else "",
+        #                                     "tutar": format_currency_tr(lease.overdue_amount)
+        #                                 }
+        #                             }
+        #                         )
 
-        #         recepients.append(
-        #             {
-        #                 "email": partner.email,
-        #                 "variables": {
-        #                     "konu": data.get("subject"),
-        #                     "proje": project_text(data),
-        #                     "tutar": format_currency_tr(total_overdue_amount)
-        #                 }
-        #             }
-        #         )
-
+        #test
         recipients = [
             {
-                "email": "koray.zorlu@arileasing.com.tr",
+                "email": "korayzorllu@gmail.com",
                 "variables": {
                     "konu": "Ödeme Hatırlatma Bilgilendirmesi",
                     "proje": "Sinpaş Kızılbük",
+                    "sozlesme": "67985",
                     "tutar": "156.897,00"
                 }
             },
@@ -77,10 +79,29 @@ class SendRiskEmailView(LoginRequiredMixin,View):
                 "variables": {
                     "konu": "Ödeme Hatırlatma Bilgilendirmesi",
                     "proje": "Sinpaş Kızılbük",
-                    "tutar": "156.897,00"
+                    "sozlesme": "67593/1",
+                    "tutar": "75.600,00"
                 }
             }
         ]
+
+        # recipients = []
+
+        # for recipient in recipientss:
+        #     if check_last_email(recipient.get("email")):
+        #         return JsonResponse({'message': 'Son bir saat içerisinde aynı e-posta adresine bir mesaj gönderilmiştir. Lütfen daha sonra tekrar deneyiniz.','status':'error'}, status=400)
+        #     recipients.append(
+        #         {
+        #             "email": recipient.get("email"),
+        #             "variables": {
+        #                 "konu": recipient.get("variables", {}).get("konu"),
+        #                 "proje": recipient.get("variables", {}).get("proje"),
+        #                 "sozlesme": recipient.get("variables", {}).get("sozlesme"),
+        #                 "tutar": recipient.get("variables", {}).get("tutar")
+        #             }
+        #         }
+        #     )
+        #test-end
         
         params = {
             "user_id": str(request.user.uuid),

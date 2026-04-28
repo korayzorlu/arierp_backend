@@ -1,3 +1,4 @@
+from django.http import JsonResponse, FileResponse, HttpResponse
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 from django.utils import timezone
@@ -62,7 +63,6 @@ def send_email_with_setrow(params):
     for i in range(0, max(len(payload), 1), chunk_size):
         chunk = payload[i:i + chunk_size]
         response = session.post(url, headers=headers, json=chunk)
-        
         if response.text:
             response_data = response.json()
             for data in response_data.get("message", []):
@@ -75,4 +75,13 @@ def send_email_with_setrow(params):
                     user=user,
                     company=company
                 )
-            
+
+def check_last_email(email):
+    last_email = SetrowEmail.objects.filter(
+        recipient = email,
+        send_date__gte = timezone.now() - timezone.timedelta(hours=1)
+    ).first()
+    
+    if last_email:
+        return True
+    return False

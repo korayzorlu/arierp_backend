@@ -74,7 +74,3 @@ def extract_contract_numbers(description):
             seen.add(match)
 
     return result
-
-
-description = "TAHİR ALDEMIR TAHİR ALDEMIR 'DAN 63.722 , 63.721 , 63.720 SÖZLEŞME NUMARASIDIR , Türkiye Garan"
-print(extract_contract_numbers(description))

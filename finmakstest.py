@@ -18,8 +18,7 @@ TRANSACTIONS_ENDPOINT = "/Transactions"
 # Kullanıcı bilgileri
 USERNAME = settings.FINMAKS_USERNAME
 PASSWORD = settings.FINMAKS_PASSWORD
-print(USERNAME)
-print(PASSWORD)
+
 INSTITUTION_CODE = "0001"
 INSTITUTION_ID = 1  # Kurum ID'nizi girin
 BANK_CODE = "0046"  # TCMB banka kodu
@@ -34,7 +33,6 @@ def encrypt_password():
     response = requests.post(url, json=payload, headers=headers)
 
     if response.status_code == 200:
-        print(response.text)
         return response.json().get("Message")  # Dokümana göre "Message" döner
     else:
         raise Exception(f"EncryptPass Hatası: {response.text}")
