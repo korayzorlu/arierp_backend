@@ -29,6 +29,9 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     talimat = serializers.SerializerMethodField()
     total_purchase_document_amount = serializers.SerializerMethodField()
     updated_amount = serializers.SerializerMethodField()
+    crm_amount = serializers.SerializerMethodField()
+    agreement = serializers.SerializerMethodField()
+    is_agreement = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -119,6 +122,25 @@ class PurchasePaymentListSerializer(serializers.Serializer):
                 return obj.total_contract_amount if obj.total_contract_amount else Decimal('0.00')
         else:
             return Decimal('0.00')
+        
+    def get_crm_amount(self, obj):
+        return obj.lease.crm_invoice_total_amount if obj.lease else Decimal('0.00')
+    
+    def get_agreement(self, obj):
+        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+        purchase_payment_total = purchase_documents['total_total_amount'] or Decimal('0.00')
+
+        return purchase_payment_total - obj.lease.crm_invoice_total_amount if obj.lease else purchase_payment_total
+    
+    def get_is_agreement(self, obj):
+        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+        purchase_payment_total = purchase_documents['total_total_amount'] or Decimal('0.00')
+
+        agreement_amount = purchase_payment_total - obj.lease.crm_invoice_total_amount if obj.lease else purchase_payment_total
+        if -1000 < agreement_amount < 1000:
+            return "Mutabakat Var"
+        else:
+            return "Mutabakat Yok"
 
 class PurchaseDocumentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
