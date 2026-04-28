@@ -1,3 +1,5 @@
+import uuid
+
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum,Count,Case,When,Value,BooleanField,Max
@@ -19,6 +21,7 @@ from communication.tasks import send_email_with_setrow_task
 from partners.models import Partner
 from risk.utils.common_utils import partners_for_project,template_for_risk_status,leases_for_project
 from leasing.utils.common_utils import format_currency_tr,project_text
+from leasing.models import Lease
 
 import os
 import json
@@ -39,51 +42,52 @@ class SendRiskEmailView(LoginRequiredMixin,View):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         company_id = active_company.company.uuid
         
-        # partners = partners_for_project(data)
+        partners = partners_for_project(data)
 
-        # recepients = []
+        recipients = []
 
-        # for partner in partners:
-        #     if partner.email and partner.email != "":
-        #         leases = leases_for_project({**data, "partner_id": partner.uuid})
+        for partner in partners:
+            if partner.email and partner.email != "":
+                leases = leases_for_project({**data, "partner_id": partner.uuid})
             
-        #         if leases:
-        #             for lease in leases:
-        #                 if lease.contract:
-        #                     if not check_last_email(partner.email):
-        #                         recepients.append(
-        #                             {
-        #                                 "email": partner.email,
-        #                                 "variables": {
-        #                                     "konu": data.get("subject"),
-        #                                     "proje": project_text(data),
-        #                                     "sozlesme": lease.contract.code if lease.contract else "",
-        #                                     "tutar": format_currency_tr(lease.overdue_amount)
-        #                                 }
-        #                             }
-        #                         )
+                if leases:
+                    for lease in leases:
+                        if lease.contract:
+                            if not check_last_email(partner.email):
+                                recipients.append(
+                                    {
+                                        "email": partner.email,
+                                        "variables": {
+                                            "konu": data.get("subject"),
+                                            "proje": project_text(data),
+                                            "sozlesme": lease.contract.code if lease.contract else "",
+                                            "tutar": format_currency_tr(lease.overdue_amount)
+                                        }
+                                    }
+                                )
+
 
         #test
-        recipients = [
-            {
-                "email": "korayzorllu@gmail.com",
-                "variables": {
-                    "konu": "Ödeme Hatırlatma Bilgilendirmesi",
-                    "proje": "Sinpaş Kızılbük",
-                    "sozlesme": "67985",
-                    "tutar": "156.897,00"
-                }
-            },
-            {
-                "email": "korayzorllu@gmail.com",
-                "variables": {
-                    "konu": "Ödeme Hatırlatma Bilgilendirmesi",
-                    "proje": "Sinpaş Kızılbük",
-                    "sozlesme": "67593/1",
-                    "tutar": "75.600,00"
-                }
-            }
-        ]
+        # recipients = [
+        #     {
+        #         "email": "korayzorllu@gmail.com",
+        #         "variables": {
+        #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+        #             "proje": "Sinpaş Kızılbük",
+        #             "sozlesme": "67985",
+        #             "tutar": "156.897,00"
+        #         }
+        #     },
+        #     {
+        #         "email": "korayzorllu@gmail.com",
+        #         "variables": {
+        #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+        #             "proje": "Sinpaş Kızılbük",
+        #             "sozlesme": "67593/1",
+        #             "tutar": "75.600,00"
+        #         }
+        #     }
+        # ]
 
         # recipients = []
 
@@ -101,6 +105,75 @@ class SendRiskEmailView(LoginRequiredMixin,View):
         #             }
         #         }
         #     )
+        #test-end
+        
+        params = {
+            "user_id": str(request.user.uuid),
+            "company_id": str(company_id),
+            "recipients": recipients,
+            "template": template_for_risk_status(data.get("risk_status"))
+        }
+
+        send_email_with_setrow_task.delay(params)
+
+        return JsonResponse({'message': 'E-posta gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
+    
+class SendRiskEmailSelectedView(LoginRequiredMixin,View):
+    model = Email
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuids = data.get('uuids')
+        
+        if request.user.authorization.department != 'kredi_risk_izleme':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+
+        active_company_uuid = data.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        company_id = active_company.company.uuid
+
+        recipients = []
+    
+        for uuid in uuids:
+            lease = Lease.objects.select_related().filter(uuid = uuid).first()
+            
+            if lease:
+                if lease.contract and lease.contract.partner and lease.contract.partner.email and lease.contract.partner.email != "":
+                    if not check_last_email(lease.contract.partner.email):
+                        recipients.append(
+                            {
+                                "email": lease.contract.partner.email,
+                                "variables": {
+                                    "konu": data.get("subject"),
+                                    "proje": project_text(data),
+                                    "sozlesme": lease.contract.code if lease.contract else "",
+                                    "tutar": format_currency_tr(lease.overdue_amount)
+                                }
+                            }
+                        )
+
+
+        #test
+        # recipients = [
+        #     {
+        #         "email": "korayzorllu@gmail.com",
+        #         "variables": {
+        #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+        #             "proje": "Sinpaş Kızılbük",
+        #             "sozlesme": "67985",
+        #             "tutar": "156.897,00"
+        #         }
+        #     },
+        #     {
+        #         "email": "korayzorllu@gmail.com",
+        #         "variables": {
+        #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+        #             "proje": "Sinpaş Kızılbük",
+        #             "sozlesme": "67593/1",
+        #             "tutar": "75.600,00"
+        #         }
+        #     }
+        # ]
         #test-end
         
         params = {

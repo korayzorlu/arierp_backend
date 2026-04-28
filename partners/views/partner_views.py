@@ -282,6 +282,7 @@ class PartnerInformationView(LoginRequiredMixin,View):
                 'city':obj.city.name if obj.city else "",
                 'country':obj.country.name if obj.country else "",
                 'kep':obj.kep,
+                'email':obj.email,
                 'is_turkkep':obj.is_turkkep
         }
 
