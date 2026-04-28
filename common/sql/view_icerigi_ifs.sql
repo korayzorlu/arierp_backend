@@ -1,3 +1,3 @@
-SELECT text AS sincrm_sozlesme
+SELECT text AS COMPANY_PERSON_FINDER
 FROM all_views
-WHERE view_name = 'SINCRM_SOZLESME';
+WHERE view_name = 'COMPANY_PERSON_FINDER';
