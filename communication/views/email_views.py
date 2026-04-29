@@ -61,7 +61,8 @@ class SendRiskEmailView(LoginRequiredMixin,View):
                                             "konu": data.get("subject"),
                                             "proje": project_text(data),
                                             "sozlesme": lease.contract.code if lease.contract else "",
-                                            "tutar": format_currency_tr(lease.overdue_amount)
+                                            "tutar": format_currency_tr(lease.overdue_amount),
+                                            "tarih" : date.today().strftime('%d.%m.%Y')
                                         }
                                     }
                                 )
@@ -73,7 +74,8 @@ class SendRiskEmailView(LoginRequiredMixin,View):
                     "konu": 'Ödeme Hatırlatma Bilgilendirmesi - Test Maili',
                     "proje": project_text(data),
                     "sozlesme": '99999',
-                    "tutar": format_currency_tr(Decimal('0.00'))
+                    "tutar": format_currency_tr(Decimal('0.00')),
+                    "tarih": date.today().strftime('%d.%m.%Y')
                 }
             }
         )
@@ -86,7 +88,8 @@ class SendRiskEmailView(LoginRequiredMixin,View):
         #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
         #             "proje": "Sinpaş Kızılbük",
         #             "sozlesme": "67985",
-        #             "tutar": "156.897,00"
+        #             "tutar": "156.897,00",
+        #             "tarih" : date.today().strftime('%d.%m.%Y')
         #         }
         #     },
         #     {
@@ -95,7 +98,8 @@ class SendRiskEmailView(LoginRequiredMixin,View):
         #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
         #             "proje": "Sinpaş Kızılbük",
         #             "sozlesme": "67593/1",
-        #             "tutar": "75.600,00"
+        #             "tutar": "75.600,00",
+        #             "tarih" : date.today().strftime('%d.%m.%Y')
         #         }
         #     }
         # ]
@@ -112,7 +116,8 @@ class SendRiskEmailView(LoginRequiredMixin,View):
         #                 "konu": recipient.get("variables", {}).get("konu"),
         #                 "proje": recipient.get("variables", {}).get("proje"),
         #                 "sozlesme": recipient.get("variables", {}).get("sozlesme"),
-        #                 "tutar": recipient.get("variables", {}).get("tutar")
+        #                 "tutar": recipient.get("variables", {}).get("tutar"),
+        #                 "tarih": recipient.get("variables", {}).get("tarih")
         #             }
         #         }
         #     )
@@ -143,59 +148,64 @@ class SendRiskEmailSelectedView(LoginRequiredMixin,View):
         active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
         company_id = active_company.company.uuid
 
-        recipients = []
+        # recipients = []
     
-        for uuid in uuids:
-            lease = Lease.objects.select_related().filter(uuid = uuid).first()
+        # for uuid in uuids:
+        #     lease = Lease.objects.select_related().filter(uuid = uuid).first()
             
-            if lease:
-                if lease.contract and lease.contract.partner and lease.contract.partner.email and lease.contract.partner.email != "":
-                    if not check_last_email(lease.contract.partner.email):
-                        recipients.append(
-                            {
-                                "email": lease.contract.partner.email,
-                                "variables": {
-                                    "konu": data.get("subject"),
-                                    "proje": project_text(data),
-                                    "sozlesme": lease.contract.code if lease.contract else "",
-                                    "tutar": format_currency_tr(lease.overdue_amount)
-                                }
-                            }
-                        )
+        #     if lease:
+        #         if lease.contract and lease.contract.partner and lease.contract.partner.email and lease.contract.partner.email != "":
 
-        recipients.append(
-            {
-                "email": 'koray.zorlu@arileasing.com.tr',
-                "variables": {
-                    "konu": 'Ödeme Hatırlatma Bilgilendirmesi - Test Maili',
-                    "proje": project_text(data),
-                    "sozlesme": '99999',
-                    "tutar": format_currency_tr(Decimal('0.00'))
-                }
-            }
-        )
+        #             if not check_last_email(lease.contract.partner.email):
+        #                 recipients.append(
+        #                     {
+        #                         "email": lease.contract.partner.email,
+        #                         "variables": {
+        #                             "konu": data.get("subject"),
+        #                             "proje": project_text(data),
+        #                             "sozlesme": lease.contract.code if lease.contract else "",
+        #                             "tutar": format_currency_tr(lease.overdue_amount),
+        #                             "tarih" : date.today().strftime('%d.%m.%Y')
+        #                         }
+        #                     }
+        #                 )
 
-        #test
-        # recipients = [
+        # recipients.append(
         #     {
-        #         "email": "korayzorllu@gmail.com",
+        #         "email": 'koray.zorlu@arileasing.com.tr',
         #         "variables": {
-        #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
-        #             "proje": "Sinpaş Kızılbük",
-        #             "sozlesme": "67985",
-        #             "tutar": "156.897,00"
-        #         }
-        #     },
-        #     {
-        #         "email": "korayzorllu@gmail.com",
-        #         "variables": {
-        #             "konu": "Ödeme Hatırlatma Bilgilendirmesi",
-        #             "proje": "Sinpaş Kızılbük",
-        #             "sozlesme": "67593/1",
-        #             "tutar": "75.600,00"
+        #             "konu": 'Ödeme Hatırlatma Bilgilendirmesi - Test Maili',
+        #             "proje": project_text(data),
+        #             "sozlesme": '99999',
+        #             "tutar": format_currency_tr(Decimal('0.00')),
+        #             "tarih" : date.today().strftime('%d.%m.%Y')
         #         }
         #     }
-        # ]
+        # )
+
+        #test
+        recipients = [
+            {
+                "email": "korayzorllu@gmail.com",
+                "variables": {
+                    "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+                    "proje": "Sinpaş Kızılbük",
+                    "sozlesme": "67985",
+                    "tutar": "156.897,00",
+                    "tarih" : date.today().strftime('%d.%m.%Y')
+                }
+            },
+            {
+                "email": "korayzorllu@gmail.com",
+                "variables": {
+                    "konu": "Ödeme Hatırlatma Bilgilendirmesi",
+                    "proje": "Sinpaş Kızılbük",
+                    "sozlesme": "67593/1",
+                    "tutar": "75.600,00",
+                    "tarih" : date.today().strftime('%d.%m.%Y')
+                }
+            }
+        ]
         #test-end
         
         params = {

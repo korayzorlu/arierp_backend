@@ -76,7 +76,12 @@ class LeaseFilter(FilterSet):
             return queryset.filter((Q(overdue_amount__gt=0)|Q(overdue_days__gt=0))&Q(is_last_project=True))
         else:
             return queryset.filter()
-        
+    
+    def filter_vendor(self, queryset, vendor, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(contract__vendor__uuid = value)
+    
     def filter_item(self, queryset, item, value):
         if value == 'all':
             return queryset

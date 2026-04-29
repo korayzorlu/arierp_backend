@@ -668,7 +668,7 @@ def template_for_risk_status(risk_status):
     elif risk_status == "warned":
         return "a1a4c7f4501d25043d68e5d9bf10f44e8b59b06b1f43a9897a"
     elif risk_status == "to_terminated":
-        return ""
+        return "7cf3da7a1e8445d68939c3f30f5d181897931bf79e31c75201"
     elif risk_status == "today_partners":
         return ""
     elif risk_status == "tomorrow_partners":
