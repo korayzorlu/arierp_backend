@@ -339,6 +339,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                     obj.crm_contract_code = str(data.sozlesme_no) or ""
                     obj.crm_project_id = str(data.proje_id) or ""
                     obj.crm_bbsn = str(data.stok_no) or ""
+                    obj.ari_bbsn = str(data.stok_no) or ""
                     obj.crm_durum = str(data.durum) or ""
                     obj.crm_satici = str(data.sirket_unvani) or ""
                     obj.crm_invoice_date = data.fatura_tarihi.date() if data.fatura_tarihi else None
@@ -356,6 +357,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                     "crm_contract_code",
                     "crm_project_id",
                     "crm_bbsn",
+                    "ari_bbsn",
                     "crm_durum",
                     "crm_satici",
                     "crm_invoice_date",
