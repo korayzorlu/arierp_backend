@@ -66,6 +66,17 @@ class SendRiskEmailView(LoginRequiredMixin,View):
                                     }
                                 )
 
+        recipients.append(
+            {
+                "email": 'koray.zorlu@arileasing.com.tr',
+                "variables": {
+                    "konu": 'Ödeme Hatırlatma Bilgilendirmesi - Test Maili',
+                    "proje": project_text(data),
+                    "sozlesme": '99999',
+                    "tutar": format_currency_tr(Decimal('0.00'))
+                }
+            }
+        )
 
         #test
         # recipients = [
@@ -152,6 +163,17 @@ class SendRiskEmailSelectedView(LoginRequiredMixin,View):
                             }
                         )
 
+        recipients.append(
+            {
+                "email": 'koray.zorlu@arileasing.com.tr',
+                "variables": {
+                    "konu": 'Ödeme Hatırlatma Bilgilendirmesi - Test Maili',
+                    "proje": project_text(data),
+                    "sozlesme": '99999',
+                    "tutar": format_currency_tr(Decimal('0.00'))
+                }
+            }
+        )
 
         #test
         # recipients = [

@@ -665,14 +665,8 @@ def template_for_risk_status(risk_status):
         return "b84e83786dbcbc132b0b25d293890ba6506ff7d0b474b2aa4e"
     elif risk_status == "to_warned":
         return "c08c6a4b2932d6bdfab0a892b3e74c6109efee6f0d3d9d3c6b"
-    elif risk_status == "to_warned_deposit":
-        return ""
-    elif risk_status == "to_warned_kep":
-        return ""
-    elif risk_status == "to_warned_posta":
-        return ""
     elif risk_status == "warned":
-        return ""
+        return "a1a4c7f4501d25043d68e5d9bf10f44e8b59b06b1f43a9897a"
     elif risk_status == "to_terminated":
         return ""
     elif risk_status == "today_partners":
