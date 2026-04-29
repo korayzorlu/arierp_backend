@@ -32,6 +32,8 @@ class PurchasePaymentListSerializer(serializers.Serializer):
     crm_amount = serializers.SerializerMethodField()
     agreement = serializers.SerializerMethodField()
     is_agreement = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
+    vendor = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -141,6 +143,18 @@ class PurchasePaymentListSerializer(serializers.Serializer):
             return "Mutabakat Var"
         else:
             return "Mutabakat Yok"
+        
+    def get_item(self, obj):
+        return {
+            "id" : obj.lease.item.uuid if obj.lease and obj.lease.item else "",
+            "name" : obj.lease.item.stock_name if obj.lease and obj.lease.item else "",
+        }
+    
+    def get_vendor(self, obj):
+        return {
+            "id" : obj.lease.contract.vendor.uuid if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "",
+            "name" : obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "",
+        }
 
 class PurchaseDocumentListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
@@ -163,6 +177,8 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     crm_amount = serializers.SerializerMethodField()
     agreement = serializers.SerializerMethodField()
     is_agreement = serializers.SerializerMethodField()
+    vendor = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -227,7 +243,18 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
         else:
             return "Mutabakat Yok"
     
-    
+    def get_item(self, obj):
+        return {
+            "id" : obj.lease.item.uuid if obj.lease and obj.lease.item else "",
+            "name" : obj.lease.item.stock_name if obj.lease and obj.lease.item else "",
+        }
+
+    def get_vendor(self, obj):
+        return {
+            "id" : obj.lease.contract.vendor.uuid if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "",
+            "name" : obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "",
+        }
+ 
 class PurchaseDocumentItemListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()

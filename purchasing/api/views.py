@@ -20,7 +20,6 @@ from rest_framework.permissions import AllowAny
 import traceback
 from datetime import datetime,timedelta
 import requests
-import xmltodict
 import json
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
@@ -107,7 +106,40 @@ class DatatablesPagination(LimitOffsetPagination):
             'recordsFiltered': self.count,
             'data': data
         })
-    
+
+class PurchasePaymentVendorList(ModelViewSet, QueryListAPIView):
+    serializer_class = PurchasePaymentListSerializer
+    filterset_class = PurchasePaymentFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        result = PurchasePayment.objects.filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter(self.request.query_params, relation="lease__contract") &
+            ~Q(lease__contract__partner__types__contains=['special']) &
+            ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
+        ).order_by("lease__contract__vendor__name").values("lease__contract__vendor__name", "lease__contract__vendor__uuid").distinct()
+
+        result = list(result)
+
+        return Response(result)
+
 class PurchasePaymentList(ModelViewSet, QueryListAPIView):
     serializer_class = PurchasePaymentListSerializer
     filterset_class = PurchasePaymentFilter
@@ -166,7 +198,40 @@ class PurchasePaymentList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
-    
+
+class PurchaseDocumentVendorList(ModelViewSet, QueryListAPIView):
+    serializer_class = PurchaseDocumentListSerializer
+    filterset_class = PurchaseDocumentFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    ## pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        result = PurchaseDocument.objects.filter(
+            Q(company = active_company.company if active_company else None) &
+            vendor_filter(self.request.query_params, relation="lease__contract") &
+            ~Q(lease__contract__partner__types__contains=['special']) &
+            ~Q(lease__contract__partner__crm_code__in=["23371", "9341", "10495", "4305", "10437", "4441", "11722", "24120"])
+        ).order_by("lease__contract__vendor__name").values("lease__contract__vendor__name", "lease__contract__vendor__uuid").distinct()
+
+        result = list(result)
+
+        return Response(result)
+
 class PurchaseDocumentList(ModelViewSet, QueryListAPIView):
     serializer_class = PurchaseDocumentListSerializer
     filterset_class = PurchaseDocumentFilter

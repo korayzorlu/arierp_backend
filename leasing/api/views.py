@@ -144,6 +144,8 @@ class ProjectList(ModelViewSet, QueryListAPIView):
         result = list(result)
 
         return Response(result)
+    
+
 
 class LeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseListSerializer

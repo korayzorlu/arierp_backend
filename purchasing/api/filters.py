@@ -19,7 +19,8 @@ class PurchasePaymentFilter(FilterSet):
     contract = CharFilter(field_name='lease__contract__code', lookup_expr='icontains')
     contract_id = CharFilter(field_name='lease__contract__contract_id', lookup_expr='icontains')
     partner = CharFilter(field_name='lease__contract__partner__name', lookup_expr='icontains')
-    vendor = CharFilter(field_name='lease__contract__vendor__name', lookup_expr='icontains')
+    #vendor = CharFilter(field_name='lease__contract__vendor__name', lookup_expr='icontains')
+    vendor = CharFilter(method = 'filter_vendor')
     currency = CharFilter(field_name='lease__currency__code', lookup_expr='icontains')
     project_name = CharFilter(field_name='lease__contract__project', lookup_expr='icontains')
     status = CharFilter(field_name='lease__status__name', lookup_expr='icontains')
@@ -28,6 +29,7 @@ class PurchasePaymentFilter(FilterSet):
     kdv = CharFilter(method = 'filter_kdv')
     special = CharFilter(method = 'filter_special')
     is_agreement = CharFilter(method='filter_is_agreement')
+    item = CharFilter(method = 'filter_item')
 
     class Meta:
         model = PurchasePayment
@@ -91,6 +93,16 @@ class PurchasePaymentFilter(FilterSet):
         else:
             return queryset
         
+    def filter_item(self, queryset, item, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(lease__item__stock_name = value)
+    
+    def filter_vendor(self, queryset, vendor, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(lease__contract__vendor__name = value)
+        
     
 class PurchaseDocumentFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
@@ -98,12 +110,24 @@ class PurchaseDocumentFilter(FilterSet):
     lease = CharFilter(field_name='lease__code', lookup_expr='exact')
     contract = CharFilter(field_name='lease__contract__code', lookup_expr='icontains')
     partner = CharFilter(field_name='partner__name', lookup_expr='icontains')
-    vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
+    #vendor = CharFilter(field_name='vendor__name', lookup_expr='icontains')
+    vendor = CharFilter(method = 'filter_vendor')
     document_number = CharFilter(field_name='document_number', lookup_expr='icontains')
+    item = CharFilter(method = 'filter_item')
 
     class Meta:
         model = PurchaseDocument
         fields = ['uuid']
+
+    def filter_item(self, queryset, item, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(lease__item__stock_name = value)
+    
+    def filter_vendor(self, queryset, vendor, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(lease__contract__vendor__name = value)
 
 class PurchaseDocumentItemFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
