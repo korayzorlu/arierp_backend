@@ -257,28 +257,28 @@ class ComprehensiveWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         custom_related_fields = []
         prefetch_related_fields = ["partner_contracts__contract_leases", "partner_contracts__vendor"]
 
-        max_overdue_days = Lease.objects.select_related("contract__partner").prefetch_related().filter(
-            Q(contract__partner=OuterRef('pk')) &
-            vendor_filter_for_serializers(self.request.query_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            Q(overdue_days__gt=25) &
-            Q(overdue_amount__gt=1000) &
-            Q(warning_notice_status='kapsamli_ihtar')
-        ).annotate(
-            warning_notice_count=Count(
-                'contract__contract_warning_notices',
-                distinct=True,
-                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
-            ),
-        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("-overdue_days").annotate(max_overdue_days=Max('overdue_days')).values('max_overdue_days')[:1]
+        # max_overdue_dayss = Lease.objects.select_related("contract__partner").prefetch_related().filter(
+        #     Q(contract__partner=OuterRef('pk')) &
+        #     vendor_filter_for_serializers(self.request.query_params) &
+        #     (
+        #         Q(lease_status='aktiflestirildi') |
+        #         Q(lease_status='planlandi') |
+        #         Q(lease_status='durduruldu')
+        #     ) &
+        #     Q(is_last_project=True) &
+        #     Q(is_kdv_diff=False) &
+        #     Q(is_credit=False) &
+        #     Q(is_under_review=False) &
+        #     Q(overdue_days__gt=25) &
+        #     Q(overdue_amount__gt=1000) &
+        #     Q(warning_notice_status='kapsamli_ihtar')
+        # ).annotate(
+        #     warning_notice_count=Count(
+        #         'contract__contract_warning_notices',
+        #         distinct=True,
+        #         filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+        #     ),
+        # ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("-overdue_days").annotate(max_overdue_days=Max('overdue_days')).values('max_overdue_days')[:1]
 
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
@@ -296,7 +296,8 @@ class ComprehensiveWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
             Q(partner_contracts__contract_leases__warning_notice_status='kapsamli_ihtar')
         ).annotate(
-            max_overdue_days=Subquery(max_overdue_days),
+            # max_overdue_days=Subquery(max_overdue_dayss),
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
             warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
             # overdue_check=Case(
