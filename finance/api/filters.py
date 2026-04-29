@@ -67,7 +67,7 @@ class BankAccountTransactionFilter(FilterSet):
         model = FinmaksTransaction
         fields = ['uuid']
 
-    def filter_transaction_date(self, queryset, transaction_date, value):
+    def filter_transaction_date_old(self, queryset, transaction_date, value):
         if not value:
             return queryset
         # Tarih parçalarını ayır (örn: "05.11.2025", "05.11.", "05")
@@ -83,6 +83,19 @@ class BankAccountTransactionFilter(FilterSet):
             # Yıl filtresi
             q &= Q(transaction_date__year=parts[2])
         return queryset.filter(q)
+    
+    def filter_transaction_date(self, queryset, transaction_date, value):
+        if not value:
+            return queryset
+
+        # ISO format (2026-04-28T00:00:00.000Z) veya düz tarih (dd.mm.yyyy) destekle
+        try:
+            date_obj = datetime.fromisoformat(value.replace('Z', '+00:00')).date()
+        except ValueError:
+            date_obj = datetime.strptime(value, '%d.%m.%Y').date()
+
+        return queryset.filter(transaction_date__date=date_obj)
+
 
 class VPosTransactionFilter(FilterSet):
     uuid = CharFilter(field_name='uuid', lookup_expr='exact')

@@ -52,7 +52,8 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
     bank_account_no = serializers.SerializerMethodField()
     bank_activity = serializers.SerializerMethodField()
     transaction_id = serializers.CharField()
-    transaction_date = serializers.DateTimeField()
+    transaction_date = serializers.SerializerMethodField()
+    transaction_time = serializers.SerializerMethodField()
     explanation_field = serializers.CharField()
     description = serializers.CharField()
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -103,6 +104,16 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
         
     def get_currency(self, obj):
         return obj.bank_account.currency.code if obj.bank_account and obj.bank_account.currency else ''
+    
+    def get_transaction_date(self, obj):
+        if obj.transaction_date:
+            return obj.transaction_date.strftime('%d.%m.%Y')
+        return ''
+    
+    def get_transaction_time(self, obj):
+        if obj.transaction_date:
+            return obj.transaction_date.strftime('%H:%M:%S')
+        return ''
         
 class BankAccountBalanceListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
