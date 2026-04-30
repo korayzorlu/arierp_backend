@@ -64,9 +64,9 @@ class EmailReceiverAdmin(admin.ModelAdmin):
 
 @admin.register(SetrowEmail)
 class SetrowEmailAdmin(admin.ModelAdmin):
-    list_display = ["company","sender","send_id","recipient","send_date","user"]
+    list_display = ["company","sender","send_id","recipient","send_date","user","send_status"]
     list_display_links = ["send_id"]
-    search_fields = ["company__name","send_date","user__name","recipient","sender"]
+    search_fields = ["company__name","send_date","user__name","recipient","sender","send_status"]
     list_filter = []
     inlines = []
     ordering = ["-created_date"]
@@ -77,6 +77,9 @@ class SetrowEmailAdmin(admin.ModelAdmin):
     
     def user(self,obj):
         return obj.user.username if obj.user else ""
+    
+    def send_status(self,obj):
+        return obj.get_send_status_display() if obj.send_status else ""
     
     class Meta:
         model = SetrowEmail

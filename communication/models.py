@@ -97,13 +97,23 @@ class SetrowEmail(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="setrow_emails")
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_setrow_emails", null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="user_setrow_emails", null=True, blank=True)
     
     send_id = models.CharField(_("Send ID"), max_length=140, null=True, blank=True)
     status = models.CharField(_("Status"), max_length=25, null=True, blank=True)
     recipient = models.CharField(_("Recipient"), max_length=250, null=True, blank=True)
     send_date = models.DateTimeField(_("Send Date"), blank=True, null=True)
     sender = models.CharField(_("Sender"), max_length=500, null=True, blank=True)
+
+    SEND_STATUS_CHOICES = (
+        ('0', ('Henüz gönderilmedi')),
+        ('1', ('Gönderildi / Okunmadı')),
+        ('2', ('Gönderildi / Okundu')),
+        ('3', ('Gönderilmedi / Bülten istemiyor')),
+        ('4', ('Gönderilmedi / Hatalı adres')),
+        ('5', ('Gönderilmedi / Junk adres')),
+    )
+    send_status = models.CharField(_("Send Status"), max_length=25, default='0', choices=SEND_STATUS_CHOICES, blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

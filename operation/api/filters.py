@@ -64,6 +64,7 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
     purchase_documents = CharFilter(method = 'filter_purchase_documents')
     ari_bbsn_warning = CharFilter(method = 'filter_ari_bbsn_warning')
     activation_date = CharFilter(method = 'filter_activation_date')
+    is_agreement = CharFilter(method = 'filter_is_agreement')
 
     class Meta:
         model = Lease
@@ -119,6 +120,40 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
         if date_parsed:
             return queryset.filter(activation_date=date_parsed)
         return queryset
+    
+    def filter_is_agreement(self, queryset, is_agreement, value):
+        if value == 'all':
+            return queryset
+        
+        main_lease_ids = list(queryset.values_list('main_lease_id', flat=True).distinct())
+        
+        pd_totals_by_main = {}
+        related_leases = Lease.objects.filter(
+            main_lease_id__in=main_lease_ids
+        ).prefetch_related('lease_purchase_documents')
+
+        for lease in related_leases:
+            mid = lease.main_lease_id
+            if mid not in pd_totals_by_main:
+                pd_totals_by_main[mid] = Decimal('0.00')
+            for pd in lease.lease_purchase_documents.all():
+                pd_totals_by_main[mid] += pd.total_amount
+
+        var_uuids, yok_uuids = set(), set()
+        for lease in queryset:
+            pd_total = pd_totals_by_main.get(lease.main_lease_id, Decimal('0.00'))
+            agreement_amount = pd_total - (lease.crm_invoice_total_amount or Decimal('0.00'))
+            if -1000 < agreement_amount < 1000:
+                var_uuids.add(lease.uuid)
+            else:
+                yok_uuids.add(lease.uuid)
+        
+        if value == 'var':
+            return queryset.filter(uuid__in=var_uuids)
+        elif value == 'yok':
+            return queryset.filter(uuid__in=yok_uuids)
+        else:
+            return queryset
 
 class UntitleDeedLeaseFilter(LeaseFilter):
     invoices = CharFilter(method = 'filter_invoices')

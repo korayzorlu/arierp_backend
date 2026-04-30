@@ -14,7 +14,7 @@ import time
 from .models import *
 from .utils.sms_utils import send_sms_with_turatel,check_sms_status
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
-from .utils.email_utils import send_email_with_setrow
+from .utils.email_utils import send_email_with_setrow,fetch_email_reports_with_setrow
 
 @shared_task()
 def send_sms(params):
@@ -25,3 +25,7 @@ def send_sms(params):
 @shared_task()
 def send_email_with_setrow_task(params):
     send_email_with_setrow(params)
+
+@shared_task()
+def fetch_email_reports_with_setrow_task(params):
+    fetch_email_reports_with_setrow(params)

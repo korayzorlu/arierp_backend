@@ -9,6 +9,8 @@ from users.models import User
 from companies.models import Company
 
 import requests
+import xmltodict
+import json
 
 def send_email_for_lease_changes(name,tc_vkn_no):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
@@ -85,3 +87,90 @@ def check_last_email(email):
     if last_email:
         return True
     return False
+
+def fetch_email_reports_with_setrow(params,BATCH_SIZE=1000):
+    company_obj = Company.objects.select_related().filter(id=int(params.get("company"))).first()
+
+    date = params.get("date") if params.get("date") != "" else timezone.now().strftime("%Y-%m-%d")
+    templatename = f"&templatename_id={params.get('template')}" if params.get("template") != "" else ""
+
+    url = (
+        f"https://api.setrow.com/V1/TRANS_SONUC_V2.php"
+        f"?apikey={settings.SETROW_API_KEY}"
+        f"&date={date}"
+        f"&type=2"
+        f"{templatename}"
+    )
+
+    headers = {
+        "Authorization": f"Bearer {settings.SETROW_API_KEY}",
+    }
+
+    session = requests.Session()
+    session.mount("https://", LegacyTLSAdapter())
+
+    response = session.post(url, headers=headers)
+
+    data_dict = xmltodict.parse(response.content)
+    data_json = json.dumps(data_dict, ensure_ascii=False, indent=2)
+
+    if data_dict.get("TRANS_SONUC_V2_XML", {}).get("SETROW_SONUC", {}):
+        data = data_dict.get("TRANS_SONUC_V2_XML", {}).get("SETROW_SONUC", {}).get("SETROW_SONUC_NODE", [])
+    else:
+        data = []
+
+    #örnek rapor
+    # {
+
+    #     "SETROW_TEMPLATE_ID": "271122",
+
+    #     "SABLON_ADI": "vadesi_gecmisler",
+
+    #     "GONDERIM_ID": "fe4f1877017eeb0388de",
+
+    #     "EMAIL_ADRESI": "kubilay.acar@tugba.com",
+
+    #     "GONDERIM_TARIHI": "2026-04-29 10:35:19",
+
+    #     "GORUNTULEME": "0",
+
+    #     "GORUNTULEME_TARIHI": null,
+
+    #     "TIKLAMA": "0",
+
+    #     "TIKLAMA_TARIHI": null,
+
+    #     "GLOBAL_HATALI_ADRES": "0",
+
+    #     "HATALI_ADRES": "0",
+
+    #     "BULTEN_ISTEMEYEN_ADRES": "0",
+
+    #     "JUNK_ADRES": "0",
+
+    #     "MUSTERI_GONDERIM_ID": null,
+
+    #     "GORUNTULEME_SAYISI": "0",
+
+    #     "TIKLAMA_SAYISI": "0",
+
+    #     "GONDERI_DURUMU": "1"
+
+    # }
+
+    updated_records = 0
+
+    for report in data:
+        SetrowEmail.objects.update_or_create(
+            send_id = report.get("GONDERIM_ID"),
+            defaults={
+                "sender": "iletisim@mail.info.arileasing.com.tr",
+                "recipient": report.get("EMAIL_ADRESI"),
+                "send_date": timezone.make_aware(timezone.datetime.strptime(report.get("GONDERIM_TARIHI"), "%Y-%m-%d %H:%M:%S")),
+                "company": company_obj,
+                "send_status": str(report.get("GONDERI_DURUMU")),
+            }
+        )
+        updated_records += 1
+    
+    print(f"Updated {updated_records} records.")

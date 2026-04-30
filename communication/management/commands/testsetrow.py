@@ -6,6 +6,7 @@ import json
 import os
 import pyodbc
 import requests
+import xmltodict
 
 from common.utils.common_utils import LegacyTLSAdapter
 
@@ -26,7 +27,13 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        url = f"https://www.setrowsend.com/email/sendV2.php?k={settings.SETROW_API_KEY}&ktemplate=b84e83786dbcbc132b0b25d293890ba6506ff7d0b474b2aa4e"
+        url = (
+            f"https://api.setrow.com/V1/TRANS_SONUC_V2.php"
+            f"?apikey={settings.SETROW_API_KEY}"
+            f"&date=2026-04-29"
+            f"&type=2"
+            f"&templatename=vadesi_gecmisler"
+        )
 
         headers = {
             "Authorization": f"Bearer {settings.SETROW_API_KEY}",
@@ -45,7 +52,11 @@ class Command(BaseCommand):
         session = requests.Session()
         session.mount("https://", LegacyTLSAdapter())
 
-        response = session.post(url, headers=headers, json=payload)
-        print(response.status_code, response.text)
+        response = session.get(url, headers=headers)
+
+        data_dict = xmltodict.parse(response.content)
+        data_json = json.dumps(data_dict, ensure_ascii=False, indent=2)
+
+        print(data_json)
         
         print("done!")
