@@ -286,7 +286,7 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name',
                        'leasing_type','application_no','current_request','finansman_kurum','bbsn','paid_amount',
-                       'purchase_document_amount','crm_invoice_total_amount','overdue_amount'
+                       'purchase_document_amount','crm_invoice_total_amount','overdue_amount','overdue_days'
                        ]
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
@@ -325,7 +325,9 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
         queryset = Lease.objects.select_related(*custom_related_fields).prefetch_related("lease_invoices").filter(
             Q(company = active_company.company if active_company else None) &
             ~Q(contract__partner__types__contains=['special']) &
-            Q(is_last_project_arinet=True)
+            Q(is_last_project_arinet=True) &
+            Q(item__bddk_code__icontains="GAYRIMENKUL") &
+            ~Q(item__item_group_id="142")
         )
 
         if ari_bbsn_warning == 'true':
@@ -401,8 +403,22 @@ class TitleDeedInvoiceControlList(ModelViewSet, QueryListAPIView):
                 'count': 1,
                 'message': f"Mutabakat (TRY) = Satıcı fatura tutarı (TRY) - CRM Fatura Tutarı (TRY)"
             })
+            projects = list(
+                queryset.exclude(item__isnull=True)
+                        .order_by('item__stock_name')
+                        .values('item__stock_name', 'item__uuid')
+                        .distinct()
+            )
+            vendors = list(
+                queryset.exclude(contract__vendor__isnull=True)
+                        .order_by('contract__vendor__name')
+                        .values('contract__vendor__name', 'contract__vendor__uuid')
+                        .distinct()
+            )
             response.data['warnings'] = warnings
             response.data['info'] = info
+            response.data['projects'] = projects
+            response.data['vendors'] = vendors
             return response
         return Response(serializer.data)
     
@@ -412,7 +428,8 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = [
         'code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type',
-        'application_no','current_request','finansman_kurum','bbsn','paid_amount','installment_amount','transfer_amount','remaining_amount'
+        'application_no','current_request','finansman_kurum','bbsn','paid_amount','installment_amount','transfer_amount','remaining_amount',
+        'overdue_amount','overdue_days'
     ]
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination

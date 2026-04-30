@@ -37,6 +37,7 @@ class LeaseFilter(FilterSet):
     item = CharFilter(method = 'filter_item')
     is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
     is_delivery = CharFilter(method = 'filter_is_delivery')
+    vendor = CharFilter(method = 'filter_vendor')
 
     class Meta:
         model = Lease
@@ -80,12 +81,12 @@ class LeaseFilter(FilterSet):
     def filter_vendor(self, queryset, vendor, value):
         if value == 'all':
             return queryset
-        return queryset.filter(contract__vendor__uuid = value)
+        return queryset.filter(contract__vendor__name = value)
     
     def filter_item(self, queryset, item, value):
         if value == 'all':
             return queryset
-        return queryset.filter(item__uuid = value)
+        return queryset.filter(item__stock_name = value)
 
     def filter_is_title_deed_delivered(self, queryset, is_title_deed_delivered, value):
         if value == 'all':

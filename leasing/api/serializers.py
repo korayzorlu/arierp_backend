@@ -135,6 +135,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
     project_no = serializers.CharField()
     item = serializers.SerializerMethodField()
+    vendor = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     leasing_type = serializers.CharField()
     application_no = serializers.CharField()
@@ -214,6 +215,12 @@ class ActiveLeaseListSerializer(serializers.Serializer):
         return {
             "id" : obj.item.uuid if obj.item else "",
             "name" : obj.item.stock_name if obj.item else "",
+        }
+    
+    def get_vendor(self, obj):
+        return {
+            "id" : obj.contract.vendor.uuid if obj.contract and obj.contract.vendor else "",
+            "name" : obj.contract.vendor.name if obj.contract and obj.contract.vendor else "",
         }
     
     # def get_block(self, obj):

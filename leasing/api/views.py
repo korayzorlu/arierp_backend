@@ -237,7 +237,9 @@ class ActiveLeaseList(ModelViewSet, QueryListAPIView):
             #     Q(lease_status='feshedildi') |
             #     Q(lease_status='devredildi')
             # ) &
-            Q(is_last_project=True)
+            Q(is_last_project=True) &
+            Q(item__bddk_code__icontains="GAYRIMENKUL") &
+            ~Q(item__item_group_id="142")
         ).exclude(
             Q(contract__partner__types__contains=['special'])
         )
@@ -253,6 +255,35 @@ class ActiveLeaseList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context()}
+        )
+
+        if page is not None:
+            response = self.get_paginated_response(serializer.data)
+            projects = list(
+                queryset.exclude(item__isnull=True)
+                        .order_by('item__stock_name')
+                        .values('item__stock_name', 'item__uuid')
+                        .distinct()
+            )
+            vendors = list(
+                queryset.exclude(contract__vendor__isnull=True)
+                        .order_by('contract__vendor__name')
+                        .values('contract__vendor__name', 'contract__vendor__uuid')
+                        .distinct()
+            )
+            response.data['projects'] = projects
+            response.data['vendors'] = vendors
+            return response
+        return Response(serializer.data)
 
 class LeaseNoteList(ModelViewSet, QueryListAPIView):
     serializer_class = LeaseNoteListSerializer

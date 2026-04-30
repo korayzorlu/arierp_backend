@@ -325,8 +325,8 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
     def get_contract_uuid(self, obj):
         return obj.contract.uuid if obj.contract else ""
 
-    def get_vendor(self, obj):
-        return obj.contract.vendor.name if obj.contract and obj.contract.vendor else ""
+    # def get_vendor(self, obj):
+    #     return obj.contract.vendor.name if obj.contract and obj.contract.vendor else ""
 
     def get_currency(self, obj):
         return obj.currency.code if obj.currency else ""
@@ -359,6 +359,12 @@ class TitleDeedInvoiceControlListSerializer(serializers.Serializer):
         return {
             "id" : obj.item.uuid if obj.item else "",
             "name" : obj.item.stock_name if obj.item else "",
+        }
+    
+    def get_vendor(self, obj):
+        return {
+            "id" : obj.contract.vendor.uuid if obj.contract and obj.contract.vendor else "",
+            "name" : obj.contract.vendor.name if obj.contract and obj.contract.vendor else "",
         }
     
     def get_block(self, obj):
