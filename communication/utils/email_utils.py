@@ -75,7 +75,8 @@ def send_email_with_setrow(params):
                     status=params.get('status'),
                     send_date=timezone.now(),
                     user=user,
-                    company=company
+                    company=company,
+                    template=params.get('template_name'),
                 )
 
 def check_last_email(email):
@@ -169,6 +170,7 @@ def fetch_email_reports_with_setrow(params,BATCH_SIZE=1000):
                 "send_date": timezone.make_aware(timezone.datetime.strptime(report.get("GONDERIM_TARIHI"), "%Y-%m-%d %H:%M:%S")),
                 "company": company_obj,
                 "send_status": str(report.get("GONDERI_DURUMU")),
+                "template": report.get("SABLON_ADI"),
             }
         )
         updated_records += 1

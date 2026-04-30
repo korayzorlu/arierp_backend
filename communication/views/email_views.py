@@ -212,7 +212,8 @@ class SendRiskEmailSelectedView(LoginRequiredMixin,View):
             "user_id": str(request.user.uuid),
             "company_id": str(company_id),
             "recipients": recipients,
-            "template": template_for_risk_status(data.get("risk_status"))
+            "template": template_for_risk_status(data.get("risk_status")),
+            "template_name": data.get("template_name"),
         }
 
         send_email_with_setrow_task.delay(params)

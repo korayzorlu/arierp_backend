@@ -104,6 +104,7 @@ class SetrowEmail(models.Model):
     recipient = models.CharField(_("Recipient"), max_length=250, null=True, blank=True)
     send_date = models.DateTimeField(_("Send Date"), blank=True, null=True)
     sender = models.CharField(_("Sender"), max_length=500, null=True, blank=True)
+    template = models.CharField(_("Template"), max_length=140, null=True, blank=True)
 
     SEND_STATUS_CHOICES = (
         ('0', ('Henüz gönderilmedi')),
