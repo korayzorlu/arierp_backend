@@ -46,8 +46,10 @@ class SendRiskEmailView(LoginRequiredMixin,View):
 
         recipients = []
 
+        ignore_tc_list = ["35263659368","35236660292","35227660584","35221660702","20416138364"]
+
         for partner in partners:
-            if partner.email and partner.email != "":
+            if partner.email and partner.email != "" and partner.tc_vkn_no not in ignore_tc_list:
                 leases = leases_for_project({**data, "partner_id": partner.uuid})
             
                 if leases:
@@ -159,12 +161,13 @@ class SendRiskEmailSelectedView(LoginRequiredMixin,View):
         company_id = active_company.company.uuid
 
         recipients = []
+        ignore_tc_list = ["35263659368","35236660292","35227660584","35221660702","20416138364"]
     
         for uuid in uuids:
             lease = Lease.objects.select_related().filter(uuid = uuid).first()
             
             if lease:
-                if lease.contract and lease.contract.partner and lease.contract.partner.email and lease.contract.partner.email != "":
+                if lease.contract and lease.contract.partner and lease.contract.partner.email and lease.contract.partner.email != "" and lease.contract.partner.tc_vkn_no not in ignore_tc_list:
 
                     if not check_last_email(lease.contract.partner.email):
                         recipients.append(
