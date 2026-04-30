@@ -64,9 +64,9 @@ class EmailReceiverAdmin(admin.ModelAdmin):
 
 @admin.register(SetrowEmail)
 class SetrowEmailAdmin(admin.ModelAdmin):
-    list_display = ["company","sender","send_id","recipient","send_date","user","send_status"]
+    list_display = ["company","sender","send_id","template","recipient","send_date","user","send_status"]
     list_display_links = ["send_id"]
-    search_fields = ["company__name","send_date","user__name","recipient","sender","send_status"]
+    search_fields = ["company__name","send_date","template","user__name","recipient","sender","send_status"]
     list_filter = []
     inlines = []
     ordering = ["-created_date"]
