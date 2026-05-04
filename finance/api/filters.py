@@ -90,7 +90,10 @@ class BankAccountTransactionFilter(FilterSet):
 
         # ISO format (2026-04-28T00:00:00.000Z) veya düz tarih (dd.mm.yyyy) destekle
         try:
-            date_obj = datetime.fromisoformat(value.replace('Z', '+00:00')).date()
+            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+            # UTC datetime'ı lokal timezone'a çevir, sonra tarihi al
+            local_dt = timezone.localtime(dt)
+            date_obj = local_dt.date()
         except ValueError:
             date_obj = datetime.strptime(value, '%d.%m.%Y').date()
 
