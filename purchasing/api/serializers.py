@@ -170,6 +170,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     vat_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    local_amount = serializers.SerializerMethodField()
     currency = serializers.SerializerMethodField()
     exchange_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     document_status = serializers.CharField()
@@ -237,7 +238,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
         return obj.total_amount - obj.lease.crm_invoice_total_amount if obj.lease else obj.total_amount
     
     def get_is_agreement(self, obj):
-        agreement_amount = obj.total_amount - obj.lease.crm_invoice_total_amount if obj.lease else obj.total_amount
+        agreement_amount = (obj.total_amount * obj.exchange_rate) - obj.lease.crm_invoice_total_amount if obj.lease else (obj.total_amount * obj.exchange_rate)
         if -1000 < agreement_amount < 1000:
             return "Mutabakat Var"
         else:
@@ -255,6 +256,9 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
             "name" : obj.lease.contract.vendor.name if obj.lease and obj.lease.contract and obj.lease.contract.vendor else "",
         }
  
+    def get_local_amount(self, obj):
+        return obj.total_amount * obj.exchange_rate if obj.total_amount and obj.exchange_rate else Decimal('0.00')
+
 class PurchaseDocumentItemListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()

@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import Q,Sum
-from django.db.models.functions import Lower,Upper
+from django.db.models import Q,Sum,F
+from django.db.models.functions import Lower,Upper,Abs
 
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter,DateFromToRangeFilter
@@ -38,6 +38,7 @@ class LeaseFilter(FilterSet):
     is_title_deed_delivered = CharFilter(method = 'filter_is_title_deed_delivered')
     is_delivery = CharFilter(method = 'filter_is_delivery')
     vendor = CharFilter(method = 'filter_vendor')
+    is_agreement = CharFilter(method = 'filter_is_agreement')
 
     class Meta:
         model = Lease
@@ -105,6 +106,20 @@ class LeaseFilter(FilterSet):
             return queryset.filter(is_delivery=True)
         elif value == 'teslim_edilmedi':
             return queryset.filter(is_delivery=False)
+        else:
+            return queryset
+        
+    def filter_is_agreement(self, queryset, is_agreement, value):
+        if value == 'all':
+            return queryset
+        if value == 'var':
+            return queryset.annotate(
+                amount_diff=Abs(F('purchase_document_amount') - F('crm_invoice_total_amount'))
+            ).filter(amount_diff__lt=1000)
+        elif value == 'yok':
+            return queryset.annotate(
+                amount_diff=Abs(F('purchase_document_amount') - F('crm_invoice_total_amount'))
+            ).filter(amount_diff__gte=1000)
         else:
             return queryset
 

@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
 from django.db.models import Q, Sum, F, Value, DecimalField, ExpressionWrapper
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce,Abs
 from django.db.models.functions import Lower,Upper
 
 from django_filters.rest_framework import FilterSet
@@ -30,6 +30,7 @@ class PurchasePaymentFilter(FilterSet):
     special = CharFilter(method = 'filter_special')
     is_agreement = CharFilter(method='filter_is_agreement')
     item = CharFilter(method = 'filter_item')
+    is_agreement = CharFilter(method='filter_is_agreement')
 
     class Meta:
         model = PurchasePayment
@@ -102,6 +103,20 @@ class PurchasePaymentFilter(FilterSet):
         if value == 'all':
             return queryset
         return queryset.filter(lease__contract__vendor__name = value)
+    
+    def filter_is_agreement(self, queryset, is_agreement, value):
+        if value == 'all':
+            return queryset
+        if value == 'var':
+            return queryset.annotate(
+                amount_diff=Abs(F('lease__purchase_document_amount') - F('lease__crm_invoice_total_amount'))
+            ).filter(amount_diff__lt=1000)
+        elif value == 'yok':
+            return queryset.filter(lease__crm_invoice_total_amount__gt=0).annotate(
+                amount_diff=Abs(F('lease__purchase_document_amount') - F('lease__crm_invoice_total_amount'))
+            ).filter(amount_diff__gte=1000)
+        else:
+            return queryset
         
     
 class PurchaseDocumentFilter(FilterSet):
@@ -114,6 +129,7 @@ class PurchaseDocumentFilter(FilterSet):
     vendor = CharFilter(method = 'filter_vendor')
     document_number = CharFilter(field_name='document_number', lookup_expr='icontains')
     item = CharFilter(method = 'filter_item')
+    is_agreement = CharFilter(method='filter_is_agreement')
 
     class Meta:
         model = PurchaseDocument
@@ -128,6 +144,20 @@ class PurchaseDocumentFilter(FilterSet):
         if value == 'all':
             return queryset
         return queryset.filter(lease__contract__vendor__name = value)
+    
+    def filter_is_agreement(self, queryset, is_agreement, value):
+        if value == 'all':
+            return queryset
+        if value == 'var':
+            return queryset.annotate(
+                amount_diff=Abs(F('lease__purchase_document_amount') - F('lease__crm_invoice_total_amount'))
+            ).filter(amount_diff__lt=1000)
+        elif value == 'yok':
+            return queryset.filter(lease__crm_invoice_total_amount__gt=0).annotate(
+                amount_diff=Abs(F('lease__purchase_document_amount') - F('lease__crm_invoice_total_amount'))
+            ).filter(amount_diff__gte=1000)
+        else:
+            return queryset
 
 class PurchaseDocumentItemFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')

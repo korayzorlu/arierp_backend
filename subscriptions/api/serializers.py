@@ -148,6 +148,9 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesap Hareketleri", "icon" : "price_change", "route" : "/trade-transactions"},
             ]},
+            {"type" : "sub_menu", "class" : ["admin"], "label" : "SMS", "icon" : "chat", "items" : [
+                {"type" : "item", "class" : ["admin"], "label" : "SMS Gönder", "icon" : "chat", "route" : "/sms-send"},
+            ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},
