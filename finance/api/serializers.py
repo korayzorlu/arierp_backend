@@ -107,12 +107,14 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
     
     def get_transaction_date(self, obj):
         if obj.transaction_date:
-            return obj.transaction_date.strftime('%d.%m.%Y')
+            local_dt = timezone.localtime(obj.transaction_date)
+            return local_dt.strftime('%d.%m.%Y')
         return ''
-    
+
     def get_transaction_time(self, obj):
         if obj.transaction_date:
-            return obj.transaction_date.strftime('%H:%M:%S')
+            local_dt = timezone.localtime(obj.transaction_date)
+            return local_dt.strftime('%H:%M:%S')
         return ''
         
 class BankAccountBalanceListSerializer(serializers.Serializer):

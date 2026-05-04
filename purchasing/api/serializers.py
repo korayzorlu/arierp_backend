@@ -129,13 +129,13 @@ class PurchasePaymentListSerializer(serializers.Serializer):
         return obj.lease.crm_invoice_total_amount if obj.lease else Decimal('0.00')
     
     def get_agreement(self, obj):
-        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum(F('total_amount') * F('exchange_rate')))
         purchase_payment_total = purchase_documents['total_total_amount'] or Decimal('0.00')
 
         return purchase_payment_total - obj.lease.crm_invoice_total_amount if obj.lease else purchase_payment_total
     
     def get_is_agreement(self, obj):
-        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum('total_amount'))
+        purchase_documents = PurchaseDocument.objects.select_related().filter(lease = obj.lease).aggregate(total_total_amount=Sum(F('total_amount') * F('exchange_rate')))
         purchase_payment_total = purchase_documents['total_total_amount'] or Decimal('0.00')
 
         agreement_amount = purchase_payment_total - obj.lease.crm_invoice_total_amount if obj.lease else purchase_payment_total
@@ -189,7 +189,8 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
             return {
                 "code" : obj.lease.code,
                 "contract" : obj.lease.contract.code if obj.lease.contract else "",
-                "bbsn" : obj.lease.bbsn if obj.lease.bbsn is not None or obj.lease.bbsn == "None" else "",
+                "bbsn" : obj.lease.ari_bbsn if obj.lease.ari_bbsn is not None or obj.lease.ari_bbsn == "None" else "",
+                "crm_bbsn" : obj.lease.crm_bbsn if obj.lease.crm_bbsn is not None or obj.lease.crm_bbsn == "None" else "",
             }
         else:
             return ""
@@ -235,7 +236,7 @@ class PurchaseDocumentListSerializer(serializers.Serializer):
         return obj.lease.crm_invoice_total_amount if obj.lease else Decimal('0.00')
     
     def get_agreement(self, obj):
-        return obj.total_amount - obj.lease.crm_invoice_total_amount if obj.lease else obj.total_amount
+        return (obj.total_amount * obj.exchange_rate) - obj.lease.crm_invoice_total_amount if obj.lease else (obj.total_amount * obj.exchange_rate)
     
     def get_is_agreement(self, obj):
         agreement_amount = (obj.total_amount * obj.exchange_rate) - obj.lease.crm_invoice_total_amount if obj.lease else (obj.total_amount * obj.exchange_rate)
