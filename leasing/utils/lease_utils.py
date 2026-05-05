@@ -146,7 +146,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.is_last_project = True if str(data.IS_LAST_PROJECT) == "1" else False
                     obj.current_request = str(data.CurrentRequest) or ""
                     obj.notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None
-                    obj.bbsn = str(data.BBSN_NO) or ""
+                    obj.bbsn = str(data.BBSN_NO) if data.BBSN_NO else None
                     obj.risk_status = check_risk_status(obj)
                     # obj.is_lop_revision = True if str(data.IS_LOP_REVISION) == "1" else False
                     #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
@@ -233,7 +233,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         is_last_project = True if str(data.IS_LAST_PROJECT) == "1" else False,
                         current_request = str(data.CurrentRequest) or "",
                         notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None,
-                        bbsn = str(data.BBSN_NO) or "",
+                        bbsn = str(data.BBSN_NO) if data.BBSN_NO else None,
                         #is_lop_revision = True if str(data.IS_LOP_REVISION) == "1" else False,
                         #transfer_count = leases_count - 1 if leases_count > 0 else 0,
                     ))
@@ -341,7 +341,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                 if obj:
                     obj.crm_contract_code = str(data.sozlesme_no) or ""
                     obj.crm_project_id = str(data.proje_id) or ""
-                    obj.crm_bbsn = str(data.stok_no) or ""
+                    obj.crm_bbsn = str(data.stok_no) if data.stok_no else None
                     obj.crm_durum = str(data.durum) or ""
                     obj.crm_satici = str(data.sirket_unvani) or ""
                     obj.crm_invoice_date = data.fatura_tarihi.date() if data.fatura_tarihi else None
@@ -353,7 +353,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                     #print(f"{str(data.teslim_tarihi)} - {data.teslim_tarihi} - {type(data.teslim_tarihi)}")
 
                     if obj.ari_bbsn is None or obj.ari_bbsn == "" or obj.ari_bbsn == "None" or obj.ari_bbsn == "BBSN.140915":
-                        obj.ari_bbsn = str(data.stok_no) or ""
+                        obj.ari_bbsn = str(data.stok_no) if data.stok_no else None
 
                     update_objs.append(obj)
                     update_progress += 1

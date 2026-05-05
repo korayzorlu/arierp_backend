@@ -270,7 +270,7 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     update_objs.append(obj)
                     update_progress += 1
                 else:
-                    print(f"{str(data.InstitutionalCustomerId)} - {data.InstitutionalCustomerName}: ")
+                    # print(f"{str(data.InstitutionalCustomerId)} - {data.InstitutionalCustomerName}: ")
                     create_objs.append(Partner(
                         company = company_obj,
                         name = data.InstitutionalCustomerName or "",
