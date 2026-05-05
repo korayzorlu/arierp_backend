@@ -91,6 +91,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.birth_place = data.BirthPlace or ""
                     obj.email = data.Email or ""
                     obj.passport_no = str(data.PassportNo) or ""
+                    obj.kep = str(data.KEP_ADDRESS) or ""
                     obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     obj.sgk_job = sgk_jobs_dict.get(str(data.SgkJobId)) if data.SgkJobId else None
                     obj.sgk_job_code = data.SgkJobCode or ""
@@ -116,6 +117,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         tc_vkn_no = str(data.TaxAndTCIdentity) or "",
                         passport_no = str(data.PassportNo) or "",
                         is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False,
+                        kep = str(data.KEP_ADDRESS) or "",
                         sector = sectors_dict.get(data.MainSectorId),
                         father_name = data.FathersName or "",
                         birthday = data.BirthDate.date() if data.BirthDate else None,
@@ -156,6 +158,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     "birth_place",
                     "email",
                     "passport_no",
+                    "kep",
                     "is_turkkep",
                     "sgk_job",
                     "sgk_job_code",
@@ -262,6 +265,8 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.city = cities_dict.get(normalize(data.CityName))
                     obj.country = countries_dict.get(normalize(data.CountryName))
                     obj.email = data.EMail or ""
+                    obj.kep = str(data.KEP_ADDRESS) or ""
+                    obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -280,7 +285,9 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                         phone_number = str(data.Phone).replace("/","") if data.Phone else "",
                         email = data.EMail or "",
                         types = ["customer"],
-                        customer_type = "institutional"
+                        customer_type = "institutional",
+                        kep = str(data.KEP_ADDRESS) or "",
+                        is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     ))
                     create_progress += 1
             if update_objs:
@@ -296,6 +303,8 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     "city",
                     "country",
                     "email",
+                    "kep",
+                    "is_turkkep",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Partner.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)

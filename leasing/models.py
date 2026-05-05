@@ -247,10 +247,10 @@ class Lease(models.Model):
             #     super().save(update_fields=['risk_status'])
 
 
-            # from .utils.lease_utils import check_risk_status
-            # if check_risk_status(self) != self.risk_status:
-            #     self.risk_status = check_risk_status(self)
-            #     super().save(update_fields=['risk_status'])
+            from .utils.lease_utils import check_risk_status
+            if check_risk_status(self) != self.risk_status:
+                self.risk_status = check_risk_status(self)
+                super().save(update_fields=['risk_status'])
             #===========================
             # RISK STATUS UPDATE END
             #===========================

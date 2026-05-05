@@ -34,6 +34,7 @@ SELECT TOP 100 PERCENT
     ca.CountryCode,
     ca.Email,
     PassportNo,
+    KEP_ADDRESS,
     CASE IS_TURKKEP_CUSTOMER
          WHEN '1' THEN 'Evet'
          ELSE 'Hayır'
