@@ -167,6 +167,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     crm_invoice_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     crm_invoice_kdv_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     crm_invoice_total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    risk_status = serializers.SerializerMethodField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -222,6 +223,10 @@ class ActiveLeaseListSerializer(serializers.Serializer):
             "id" : obj.contract.vendor.uuid if obj.contract and obj.contract.vendor else "",
             "name" : obj.contract.vendor.name if obj.contract and obj.contract.vendor else "",
         }
+    
+    def get_risk_status(self, obj):
+        return obj.get_risk_status_display() if obj.risk_status else ""
+
     
     # def get_block(self, obj):
     #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""

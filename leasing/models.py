@@ -1,9 +1,10 @@
 from django.db import models, transaction
-from django.db.models import Q,IntegerField
+from django.db.models import Q,IntegerField,Count,Max,Case,When,F,Value,DateField
 from django.db.models.functions import Cast
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 from django.conf import settings
+from django.utils.timezone import now
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -26,6 +27,8 @@ from finance.models import FinmaksTransaction
 from inventory.models import Item
 from quotations.models import Quotation
 from compliance.utils.third_person_utils import create_third_person
+from risk.utils.filter_utils import gecikmede_filters,ihtar_cekilecek_filters,ihtar_cekildi_filters,fesih_edilecek_filters
+
 from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
 from .utils.bank_activity_utils import (
     distribude_amount_with_leases,
@@ -39,6 +42,12 @@ from .utils.bank_activity_utils import (
 )
 
 # Create your models here.
+class RiskStatus(models.TextChoices):
+    RISK_YOK = 'risk_yok', 'Risk Yok'
+    GECIKMEDE = 'gecikmede', 'Gecikmede'
+    IHTAR_CEKILECEK = 'ihtar_cekilecek', 'İhtar Çekilecek'
+    IHTAR_CEKILDI = 'ihtar_cekildi', 'İhtar Çekildi'
+    FESIH_EDILECEK = 'fesih_edilecek', 'Fesih Edilecek'
 
 class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -176,11 +185,75 @@ class Lease(models.Model):
     ari_bbsn = models.CharField(_("Arı BBSN"), max_length=25, blank=True, null=True)
     #arinet-end
 
+    #risk
+    risk_status = models.CharField(_("Status"), max_length=25, default=RiskStatus.RISK_YOK, choices=RiskStatus.choices, blank=True, null=True)
+    #risk-end
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.code)
+    
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+
+            #===========================
+            # RISK STATUS UPDATE
+            #===========================
+            # if Lease.objects.filter(
+            #     Q(pk=self.pk) &
+            #     gecikmede_filters()
+            # ).exists():
+            #     print(self.code)
+            #     self.risk_status = RiskStatus.GECIKMEDE
+            #     super().save(update_fields=['risk_status'])
+            # elif Lease.objects.filter(
+            #     Q(pk=self.pk) &
+            #     ihtar_cekilecek_filters()
+            # ).exists():
+            #     self.risk_status = RiskStatus.IHTAR_CEKILECEK
+            #     super().save(update_fields=['risk_status'])
+            # elif Lease.objects.filter(
+            #     Q(pk=self.pk) &
+            #     ihtar_cekildi_filters()
+            # ).annotate(
+            #     warning_notice_count=Count(
+            #         'contract__contract_warning_notices',
+            #         distinct=True,
+            #         filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+            #     ),
+            # ).filter(warning_notice_count__gt=0).exists():
+            #     self.risk_status = RiskStatus.IHTAR_CEKILDI
+            #     super().save(update_fields=['risk_status'])
+            # elif Lease.objects.filter(
+            #     Q(pk=self.pk) &
+            #     fesih_edilecek_filters()
+            # ).annotate(
+            #     official_cancellation_date=Max(
+            #         Case(
+            #             When(
+            #                 Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
+            #                 Q(contract__contract_warning_notices__official_cancellation_date__lte=now().date()),
+            #                 then=F('contract__contract_warning_notices__official_cancellation_date')
+            #             ),
+            #             default=None,
+            #             output_field=DateField()
+            #         )
+            #     ),
+            # ).filter(official_cancellation_date__lte=now().date()).exists():
+            #     self.risk_status = RiskStatus.FESIH_EDILECEK
+            #     super().save(update_fields=['risk_status'])
+
+
+            # from .utils.lease_utils import check_risk_status
+            # if check_risk_status(self) != self.risk_status:
+            #     self.risk_status = check_risk_status(self)
+            #     super().save(update_fields=['risk_status'])
+            #===========================
+            # RISK STATUS UPDATE END
+            #===========================
     
 class LeaseNote(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)

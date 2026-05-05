@@ -11,3 +11,4 @@ class ExchangeRateFilter(FilterSet):
     class Meta:
         model = ExchangeRate
         fields = ['id','date','forex_buying','forex_selling']
+

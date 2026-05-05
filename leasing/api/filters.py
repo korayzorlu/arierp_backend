@@ -29,7 +29,7 @@ class LeaseFilter(FilterSet):
     vade = CharFilter(field_name='vade', lookup_expr='icontains')
     leasing_rate = CharFilter(field_name='leasing_rate', lookup_expr='icontains')
     vat = CharFilter(field_name='vat', lookup_expr='icontains')
-    currency = CharFilter(field_name='currency__code', lookup_expr='icontains')
+    currency = CharFilter(method = 'filter_currency')
     lease_status = CharFilter(field_name='lease_status', lookup_expr='icontains')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     leaseflex_automation = CharFilter(method = 'filter_leaseflex_automation')
@@ -39,6 +39,7 @@ class LeaseFilter(FilterSet):
     is_delivery = CharFilter(method = 'filter_is_delivery')
     vendor = CharFilter(method = 'filter_vendor')
     is_agreement = CharFilter(method = 'filter_is_agreement')
+    risk_status = CharFilter(method = 'filter_risk_status')
 
     class Meta:
         model = Lease
@@ -122,6 +123,16 @@ class LeaseFilter(FilterSet):
             ).filter(amount_diff__gte=1000)
         else:
             return queryset
+        
+    def filter_currency(self, queryset, currency, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(currency__code = value)
+    
+    def filter_risk_status(self, queryset, risk_status, value):
+        if value == 'all':
+            return queryset
+        return queryset.filter(risk_status = value)
 
 class ActiveLeaseFilter(LeaseFilter):
     class Meta:

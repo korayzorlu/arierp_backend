@@ -34,6 +34,7 @@ from partners.models import Partner
 from trade.models import TradeTransaction
 from contracts.models import WarningNotice,ComprehensiveWarningNotice
 from purchasing.models import PurchaseDocument
+from risk.utils.filter_utils import _active_warning_notice_exists,active_warning_notice_exists
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -146,6 +147,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.current_request = str(data.CurrentRequest) or ""
                     obj.notary_public_date = data.NotaryPublicDate.date() if data.NotaryPublicDate else None
                     obj.bbsn = str(data.BBSN_NO) or ""
+                    obj.risk_status = check_risk_status(obj)
                     # obj.is_lop_revision = True if str(data.IS_LOP_REVISION) == "1" else False
                     #obj.transfer_count = leases_count - 1 if leases_count > 0 else 0
 
@@ -273,6 +275,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "transfer_amount",
                     "warning_notice_status",
                     "purchase_document_amount",
+                    "risk_status",
                     # "is_lop_revision",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
@@ -339,7 +342,6 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                     obj.crm_contract_code = str(data.sozlesme_no) or ""
                     obj.crm_project_id = str(data.proje_id) or ""
                     obj.crm_bbsn = str(data.stok_no) or ""
-                    obj.ari_bbsn = str(data.stok_no) or ""
                     obj.crm_durum = str(data.durum) or ""
                     obj.crm_satici = str(data.sirket_unvani) or ""
                     obj.crm_invoice_date = data.fatura_tarihi.date() if data.fatura_tarihi else None
@@ -349,6 +351,9 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                     obj.crm_invoice_total_amount = safe_decimal(data.fatura_tutari) + safe_decimal(data.fatura_kdv_tutari)
                     obj.is_delivery = True if data.teslim_tarihi else False
                     #print(f"{str(data.teslim_tarihi)} - {data.teslim_tarihi} - {type(data.teslim_tarihi)}")
+
+                    if obj.ari_bbsn is None or obj.ari_bbsn == "" or obj.ari_bbsn == "None" or obj.ari_bbsn == "BBSN.140915":
+                        obj.ari_bbsn = str(data.stok_no) or ""
 
                     update_objs.append(obj)
                     update_progress += 1
@@ -982,3 +987,21 @@ def set_bbsn(company):
             obj.save()
 
     print(f"{old_obj_count} objects updated for leases.")
+
+#===========================
+# RISK STATUS UPDATE
+#===========================
+def check_risk_status(self):
+    if self.overdue_amount > 100 and self.overdue_days > 0 and self.overdue_days <= 25 and not active_warning_notice_exists(self) and self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review:
+        return RiskStatus.GECIKMEDE
+    elif self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and (self.overdue_0_30 > 0 or self.overdue_31_60 > 0 or self.overdue_61_90 > 0 or self.overdue_91_120 > 0 or self.overdue_121_150 > 0 or self.overdue_151_180 > 0 or self.overdue_181_gte > 0) and not active_warning_notice_exists(self):
+        return RiskStatus.IHTAR_CEKILECEK
+    elif self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists() and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000:
+        return RiskStatus.IHTAR_CEKILDI
+    elif self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists() and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.contract.contract_warning_notices.filter(Q(service_date__isnull=False) & (Q(official_cancellation_date__lte=timezone.now().date()))).exists() and self.overdue_days > 25 and self.overdue_amount > 1000:
+        return RiskStatus.FESIH_EDILECEK
+    else:
+        return RiskStatus.RISK_YOK
+
+
+
