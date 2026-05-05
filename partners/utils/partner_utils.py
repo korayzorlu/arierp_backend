@@ -117,7 +117,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         tc_vkn_no = str(data.TaxAndTCIdentity) or "",
                         passport_no = str(data.PassportNo) or "",
                         is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False,
-                        kep = str(data.KEP_ADDRESS) or "",
+                        kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None,
                         sector = sectors_dict.get(data.MainSectorId),
                         father_name = data.FathersName or "",
                         birthday = data.BirthDate.date() if data.BirthDate else None,
