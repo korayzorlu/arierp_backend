@@ -675,6 +675,93 @@ class UntitleDeedLeaseListSerializer(serializers.Serializer):
         else:
             return ""
 
+class KepMonitoringListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    image = serializers.ImageField()
+    name = serializers.CharField()
+    formalName = serializers.CharField(source = "formal_name")
+    types = serializers.ListField()
+    customer_type = serializers.CharField()
+    customerCode = serializers.CharField(source = "customer_code")
+    crmCode = serializers.CharField(source = "crm_code")
+    customer = serializers.SerializerMethodField()
+    supplier = serializers.SerializerMethodField()
+    shareholder = serializers.SerializerMethodField()
+    special = serializers.SerializerMethodField()
+    pep = serializers.SerializerMethodField()
+    companyId = serializers.SerializerMethodField()
+    vatOffice = serializers.CharField(source = "vat_office")
+    vatNo = serializers.CharField(source = "vat_no")
+    tcVknNo = serializers.CharField(source = "tc_vkn_no")
+    country = serializers.SerializerMethodField()
+    city = serializers.SerializerMethodField()
+    address = serializers.CharField()
+    address2 = serializers.CharField()
+    isBillingSame = serializers.BooleanField(source = "is_billing_same")
+    billingCountry = serializers.SerializerMethodField()
+    billingCity = serializers.SerializerMethodField()
+    billingAddress = serializers.CharField(source = "billing_address")
+    billingAddress2 = serializers.CharField(source = "billing_address2")
+    country_name = serializers.SerializerMethodField()
+    city_name = serializers.SerializerMethodField()
+    phoneCountry = serializers.SerializerMethodField(source = "phone_country")
+    phoneNumber = serializers.CharField(source = "phone_number")
+    email = serializers.EmailField()
+    web = serializers.EmailField()
+    about = serializers.CharField()
+    is_reliable_person = serializers.BooleanField()
+    is_commercial = serializers.BooleanField()
+    is_turkkep = serializers.BooleanField()
+    kep = serializers.CharField()
+    sgk_job = serializers.SerializerMethodField()
+    sgk_job_code = serializers.SerializerMethodField()
+    last_contract_date = serializers.SerializerMethodField()
+    
+    def get_customer(self, obj):
+        return True if "customer" in obj.types else False
+    
+    def get_supplier(self, obj):
+        return True if "supplier" in obj.types else False
+
+    def get_shareholder(self, obj):
+        return True if "shareholder" in obj.types else False
+    
+    def get_special(self, obj):
+        return True if "special" in obj.types else False
+    
+    def get_pep(self, obj):
+        return True if "pep" in obj.types else False
+    
+    def get_country(self, obj):
+        return obj.country.iso2 if obj.country else ''
+    
+    def get_city(self, obj):
+        return {"id":obj.city.id,"name":obj.city.name} if obj.city else {}
+    
+    def get_billingCountry(self, obj):
+        return obj.billing_country.iso2 if obj.billing_country else ''
+    
+    def get_billingCity(self, obj):
+        return {"id":obj.billing_city.id,"name":obj.billing_city.name} if obj.billing_city else {}
+    
+    def get_country_name(self, obj):
+        return obj.country.name if obj.country else ''
+    
+    def get_city_name(self, obj):
+        return obj.city.name if obj.city else ''
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_phoneCountry(self, obj):
+        return obj.phone_country.iso2 if obj.phone_country else ''
+    
+    def get_sgk_job(self, obj):
+        return obj.sgk_job.description if obj.sgk_job else ''
+
+    def get_sgk_job_code(self, obj):
+        return obj.sgk_job.sgk_job_code if obj.sgk_job else ''
 
 
 

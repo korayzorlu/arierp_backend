@@ -11,6 +11,7 @@ router.register(r'partner_advance_activities',PartnerAdvanceActivityList, "partn
 router.register(r'partner_advance_activity_leases',PartnerAdvanceActivityLeaseList, "partner_advance_activity_leases_api")
 router.register(r'title_deed_invoice_controls',TitleDeedInvoiceControlList, "title_deed_invoice_controls_api")
 router.register(r'untitle_deed_leases',UntitleDeedLeaseList, "untitle_deed_leases_api")
+router.register(r'kep_monitorings',KepMonitoringList, "kep_monitorings_api")
 
 urlpatterns = [
     path('',include(router.urls)),

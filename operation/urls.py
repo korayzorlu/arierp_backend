@@ -17,6 +17,7 @@ urlpatterns = [
     path('update_contract_operation_status/', UpdateContractOperationStatusView.as_view(), name="update_contract_operation_status"),
     path('export_title_deed_invoice_controls/', ExportTitleDeedInvoiceControlsView.as_view(), name="export_title_deed_invoice_controls"),
     path('title_deed_invoice_controls_excel/', TitleDeedInvoiceControlsExcelView.as_view(), name="title_deed_invoice_controls_excel"),
+    
 
 
     path('', include("operation.api.urls")),

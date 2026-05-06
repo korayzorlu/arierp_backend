@@ -163,3 +163,74 @@ class UntitleDeedLeaseFilter(LeaseFilter):
             return queryset.exclude(main_lease_id__in=main_lease_ids_with_docs)
         else:
             return queryset
+ 
+class KepMonitoringFilter(FilterSet):
+    uuid = CharFilter(method = 'filter_uuid')
+    customerCode = CharFilter(method = 'filter_customer_code')
+    customer_type = CharFilter(method = 'filter_customer_type')
+    crmCode = CharFilter(method = 'filter_crm_code')
+    tcVknNo = CharFilter(method = 'filter_tc_vkn_no')
+    types = CharFilter(method = 'filter_types')
+    name = CharFilter(method = 'filter_name')
+    country_name = CharFilter(method = 'filter_country')
+    kep = CharFilter(field_name = 'kep', lookup_expr = 'contains')
+    is_turkkep = CharFilter(method='filter_is_turkkep')
+
+    class Meta:
+        model = Partner
+        fields = ['uuid','types','name','crm_code','customer_code','customer_type','is_commercial','tc_vkn_no']
+
+    def filter_uuid(self, queryset, uuid, value):
+        return queryset.filter(uuid = value)
+    
+    def filter_customer_code(self, queryset, customer_code, value):
+        return queryset.filter(customer_code = value)
+
+    def filter_crm_code(self, queryset, crm_code, value):
+        return queryset.filter(crm_code = value)
+    
+    def filter_tc_vkn_no(self, queryset, tc_vkn_no, value):
+        return queryset.filter(tc_vkn_no = value)
+    
+    def filter_types(self, queryset, types, value):
+        return queryset.filter(types__overlap = value)
+    
+    def filter_name(self, queryset, name, value):
+        return queryset.annotate(lowercase=Lower('name'),uppercase=Upper('name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
+    
+    def filter_country(self, queryset, country, value):
+        return queryset.annotate(lowercase=Lower('country__name'),uppercase=Upper('country__name')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
+    
+    def filter_customer_type(self, queryset, customer_type, value):
+        return queryset.filter(customer_type = value)
+    
+    def filter_is_turkkep(self, queryset, is_turkkep, value):
+        if value == "true":
+            value = True
+        elif value == "false":
+            value = False
+        elif value == "all":
+            return queryset
+        return queryset.filter(is_turkkep = value)       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

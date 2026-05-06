@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
 from django.db.models import QuerySet, Q,F, Count, Sum, Case, When, Value, IntegerField, DecimalField, Subquery, OuterRef
-from django.db.models.functions import Lower,Upper,Coalesce
+from django.db.models.functions import Lower,Upper,Coalesce,Cast
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -545,7 +545,39 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
+class KepMonitoringList(ModelViewSet, QueryListAPIView):
+    serializer_class = KepMonitoringListSerializer
+    filterset_class = KepMonitoringFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
 
+        custom_related_fields = ["company","country"]
+
+        # crm_code alanını integer olarak sıralamak için annotate ile dönüştür
+
+        queryset = Partner.objects.select_related(*custom_related_fields).filter(
+            company=active_company.company if active_company else None
+        ).annotate(
+            crm_code_int=Cast('crm_code', IntegerField())
+        ).order_by('crm_code_int')
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["name","formal_name","company__name","tc_vkn_no","country__name"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset
 
 
 

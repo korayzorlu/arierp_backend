@@ -9,28 +9,49 @@ class MenuItemListSerializer(serializers.Serializer):
     
     def get_menu_items(self, obj):
         menu_items = [
+            #========================
+            #DASHBOARD
+            #========================
             {"type" : "item", "class" : ["default"], "label" : "Kontrol Paneli", "icon" : "dashboard", "route" : "/dashboard"},
+            #========================
+            #ORGANİZASYON
+            #========================
             {"type" : "sub_menu", "class" : ["admin"], "label" : "Organizasyon", "icon" : "organization", "items" : [
                 {"type" : "item", "class" : ["admin"], "label" : "Firmalar", "icon" : "badge", "route" : "/companies"},
                 {"type" : "item", "class" : ["admin"], "label" : "Davetiyeler", "icon" : "mail", "route" : "/invitations"}
             ]},
+            #========================
+            #PARTNERLER
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Partner", "icon" : "handshake", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Partnerler", "icon" : "handshake", "route" : "/partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Tüketici Müşteriler", "icon" : "handshake", "route" : "/tuketici-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Ticari Müşteriler", "icon" : "handshake", "route" : "/ticari-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Sektörler", "icon" : "tree", "route" : "/sectors"},
             ]},
+            #========================
+            #GAYRİMENKUL
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Gayrimenkul", "icon" : "home_work", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Projeler", "icon" : "article", "route" : "/projects"},
                 {"type" : "item", "class" : ["default"], "label" : "Parseller", "icon" : "article", "route" : "/parcels"},
                 {"type" : "item", "class" : ["default"], "label" : "Taşınmazlar", "icon" : "article", "route" : "/real-estates"},
                 {"type" : "item", "class" : ["default"], "label" : "Arı Leasing Tapular", "icon" : "article", "route" : "/title-deeds"},
             ]},
+            #========================
+            #TEKLİF
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Teklif", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Hızlı Teklifler", "icon" : "article", "route" : "/quick-quotations"},
                 {"type" : "item", "class" : ["default"], "label" : "Teklifler", "icon" : "article", "route" : "/quotations"},
             ]},
+            #========================
+            #SÖZLEŞMELER
+            #========================
             {"type" : "item", "class" : ["default"], "label" : "Sözleşmeler", "icon" : "description", "route" : "/contracts"},
+            #========================
+            #KİRA PLANI
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Kira Planı", "icon" : "unknown", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Kira Planları", "icon" : "description", "route" : "/leases"},
                 {"type" : "item", "class" : ["default"], "label" : "Yürürlükteki Kira Planları", "icon" : "description", "route" : "/active-leases"},
@@ -44,13 +65,19 @@ class MenuItemListSerializer(serializers.Serializer):
             #     {"type" : "item", "class" : ["admin"], "label" : "KRS Bildirimi", "icon" : "paid", "route" : "/krs-notifications"},
             #     {"type" : "item", "class" : ["admin"], "label" : "PEP Listesi", "icon" : "paid", "route" : "/pep-list"},
             # ]},
+            #========================
+            #UYUM
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Uyum", "icon" : "policy", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Yasaklı Listesi", "icon" : "paid", "route" : "/black-list-persons"},
                 {"type" : "item", "class" : ["default"], "label" : "Kam. Nüfuz Sahibi Kişiler", "icon" : "paid", "route" : "/pep-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Kişiler", "icon" : "paid", "route" : "/third-persons"},
                 {"type" : "item", "class" : ["admin"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
-            ]},
+            ]},     
+            #========================
+            #OPERASYON
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Operasyon", "icon" : "hub", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Müşteri Avansları", "icon" : "description", "route" : "/partner-advances"},
                 {"type" : "item", "class" : ["operasyon"], "label" : "Müşteri Avansı İşleme", "icon" : "description", "route" : "/partner-advance-activities"},
@@ -61,7 +88,13 @@ class MenuItemListSerializer(serializers.Serializer):
                 ]},
                 {"type" : "item", "class" : ["default"], "label" : "Tapu Fatura Kontrol", "icon" : "description", "route" : "/title-deed-invoice-control"},
                 {"type" : "item", "class" : ["default"], "label" : "Tapu Almayanlar", "icon" : "description", "route" : "/untitle-deed-leases"},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "Kep", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Kep Takip", "icon" : "paid", "route" : "/kep-monitoring"},
+                ]},
             ]},
+            #========================
+            #FİNANS
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Finans", "icon" : "paid", "items" : [
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Banka", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["finans"], "label" : "Banka Hesap Bakiyeleri", "icon" : "description", "route" : "/bank-account-balances"},
@@ -84,6 +117,9 @@ class MenuItemListSerializer(serializers.Serializer):
                 ]},
                 #{"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "description", "route" : "/finance-summary"},
             ]},
+            #========================
+            #RİSK
+            #========================
             {"type" : "sub_menu", "class" : ["default","operasyon"], "label" : "Risk", "icon" : "report", "items" : [
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Vadesi Geçmişler", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Vadesi Geçmişler(Ham)", "icon" : "policy", "route" : "/overdue-leases"},
@@ -123,6 +159,9 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Bakiye Temerrüt Raporu", "icon" : "policy", "route" : "/amount-debit-transaction"},
                 {"type" : "item", "class" : ["default"], "label" : "Özet", "icon" : "policy", "route" : "/manager-summary"},
             ]},
+            #========================
+            #MUHASEBE
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Muhasebe", "icon" : "checkbook", "items" : [
                 # {"type" : "item", "class" : ["default"], "label" : "Muhasebe Hesapları", "icon" : "checkbook", "route" : "/ledger-accounts"},
                 {"type" : "item", "class" : ["default"], "label" : "Genel Mizan", "icon" : "checkbook", "route" : "/trial-balances"},
@@ -144,10 +183,16 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Mali Tablo", "icon" : "checkbook", "route" : "/mali-tablo"},
                 ]},
             ]},
+            #========================
+            #CARİ
+            #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Cari", "icon" : "price_change", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesaplar", "icon" : "price_change", "route" : "/trade-accounts"},
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesap Hareketleri", "icon" : "price_change", "route" : "/trade-transactions"},
             ]},
+            #========================
+            #SMS
+            #========================
             {"type" : "sub_menu", "class" : ["admin"], "label" : "SMS", "icon" : "chat", "items" : [
                 {"type" : "item", "class" : ["admin"], "label" : "SMS Gönder", "icon" : "chat", "route" : "/sms-send"},
             ]},
