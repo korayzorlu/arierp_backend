@@ -1,4 +1,4 @@
-SELECT 
+SELECT
     lop.OperationTypeId,
     lop.OperationProjectId,
     lop.OperationProjectCode,
@@ -62,7 +62,8 @@ SELECT
     fpp.TIMESHARE_PERIOD,
     pl.CityName,
     pl.DistrictName,
-    lw.BBSN_NO
+    lw.BBSN_NO,
+    fpp.FREE_PART_ID
 FROM
     dbo.LeasingOperationProject lop (NOLOCK)
     INNER JOIN dbo.GeneralCurrency gc (NOLOCK) ON lop.CurrencyId = gc.CurrencyId

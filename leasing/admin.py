@@ -7,9 +7,9 @@ from .models import Lease,Installment,BankActivity,BankActivityLease
 
 @admin.register(Lease)
 class LeaseAdmin(admin.ModelAdmin):
-    list_display = ["company","partner","lease_id","code","project","block","unit","activation_date","notary_public_date","installment_amount","transfer_amount","paid_amount","lease_status","lease_status_update_date"]
+    list_display = ["company","partner","lease_id","code","project","block","unit","real_estate","activation_date","notary_public_date","installment_amount","transfer_amount","paid_amount","lease_status","lease_status_update_date"]
     list_display_links = ["code"]
-    search_fields = ["company__name","lease_id","code","contract__partner__name","activation_date","notary_public_date","block","unit"]
+    search_fields = ["company__name","lease_id","code","contract__partner__name","activation_date","notary_public_date","block","unit","real_estate__unit"]
     list_filter = []
     inlines = []
     ordering = ["-activation_date"]
@@ -17,6 +17,9 @@ class LeaseAdmin(admin.ModelAdmin):
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
+    
+    def real_estate(self,obj):
+        return obj.real_estate.unit if obj.real_estate else ""
     
     def partner(self,obj):
         return obj.contract.partner.name if obj.contract and obj.contract.partner else ""

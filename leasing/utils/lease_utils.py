@@ -88,18 +88,21 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
             # 1. codes
             lease_codes = [r.OperationProjectId for r in records]
             contract_codes = [r.ContractHeaderCode for r in records]
+            real_estate_codes = [r.FREE_PART_ID for r in records]
             partner_codes = [r.Vendor for r in records]
             item_codes = [r.Project for r in records]
             status_codes = [r.SubStatuteName for r in records]
             # 2. querysets
             leases = Lease.objects.select_related().filter(lease_id__in=lease_codes)
             contracts = Contract.objects.select_related().filter(code__in=contract_codes)
+            real_estates = RealEstate.objects.select_related().filter(real_estate_id__in=real_estate_codes)
             partners = Partner.objects.select_related().filter(crm_code__in=partner_codes)
             items = Item.objects.select_related().filter(stock_code_id__in=item_codes)
             statuses = Status.objects.select_related().filter(name__in=status_codes)
             # 3. dicts
             lease_dict = {l.lease_id: l for l in leases}
             contracts_dict = {c.code: c for c in contracts}
+            real_estates_dict = {re.real_estate_id: re for re in real_estates}
             partners_dict = {p.crm_code: p for p in partners}
             items_dict = {i.stock_code_id: i for i in items}
             statuses_dict = {s.name: s for s in statuses}
@@ -121,6 +124,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.main_lease_id = str(data.MainLopId) or ""
                     obj.code = str(data.OperationProjectCode) or ""
                     obj.contract = contracts_dict.get(str(data.ContractHeaderCode))
+                    obj.real_estate = real_estates_dict.get(str(data.FREE_PART_ID)) if data.FREE_PART_ID else None
                     obj.vendor = partners_dict.get(str(data.Vendor))
                     obj.item = items_dict.get(str(data.Project))
                     obj.block = str(data.BLOCK_NO) or ""
@@ -208,6 +212,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         main_lease_id = str(data.MainLopId) or "",
                         code = str(data.OperationProjectCode) or "",
                         contract = contracts_dict.get(str(data.ContractHeaderCode)),
+                        real_estate = real_estates_dict.get(str(data.FREE_PART_ID)) if data.FREE_PART_ID else None,
                         vendor = partners_dict.get(str(data.Vendor)),
                         item = items_dict.get(str(data.Project)),
                         block = str(data.BLOCK_NO) or "",
@@ -244,6 +249,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "main_lease_id",
                     "code",
                     "contract",
+                    "real_estate",
                     "vendor",
                     "item",
                     "block",

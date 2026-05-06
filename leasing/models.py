@@ -28,6 +28,7 @@ from inventory.models import Item
 from quotations.models import Quotation
 from compliance.utils.third_person_utils import create_third_person
 from risk.utils.filter_utils import gecikmede_filters,ihtar_cekilecek_filters,ihtar_cekildi_filters,fesih_edilecek_filters
+from projects.models import RealEstate
 
 from .utils.common_utils import extract_contract_numbers,extract_contract_numberss
 from .utils.bank_activity_utils import (
@@ -57,6 +58,7 @@ class Lease(models.Model):
     main_lease_id = models.CharField(_("Main Lease ID"), max_length=25, null=True, blank=True)
     code = models.CharField(_("Code"), max_length=25)
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_leases")
+    real_estate = models.ForeignKey(RealEstate, on_delete=models.CASCADE, related_name="real_estate_leases", null=True, blank=True)
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
     vat = models.DecimalField(_("Vat"), default = Decimal("0.00"), max_digits=5, decimal_places=2)
     activation_date = models.DateField(_("Activation Date"), blank=True, null=True)
