@@ -1000,7 +1000,7 @@ def set_bbsn(company):
     file_data = pd.read_excel("files/ari-tasinmazlar-guncellenmis.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    real_estates = RealEstate.objects.select_related().filter(is_last_project_arinet=True,code__isnull=False)
+    real_estates = RealEstate.objects.select_related().filter()
 
     real_estates_dict = {re.real_estate_id: re for re in real_estates if re.real_estate_id}
 
