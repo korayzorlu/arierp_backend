@@ -45,9 +45,9 @@ class ParcelAdmin(admin.ModelAdmin):
 
 @admin.register(RealEstate)
 class RealEstateAdmin(admin.ModelAdmin):
-    list_display = ["company","project","real_estate_id","parcel","block","unit"]
+    list_display = ["company","project","real_estate_id","parcel","block","unit","bbsn"]
     list_display_links = ["block"]
-    search_fields = ["company__name","project__name","real_estate_id","parcel","block","unit"]
+    search_fields = ["company__name","project__name","real_estate_id","parcel","block","unit","bbsn"]
     list_filter = []
     inlines = []
     ordering = ["id"]

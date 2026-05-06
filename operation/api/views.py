@@ -563,10 +563,16 @@ class KepMonitoringList(ModelViewSet, QueryListAPIView):
         # crm_code alanını integer olarak sıralamak için annotate ile dönüştür
 
         queryset = Partner.objects.select_related(*custom_related_fields).filter(
-            company=active_company.company if active_company else None
+            Q(company=active_company.company if active_company else None) &
+            (
+                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+                Q(partner_contracts__contract_leases__lease_status='planlandi') |
+                Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            ) &
+            Q(partner_contracts__contract_leases__is_last_project_arinet=True)
         ).annotate(
             crm_code_int=Cast('crm_code', IntegerField())
-        ).order_by('crm_code_int')
+        ).order_by('crm_code_int').distinct()
 
         query = self.request.query_params.get('search[value]', None)
         if query:

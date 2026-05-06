@@ -39,6 +39,22 @@ class Parcel(models.Model):
     def __str__(self):
         return f"{self.project.name} - {self.no}"
     
+class Block(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="blocks")
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="project_blocks", null=True, blank=True)
+    block_id = models.CharField(_("Block ID"), max_length=25, null=True, blank=True)
+    block_no = models.CharField(_("Block No"), max_length=25, null=True, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.project.name} - {self.block_no}"
+    
+
+    
 class RealEstate(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="real_estates")
@@ -48,6 +64,7 @@ class RealEstate(models.Model):
     parcel = models.CharField(_("Parcel"), max_length=25, null=True, blank=True)
     block = models.CharField(_("Block"), max_length=25, null=True, blank=True)
     unit = models.CharField(_("Unit"), max_length=25, null=True, blank=True)
+    bbsn = models.CharField(_("BBSN"), max_length=25, null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

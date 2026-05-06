@@ -4,7 +4,7 @@ from decimal import Decimal
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.utils import timezone
 
 from contracts.models import *
@@ -716,7 +716,7 @@ class KepMonitoringListSerializer(serializers.Serializer):
     kep = serializers.CharField()
     sgk_job = serializers.SerializerMethodField()
     sgk_job_code = serializers.SerializerMethodField()
-    last_contract_date = serializers.SerializerMethodField()
+    last_contract = serializers.SerializerMethodField()
     
     def get_customer(self, obj):
         return True if "customer" in obj.types else False
@@ -763,8 +763,22 @@ class KepMonitoringListSerializer(serializers.Serializer):
     def get_sgk_job_code(self, obj):
         return obj.sgk_job.sgk_job_code if obj.sgk_job else ''
 
+    def get_last_contract(self, obj):
+        last_lease = Lease.objects.select_related().filter(
+            Q(contract__partner=obj) &
+            (
+                Q(lease_status='aktiflestirildi') |
+                Q(lease_status='planlandi') |
+                Q(lease_status='durduruldu')
+            ) &
+            Q(is_last_project_arinet=True)
+        ).only('activation_date').order_by('-activation_date').first()
 
-
+        return {
+            "contract_code": last_lease.contract.code if last_lease and last_lease.contract else "",
+            "activation_date": datetime.strftime(last_lease.activation_date, '%d.%m.%Y') if last_lease else None,
+            "lease_status": last_lease.get_lease_status_display() if last_lease else "",
+        }
 
 
 

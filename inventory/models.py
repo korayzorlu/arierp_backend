@@ -34,3 +34,4 @@ class Item(models.Model):
 
     def __str__(self):
         return str(self.stock_code) + " - " + str(self.stock_name)
+    

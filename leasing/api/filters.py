@@ -30,7 +30,8 @@ class LeaseFilter(FilterSet):
     leasing_rate = CharFilter(field_name='leasing_rate', lookup_expr='icontains')
     vat = CharFilter(field_name='vat', lookup_expr='icontains')
     currency = CharFilter(method = 'filter_currency')
-    lease_status = CharFilter(field_name='lease_status', lookup_expr='icontains')
+    #lease_status = CharFilter(field_name='lease_status', lookup_expr='icontains')
+    lease_status = CharFilter(method = 'filter_lease_status')
     overdue_amount = CharFilter(method = 'filter_overdue_amount')
     leaseflex_automation = CharFilter(method = 'filter_leaseflex_automation')
     overdue = CharFilter(method = 'filter_overdue')
@@ -45,9 +46,17 @@ class LeaseFilter(FilterSet):
         model = Lease
         fields = '__all__'
     
-    def filter_lease_status(self, queryset, lease_status, value):
+    def filter_lease_statuss(self, queryset, lease_status, value):
         return queryset.annotate(lowercase=Lower('lease_status'),uppercase=Upper('lease_status')).filter(Q(lowercase__icontains = value) | Q(uppercase__icontains = value))
     
+    def filter_lease_status(self, queryset, lease_status, value):
+        if value == 'all':
+            return queryset
+        if value != 'all':
+            return queryset.filter(lease_status=value)
+        else:
+            return queryset
+        
     # def filter_overdue_amount(self, queryset, overdue_amount, value):
     #     if value == "true":
     #         return queryset.annotate(
