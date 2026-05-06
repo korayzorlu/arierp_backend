@@ -966,16 +966,43 @@ def set_delivery(company):
     print(f"{old_obj_count} objects updated for leases.")
 
 def set_bbsn(company):
-    excel_file = pd.ExcelFile("files/bbsn-eslestirme.xlsx")
+    # excel_file = pd.ExcelFile("files/bbsn-eslestirme.xlsx")
+    # sheet_name = excel_file.sheet_names[0]
+
+    # file_data = pd.read_excel("files/bbsn-eslestirme.xlsx", sheet_name)
+    # df = pd.DataFrame(file_data)
+
+    # leases = Lease.objects.select_related().filter(is_last_project_arinet=True,code__isnull=False)
+    # leases.update(is_delivery = False)
+
+    # leases_dict = {l.code: l for l in leases if l.code}
+
+    # previous_progress = 0
+    # old_obj_count = 0
+    # for index,row in df.iterrows():
+    #     current_progress = ((index + 1)/len(df))*100
+
+    #     if current_progress - previous_progress >= 1:
+    #         previous_progress = current_progress
+    #         print(f"{int(current_progress)} %")
+  
+    #     obj = (leases_dict.get(str(row['Kira Planı'])))
+    #     if obj:
+    #         old_obj_count += 1
+    #         obj.ari_bbsn = str(row['BBSN'])
+    #         obj.save()
+
+    # print(f"{old_obj_count} objects updated for leases.")
+
+    excel_file = pd.ExcelFile("files/ari-tasinmazlar-guncellenmis.xlsx")
     sheet_name = excel_file.sheet_names[0]
 
-    file_data = pd.read_excel("files/bbsn-eslestirme.xlsx", sheet_name)
+    file_data = pd.read_excel("files/ari-tasinmazlar-guncellenmis.xlsx", sheet_name)
     df = pd.DataFrame(file_data)
 
-    leases = Lease.objects.select_related().filter(is_last_project_arinet=True,code__isnull=False)
-    leases.update(is_delivery = False)
+    real_estates = RealEstate.objects.select_related().filter(is_last_project_arinet=True,code__isnull=False)
 
-    leases_dict = {l.code: l for l in leases if l.code}
+    real_estates_dict = {re.real_estate_id: re for re in real_estates if re.real_estate_id}
 
     previous_progress = 0
     old_obj_count = 0
@@ -986,13 +1013,13 @@ def set_bbsn(company):
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
   
-        obj = (leases_dict.get(str(row['Kira Planı'])))
+        obj = (real_estates_dict.get(str(row['Taşınmaz ID'])))
         if obj:
             old_obj_count += 1
             obj.ari_bbsn = str(row['BBSN'])
             obj.save()
 
-    print(f"{old_obj_count} objects updated for leases.")
+    print(f"{old_obj_count} objects updated for real estates.")
 
 #===========================
 # RISK STATUS UPDATE

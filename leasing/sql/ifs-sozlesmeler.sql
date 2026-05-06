@@ -23,6 +23,7 @@ SELECT a.sozlesme_no,
        a.teslim_durumu,
        a.teslim_tarihi
 FROM ifsapp.sincrm_sozlesme a
+
 -- WHERE a.stok_no = 'BBSN.119982'
      --AND a.araci_kurum_tc_vergi_no = '30964162810'
 --WHERE a.stok_no ='DTSN.A01336'

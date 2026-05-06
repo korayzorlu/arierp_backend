@@ -63,7 +63,8 @@ SELECT
     pl.CityName,
     pl.DistrictName,
     lw.BBSN_NO,
-    fpp.FREE_PART_ID
+    fpp.FREE_PART_ID,
+    lop.QuotationHeaderId
 FROM
     dbo.LeasingOperationProject lop (NOLOCK)
     INNER JOIN dbo.GeneralCurrency gc (NOLOCK) ON lop.CurrencyId = gc.CurrencyId
@@ -82,6 +83,7 @@ FROM
     LEFT JOIN RPR_PROJECT_BLOCK_LIST pb (NOLOCK) ON qi.BLOCK_ID = pb.BLOCK_ID
     LEFT JOIN RPR_PROJECT_LIST pl ON qi.PROJECT_ID = pl.PROJECT_ID
     LEFT JOIN LeasingOperationProjectList lw ON lop.OperationProjectId = lw.OperationProjectId
+
 -- WHERE
 --     ch.ContractHeaderCode = '59674'
 -- WHERE
