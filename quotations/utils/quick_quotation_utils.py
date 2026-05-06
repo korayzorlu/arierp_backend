@@ -118,13 +118,14 @@ def fetch_quick_quotations_from_leaseflex(company,BATCH_SIZE=1000):
         statuses = Status.objects.select_related().all()
         currencies = Currency.objects.select_related().all()
         company_obj = Company.objects.select_related().filter(id=int(company)).first()
+        real_estates = RealEstate.objects.select_related().all()
 
         quick_quotation_by_code = {q.code: q for q in quick_quotations if q.code}
         partners_dict = {p.crm_code: p for p in partners if p.crm_code}
         statuses_dict = {s.name: s for s in statuses}
         currencies_dict = {c.code: c for c in currencies}
+        real_estates_dict = {r.real_estate_id: r for r in real_estates if r.real_estate_id}
         
-
         update_progress = 0
         create_progress = 0
         while True:
@@ -155,6 +156,8 @@ def fetch_quick_quotations_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.unit_delivery_date = data.FREE_PART_DELIVERY_DATE.date() if data.FREE_PART_DELIVERY_DATE else None
                     obj.ortalama_tahsil_suresi = safe_decimal(data.AVERAGE_RETURN_PERIOD)
                     obj.devremulk = data.TIMESHARE_PERIOD or ""
+                    obj.bbsn = data.BBSN_NO or None
+                    obj.real_estate = real_estates_dict.get(str(data.FREE_PART_ID)) if data.FREE_PART_ID else None
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -174,6 +177,8 @@ def fetch_quick_quotations_from_leaseflex(company,BATCH_SIZE=1000):
                         unit_delivery_date = data.FREE_PART_DELIVERY_DATE.date() if data.FREE_PART_DELIVERY_DATE else None,
                         ortalama_tahsil_suresi = safe_decimal(data.AVERAGE_RETURN_PERIOD),
                         devremulk = data.TIMESHARE_PERIOD or "",
+                        real_estate = real_estates_dict.get(str(data.FREE_PART_ID)) if data.FREE_PART_ID else None,
+                        bbsn = data.BBSN_NO or None,
                     ))
                     create_progress += 1
 
@@ -193,6 +198,8 @@ def fetch_quick_quotations_from_leaseflex(company,BATCH_SIZE=1000):
                     "unit_delivery_date",
                     "ortalama_tahsil_suresi",
                     "devremulk",
+                    "bbsn",
+                    "real_estate",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 QuickQuotation.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
