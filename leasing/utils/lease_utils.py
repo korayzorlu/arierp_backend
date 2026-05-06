@@ -1016,8 +1016,13 @@ def set_bbsn(company):
         obj = (real_estates_dict.get(str(row['Taşınmaz ID'])))
         if obj:
             old_obj_count += 1
-            obj.ari_bbsn = str(row['BBSN'])
+            obj.bbsn = str(row['BBSN'])
             obj.save()
+
+            leases = obj.real_estate_leases.filter(ari_bbsn__isnull=True)
+            for lease in leases:
+                lease.ari_bbsn = str(row['BBSN'])
+                lease.save()
 
     print(f"{old_obj_count} objects updated for real estates.")
 
