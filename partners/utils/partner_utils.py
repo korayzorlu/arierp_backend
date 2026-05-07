@@ -92,6 +92,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.email = data.Email or ""
                     obj.passport_no = str(data.PassportNo) or ""
                     obj.kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None
+                    obj.kep_expiry_date = data.KEP_FINISH_DATE.date() if data.KEP_FINISH_DATE else None
                     obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     obj.sgk_job = sgk_jobs_dict.get(str(data.SgkJobId)) if data.SgkJobId else None
                     obj.sgk_job_code = data.SgkJobCode or ""
@@ -118,6 +119,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                         passport_no = str(data.PassportNo) or "",
                         is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False,
                         kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None,
+                        kep_expiry_date = data.KEP_FINISH_DATE.date() if data.KEP_FINISH_DATE else None,
                         sector = sectors_dict.get(data.MainSectorId),
                         father_name = data.FathersName or "",
                         birthday = data.BirthDate.date() if data.BirthDate else None,
@@ -159,6 +161,7 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     "email",
                     "passport_no",
                     "kep",
+                    "kep_expiry_date",
                     "is_turkkep",
                     "sgk_job",
                     "sgk_job_code",
@@ -266,6 +269,7 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.country = countries_dict.get(normalize(data.CountryName))
                     obj.email = data.EMail or ""
                     obj.kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None
+                    obj.kep_expiry_date = data.KEP_FINISH_DATE.date() if data.KEP_FINISH_DATE else None
                     obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     update_objs.append(obj)
                     update_progress += 1
@@ -287,6 +291,7 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                         types = ["customer"],
                         customer_type = "institutional",
                         kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None,
+                        kep_expiry_date = data.KEP_FINISH_DATE.date() if data.KEP_FINISH_DATE else None,
                         is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
                     ))
                     create_progress += 1
@@ -304,6 +309,7 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     "country",
                     "email",
                     "kep",
+                    "kep_expiry_date",
                     "is_turkkep",
                 ], batch_size=BATCH_SIZE)
             if create_objs:

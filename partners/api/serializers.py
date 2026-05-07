@@ -80,6 +80,7 @@ class PartnerListSerializer(serializers.Serializer):
     is_commercial = serializers.BooleanField()
     is_turkkep = serializers.BooleanField()
     kep = serializers.CharField()
+    kep_expiry_date = serializers.DateField()
     sgk_job = serializers.SerializerMethodField()
     sgk_job_code = serializers.SerializerMethodField()
     

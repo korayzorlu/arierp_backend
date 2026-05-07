@@ -35,6 +35,7 @@ SELECT TOP 100 PERCENT
     ca.Email,
     PassportNo,
     KEP_ADDRESS,
+    KEP_FINISH_DATE,
     CASE IS_TURKKEP_CUSTOMER
          WHEN '1' THEN 'Evet'
          ELSE 'Hayır'
