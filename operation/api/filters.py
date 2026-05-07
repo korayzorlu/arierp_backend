@@ -175,6 +175,7 @@ class KepMonitoringFilter(FilterSet):
     country_name = CharFilter(method = 'filter_country')
     kep = CharFilter(field_name = 'kep', lookup_expr = 'contains')
     is_turkkep = CharFilter(method='filter_is_turkkep')
+    has_kep = CharFilter(method='filter_has_kep')
     last_contract_code = CharFilter(field_name='partner_contracts__contract_leases__contract__code', lookup_expr='exact')
     last_contract_date = CharFilter(method='filter_last_contract_date')
     class Meta:
@@ -212,7 +213,16 @@ class KepMonitoringFilter(FilterSet):
             value = False
         elif value == "all":
             return queryset
-        return queryset.filter(is_turkkep = value)      
+        return queryset.filter(is_turkkep = value)
+
+    def filter_has_kep(self, queryset, has_kep, value):
+        if value == "true":
+            value = True
+        elif value == "false":
+            value = False
+        elif value == "all":
+            return queryset
+        return queryset.filter(kep__isnull = not value)   
 
     def filter_last_contract_date(self, queryset, last_contract_date, value):
         parsed = parse_datetime(value)

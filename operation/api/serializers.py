@@ -713,6 +713,7 @@ class KepMonitoringListSerializer(serializers.Serializer):
     is_reliable_person = serializers.BooleanField()
     is_commercial = serializers.BooleanField()
     is_turkkep = serializers.BooleanField()
+    has_kep = serializers.SerializerMethodField()
     kep = serializers.CharField()
     kep_expiry_date = serializers.DateField()
     sgk_job = serializers.SerializerMethodField()
@@ -781,7 +782,8 @@ class KepMonitoringListSerializer(serializers.Serializer):
             "lease_status": last_lease.get_lease_status_display() if last_lease else "",
         }
 
-
+    def get_has_kep(self, obj):
+        return bool(obj.kep)
 
 
 
