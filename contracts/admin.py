@@ -74,7 +74,7 @@ class WarningNoticeAdmin(admin.ModelAdmin):
 class ComprehensiveWarningNoticeAdmin(admin.ModelAdmin):
     list_display = ["company","contract","state","official_cancellation_date","process_start_date","service_date"]
     list_display_links = ["contract"]
-    search_fields = ["company__name","contract__code","state__name","official_cancellation_date","process_start_date","service_date"]
+    search_fields = ["company__name","contract__code","state","official_cancellation_date","process_start_date","service_date"]
     list_filter = []
     inlines = []
     ordering = ["-official_cancellation_date"]
