@@ -178,6 +178,8 @@ class KepMonitoringFilter(FilterSet):
     has_kep = CharFilter(method='filter_has_kep')
     last_contract_code = CharFilter(field_name='partner_contracts__contract_leases__contract__code', lookup_expr='exact')
     last_contract_date = CharFilter(method='filter_last_contract_date')
+    last_lease_status = CharFilter(method='filter_last_lease_status')
+    kep_expiry_date = CharFilter(method='filter_kep_expiry_date')
     class Meta:
         model = Partner
         fields = ['uuid','types','name','crm_code','customer_code','customer_type','is_commercial','tc_vkn_no']
@@ -240,6 +242,15 @@ class KepMonitoringFilter(FilterSet):
             return queryset.filter(partner_contracts__contract_leases__lease_status=value)
         else:
             return queryset
+        
+    def filter_kep_expiry_date(self, queryset, kep_expiry_date, value):
+        parsed = parse_datetime(value)
+        if parsed:
+            return queryset.filter(kep_expiry_date=parsed.date())
+        date_parsed = parse_date(value)
+        if date_parsed:
+            return queryset.filter(kep_expiry_date=date_parsed)
+        return queryset
 
 
 
