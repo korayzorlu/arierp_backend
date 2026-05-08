@@ -1030,16 +1030,19 @@ def set_bbsn(company):
 # RISK STATUS UPDATE
 #===========================
 def check_risk_status(self):
-    if self.overdue_amount > 100 and self.overdue_days > 0 and self.overdue_days <= 25 and not active_warning_notice_exists(self) and self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review:
+    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 0 and self.overdue_days <= 25 and self.overdue_amount > 100 and not active_warning_notice_exists(self):
         return RiskStatus.GECIKMEDE
-    elif self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and (self.overdue_0_30 > 0 or self.overdue_31_60 > 0 or self.overdue_61_90 > 0 or self.overdue_91_120 > 0 or self.overdue_121_150 > 0 or self.overdue_151_180 > 0 or self.overdue_181_gte > 0) and not active_warning_notice_exists(self):
+    
+    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and (self.overdue_0_30 > 0 or self.overdue_31_60 > 0 or self.overdue_61_90 > 0 or self.overdue_91_120 > 0 or self.overdue_121_150 > 0 or self.overdue_151_180 > 0 or self.overdue_181_gte > 0) and not active_warning_notice_exists(self):
         return RiskStatus.IHTAR_CEKILECEK
-    elif self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists() and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000:
+    
+    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000 and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists():
         return RiskStatus.IHTAR_CEKILDI
-    elif self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists() and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.contract.contract_warning_notices.filter(Q(service_date__isnull=False) & (Q(official_cancellation_date__lte=timezone.now().date()))).exists() and self.overdue_days > 25 and self.overdue_amount > 1000:
+    
+    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000 and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists() and self.contract.contract_warning_notices.filter(Q(service_date__isnull=False) & (Q(official_cancellation_date__lte=timezone.now().date()))).exists():
         return RiskStatus.FESIH_EDILECEK
-    else:
-        return RiskStatus.RISK_YOK
+    
+    return RiskStatus.RISK_YOK
 
 
 

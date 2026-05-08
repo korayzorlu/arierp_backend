@@ -188,7 +188,7 @@ class Lease(models.Model):
     #arinet-end
 
     #risk
-    risk_status = models.CharField(_("Status"), max_length=25, default=RiskStatus.RISK_YOK, choices=RiskStatus.choices, blank=True, null=True)
+    risk_status = models.CharField(_("Risk Status"), max_length=25, default=RiskStatus.RISK_YOK, choices=RiskStatus.choices, blank=True, null=True)
     #risk-end
 
     created_date = models.DateTimeField(auto_now_add=True)
