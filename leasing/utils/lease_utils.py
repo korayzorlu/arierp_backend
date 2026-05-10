@@ -34,7 +34,7 @@ from partners.models import Partner
 from trade.models import TradeTransaction
 from contracts.models import WarningNotice,ComprehensiveWarningNotice
 from purchasing.models import PurchaseDocument
-from risk.utils.filter_utils import _active_warning_notice_exists,active_warning_notice_exists
+from risk.utils.filter_utils import _active_warning_notice_exists,active_warning_notice_exists,cancellation_warning_notice_exists
 
 def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -1030,19 +1030,20 @@ def set_bbsn(company):
 # RISK STATUS UPDATE
 #===========================
 def check_risk_status(self):
+    status = RiskStatus.RISK_YOK
     if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 0 and self.overdue_days <= 25 and self.overdue_amount > 100 and not active_warning_notice_exists(self):
-        return RiskStatus.GECIKMEDE
+        status = RiskStatus.GECIKMEDE
     
     if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and (self.overdue_0_30 > 0 or self.overdue_31_60 > 0 or self.overdue_61_90 > 0 or self.overdue_91_120 > 0 or self.overdue_121_150 > 0 or self.overdue_151_180 > 0 or self.overdue_181_gte > 0) and not active_warning_notice_exists(self):
-        return RiskStatus.IHTAR_CEKILECEK
+        status = RiskStatus.IHTAR_CEKILECEK
     
-    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000 and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists():
-        return RiskStatus.IHTAR_CEKILDI
+    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000 and active_warning_notice_exists(self):
+        status = RiskStatus.IHTAR_CEKILDI
     
-    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000 and self.contract.contract_warning_notices.filter(Q(state='Yeni') | Q(state='Geçerli')).exists() and self.contract.contract_warning_notices.filter(Q(service_date__isnull=False) & (Q(official_cancellation_date__lte=timezone.now().date()))).exists():
-        return RiskStatus.FESIH_EDILECEK
+    if self.lease_status in ['aktiflestirildi', 'planlandi', 'durduruldu'] and self.is_last_project and not self.is_kdv_diff and not self.is_credit and not self.is_under_review and self.overdue_days > 25 and self.overdue_amount > 1000 and cancellation_warning_notice_exists(self):
+        status = RiskStatus.FESIH_EDILECEK
     
-    return RiskStatus.RISK_YOK
+    return status
 
 
 

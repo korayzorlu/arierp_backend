@@ -52,20 +52,21 @@ class RiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related("contract","contract__partner","contract__vendor").prefetch_related("contract__contract_warning_notices").filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            Q(overdue_amount__gt=100) &
-            Q(overdue_days__gt=0) &
-            Q(overdue_days__lte=25) &
-            ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
-            #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False)
+            # Q(overdue_amount__gt=100) &
+            # Q(overdue_days__gt=0) &
+            # Q(overdue_days__lte=25) &
+            # ~Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
+            # #Q(contract__project="SİNPAŞ KIZILBÜK THERMAL WELLNESS RESORT-") &
+            # (
+            #     Q(lease_status='aktiflestirildi') |
+            #     Q(lease_status='planlandi') |
+            #     Q(lease_status='durduruldu')
+            # ) &
+            # Q(is_last_project=True) &
+            # Q(is_kdv_diff=False) &
+            # Q(is_credit=False) &
+            # Q(is_under_review=False)
+            Q(risk_status='gecikmede')
         ).order_by("-overdue_days")
 
         # if str(filter_params.get('project')) == "diger":

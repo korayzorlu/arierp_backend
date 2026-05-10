@@ -49,33 +49,39 @@ class WarnedRiskPartnerListSerializer(serializers.Serializer):
         request = self.context.get('request')
         filter_params = request.GET if request else {}
 
+        # leases = Lease.objects.select_related("contract","contract__partner").filter(
+        #     Q(contract__partner = obj) &
+        #     vendor_filter_for_serializers(filter_params) &
+        #     (
+        #         Q(lease_status='aktiflestirildi') |
+        #         Q(lease_status='planlandi') |
+        #         Q(lease_status='durduruldu')
+        #     ) &
+        #     (
+        #         Q(contract__contract_warning_notices__state='Yeni') |
+        #         Q(contract__contract_warning_notices__state='Geçerli')
+        #     ) &
+        #     Q(is_last_project=True) &
+        #     Q(is_kdv_diff=False) &
+        #     Q(is_credit=False) &
+        #     Q(is_under_review=False) &
+        #     #Q(contract__contract_warning_notices__official_cancellation_date__gt=datetime.today()) &
+        #     Q(overdue_days__gt=25) &
+        #     Q(overdue_amount__gt=1000) &
+        #     ~Q(warning_notice_status='kapsamli_ihtar')
+        # ).annotate(
+        #     warning_notice_count=Count(
+        #         'contract__contract_warning_notices',
+        #         distinct=True,
+        #         filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+        #     ),
+        # ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("overdue_days")
+
         leases = Lease.objects.select_related("contract","contract__partner").filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            (
-                Q(lease_status='aktiflestirildi') |
-                Q(lease_status='planlandi') |
-                Q(lease_status='durduruldu')
-            ) &
-            (
-                Q(contract__contract_warning_notices__state='Yeni') |
-                Q(contract__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(is_last_project=True) &
-            Q(is_kdv_diff=False) &
-            Q(is_credit=False) &
-            Q(is_under_review=False) &
-            #Q(contract__contract_warning_notices__official_cancellation_date__gt=datetime.today()) &
-            Q(overdue_days__gt=25) &
-            Q(overdue_amount__gt=1000) &
-            ~Q(warning_notice_status='kapsamli_ihtar')
-        ).annotate(
-            warning_notice_count=Count(
-                'contract__contract_warning_notices',
-                distinct=True,
-                filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
-            ),
-        ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("overdue_days")
+            Q(risk_status='ihtar_cekildi')
+        ).exclude(contract__partner__types__contains=["special"]).order_by("overdue_days")
 
         # latest_lease = leases.filter(
         #     contract__code=OuterRef('contract__code')

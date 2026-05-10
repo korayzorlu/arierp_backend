@@ -57,7 +57,8 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
         leases = Lease.objects.select_related().filter(
             Q(contract__partner = obj) &
             vendor_filter_for_serializers(filter_params) &
-            to_warned_filters_for_serializers()
+            # to_warned_filters_for_serializers()
+            Q(risk_status='ihtar_cekilecek')
         )
 
         leases = leases.annotate(

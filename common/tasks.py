@@ -31,7 +31,7 @@ from accounting.utils.invoice_utils import fetch_invoices_from_leaseflex
 from trade.utils.trade_transaction_utils import fetch_trade_transactions_from_leaseflex
 from inventory.utils.item_utils import fetch_items_from_leaseflex
 from compliance.utils.third_person_utils import check_third_person_in_partners,fix_third_person_bank_activity_date
-
+from risk.utils.risk_utils import set_warning_notice_files
 
 @shared_task(bind=True)
 def importData(self,df_json,user_id,app,model_name):
@@ -59,6 +59,7 @@ def fetch_data_from_leaseflex(company):
     fetch_quotations_from_leaseflex(company)
     fetch_contracts_from_leaseflex(company)
     fetch_warning_notices_from_leaseflex(company)
+    set_warning_notice_files(company)
     fetch_leases_from_leaseflex(company)
     fetch_purchase_documents_from_leaseflex(company)
     fetch_purchase_document_items_from_leaseflex(company)

@@ -148,7 +148,8 @@ class ToWarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            to_warned_filters_for_views()
+            # to_warned_filters_for_views()
+            Q(partner_contracts__contract_leases__risk_status='ihtar_cekilecek')
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')

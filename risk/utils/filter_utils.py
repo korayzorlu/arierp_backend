@@ -1,6 +1,7 @@
 from django.db.models import Q, Exists, OuterRef
 
 from django.utils.timezone import now
+from django.utils import timezone
 
 def _active_warning_notice_exists():
     from contracts.models import WarningNotice
@@ -14,7 +15,16 @@ def active_warning_notice_exists(self):
     return WarningNotice.objects.filter(
         contract=self.contract,
         state__in=['Yeni', 'Geçerli']
-    )
+    ).exists()
+
+def cancellation_warning_notice_exists(self):
+    from contracts.models import WarningNotice
+    return WarningNotice.objects.filter(
+        contract=self.contract,
+        service_date__isnull=False,
+        official_cancellation_date__lte=timezone.now().date(),
+        state__in=['Yeni', 'Geçerli']
+    ).exists()
 
 def gecikmede_filters():
     return (

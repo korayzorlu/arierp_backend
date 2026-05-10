@@ -3,9 +3,15 @@ import os
 import string
 import random
 from datetime import datetime
+from decimal import Decimal
+from docxtpl import DocxTemplate
+from django.conf import settings
 
 from risk.models import AmountDebitTransaction
 from leasing.models import Lease
+from leasing.utils.lease_utils import check_risk_status,get_future_payments
+from contracts.models import WarningNotice
+from companies.models import Company
 
 def update_risk_summary():
     pass
@@ -109,4 +115,86 @@ def export_amount_debit_transactions(self):
     #self.process.status = "completed"
     self.process.save()
 
+
+def set_risk_status(company, batch_size=1000):
+    objs = Lease.objects.select_related().filter(company=int(company), is_last_project = True)
+
+    update_progress = 0
+    updated_objects = []
+    for obj in objs:
+        obj.risk_status = check_risk_status(obj)
+
+        update_progress += 1
+        updated_objects.append(obj)
+
+        if len(updated_objects) >= batch_size:
+            Lease.objects.bulk_update(updated_objects, ['risk_status'])
+            updated_objects = []
+
+    if updated_objects:
+        Lease.objects.bulk_update(updated_objects, ['risk_status'])
+
+    print(f"Toplam {update_progress} kira planı risk durumu güncellendi.")
+    print("--------")
+
+def set_warning_notice_files(company):
+    objs = WarningNotice.objects.select_related().filter(state__in=['Yeni', 'Geçerli'], company=int(company))
+    leases = Lease.objects.select_related().filter(company=int(company), is_last_project = True)
+    leases_dict = {lease.contract.uuid: lease for lease in leases if lease.contract}
+
+    company_obj = Company.objects.select_related().filter(id=int(company)).first()
+
+    update_progress = 0
+    for obj in objs:
+        lease = leases_dict.get(obj.contract.uuid)
+        if lease:
+            file_name = lease.contract.code.replace("/","-")
+            doc = DocxTemplate(f"files/gecikme-ihtari-{'kep' if lease.contract.partner.kep else 'noter'}.docx")
     
+            def format_currency(value):
+                return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+            
+            if lease.contract.partner.is_commercial:
+                if lease.contract.partner.tc_vkn_no and len(lease.contract.partner.tc_vkn_no) > 0:
+                    tc_vkn_no = lease.contract.partner.tc_vkn_no
+                elif lease.contract.partner.vat_no and len(lease.contract.partner.vat_no) > 0:
+                    tc_vkn_no = lease.contract.partner.vat_no
+                else:
+                    tc_vkn_no = ''
+            else:
+                tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
+
+            gecikme_bakiye = lease.overdue_amount
+            masraf_bakiye = (gecikme_bakiye / Decimal('100')) * Decimal('10')
+            toplam_borc_bakiye = gecikme_bakiye + masraf_bakiye
+            gelecek_bakiye = get_future_payments(lease.lease_id)
+            toplam_bakiye = toplam_borc_bakiye + gelecek_bakiye
+
+            context = {
+                "tarih": datetime.today().strftime('%d.%m.%Y'),
+                "isim": lease.contract.partner.name,
+                "tc_vkn_no": tc_vkn_no,
+                "adres": lease.contract.partner.address,
+                "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+                "sozlesme_no": lease.contract.code,
+                "il": f"{lease.city} ili, " if lease.city else '',
+                "ilce": f"{lease.district} ilçesi, " if lease.district else '',
+                "ada": f"{lease.island} ada, " if lease.island else '',
+                "parsel": f"{lease.parcel} parsel, " if lease.parcel else '',
+                "blok": f"{lease.block} blok, " if lease.block else '',
+                "bagimsiz_bolum": f"{lease.unit} numaralı bağımsız bölüm " if lease.unit else '',
+                "gecikme_bakiye": format_currency(gecikme_bakiye),
+                "masraf_bakiye": format_currency(masraf_bakiye),
+                "toplam_borc_bakiye": format_currency(toplam_borc_bakiye),
+                "gelecek_bakiye": format_currency(gelecek_bakiye),
+                "toplam_bakiye": format_currency(toplam_bakiye),
+            }
+            doc.render(context)
+
+            files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(company_obj.uuid), "risk", "warned_risk_partners", "documents",f"{file_name}.docx")
+            doc.save(files_path)
+
+        update_progress += 1
+
+    print(f"Toplam {update_progress} ihtar dosyası oluşturuldu.")
+    print("--------")

@@ -145,69 +145,79 @@ class ToTerminatedRiskPartnerList(ModelViewSet, QueryListAPIView):
         #after_60_days = datetime.today() + timedelta(days=60)
         #after_30_days = datetime.today() + timedelta(days=30)
 
+        # queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+        #     Q(company = active_company.company if active_company else None) &
+        #     vendor_filter_for_views(self.request.query_params) &
+        #     (
+        #         Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+        #         Q(partner_contracts__contract_leases__lease_status='planlandi') |
+        #         Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        #     ) &
+        #     (
+        #         Q(partner_contracts__contract_warning_notices__state='Yeni') |
+        #         Q(partner_contracts__contract_warning_notices__state='Geçerli')
+        #     ) &
+        #     Q(partner_contracts__contract_leases__is_last_project=True) &
+        #     Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        #     Q(partner_contracts__contract_leases__is_credit=False) &
+        #     Q(partner_contracts__contract_leases__is_under_review=False) &
+        #     Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
+        #     (
+        #         Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) |
+        #         Q(partner_contracts__contract_comprehensive_warning_notices__official_cancellation_date__lte=now().date())
+        #     ) &
+        #     Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+        #     Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+            
+        #     #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
+            
+        # ).annotate(
+        #     max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
+        #     total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+        #     # warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
+        #     # comprehensive_warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
+        #     official_cancellation_date=Max(
+        #         Case(
+        #             When(
+        #                 Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
+        #                 Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()),
+        #                 then=F('partner_contracts__contract_warning_notices__official_cancellation_date')
+        #             ),
+        #             default=None,
+        #             output_field=DateField()
+        #         )
+        #     ),
+        #     # overdue_check=Case(
+        #     #     When(
+        #     #         customer_type='individual',
+        #     #         then=Case(
+        #     #             When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
+        #     #             default=Value(False),
+        #     #             output_field=BooleanField()
+        #     #         )
+        #     #     ),
+        #     #     When(
+        #     #         customer_type='institutional',
+        #     #         then=Case(
+        #     #             When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
+        #     #             default=Value(False),
+        #     #             output_field=BooleanField()
+        #     #         )
+        #     #     ),
+        #     #     default=Value(False),
+        #     #     output_field=BooleanField()
+        #     # )
+        # ).filter(official_cancellation_date__lte=now().date()).exclude(types__contains=["special"])
+
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            (
-                Q(partner_contracts__contract_warning_notices__state='Yeni') |
-                Q(partner_contracts__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_warning_notices__service_date__isnull=False) &
-            (
-                Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) |
-                Q(partner_contracts__contract_comprehensive_warning_notices__official_cancellation_date__lte=now().date())
-            ) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
-            
-            #Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()) &
+            Q(partner_contracts__contract_leases__risk_status='fesih_edilecek')
             
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            # warning_notice_count=Count('partner_contracts__contract_warning_notices', distinct=True),
-            # comprehensive_warning_notice_count=Count('partner_contracts__contract_comprehensive_warning_notices', distinct=True),
-            official_cancellation_date=Max(
-                Case(
-                    When(
-                        Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli']) &
-                        Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=now().date()),
-                        then=F('partner_contracts__contract_warning_notices__official_cancellation_date')
-                    ),
-                    default=None,
-                    output_field=DateField()
-                )
-            ),
-            # overdue_check=Case(
-            #     When(
-            #         customer_type='individual',
-            #         then=Case(
-            #             When(partner_contracts__contract_leases__overdue_days__gt=60, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     When(
-            #         customer_type='institutional',
-            #         then=Case(
-            #             When(partner_contracts__contract_leases__overdue_days__gt=90, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     default=Value(False),
-            #     output_field=BooleanField()
-            # )
-        ).filter(official_cancellation_date__lte=now().date()).exclude(types__contains=["special"])
+        ).exclude(types__contains=["special"])
 
         #filter(warning_notice_count__gt=0,overdue_check=True).exclude(types__contains=["special"])
 

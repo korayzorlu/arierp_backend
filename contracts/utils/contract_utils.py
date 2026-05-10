@@ -13,12 +13,15 @@ import os
 import random
 import string
 import gc
+from decimal import Decimal
+from docxtpl import DocxTemplate
 
 from contracts.models import *
 from leasing.models import Lease
 from common.models import Status
 from partners.models import Partner
 from common.utils.common_utils import normalize,safe_decimal
+from leasing.utils.lease_utils import get_future_payments
 
 def import_contracts(self, df_json):
     df = pd.read_json(io.StringIO(df_json), orient='records')
@@ -460,6 +463,7 @@ def fetch_warning_notices_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.diff = safe_decimal(data.Diff)
                     obj.state = str(data.State) or ""
                     obj.approval_state = str(data.ApprovalState) or ""
+
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -500,22 +504,22 @@ def fetch_warning_notices_from_leaseflex(company,BATCH_SIZE=1000):
             if create_objs:
                 WarningNotice.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
         
-        wns = WarningNotice.objects.select_related("contract").filter(company__id=int(company))
-        cwns = ComprehensiveWarningNotice.objects.select_related("contract").filter(company__id=int(company))
-        for wn in wns:
-            if wn.contract.contract_comprehensive_warning_notices.all().exists():
-                cwn=wn.contract.contract_comprehensive_warning_notices.all().first()
-                cwn.service_date=wn.service_date
-                cwn.official_cancellation_date=wn.official_cancellation_date
-                cwn.save()
+        # wns = WarningNotice.objects.select_related("contract").filter(company__id=int(company))
+        # cwns = ComprehensiveWarningNotice.objects.select_related("contract").filter(company__id=int(company))
+        # for wn in wns:
+        #     if wn.contract.contract_comprehensive_warning_notices.all().exists():
+        #         cwn=wn.contract.contract_comprehensive_warning_notices.all().first()
+        #         cwn.service_date=wn.service_date
+        #         cwn.official_cancellation_date=wn.official_cancellation_date
+        #         cwn.save()
 
-        for cwn in cwns:
-            if not cwn.contract.contract_warning_notices.all().exists():
-                lease = Lease.objects.select_related("contract").filter(contract = cwn.contract).first()
-                if lease:
-                    lease.warning_notice_status = "ihtar_yok"
-                    lease.save()
-                cwn.delete()
+        # for cwn in cwns:
+        #     if not cwn.contract.contract_warning_notices.all().exists():
+        #         lease = Lease.objects.select_related("contract").filter(contract = cwn.contract).first()
+        #         if lease:
+        #             lease.warning_notice_status = "ihtar_yok"
+        #             lease.save()
+        #         cwn.delete()
 
         print(f"Toplam {update_progress} ihtar güncellendi.")
         print(f"Toplam {create_progress} ihtar oluşturuldu.")

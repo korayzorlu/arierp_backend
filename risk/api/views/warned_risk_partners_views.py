@@ -165,55 +165,64 @@ class WarnedRiskPartnerList(ModelViewSet, QueryListAPIView):
             ),
         ).filter(warning_notice_count__gt=0).exclude(contract__partner__types__contains=["special"]).order_by("-overdue_days").annotate(max_overdue_days=Max('overdue_days')).values('max_overdue_days')[:1]
 
+        # queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
+        #     Q(company = active_company.company if active_company else None) &
+        #     vendor_filter_for_views(self.request.query_params) &
+        #     (
+        #         Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+        #         Q(partner_contracts__contract_leases__lease_status='planlandi') |
+        #         Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        #     ) &
+        #     (
+        #         Q(partner_contracts__contract_warning_notices__state='Yeni') |
+        #         Q(partner_contracts__contract_warning_notices__state='Geçerli')
+        #     ) &
+        #     Q(partner_contracts__contract_leases__is_last_project=True) &
+        #     Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        #     Q(partner_contracts__contract_leases__is_credit=False) &
+        #     Q(partner_contracts__contract_leases__is_under_review=False) &
+        #     #Q(partner_contracts__contract_warning_notices__official_cancellation_date__gt=datetime.today()) &
+        #     Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+        #     Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
+        #     ~Q(partner_contracts__contract_leases__warning_notice_status='kapsamli_ihtar')
+        # ).annotate(
+        #     max_overdue_days=Subquery(max_overdue_days),
+        #     total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
+        #     warning_notice_count=Count(
+        #         'partner_contracts__contract_warning_notices',
+        #         distinct=True,
+        #         filter=Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
+        #     ),
+        #     # overdue_check=Case(
+        #     #     When(
+        #     #         customer_type='individual',
+        #     #         then=Case(
+        #     #             When(partner_contracts__contract_leases__overdue_days__lte=60, then=Value(True)),
+        #     #             default=Value(False),
+        #     #             output_field=BooleanField()
+        #     #         )
+        #     #     ),
+        #     #     When(
+        #     #         customer_type='institutional',
+        #     #         then=Case(
+        #     #             When(partner_contracts__contract_leases__overdue_days__lte=90, then=Value(True)),
+        #     #             default=Value(False),
+        #     #             output_field=BooleanField()
+        #     #         )
+        #     #     ),
+        #     #     default=Value(False),
+        #     #     output_field=BooleanField()
+        #     # )
+        # ).filter(warning_notice_count__gt=0).exclude(types__contains=["special"])
+
         queryset = Partner.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
             vendor_filter_for_views(self.request.query_params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            (
-                Q(partner_contracts__contract_warning_notices__state='Yeni') |
-                Q(partner_contracts__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            #Q(partner_contracts__contract_warning_notices__official_cancellation_date__gt=datetime.today()) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000) &
-            ~Q(partner_contracts__contract_leases__warning_notice_status='kapsamli_ihtar')
+            Q(partner_contracts__contract_leases__risk_status='ihtar_cekildi')
         ).annotate(
-            max_overdue_days=Subquery(max_overdue_days),
+            max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
-            warning_notice_count=Count(
-                'partner_contracts__contract_warning_notices',
-                distinct=True,
-                filter=Q(partner_contracts__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
-            ),
-            # overdue_check=Case(
-            #     When(
-            #         customer_type='individual',
-            #         then=Case(
-            #             When(partner_contracts__contract_leases__overdue_days__lte=60, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     When(
-            #         customer_type='institutional',
-            #         then=Case(
-            #             When(partner_contracts__contract_leases__overdue_days__lte=90, then=Value(True)),
-            #             default=Value(False),
-            #             output_field=BooleanField()
-            #         )
-            #     ),
-            #     default=Value(False),
-            #     output_field=BooleanField()
-            # )
-        ).filter(warning_notice_count__gt=0).exclude(types__contains=["special"])
+        ).exclude(types__contains=["special"])
 
         query = self.request.query_params.get('search[value]', None)
         if query:
