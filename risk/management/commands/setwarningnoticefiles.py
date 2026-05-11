@@ -21,12 +21,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-c', type=str, help='Company to associate with operation')
+        parser.add_argument('-r', action='store_true', default=False, help='Reset flag for operation')
 
     def handle(self, *args, **options):
         company = options.get('c')
+        reset = options.get('r')
 
         print("processing...")
         
-        set_warning_notice_files_task.delay(company)
+        set_warning_notice_files_task.delay(company, reset)
         
         print("done!")

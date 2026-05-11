@@ -519,5 +519,5 @@ def set_risk_status_task(company):
     set_risk_status(company)
 
 @shared_task()
-def set_warning_notice_files_task(company):
-    set_warning_notice_files(company)
+def set_warning_notice_files_task(company, reset):
+    set_warning_notice_files(company, reset)

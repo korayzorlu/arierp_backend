@@ -137,7 +137,7 @@ def set_risk_status(company, batch_size=1000):
     print(f"Toplam {update_progress} kira planı risk durumu güncellendi.")
     print("--------")
 
-def set_warning_notice_files(company):
+def set_warning_notice_files(company,reset):
     objs = WarningNotice.objects.select_related().filter(state__in=['Yeni', 'Geçerli'], company=int(company))
     leases = Lease.objects.select_related().filter(company=int(company), is_last_project = True)
     leases_dict = {lease.contract.uuid: lease for lease in leases if lease.contract}
@@ -150,6 +150,11 @@ def set_warning_notice_files(company):
         if lease:
             file_name = lease.contract.code.replace("/","-")
             doc = DocxTemplate(f"files/gecikme-ihtari-{'kep' if lease.contract.partner.kep else 'noter'}.docx")
+
+            if not reset:
+                file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(company_obj.uuid), "risk", "warned_risk_partners", "documents",f"{file_name}.docx")  
+                if os.path.exists(file_path):
+                    continue
     
             def format_currency(value):
                 return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
