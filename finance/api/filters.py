@@ -61,7 +61,7 @@ class BankAccountTransactionFilter(FilterSet):
     transaction_id = CharFilter(field_name='transaction_id', lookup_expr='icontains')
     explanation_field = CharFilter(field_name='explanation_field', lookup_expr='icontains')
     bank_name = CharFilter(field_name='bank_account__bank_name', lookup_expr='icontains')
-    bank_account_no = CharFilter(field_name='bank_account__account_no', lookup_expr='icontains')
+    bank_account_no = CharFilter(method='filter_bank_account_no')
 
     class Meta:
         model = FinmaksTransaction
@@ -99,6 +99,11 @@ class BankAccountTransactionFilter(FilterSet):
 
         return queryset.filter(transaction_date__date=date_obj)
 
+    def filter_bank_account_no(self, queryset, bank_account_no, value):
+        print(value)
+        if value == 'all':
+            return queryset
+        return queryset.filter(bank_account__uuid=value)
 
 class VPosTransactionFilter(FilterSet):
     uuid = CharFilter(field_name='uuid', lookup_expr='exact')

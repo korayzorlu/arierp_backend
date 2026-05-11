@@ -93,7 +93,7 @@ class BankAccountTransactionListSerializer(serializers.Serializer):
         return obj.bank_account.bank_name if obj.bank_account else ''
     
     def get_bank_account_no(self, obj):
-        return obj.bank_account.account_no if obj.bank_account else ''
+        return f"{obj.bank_account.bank_name} - {obj.bank_account.account_no}" if obj.bank_account else ''
     
     def get_bank_activity(self, obj):
         bank_activity = obj.finmaks_transaction_bank_activities.all()

@@ -742,6 +742,28 @@ class BankAccountTransactionList(ModelViewSet, QueryListAPIView):
             queryset = queryset.filter(q_objects)
         self._cached_queryset = queryset
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context()}
+        )
+
+        if page is not None:
+            response = self.get_paginated_response(serializer.data)
+            bank_accounts = list(
+                queryset.exclude(bank_account__isnull=True)
+                        .order_by('bank_account__bank_name', 'bank_account__account_no')
+                        .values('bank_account__bank_name', 'bank_account__account_no', 'bank_account__uuid')
+                        .distinct()
+            )
+            response.data['bank_accounts'] = bank_accounts
+            return response
+        return Response(serializer.data)
     
 class PartnerAdvanceList(ModelViewSet, QueryListAPIView):
     serializer_class = PartnerAdvanceListSerializer
