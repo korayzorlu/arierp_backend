@@ -128,7 +128,7 @@ def set_risk_status(company, batch_size=1000):
         updated_objects.append(obj)
 
         if len(updated_objects) >= batch_size:
-            Lease.objects.bulk_update(updated_objects, ['risk_status'])
+            Lease.objects.bulk_update(updated_objects, ['risk_status', 'risk_status_update_date'])
             updated_objects = []
 
     if updated_objects:
