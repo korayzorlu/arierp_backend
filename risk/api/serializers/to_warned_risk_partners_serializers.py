@@ -25,6 +25,7 @@ class ToWarnedRiskPartnerListSerializer(serializers.Serializer):
     status = serializers.SerializerMethodField()
     is_commercial = serializers.BooleanField()
     partner_note_count = serializers.SerializerMethodField()
+    advance_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
 
     def get_partner_note_count(self, obj):
         return obj.partner_partner_notes.count() if obj.partner_partner_notes.exists() else 0
