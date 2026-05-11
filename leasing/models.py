@@ -62,6 +62,7 @@ class Lease(models.Model):
     type = models.CharField(_("Type"), max_length=25, null=True, blank=True)
     vat = models.DecimalField(_("Vat"), default = Decimal("0.00"), max_digits=5, decimal_places=2)
     activation_date = models.DateField(_("Activation Date"), blank=True, null=True)
+    signature_date = models.DateField(_("Signature Date"), blank=True, null=True)
 
     LEASE_STATUS_CHOICES = (
         ('aktiflestirildi', ('Aktifleştirildi')),

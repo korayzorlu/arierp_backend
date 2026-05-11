@@ -8,6 +8,8 @@ SELECT
     l.RiskIncludingLastUpdateDate AS RiskIncludingLastUpdateDate,
     lop.VatRate,
     lop.ActivationDate,
+    lop.NotaryPublicDate,
+    lop.SignatureDate,
     lop.CustomerBaseCost,
     gc.CurrencyCode,
     lop.PaymentCount,
@@ -85,7 +87,7 @@ FROM
     LEFT JOIN LeasingOperationProjectList lw ON lop.OperationProjectId = lw.OperationProjectId
 
 -- WHERE
---     ch.ContractHeaderCode = '59674'
+--     lop.NotaryPublicDate <> lop.SignatureDate
 -- WHERE
 -- lw.BBSN_NO = 'BBSN.140915'
 --     AND lop.IS_LAST_PROJECT = 1
@@ -96,4 +98,4 @@ FROM
 --     )
 ORDER BY 
     pb.BLOCK_NO,
-    lop.OperationProjectId DESC;
+    lop.OperationProjectId DESC

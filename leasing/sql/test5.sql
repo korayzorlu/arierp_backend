@@ -1,4 +1,6 @@
 SELECT TOP 1000 *
 
 FROM
-    RPR_PROJECT_FREE_PART
+    LeasingOperationProject
+WHERE
+    OperationProjectCode = '69591.1.0'

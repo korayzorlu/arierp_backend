@@ -59,7 +59,7 @@ def fetch_data_from_leaseflex(company):
     fetch_quotations_from_leaseflex(company)
     fetch_contracts_from_leaseflex(company)
     fetch_warning_notices_from_leaseflex(company)
-    set_warning_notice_files(company)
+    set_warning_notice_files(company,reset=False)
     fetch_leases_from_leaseflex(company)
     fetch_purchase_documents_from_leaseflex(company)
     fetch_purchase_document_items_from_leaseflex(company)

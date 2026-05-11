@@ -137,6 +137,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.type = str(data.TypeName) or ""
                     obj.vat = safe_decimal(data.VatRate)
                     obj.activation_date = data.ActivationDate.date() if data.ActivationDate else None
+                    obj.signature_date = data.SignatureDate.date() if data.SignatureDate else None
                     obj.lease_status = get_lease_status_value(str(data.RiskIncludingTypeName)) or None
                     obj.lease_status_update_date = make_aware(data.RiskIncludingLastUpdateDate) if data.RiskIncludingLastUpdateDate else None
                     obj.currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode)
@@ -225,6 +226,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         type = str(data.TypeName) or "",
                         vat = safe_decimal(data.VatRate),
                         activation_date = data.ActivationDate.date() if data.ActivationDate else None,
+                        signature_date = data.SignatureDate.date() if data.SignatureDate else None,
                         lease_status = get_lease_status_value(str(data.RiskIncludingTypeName)) or None,
                         lease_status_update_date = make_aware(data.RiskIncludingLastUpdateDate) if data.RiskIncludingLastUpdateDate else None,
                         currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode),
@@ -262,6 +264,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "type",
                     "vat",
                     "activation_date",
+                    "signature_date",
                     "lease_status",
                     "lease_status_update_date",
                     "currency",
