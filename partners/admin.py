@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Partner,Sector,PartnerNote, SgkJob
+from .models import Partner,Sector,PartnerNote, SgkJob,PartnerFinancialProfile
 
 # Register your models here.
 
@@ -83,6 +83,25 @@ class PartnerAdmin(admin.ModelAdmin):
     class Meta:
         model = Partner
 
+@admin.register(PartnerFinancialProfile)
+class PartnerFinancialProfileAdmin(admin.ModelAdmin):
+
+    list_display = ["company","partner","income_types","other_income","created_date","updated_date"]
+    list_display_links = ["partner"]
+    search_fields = ["company__name","partner__name","income_types","other_income"]
+    list_filter = []
+    inlines = []
+    ordering = ["partner"]
+    autocomplete_fields = ["company","partner"]
+
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def partner(self,obj):
+        return obj.partner.name if obj.partner else ""
+    
+    class Meta:
+        model = PartnerFinancialProfile
 @admin.register(PartnerNote)
 class PartnerNoteAdmin(admin.ModelAdmin):
 

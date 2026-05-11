@@ -15,6 +15,13 @@ from users.models import User
 
 # Create your models here.
 
+class IncomeTypes(models.TextChoices):
+    MAAS = 'maas', 'Maaş'
+    TICARI = 'ticari', 'Ticari Kazanç'
+    KIRA = 'kira', 'Kira Geliri'
+    YATIRIM = 'yatirim', 'Yatırım Geliri'
+    DIGER = 'diger', 'Diğer'
+
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sectors")
@@ -138,7 +145,15 @@ class Partner(models.Model):
     def save(self, *args, **kwargs):
         if self.formal_name is None:
             self.formal_name = self.name
+        is_new = self.pk is None
+
         super(Partner, self).save(*args, **kwargs)
+
+        if is_new:
+            PartnerFinancialProfile.objects.create(
+                partner=self,
+                company=self.company
+            )
 
     def __str__(self):
         return str(self.name)
@@ -162,16 +177,9 @@ class PartnerFinancialProfile(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_financial_profiles")
 
-    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_financial_profiles")
-
-    INCOME_TYPES_CHOICES = (
-        ('maas', ('Maaş')),
-        ('ticari', ('Ticari Kazanç')),
-        ('kira', ('Kira Geliri')),
-        ('yatirim', ('Yatırım Geliri')),
-        ('diger', ('Diğer')),
-    )
-    income_types = ArrayField(models.CharField(_("Income Types"), max_length=25, choices=INCOME_TYPES_CHOICES), default=list, blank=True, null=True)
+    partner = models.OneToOneField(Partner, on_delete=models.CASCADE, primary_key=True, related_name="partner_financial_profile")
+    #partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_financial_profiles")
+    income_types = ArrayField(models.CharField(_("Income Types"), max_length=25, choices=IncomeTypes.choices), default=list, blank=True, null=True)
     other_income = models.CharField(_("Other Income"), max_length=140, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)

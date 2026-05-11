@@ -74,7 +74,13 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Kişiler", "icon" : "paid", "route" : "/third-persons"},
                 {"type" : "item", "class" : ["admin"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
-            ]},     
+            ]},
+            #========================
+            #KREDİ TAHSİS
+            #========================
+            {"type" : "sub_menu", "class" : ["admin"], "label" : "Kredi Tahsis", "icon" : "data_loss_prevention", "items" : [
+                {"type" : "item", "class" : ["admin"], "label" : "Mali Profiller", "icon" : "paid", "route" : "/financial-profiles"},
+            ]},   
             #========================
             #OPERASYON
             #========================
