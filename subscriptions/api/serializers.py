@@ -78,8 +78,8 @@ class MenuItemListSerializer(serializers.Serializer):
             #========================
             #KREDİ TAHSİS
             #========================
-            {"type" : "sub_menu", "class" : ["admin"], "label" : "Kredi Tahsis", "icon" : "data_loss_prevention", "items" : [
-                {"type" : "item", "class" : ["admin"], "label" : "Mali Profiller", "icon" : "paid", "route" : "/financial-profiles"},
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Kredi Tahsis", "icon" : "data_loss_prevention", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Mali Profiller", "icon" : "paid", "route" : "/partner-financial-profiles"},
             ]},   
             #========================
             #OPERASYON

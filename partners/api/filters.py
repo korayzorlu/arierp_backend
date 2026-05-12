@@ -1,6 +1,7 @@
 from django.core.validators import EMPTY_VALUES
 from django.db.models import Q,Sum
 from django.db.models.functions import Lower,Upper
+from django.contrib.postgres.fields import ArrayField
 
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter,DateFromToRangeFilter
@@ -43,3 +44,15 @@ class PartnerNoteFilter(FilterSet):
     class Meta:
         model = PartnerNote
         fields = ['uuid']
+
+class PartnerFinancialProfileFilter(FilterSet):
+
+    class Meta:
+        model = PartnerFinancialProfile
+        fields = '__all__'
+        filter_overrides = {
+            ArrayField: {
+                'filter_class': CharFilter,
+                'extra': lambda _: {'lookup_expr': 'icontains'},
+            },
+        }

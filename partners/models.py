@@ -11,6 +11,7 @@ from decimal import Decimal
 
 from companies.models import Company
 from common.models import Country,City
+from common.utils.mixins import CompletionRateMixin
 from users.models import User
 
 # Create your models here.
@@ -173,12 +174,13 @@ class PartnerNote(models.Model):
     def __str__(self):
         return str(f"{self.user.get_full_name()} - {self.title}")
 
-class PartnerFinancialProfile(models.Model):
+class PartnerFinancialProfile(models.Model,CompletionRateMixin):
+    COMPLETION_FIELDS = ["uuid", "company", "partner", "income_types", "other_income"]
+
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_financial_profiles")
 
     partner = models.OneToOneField(Partner, on_delete=models.CASCADE, primary_key=True, related_name="partner_financial_profile")
-    #partner = models.ForeignKey(Partner, on_delete=models.CASCADE, blank=True, null=True, related_name="partner_partner_financial_profiles")
     income_types = ArrayField(models.CharField(_("Income Types"), max_length=25, choices=IncomeTypes.choices), default=list, blank=True, null=True)
     other_income = models.CharField(_("Other Income"), max_length=140, blank=True, null=True)
 

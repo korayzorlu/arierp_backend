@@ -294,10 +294,10 @@ class PartnerNoteList(ModelViewSet, QueryListAPIView):
     
 class PartnerFinancialProfileList(ModelViewSet, QueryListAPIView):
     serializer_class = PartnerFinancialProfileListSerializer
-    filterset_class = PartnerFilter
+    filterset_class = PartnerFinancialProfileFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
-    ordering = ['partner__name']
+    ordering = ['crm_code_int']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -322,9 +322,11 @@ class PartnerFinancialProfileList(ModelViewSet, QueryListAPIView):
 
         queryset = PartnerFinancialProfile.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)
+        ).annotate(
+            crm_code_int=Cast('partner__crm_code', IntegerField())
         ).exclude(
             Q(partner__types__contains=['special'])
-        )
+        ).order_by('crm_code_int')
 
         query = self.request.query_params.get('search[value]', None)
         if query:
