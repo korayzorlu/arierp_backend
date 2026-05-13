@@ -101,11 +101,6 @@ class TitleDeedInvoiceControlFilter(LeaseFilter):
                 (
                     Q(ari_bbsn__isnull=True) |
                     Q(ari_bbsn='')
-                ) |
-                (
-                    ~Q(ari_bbsn=F('crm_bbsn')) &
-                    Q(crm_bbsn__isnull=False) &
-                    ~Q(crm_bbsn='')
                 )
             )
         else:
