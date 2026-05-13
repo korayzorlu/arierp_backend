@@ -388,6 +388,10 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
         obj.bank_deposit_assets = data.get('bank_deposit_assets')
         obj.investment_assets = data.get('investment_assets')
         obj.other_assets = data.get('other_assets')
+        obj.transaction_amount = data.get('transaction_amount')
+        obj.transaction_frequency = data.get('transaction_frequency')
+        obj.transaction_risk = data.get('transaction_risk')
+        obj.job_compliance = data.get('job_compliance')
         obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)

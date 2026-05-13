@@ -185,14 +185,26 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     bank_deposit_assets = serializers.CharField()
     investment_assets = serializers.CharField()
     other_assets = serializers.CharField()
+    transaction_amount = serializers.CharField()
+    transaction_frequency = serializers.CharField()
+    transaction_risk = serializers.CharField()
+    job_compliance = serializers.CharField()
     
     def get_partner(self, obj):
+        if obj.partner.tc_vkn_no and obj.partner.tc_vkn_no != '':
+            tc_vkn_no = obj.partner.tc_vkn_no
+        elif obj.partner.vat_no and obj.partner.vat_no != '':
+            tc_vkn_no = obj.partner.vat_no
+        else:
+            tc_vkn_no = ''
+
         return {
             "id": obj.partner.uuid if obj.partner else '',
             "name": obj.partner.name if obj.partner else '',
-            "tc_vkn_no": obj.partner.tc_vkn_no if obj.partner else '',
+            "tc_vkn_no": tc_vkn_no,
             "customer_code": obj.partner.customer_code if obj.partner else '',
             "crm_code": obj.partner.crm_code if obj.partner else '',
+            "customer_type": obj.partner.customer_type if obj.partner else '',
         }
     
     def get_sgk_job(self, obj):

@@ -47,13 +47,29 @@ class Position(models.TextChoices):
     ORTAK = 'ortak', 'Ortak'
     YOK = 'yok', 'Yok'
 
-class AssetTRY(models.TextChoices):
+class AmountTRY(models.TextChoices):
     RANGE_0 = '0', '0 TL'
-    RANGE_0_500K   = '1', '1-500.000'
-    RANGE_500K_1M  = '2', '500.001-1.000.000'
-    RANGE_1M_5M = '3', '1.000.001-5.000.000'
-    RANGE_5M_15M = '4', '5.000.001-15.000.000'
-    RANGE_15M_ABOVE = '5', '15.000.001 ve üzeri'
+    RANGE_0_100K   = '1', '1-100.000'
+    RANGE_100K_500K  = '2', '100.001-500.000'
+    RANGE_500K_2M = '3', '500.001-2.000.000'
+    RANGE_2M_10M = '4', '2.000.001-10.000.000'
+    RANGE_10M_ABOVE = '5', '10.000.001 ve üzeri'
+
+class Frequency(models.TextChoices):
+    RANGE_0 = '0', '0'
+    RANGE_1_20   = '1', '1-20'
+    RANGE_21_50  = '2', '21-50'
+    RANGE_51_100 = '3', '51-100'
+    RANGE_101_500 = '4', '101-500'
+    RANGE_500_ABOVE = '5', '500 ve üzeri'
+
+class RiskStatus(models.TextChoices):
+    RISKLI = 'riskli', 'Riskli'
+    RISKLI_DEGIL   = 'riskli_degil', 'Riskli Değil'
+
+class ComplianceStatus(models.TextChoices):
+    UYUMLU = 'uyumlu', 'Uyumlu'
+    UYUMLU_DEGIL   = 'uyumlu_degil', 'Uyumlu Değil'
 
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -209,7 +225,8 @@ class PartnerNote(models.Model):
 class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     COMPLETION_FIELDS = [
         "income_types", "fund_sources","sgk_job", "institution", "position",
-        "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets", "other_assets"
+        "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets",
+        "transaction_amount", "transaction_frequency", "transaction_risk", "job_compliance"
     ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -226,12 +243,17 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     institution = models.CharField(_("Institution"), max_length=25, choices=Institution.choices, blank=True, null=True)
     position = models.CharField(_("Position"), max_length=25, choices=Position.choices, blank=True, null=True)
 
-    real_estate_assets = models.CharField(_("Real Estate Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
-    vehicle_assets = models.CharField(_("Vehicle Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
-    bank_deposit_assets = models.CharField(_("Bank Deposit Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
-    investment_assets = models.CharField(_("Investment Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
-    other_assets = models.CharField(_("Other Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
+    real_estate_assets = models.CharField(_("Real Estate Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    vehicle_assets = models.CharField(_("Vehicle Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    bank_deposit_assets = models.CharField(_("Bank Deposit Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    investment_assets = models.CharField(_("Investment Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    other_assets = models.CharField(_("Other Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
     # other_assets = models.DecimalField(_("Other Assets"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+
+    transaction_amount = models.CharField(_("Transaction Amount"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    transaction_frequency = models.CharField(_("Transaction Frequency"), max_length=25, choices=Frequency.choices, blank=True, null=True)
+    transaction_risk = models.CharField(_("Transaction Risk"), max_length=25, choices=RiskStatus.choices, blank=True, null=True)
+    job_compliance = models.CharField(_("Job Compliance"), max_length=25, choices=ComplianceStatus.choices, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
