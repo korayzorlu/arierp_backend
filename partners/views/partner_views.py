@@ -374,26 +374,13 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
     model = PartnerFinancialProfile
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-
-        valid, response = is_valid_partner_data(data)
-        if not valid:
-            return response
-
         obj = PartnerFinancialProfile.objects.filter(uuid = data.get('uuid')).first()
-
-        if not obj.is_reliable_person:
-            send_warning_email_for_ignored_partners({
-                'name': obj.name,
-                'tc_vkn_no': obj.tc_vkn_no,
-                'crm_code': obj.crm_code,
-                'request_user_full_name': request.user.get_full_name(),
-                'request_user_email': request.user.email
-            })
-
-            return JsonResponse({'message': 'Kaydedilemedi! Bu kişi yasaklı listelerinde bulunduğu için işlemleri kısıtlanmıştır. Yöneticinizle iletişime geçin.','status':'error'}, status=400)
-
-        obj.name = data.get('name')
-        obj.formal_name = data.get('formalName')
+        
+        obj.income_types = data.get('income_types')
+        obj.other_income = data.get('other_income')
+        obj.fund_sources = data.get('fund_sources')
+        obj.other_fund_source = data.get('other_fund_source')
+        obj.sgk_job = SgkJob.objects.filter(sgk_job_code = data.get('sgk_job')).first() if data.get('sgk_job') else None
         obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)

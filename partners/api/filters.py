@@ -46,7 +46,11 @@ class PartnerNoteFilter(FilterSet):
         fields = ['uuid']
 
 class PartnerFinancialProfileFilter(FilterSet):
-
+    uuid = CharFilter(method = 'filter_uuid')
+    partner_name = CharFilter(field_name='partner__name', lookup_expr='icontains')
+    partner_tc_vkn_no = CharFilter(field_name='partner__tc_vkn_no', lookup_expr='icontains')
+    partner_customer_code = CharFilter(field_name='partner__customer_code', lookup_expr='exact')
+    partner_crm_code = CharFilter(field_name='partner__crm_code', lookup_expr='exact')
     class Meta:
         model = PartnerFinancialProfile
         fields = '__all__'
@@ -56,3 +60,6 @@ class PartnerFinancialProfileFilter(FilterSet):
                 'extra': lambda _: {'lookup_expr': 'icontains'},
             },
         }
+
+    def filter_uuid(self, queryset, uuid, value):
+        return queryset.filter(uuid = value)

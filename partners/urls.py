@@ -33,6 +33,8 @@ urlpatterns = [
     path('update_partner_note/', UpdatePartnerNoteView.as_view(), name="update_partner_note"),
     path('delete_partner_note/', DeletePartnerNoteView.as_view(), name="delete_partner_note"),
 
+    path('update_partner_financial_profile/', UpdatePartnerFinancialProfileView.as_view(), name="update_partner_financial_profile"),
+
     path('test/', ExampleView.as_view(), name="test"),
     
     path('', include("partners.api.urls")),

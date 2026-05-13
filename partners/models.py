@@ -23,6 +23,15 @@ class IncomeTypes(models.TextChoices):
     YATIRIM = 'yatirim', 'Yatırım Geliri'
     DIGER = 'diger', 'Diğer'
 
+class FundSource(models.TextChoices):
+    SATIS = 'satis', 'Satış Geliri'
+    MAAS = 'maas', 'Maaş Birikimi'
+    KIRA = 'kira', 'Kira Geliri'
+    MIRAS = 'miras', 'Miras'
+    SIRKET = 'sirket', 'Şirket Kazancı'
+    YURTDISI = 'yurtdisi', 'Yurt Dışı Transfer'
+    DIGER = 'diger', 'Diğer'
+
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sectors")
@@ -175,7 +184,7 @@ class PartnerNote(models.Model):
         return str(f"{self.user.get_full_name()} - {self.title}")
 
 class PartnerFinancialProfile(models.Model,CompletionRateMixin):
-    COMPLETION_FIELDS = ["uuid", "company", "partner", "income_types", "other_income"]
+    COMPLETION_FIELDS = ["income_types", "fund_sources","sgk_job"]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_financial_profiles")
@@ -183,6 +192,11 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     partner = models.OneToOneField(Partner, on_delete=models.CASCADE, primary_key=True, related_name="partner_financial_profile")
     income_types = ArrayField(models.CharField(_("Income Types"), max_length=25, choices=IncomeTypes.choices), default=list, blank=True, null=True)
     other_income = models.CharField(_("Other Income"), max_length=140, blank=True, null=True)
+
+    fund_sources = ArrayField(models.CharField(_("Fund Sources"), max_length=25, choices=FundSource.choices), default=list, blank=True, null=True)
+    other_fund_source = models.CharField(_("Other Fund Source"), max_length=140, blank=True, null=True)
+
+    sgk_job = models.ForeignKey(SgkJob, on_delete=models.SET_NULL, blank=True, null=True, related_name="sgk_job_partner_financial_profiles")
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

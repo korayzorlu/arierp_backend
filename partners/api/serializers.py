@@ -172,13 +172,24 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     uuid = serializers.CharField()
     partner = serializers.SerializerMethodField()
+    income_types = serializers.ListField()
+    other_income = serializers.CharField()
+    fund_sources = serializers.ListField()
+    other_fund_source = serializers.CharField()
+    completion_rate = serializers.SerializerMethodField()
+    sgk_job = serializers.SerializerMethodField()
     
     def get_partner(self, obj):
         return {
-            "id": obj.partner.uuid,
-            "name": obj.partner.name,
-            "tc_vkn_no": obj.partner.tc_vkn_no,
-            "customer_code": obj.partner.customer_code,
-            "crm_code": obj.partner.crm_code,
+            "id": obj.partner.uuid if obj.partner else '',
+            "name": obj.partner.name if obj.partner else '',
+            "tc_vkn_no": obj.partner.tc_vkn_no if obj.partner else '',
+            "customer_code": obj.partner.customer_code if obj.partner else '',
+            "crm_code": obj.partner.crm_code if obj.partner else '',
         }
     
+    def get_sgk_job(self, obj):
+        return obj.sgk_job.sgk_job_code if obj.sgk_job else ''
+    
+    def get_completion_rate(self, obj):
+        return obj.get_completion_rate()
