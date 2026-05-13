@@ -32,6 +32,29 @@ class FundSource(models.TextChoices):
     YURTDISI = 'yurtdisi', 'Yurt Dışı Transfer'
     DIGER = 'diger', 'Diğer'
 
+class Institution(models.TextChoices):
+    OZEL = 'ozel', 'Özel Sektör'
+    KAMU = 'kamu', 'Kamu Kurumu'
+    SERBEST = 'serbest', 'Serbest Meslek'
+    EMEKLI = 'emekli', 'Emekli'
+    OGRENCI = 'ogrenci', 'Öğrenci'
+    EV = 'ev', 'Ev Hanımı'
+    YOK = 'yok', 'Yok'
+
+class Position(models.TextChoices):
+    CALISAN = 'calisan', 'Çalışan'
+    YONETICI = 'yonetici', 'Yönetici'
+    ORTAK = 'ortak', 'Ortak'
+    YOK = 'yok', 'Yok'
+
+class AssetTRY(models.TextChoices):
+    RANGE_0 = '0', '0 TL'
+    RANGE_0_500K   = '1', '1-500.000'
+    RANGE_500K_1M  = '2', '500.001-1.000.000'
+    RANGE_1M_5M = '3', '1.000.001-5.000.000'
+    RANGE_5M_15M = '4', '5.000.001-15.000.000'
+    RANGE_15M_ABOVE = '5', '15.000.001 ve üzeri'
+
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sectors")
@@ -184,7 +207,10 @@ class PartnerNote(models.Model):
         return str(f"{self.user.get_full_name()} - {self.title}")
 
 class PartnerFinancialProfile(models.Model,CompletionRateMixin):
-    COMPLETION_FIELDS = ["income_types", "fund_sources","sgk_job"]
+    COMPLETION_FIELDS = [
+        "income_types", "fund_sources","sgk_job", "institution", "position",
+        "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets", "other_assets"
+    ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="partner_financial_profiles")
@@ -197,6 +223,15 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     other_fund_source = models.CharField(_("Other Fund Source"), max_length=140, blank=True, null=True)
 
     sgk_job = models.ForeignKey(SgkJob, on_delete=models.SET_NULL, blank=True, null=True, related_name="sgk_job_partner_financial_profiles")
+    institution = models.CharField(_("Institution"), max_length=25, choices=Institution.choices, blank=True, null=True)
+    position = models.CharField(_("Position"), max_length=25, choices=Position.choices, blank=True, null=True)
+
+    real_estate_assets = models.CharField(_("Real Estate Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
+    vehicle_assets = models.CharField(_("Vehicle Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
+    bank_deposit_assets = models.CharField(_("Bank Deposit Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
+    investment_assets = models.CharField(_("Investment Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
+    other_assets = models.CharField(_("Other Assets"), max_length=25, choices=AssetTRY.choices, blank=True, null=True)
+    # other_assets = models.DecimalField(_("Other Assets"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

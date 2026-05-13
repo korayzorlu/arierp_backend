@@ -178,6 +178,13 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     other_fund_source = serializers.CharField()
     completion_rate = serializers.SerializerMethodField()
     sgk_job = serializers.SerializerMethodField()
+    institution = serializers.CharField()
+    position = serializers.CharField()
+    real_estate_assets = serializers.CharField()
+    vehicle_assets = serializers.CharField()
+    bank_deposit_assets = serializers.CharField()
+    investment_assets = serializers.CharField()
+    other_assets = serializers.CharField()
     
     def get_partner(self, obj):
         return {
