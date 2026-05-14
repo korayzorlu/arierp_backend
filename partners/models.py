@@ -81,6 +81,11 @@ class CompanyType(models.TextChoices):
     SAHIS = 'sahis', 'Şahıs Şirketi'
     KOLLEKTIF = 'kollektif', 'Kollektif Şirket'
 
+class RemitterType(models.TextChoices):
+    KENDISI = 'kendisi', 'Kendisi'
+    YAKINI = 'yakini', 'Yakını (Aile Bağı)'
+    UCUNCU_KISI = 'ucuncu_kisi', '3. Kişi'
+
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sectors")
@@ -237,7 +242,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
         "income_types", "fund_sources","sgk_job", "institution", "position",
         "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets",
         "transaction_amount", "transaction_frequency", "transaction_risk", "job_compliance",
-        "customer_type"
+        "customer_type", "remitter_type"
     ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -278,6 +283,19 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     is_negative_news = models.BooleanField(default=False)
 
     company_type = models.CharField(_("Company Type"), max_length=25, choices=CompanyType.choices, blank=True, null=True)
+
+    is_cash_payment = models.BooleanField(default=False)
+    is_balloon_payment = models.BooleanField(default=False)
+    remitter_type = models.CharField(_("Remitter Type"), max_length=25, choices=RemitterType.choices, blank=True, null=True)
+
+    is_suspicious = models.BooleanField(default=False)
+    is_blacklisted = models.BooleanField(default=False)
+
+    is_warning_notice = models.BooleanField(default=False)
+    is_delayed = models.BooleanField(default=False)
+    is_kkb_score_low = models.BooleanField(default=False)
+    is_administrative_follow_up = models.BooleanField(default=False)
+    is_cheque_risk = models.BooleanField(default=False)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

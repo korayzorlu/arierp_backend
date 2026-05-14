@@ -198,6 +198,16 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     company_type = serializers.CharField()
     is_pep = serializers.BooleanField()
     is_negative_news = serializers.BooleanField()
+    is_cash_payment = serializers.BooleanField()
+    is_balloon_payment = serializers.BooleanField()
+    remitter_type = serializers.CharField()
+    is_suspicious = serializers.BooleanField()
+    is_blacklisted = serializers.BooleanField()
+    is_warning_notice = serializers.BooleanField()
+    is_delayed = serializers.BooleanField()
+    is_kkb_score_low = serializers.BooleanField()
+    is_administrative_follow_up = serializers.BooleanField()
+    is_cheque_risk = serializers.BooleanField()
     
     def get_partner(self, obj):
         if obj.partner.tc_vkn_no and obj.partner.tc_vkn_no != '':
