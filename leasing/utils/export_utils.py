@@ -967,7 +967,7 @@ def export_active_leases(self):
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
         data["RBlok"].append(obj.real_estate.block if obj.real_estate else "" )
         data["RBağımsız Bölüm"].append(obj.real_estate.unit if obj.real_estate else "")
-        data["BBSN"].append(obj.bbsn if obj.bbsn else "")
+        data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.lease_status if obj.lease_status else "")
         data["Statü Değişme Tarihi"].append(obj.lease_status_update_date)
