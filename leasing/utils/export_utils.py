@@ -915,9 +915,11 @@ def export_delivery_confirms(self):
 
 def export_active_leases(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
-        status_filter_for_leases(self.params) &
-        Q(is_last_project=True)
-    ).order_by("-activation_date")
+        # status_filter_for_leases(self.params) &
+        # Q(is_last_project=True)
+        Q(is_last_project_arinet=True) &
+        Q(real_estate__isnull=True)
+    ).order_by("-signature_date")
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -934,6 +936,8 @@ def export_active_leases(self):
         "Proje": [],
         "Blok": [],
         "Bağımsız Bölüm": [],
+        "RBlok": [],
+        "RBağımsız Bölüm": [],
         "BBSN": [],
         "Alt Statü": [],
         "Statü": [],
@@ -961,6 +965,8 @@ def export_active_leases(self):
         data["Proje"].append(obj.contract.project if obj.contract else "")
         data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
+        data["RBlok"].append(obj.real_estate.block if obj.real_estate else "" )
+        data["RBağımsız Bölüm"].append(obj.real_estate.unit if obj.real_estate else "")
         data["BBSN"].append(obj.bbsn if obj.bbsn else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.lease_status if obj.lease_status else "")
