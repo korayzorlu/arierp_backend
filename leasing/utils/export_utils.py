@@ -962,7 +962,7 @@ def export_active_leases(self):
         data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
         data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
         data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
-        data["Proje"].append(obj.contract.project if obj.contract else "")
+        data["Proje"].append(obj.item.stock_name if obj.item else "")
         data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
         data["RBlok"].append(obj.real_estate.block if obj.real_estate else "" )
