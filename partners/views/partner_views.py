@@ -392,6 +392,21 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
         obj.transaction_frequency = data.get('transaction_frequency')
         obj.transaction_risk = data.get('transaction_risk')
         obj.job_compliance = data.get('job_compliance')
+        obj.customer_type = data.get('customer_type')
+        obj.is_foreign_nationality = data.get('is_foreign_nationality')
+        obj.is_end_beneficiary = data.get('is_end_beneficiary')
+        if data.get('customer_type') == "bireysel":
+            obj.is_transparency = False
+            obj.is_foreign_partner = False
+            obj.is_complex_partner = False
+            obj.company_type = None
+        else:
+            obj.is_transparency = data.get('is_transparency')
+            obj.is_foreign_partner = data.get('is_foreign_partner')
+            obj.is_complex_partner = data.get('is_complex_partner')
+            obj.company_type = data.get('company_type')
+        obj.is_pep = data.get('is_pep')
+        obj.is_negative_news = data.get('is_negative_news')
         obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)

@@ -189,6 +189,15 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     transaction_frequency = serializers.CharField()
     transaction_risk = serializers.CharField()
     job_compliance = serializers.CharField()
+    customer_type = serializers.CharField()
+    is_foreign_nationality = serializers.BooleanField()
+    is_end_beneficiary = serializers.BooleanField()
+    is_transparency = serializers.BooleanField()
+    is_foreign_partner = serializers.BooleanField()
+    is_complex_partner = serializers.BooleanField()
+    company_type = serializers.CharField()
+    is_pep = serializers.BooleanField()
+    is_negative_news = serializers.BooleanField()
     
     def get_partner(self, obj):
         if obj.partner.tc_vkn_no and obj.partner.tc_vkn_no != '':

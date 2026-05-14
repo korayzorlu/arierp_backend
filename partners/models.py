@@ -71,6 +71,16 @@ class ComplianceStatus(models.TextChoices):
     UYUMLU = 'uyumlu', 'Uyumlu'
     UYUMLU_DEGIL   = 'uyumlu_degil', 'Uyumlu Değil'
 
+class CustomerType(models.TextChoices):
+    BIREYSEL = 'bireysel', 'Bireysel'
+    TUZEL   = 'tuzel', 'Tüzel'
+
+class CompanyType(models.TextChoices):
+    AS = 'as', 'A.Ş.'
+    LTD   = 'ltd', 'LTD'
+    SAHIS = 'sahis', 'Şahıs Şirketi'
+    KOLLEKTIF = 'kollektif', 'Kollektif Şirket'
+
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sectors")
@@ -226,7 +236,8 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     COMPLETION_FIELDS = [
         "income_types", "fund_sources","sgk_job", "institution", "position",
         "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets",
-        "transaction_amount", "transaction_frequency", "transaction_risk", "job_compliance"
+        "transaction_amount", "transaction_frequency", "transaction_risk", "job_compliance",
+        "customer_type"
     ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -254,6 +265,19 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     transaction_frequency = models.CharField(_("Transaction Frequency"), max_length=25, choices=Frequency.choices, blank=True, null=True)
     transaction_risk = models.CharField(_("Transaction Risk"), max_length=25, choices=RiskStatus.choices, blank=True, null=True)
     job_compliance = models.CharField(_("Job Compliance"), max_length=25, choices=ComplianceStatus.choices, blank=True, null=True)
+
+    customer_type = models.CharField(_("Customer Type"), max_length=25, choices=CustomerType.choices, blank=True, null=True)
+    is_foreign_nationality = models.BooleanField(default=False)
+    is_end_beneficiary = models.BooleanField(default=False)
+
+    is_transparency = models.BooleanField(default=False)
+    is_foreign_partner = models.BooleanField(default=False)
+    is_complex_partner = models.BooleanField(default=False)
+
+    is_pep = models.BooleanField(default=False)
+    is_negative_news = models.BooleanField(default=False)
+
+    company_type = models.CharField(_("Company Type"), max_length=25, choices=CompanyType.choices, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
