@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery
+from django.db.models import QuerySet, Q,Max,Count, Sum,When,Case,BooleanField,Value,OuterRef, Subquery
 
 from decimal import Decimal
 from datetime import date,timedelta,datetime
@@ -23,6 +23,7 @@ class RiskPartnerListSerializer(serializers.Serializer):
     is_commercial = serializers.BooleanField()
     partner_note_count = serializers.SerializerMethodField()
     advance_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    lease_advance_amount = serializers.SerializerMethodField()
 
     def get_tc_vkn_no(self, obj):
         return obj.vat_no if obj.customer_type == "institutional" else obj.tc_vkn_no
@@ -125,3 +126,15 @@ class RiskPartnerListSerializer(serializers.Serializer):
                 })
         #return sorted(lease_dict, key=lambda x: x["leases"]["overdue_days"], reverse=True)
         return lease_dict
+    
+    def get_lease_advance_amount(self, obj):
+        request = self.context.get('request')
+        filter_params = request.GET if request else {}
+
+        leases_advance_amount = Lease.objects.select_related().filter(
+            Q(contract__partner = obj) &
+            Q(overdue_amount__lt=0)
+        ).only("overdue_amount").aggregate(total_advance_amount=Sum('overdue_amount'))
+
+
+        return leases_advance_amount["total_advance_amount"] if leases_advance_amount["total_advance_amount"] and leases_advance_amount["total_advance_amount"] < 0 else Decimal("0.00")
