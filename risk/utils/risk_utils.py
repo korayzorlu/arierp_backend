@@ -193,6 +193,7 @@ def set_warning_notice_files(company,reset):
                 "toplam_borc_bakiye": format_currency(toplam_borc_bakiye),
                 "gelecek_bakiye": format_currency(gelecek_bakiye),
                 "toplam_bakiye": format_currency(toplam_bakiye),
+                "pb": lease.currency.code if lease.currency and lease.currency.code != 'TRY' else 'TL',
             }
             doc.render(context)
 
