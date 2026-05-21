@@ -14,8 +14,9 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 
 from communication.models import SMS
 from communication.utils.sms_utils import send_sms_with_turatel,check_sms_status
-from communication.tasks import send_sms
+from communication.tasks import send_sms,send_sms_task
 from partners.models import Partner
+from common.utils.common_utils import get_phone_numbers_from_queryset
 
 import os
 import json
@@ -34,7 +35,30 @@ class SendSMSView(LoginRequiredMixin,View):
         send_sms.delay(data)
 
         return JsonResponse({'message': 'SMS gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
-    
+
+class SendSMSGlobalView(LoginRequiredMixin,View):
+    model = SMS
+
+    def post(self, request, *args, **kwargs):
+        from operation.api.views import UntitleDeedLeaseList
+        from rest_framework.request import Request
+        data = json.loads(request.body)
+
+        if request.user.authorization.department != 'operasyonn':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+
+        receiver_list, text = get_phone_numbers_from_queryset(request=request,data=data)
+
+        params = {
+            "activeCompany": data.get('activeCompany'),
+            "receiver_list": ['05542663970'],
+            "text": text
+        }
+
+        send_sms_task.delay(params)
+
+        return JsonResponse({'message': 'SMS gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
+
 class CheckSMSView(LoginRequiredMixin,View):
     model = SMS
 
@@ -47,3 +71,5 @@ class CheckSMSView(LoginRequiredMixin,View):
             check_sms_status({"message_id_list": [message_obj.message_id]})
 
         return JsonResponse({},status=200)
+    
+

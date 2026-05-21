@@ -7,6 +7,7 @@ app_name = "communication"
 
 urlpatterns = [
     path('send_sms/', SendSMSView.as_view(), name="send_sms"),
+    path('send_sms_global/', SendSMSGlobalView.as_view(), name="send_sms_global"),
     path('send_risk_email/', SendRiskEmailView.as_view(), name="send_risk_email"),
     path('send_risk_email_selected/', SendRiskEmailSelectedView.as_view(), name="send_risk_email_selected"),
     path('check_sms/', CheckSMSView.as_view(), name="check_sms"),

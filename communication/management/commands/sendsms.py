@@ -3,7 +3,7 @@ from django.conf import settings
 
 from contracts.models import *
 from leasing.models import *
-from communication.tasks import send_sms_task
+from communication.tasks import send_sms_on_command_task
 
 import pandas as pd
 import json
@@ -27,6 +27,6 @@ class Command(BaseCommand):
 
         print("processing...")
         
-        send_sms_task.delay(company)
+        send_sms_on_command_task.delay(company)
         
         print("done!")

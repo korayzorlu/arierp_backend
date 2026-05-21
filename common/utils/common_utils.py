@@ -1,5 +1,6 @@
 from django.utils.timezone import make_aware, is_aware
 from django.db.models import QuerySet, Q
+from rest_framework.request import Request
 
 from unidecode import unidecode
 from decimal import Decimal,InvalidOperation
@@ -258,3 +259,28 @@ def vendor_filter(filter_params, relation="partner_contracts"):
         )
     else:
         return Q()
+
+def get_queryset_view(query):
+    if query == "untitle_deed_leases":
+        from operation.api.views import UntitleDeedLeaseList
+        value_field="contract__partner__phone_number"
+        text = "Test mesajıdır, lütfen dikkate almayınız."
+        return UntitleDeedLeaseList, value_field, text
+
+def get_phone_numbers_from_queryset(request,data):
+    mutable_get = request.GET.copy()
+    mutable_get['ac'] = data.get('activeCompany')
+    request.GET = mutable_get
+
+    view_class, value_field, text = get_queryset_view(data.get('query'))
+    view = view_class()
+    drf_request = Request(request)
+    drf_request._user = request.user
+    view.request = drf_request
+    view.kwargs = {}
+    view.format_kwarg = None
+
+    queryset = view.get_queryset().values_list(value_field, flat=True)
+    queryset = [pn for pn in queryset if pn and pn != ""]
+
+    return list(queryset), text

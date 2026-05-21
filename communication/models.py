@@ -50,6 +50,7 @@ class SMS(models.Model):
         ('to_terminated', ('Fesih Edilecek')),
         ('today_payment', ('Bugün Ödemesi Olan')),
         ('tomorrow_payment', ('Yarın Ödemesi Olan')),
+        ('untitle_deed', ('Tapu Almayanlar')),
     )
     category = models.CharField(_("Category"), max_length=25, default='0', choices=CATEGORY_CHOICES, blank=True, null=True)
 

@@ -13,7 +13,7 @@ from partners.models import Partner
 from leasing.models import Lease
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from risk.utils.common_utils import partners_for_project,leases_for_project
-from companies.models import Company
+from companies.models import Company,UserCompany
 
 def sms_text_for_risk_status(params,contracts,total_overdue_amount,overdue_start_date):
     tomorrow = date.today() + timedelta(days=1)
@@ -199,14 +199,15 @@ def send_sms_on_command(company):
             SMS.objects.bulk_create(create_objs)
 
 def send_sms_util(params):
-    company = Company.objects.filter(id=int(params.get('company'))).first()
+    active_company = UserCompany.objects.filter(uuid=params.get('activeCompany'), is_active=True).first()
+    company = active_company.company if active_company else None
 
     SMS_TEXT = params.get('text', '')
 
     receiver_list = params.get('receiver_list', [])
     
     for receiver in receiver_list:
-        time.sleep(0.5)
+        time.sleep(0.1)
         data = {
             "messageText" : SMS_TEXT,
             "receiverList" : [receiver],
@@ -236,7 +237,7 @@ def send_sms_util(params):
                     size = sms_result.get("messageSize", ""),
                     status = message_result.get("status", ""),
                     reason = message_result.get("reason", ""),
-                    category = 'risk',
+                    category = 'untitle_deed',
                     send_date = now,
                     delivery_date = now,
                     text = SMS_TEXT,
