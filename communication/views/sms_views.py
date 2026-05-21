@@ -43,7 +43,7 @@ class SendSMSGlobalView(LoginRequiredMixin,View):
         from operation.api.views import UntitleDeedLeaseList
         from rest_framework.request import Request
         data = json.loads(request.body)
-
+        
         if request.user.authorization.department != 'operasyonn':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
 

@@ -280,7 +280,11 @@ def get_phone_numbers_from_queryset(request,data):
     view.kwargs = {}
     view.format_kwarg = None
 
-    queryset = view.get_queryset().values_list(value_field, flat=True)
+    if data.get('uuids', []):
+        queryset = view.get_queryset().filter(uuid__in=data.get('uuids')).values_list(value_field, flat=True)
+    else:
+        queryset = view.get_queryset().values_list(value_field, flat=True)
+  
     queryset = [pn for pn in queryset if pn and pn != ""]
 
     return list(queryset), text
