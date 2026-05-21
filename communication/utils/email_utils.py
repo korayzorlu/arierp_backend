@@ -6,7 +6,7 @@ from django.utils import timezone
 from common.utils.common_utils import LegacyTLSAdapter
 from communication.models import SetrowEmail
 from users.models import User
-from companies.models import Company
+from companies.models import Company,UserCompany
 
 import requests
 import xmltodict
@@ -43,6 +43,46 @@ def send_email_for_lease_changes(name,tc_vkn_no):
 def send_email_with_setrow(params):
     company = Company.objects.filter(uuid=params.get("company_id")).first()
     user = User.objects.filter(uuid=params.get("user_id")).first()
+
+    url = f"https://www.setrowsend.com/email/sendV2.php?k={settings.SETROW_API_KEY}&ktemplate={params.get('template')}"
+
+    headers = {
+        "Authorization": f"Bearer {settings.SETROW_API_KEY}",
+    }
+
+    payload = []
+
+    for recipient in params.get('recipients', []):
+        payload.append({
+            "to": recipient.get('email'),
+            "variables": recipient.get('variables', {}),
+        })
+
+    session = requests.Session()
+    session.mount("https://", LegacyTLSAdapter())
+
+    chunk_size = 1000
+    for i in range(0, max(len(payload), 1), chunk_size):
+        chunk = payload[i:i + chunk_size]
+        response = session.post(url, headers=headers, json=chunk)
+        if response.text:
+            response_data = response.json()
+            for data in response_data.get("message", []):
+                SetrowEmail.objects.create(
+                    send_id=data.get("send_id"),
+                    sender='iletisim@mail.info.arileasing.com.tr',
+                    recipient=data.get("email"),
+                    status=params.get('status'),
+                    send_date=timezone.now(),
+                    user=user,
+                    company=company,
+                    template=params.get('template_name'),
+                )
+
+def send_email_global_with_setrow(params):
+    user = User.objects.filter(uuid=params.get("user_id")).first()
+    active_company = UserCompany.objects.filter(uuid=params.get('activeCompany'), is_active=True).first()
+    company = active_company.company if active_company else None
 
     url = f"https://www.setrowsend.com/email/sendV2.php?k={settings.SETROW_API_KEY}&ktemplate={params.get('template')}"
 

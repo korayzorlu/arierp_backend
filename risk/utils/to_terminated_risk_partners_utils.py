@@ -16,8 +16,6 @@ from partners.models import Partner
 
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 
-
-
 def export_to_terminated_risk_partners_for_sms(self):
     objs = Partner.objects.select_related().filter(
         vendor_filter_for_views(self.params) &

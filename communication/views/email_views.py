@@ -17,17 +17,57 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 from communication.models import SMS, Email
 from communication.utils.sms_utils import send_sms_with_turatel,check_sms_status
 from communication.utils.email_utils import send_email_with_setrow,check_last_email
-from communication.tasks import send_email_with_setrow_task
+from communication.tasks import send_email_with_setrow_task,send_email_global_with_setrow_task
 from partners.models import Partner
 from risk.utils.common_utils import partners_for_project,template_for_risk_status,leases_for_project
 from leasing.utils.common_utils import format_currency_tr,project_text
 from leasing.models import Lease
+from common.utils.common_utils import get_emails_from_queryset
+
 
 import os
 import json
 import pandas as pd
 from decimal import Decimal
 from datetime import datetime,date,timedelta
+
+class SendEmailView(LoginRequiredMixin,View):
+    model = Email
+
+    def post(self, request, *args, **kwargs):
+        from operation.api.views import UntitleDeedLeaseList
+        from rest_framework.request import Request
+        data = json.loads(request.body)
+        
+        # if request.user.authorization.department != 'operasyonn':
+        #     return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+
+        receiver_list, text = get_emails_from_queryset(request=request,data=data)
+
+        test_receiver_list = [
+            {
+                "email": 'korayzorllu@gmail.com',
+                "variables": {
+                    "konu": 'Ödeme Hatırlatma Bilgilendirmesi - Test Maili',
+                    "proje": project_text({"project": "kizilbuk"}),
+                    "sozlesme": '99999',
+                    "tutar": format_currency_tr(Decimal('0.00')),
+                    "tarih": date.today().strftime('%d.%m.%Y')
+                }
+            },
+        ]
+
+        params = {
+            "activeCompany": str(data.get("activeCompany")),
+            "user_id": str(request.user.uuid),
+            #"recipients": [{"email": item,"variables": {}} for item in receiver_list if item],
+            "recipients": test_receiver_list,
+            "template": template_for_risk_status(data.get("query"))
+        }
+
+        send_email_global_with_setrow_task.delay(params)        
+
+        return JsonResponse({'message': 'Email gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
 
 class SendRiskEmailView(LoginRequiredMixin,View):
     model = Email
@@ -242,4 +282,5 @@ class SendRiskEmailSelectedView(LoginRequiredMixin,View):
         send_email_with_setrow_task.delay(params)
 
         return JsonResponse({'message': 'E-posta gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
-    
+
+
