@@ -201,7 +201,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
         return obj.contract.partner.crm_code if obj.contract.partner else ""
     
     def get_partner_special(self, obj):
-        return True if "special" in obj.contract.partner.types else False
+        return True if obj.contract and obj.contract.partner and "special" in obj.contract.partner.types else False
     
     def get_quotation(self, obj):
         return obj.contract.quotation_obj.code if obj.contract.quotation_obj else ""
