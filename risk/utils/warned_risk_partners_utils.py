@@ -221,17 +221,7 @@ def export_warned_risk_partners_for_sms(self):
 def export_warned_risk_partners(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
         vendor_filter_for_serializers(self.params) &
-        (
-            Q(lease_status='aktiflestirildi') |
-            Q(lease_status='planlandi') |
-            Q(lease_status='durduruldu')
-        ) &
-        Q(is_last_project=True) &
-        Q(is_kdv_diff=False) &
-        Q(is_credit=False) &
-        Q(is_under_review=False) &
-        Q(overdue_days__gt=25) &
-        Q(overdue_amount__gt=1000)
+        Q(risk_status='ihtar_cekildi')
     ).annotate(
         warning_notice_count=Count(
                 'contract__contract_warning_notices',

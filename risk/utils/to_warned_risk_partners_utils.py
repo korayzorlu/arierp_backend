@@ -192,7 +192,7 @@ def export_to_warned_risk_partners_for_sms(self):
 def export_to_warned_risk_partners(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
         vendor_filter_for_serializers(self.params) &
-        to_warned_filters_for_views_lease()
+        Q(risk_status='ihtar_cekilecek')
     ).exclude(
             Q(contract__partner__types__contains=["special"]) |
             Q(contract__partner__types__contains=["barter"]) |

@@ -182,19 +182,7 @@ def export_risk_partners_for_sms(self):
 def export_risk_partners(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
         vendor_filter_for_serializers(self.params) &
-        Q(overdue_amount__gt=100) &
-        Q(overdue_days__gt=0) &
-        Q(overdue_days__lte=25) &
-        ~Q(contract__contract_warning_notices__state__in=['Yeni','Geçerli']) &
-        (
-            Q(lease_status='aktiflestirildi') |
-            Q(lease_status='planlandi') |
-            Q(lease_status='durduruldu')
-        ) &
-        Q(is_last_project=True) &
-        Q(is_kdv_diff=False) &
-        Q(is_credit=False) &
-        Q(is_under_review=False)
+        Q(risk_status='gecikmede')
     ).order_by("-overdue_amount").exclude(
         Q(contract__partner__types__contains=["special"]) |
         Q(contract__partner__types__contains=["barter"]) |
