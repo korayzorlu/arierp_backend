@@ -675,3 +675,4 @@ def template_for_risk_status(risk_status):
         return ""
     elif risk_status == "untitle_deed_leases":
         return "b84e83786dbcbc132b0b25d293890ba6506ff7d0b474b2aa4e"
+    

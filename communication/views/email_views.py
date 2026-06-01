@@ -22,7 +22,8 @@ from partners.models import Partner
 from risk.utils.common_utils import partners_for_project,template_for_risk_status,leases_for_project
 from leasing.utils.common_utils import format_currency_tr,project_text
 from leasing.models import Lease
-from common.utils.common_utils import get_emails_from_queryset
+from common.utils.common_utils import get_emails_from_queryset,get_receivers_from_queryset
+from common.utils.text_utils import get_email_template
 
 
 import os
@@ -31,7 +32,7 @@ import pandas as pd
 from decimal import Decimal
 from datetime import datetime,date,timedelta
 
-class SendEmailView(LoginRequiredMixin,View):
+class SendEmailVieww(LoginRequiredMixin,View):
     model = Email
 
     def post(self, request, *args, **kwargs):
@@ -63,6 +64,36 @@ class SendEmailView(LoginRequiredMixin,View):
             #"recipients": [{"email": item,"variables": {}} for item in receiver_list if item],
             "recipients": test_receiver_list,
             "template": template_for_risk_status(data.get("query"))
+        }
+
+        send_email_global_with_setrow_task.delay(params)        
+
+        return JsonResponse({'message': 'Email gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
+    
+class SendEmailView(LoginRequiredMixin,View):
+    model = Email
+
+    def post(self, request, *args, **kwargs):
+        from operation.api.views import UntitleDeedLeaseList
+        from rest_framework.request import Request
+        data = json.loads(request.body)
+        
+        # if request.user.authorization.department != 'operasyonn':
+        #     return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+
+        receiver_list = get_receivers_from_queryset(request=request,data=data)
+
+        #phone_numbers = [next(reversed(r.values())) for r in receiver_list]
+
+        email_data = get_email_template(app=data.get("app"),list=data.get("query"))
+        receiver_list = [{"to": r.get(email_data.get("email_field", "")), "variables": r | {"konu": email_data.get("subject", "")}} for r in receiver_list]
+        
+        params = {
+            "activeCompany": str(data.get("activeCompany")),
+            "user_id": str(request.user.uuid),
+            #"recipients": [{"email": item,"variables": {}} for item in receiver_list if item],
+            "recipients": receiver_list,
+            "template": email_data.get('template', "")
         }
 
         send_email_global_with_setrow_task.delay(params)        

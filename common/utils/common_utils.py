@@ -262,20 +262,18 @@ def vendor_filter(filter_params, relation="partner_contracts"):
     else:
         return Q()
 
-def get_queryset_view(query):
+def get_queryset_view(query,variables=[]):
     if query == "untitle_deed_leases":
         from operation.api.views import UntitleDeedLeaseList
-        phone_number_value_field="contract__partner__phone_number"
-        email_value_field="contract__partner__email"
-        text = get_sms_text(app="operation", list="tapu_almayanlar")
-        return UntitleDeedLeaseList, phone_number_value_field, email_value_field, text
+        variable_fields = variables
+        return UntitleDeedLeaseList, variable_fields
 
-def get_phone_numbers_from_queryset(request,data):
+def get_receivers_from_queryset(request,data):
     mutable_get = request.GET.copy()
     mutable_get['ac'] = data.get('activeCompany')
     request.GET = mutable_get
 
-    view_class, phone_number_value_field, email_value_field, text = get_queryset_view(data.get('query'))
+    view_class, variable_fields = get_queryset_view(data.get('query'),data.get('variables', []))
     view = view_class()
     drf_request = Request(request)
     drf_request._user = request.user
@@ -284,20 +282,18 @@ def get_phone_numbers_from_queryset(request,data):
     view.format_kwarg = None
 
     if data.get('uuids', []):
-        queryset = view.get_queryset().filter(uuid__in=data.get('uuids')).values_list(phone_number_value_field, flat=True)
+        queryset = view.get_queryset().filter(uuid__in=data.get('uuids')).values(*variable_fields)
     else:
-        queryset = view.get_queryset().values_list(phone_number_value_field, flat=True)
-  
-    queryset = [pn for pn in queryset if pn and pn != ""]
+        queryset = view.get_queryset().values(*variable_fields)
 
-    return list(queryset), text
+    return list(queryset)
 
 def get_emails_from_queryset(request, data):
     mutable_get = request.GET.copy()
     mutable_get['ac'] = data.get('activeCompany')
     request.GET = mutable_get
 
-    view_class, phone_number_value_field, email_value_field, text = get_queryset_view(data.get('query'))
+    view_class, phone_number_value_field, email_value_field, variable_fields, text = get_queryset_view(data.get('query'), data.get('variables', []))
     view = view_class()
     drf_request = Request(request)
     drf_request._user = request.user

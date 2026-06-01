@@ -14,6 +14,7 @@ from leasing.models import Lease
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from risk.utils.common_utils import partners_for_project,leases_for_project
 from companies.models import Company,UserCompany
+from common.utils.text_utils import get_sms_text
 
 def sms_text_for_risk_status(params,contracts,total_overdue_amount,overdue_start_date):
     tomorrow = date.today() + timedelta(days=1)
@@ -208,44 +209,48 @@ def send_sms_util(params):
     
     for receiver in receiver_list:
         time.sleep(0.1)
+        sms_data = get_sms_text(app=params.get('app', ''), list=params.get('list', ''), params=receiver)
         data = {
-            "messageText" : SMS_TEXT,
-            "receiverList" : [receiver],
+            "messageText" : sms_data.get('text', ''),
+            "receiverList" : [sms_data.get('phone_number', '')],
         }
 
-        now = timezone.now()
-        turatel_response = send_turatel_sms(data)
+        print(data)
+        print("-----------------------------")
 
-        sms_result = turatel_response.get("message", {}).get("sendSmsResult", {})
+        # now = timezone.now()
+        # turatel_response = send_turatel_sms(data)
 
-        if sms_result.get("ErrorCode", "") != "0":
-            return {"message_id_list": []}
+        # sms_result = turatel_response.get("message", {}).get("sendSmsResult", {})
+
+        # if sms_result.get("ErrorCode", "") != "0":
+        #     return {"message_id_list": []}
         
-        create_objs = []
-        message_id_list = []
-        if sms_result.get("MessageIdList", {}).get("MessageId", "") != "-19":
-            sms_status = get_turatel_status_with_message({"messageIdList": [sms_result.get("MessageIdList", {}).get("MessageId", "")]})
-            message_result = sms_status.get("message", {}).get("data", {}).get("messageStatusList", {})[0] if sms_status.get("message", {}) else None
+        # create_objs = []
+        # message_id_list = []
+        # if sms_result.get("MessageIdList", {}).get("MessageId", "") != "-19":
+        #     sms_status = get_turatel_status_with_message({"messageIdList": [sms_result.get("MessageIdList", {}).get("MessageId", "")]})
+        #     message_result = sms_status.get("message", {}).get("data", {}).get("messageStatusList", {})[0] if sms_status.get("message", {}) else None
             
-            if message_result and str(sms_result.get("MessageIdList", {}).get("MessageId", "")) == str(message_result.get("messageId", "")):
+        #     if message_result and str(sms_result.get("MessageIdList", {}).get("MessageId", "")) == str(message_result.get("messageId", "")):
                 
-                create_objs.append(SMS(
-                    company = company,
-                    packet_id = str(message_result.get("packetId", "")),
-                    message_id = str(message_result.get("messageId", "")),
-                    error_code = sms_result.get("ErrorCode", ""),
-                    size = sms_result.get("messageSize", ""),
-                    status = message_result.get("status", ""),
-                    reason = message_result.get("reason", ""),
-                    category = 'untitle_deed',
-                    send_date = now,
-                    delivery_date = now,
-                    text = SMS_TEXT,
-                    phone_number = message_result.get("receiver", ""),
-                ))
-                message_id_list.append(str(message_result.get("messageId", "")))
+        #         create_objs.append(SMS(
+        #             company = company,
+        #             packet_id = str(message_result.get("packetId", "")),
+        #             message_id = str(message_result.get("messageId", "")),
+        #             error_code = sms_result.get("ErrorCode", ""),
+        #             size = sms_result.get("messageSize", ""),
+        #             status = message_result.get("status", ""),
+        #             reason = message_result.get("reason", ""),
+        #             category = 'untitle_deed',
+        #             send_date = now,
+        #             delivery_date = now,
+        #             text = sms_data.get('text', ''),
+        #             phone_number = message_result.get("receiver", ""),
+        #         ))
+        #         message_id_list.append(str(message_result.get("messageId", "")))
 
-        if create_objs:
-            SMS.objects.bulk_create(create_objs)
+        # if create_objs:
+        #     SMS.objects.bulk_create(create_objs)
 
 

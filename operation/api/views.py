@@ -499,7 +499,8 @@ class UntitleDeedLeaseList(ModelViewSet, QueryListAPIView):
             # )
         ).filter(
             lease_invoices_count__gt=0,
-            remaining_amount__lte=F('transfer_amount')
+            remaining_amount__lte=F('transfer_amount'),
+            remaining_amount__gt=Decimal('0.00')
             #invoice_paid_diff__lt=100000
         ).exclude(
             Q(contract__partner__types__contains=['special'])

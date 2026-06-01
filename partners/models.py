@@ -260,7 +260,9 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     position = models.CharField(_("Position"), max_length=25, choices=Position.choices, blank=True, null=True)
 
     real_estate_assets = models.CharField(_("Real Estate Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    real_estate_assets_count = models.PositiveIntegerField(_("Real Estate Assets Count"), default=0)
     vehicle_assets = models.CharField(_("Vehicle Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    vehicle_assets_count = models.PositiveIntegerField(_("Vehicle Assets Count"), default=0)
     bank_deposit_assets = models.CharField(_("Bank Deposit Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
     investment_assets = models.CharField(_("Investment Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
     other_assets = models.CharField(_("Other Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)

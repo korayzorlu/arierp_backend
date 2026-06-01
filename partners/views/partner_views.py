@@ -383,8 +383,8 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
         obj.sgk_job = SgkJob.objects.filter(sgk_job_code = data.get('sgk_job')).first() if data.get('sgk_job') else None
         obj.institution = data.get('institution')
         obj.position = data.get('position')
-        obj.real_estate_assets = data.get('real_estate_assets')
-        obj.vehicle_assets = data.get('vehicle_assets')
+        obj.real_estate_assets_count = data.get('real_estate_assets_count')
+        obj.vehicle_assets_count = data.get('vehicle_assets_count')
         obj.bank_deposit_assets = data.get('bank_deposit_assets')
         obj.investment_assets = data.get('investment_assets')
         obj.other_assets = data.get('other_assets')
