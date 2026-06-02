@@ -19,6 +19,7 @@ from celery.schedules import crontab
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 import ollama
+import sentry_sdk
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -147,45 +148,88 @@ CHANNEL_LAYERS= {
 
 DB_TEST = config('DB_TEST', cast = bool, default = False)
 
+# if DB_TEST:
+#     DATABASES = {
+#             'default': {
+#                 'ENGINE': 'dj_db_conn_pool.backends.postgresql',
+#                 'NAME': 'postgres',
+#                 'USER': 'postgres',
+#                 'PASSWORD': 'postgres',
+#                 'HOST': 'db',
+#                 'PORT': '',
+#                 'POOL_OPTIONS': {
+#                     'POOL_SIZE': 100,
+#                     'MAX_OVERFLOW': 50,
+#                     'RECYCLE': 300
+#                 },
+#                 #'CONN_MAX_AGE': 30, # Bağlantı ömrü (saniye cinsinden)
+#                 "TEST": {
+#                     "NAME": "marswidedb_test",
+#                 },
+#             }
+#     }
+# else:
+#     DATABASES = {
+#             'default': {
+#                 'ENGINE': 'dj_db_conn_pool.backends.postgresql',
+#                 'NAME': str(os.getenv('PG_DB')),
+#                 'USER': str(os.getenv('PG_USER')),
+#                 'PASSWORD': str(os.getenv('PG_PASSWORD')),
+#                 'HOST': 'db',
+#                 'PORT': '',
+#                 'POOL_OPTIONS': {
+#                     'POOL_SIZE': 100,
+#                     'MAX_OVERFLOW': 50,
+#                     'RECYCLE': 300
+#                 },
+#                 #'CONN_MAX_AGE': 30, # Bağlantı ömrü (saniye cinsinden)
+#                 "TEST": {
+#                     "NAME": "aridb_test",
+#                 },
+#             }
+#     }
+
+_pool_options = {
+    'min_size': 3,
+    'max_size': 40,
+    'max_waiting': 20,
+    'max_lifetime': 300,
+    'max_idle': 300,
+    'reconnect_timeout': 5,
+    'num_workers': 1,
+}
+
 if DB_TEST:
     DATABASES = {
-            'default': {
-                'ENGINE': 'dj_db_conn_pool.backends.postgresql',
-                'NAME': 'postgres',
-                'USER': 'postgres',
-                'PASSWORD': 'postgres',
-                'HOST': 'db',
-                'PORT': '',
-                'POOL_OPTIONS': {
-                    'POOL_SIZE': 100,
-                    'MAX_OVERFLOW': 50,
-                    'RECYCLE': 300
-                },
-                #'CONN_MAX_AGE': 30, # Bağlantı ömrü (saniye cinsinden)
-                "TEST": {
-                    "NAME": "marswidedb_test",
-                },
-            }
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'db',
+            'PORT': '',
+            #'CONN_MAX_AGE': None,
+            'OPTIONS': {'pool': _pool_options},
+            'TEST': {
+                'NAME': 'marswidedb_test',
+            },
+        }
     }
 else:
     DATABASES = {
-            'default': {
-                'ENGINE': 'dj_db_conn_pool.backends.postgresql',
-                'NAME': str(os.getenv('PG_DB')),
-                'USER': str(os.getenv('PG_USER')),
-                'PASSWORD': str(os.getenv('PG_PASSWORD')),
-                'HOST': 'db',
-                'PORT': '',
-                'POOL_OPTIONS': {
-                    'POOL_SIZE': 100,
-                    'MAX_OVERFLOW': 50,
-                    'RECYCLE': 300
-                },
-                #'CONN_MAX_AGE': 30, # Bağlantı ömrü (saniye cinsinden)
-                "TEST": {
-                    "NAME": "aridb_test",
-                },
-            }
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': str(os.getenv('PG_DB')),
+            'USER': str(os.getenv('PG_USER')),
+            'PASSWORD': str(os.getenv('PG_PASSWORD')),
+            'HOST': 'db',
+            'PORT': '',
+            #'CONN_MAX_AGE': None,
+            'OPTIONS': {'pool': _pool_options},
+            'TEST': {
+                'NAME': 'aridb_test',
+            },
+        }
     }
 
 
@@ -647,3 +691,11 @@ AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")
 
 # vpos
 VPOS_VALIDATION_KEY = os.getenv('VPOS_VALIDATION_KEY','')
+
+# Sentry
+sentry_sdk.init(
+    dsn="https://bf1b38ebd9e1b207370a1e2a9f666596@o4511494864961536.ingest.de.sentry.io/4511494867386448",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)

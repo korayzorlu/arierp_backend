@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.views import View
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, alogout
 from django.contrib.auth.forms import PasswordResetForm
 from django.core.mail import BadHeaderError
 from django.http import JsonResponse

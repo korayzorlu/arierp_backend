@@ -93,6 +93,7 @@ services:
   db:
     image: postgres:16
     container_name: postgres_db
+    command: postgres -c max_connections=300
     volumes:
       #- ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
       - postgres_data:/var/lib/postgresql/data
