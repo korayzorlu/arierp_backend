@@ -4,7 +4,7 @@ attrs==24.3.0
 autobahn==24.4.2
 Automat==24.8.1
 billiard==4.2.1
-celery==5.4.0
+celery==5.6.3
 cffi==1.17.1
 channels==4.2.0
 channels-redis==4.2.0
@@ -47,12 +47,11 @@ hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
 ipython==9.8.0
-kombu==5.4.2
+kombu==5.6.2
 msgpack==1.1.0
 packaging==24.2
 prompt_toolkit==3.0.48
 psycopg[pool]==3.3.4
-#psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
@@ -73,7 +72,7 @@ tinycss2==1.5.0
 Twisted==24.11.0
 txaio==23.1.1
 typing_extensions==4.15.0
-tzdata==2024.2
+tzdata==2026.2
 uvicorn==0.34.0
 vine==5.1.0
 wcwidth==0.2.13
