@@ -187,11 +187,13 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     bank_deposit_assets = serializers.CharField()
     investment_assets = serializers.CharField()
     other_assets = serializers.CharField()
+    other_assets_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
+    other_assets_description = serializers.CharField()
     transaction_amount = serializers.CharField()
     transaction_frequency = serializers.CharField()
     transaction_risk = serializers.CharField()
     job_compliance = serializers.CharField()
-    customer_type = serializers.CharField()
+    customer_type = serializers.SerializerMethodField()
     is_foreign_nationality = serializers.BooleanField()
     is_end_beneficiary = serializers.BooleanField()
     is_transparency = serializers.BooleanField()
@@ -233,3 +235,11 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     
     def get_completion_rate(self, obj):
         return obj.get_completion_rate()
+    
+    def get_customer_type(self, obj):
+        if obj.partner and obj.partner.customer_type == 'individual':
+            return "bireysel"
+        elif obj.partner and obj.partner.customer_type == 'institutional':
+            return "tuzel"
+        else:
+            return ''

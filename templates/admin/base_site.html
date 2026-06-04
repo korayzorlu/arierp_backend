@@ -18,7 +18,70 @@
 {% block nav-global %}{% endblock %}
 
 {% block extrabody %}
-    <h1 id="site-name">
-        test
-    </h1>
+
+    <nav id="accordion-nav">
+        <div class="accordion-search">
+            <input type="search" id="accordion-search-input" placeholder="Ara..." autocomplete="off">
+        </div>
+        {% for app in available_apps %}
+        <div class="accordion-app{% if app.app_url in request.path %} open{% endif %}">
+            <button class="accordion-app-header" type="button">
+                <span>{{ app.name }}</span>
+                <svg class="accordion-arrow" viewBox="0 0 10 6" width="10" height="6" fill="currentColor">
+                    <path d="M0 0l5 6 5-6z"/>
+                </svg>
+            </button>
+            <ul class="accordion-model-list">
+                {% for model in app.models %}
+                <li>
+                    {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}"{% if request.path == model.admin_url %} class="selected"{% endif %}>
+                        {{ model.name }}
+                    </a>
+                    {% else %}
+                    <span>{{ model.name }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </nav>
+
+    <script>
+        (function () {
+            var nav = document.getElementById('accordion-nav');
+            var main = document.getElementById('main');
+            if (main && nav) {
+                main.insertBefore(nav, main.firstChild);
+            }
+
+            // Accordion toggle
+            nav.querySelectorAll('.accordion-app-header').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var app = btn.parentElement;
+                    app.classList.toggle('open');
+                });
+            });
+
+            // Search filter
+            var searchInput = document.getElementById('accordion-search-input');
+            searchInput.addEventListener('input', function () {
+                var q = this.value.trim().toLowerCase();
+                nav.querySelectorAll('.accordion-app').forEach(function (appEl) {
+                    var modelItems = appEl.querySelectorAll('.accordion-model-list li');
+                    var anyVisible = false;
+                    modelItems.forEach(function (li) {
+                        var text = li.textContent.toLowerCase();
+                        var show = !q || text.includes(q);
+                        li.style.display = show ? '' : 'none';
+                        if (show) anyVisible = true;
+                    });
+                    appEl.style.display = anyVisible || !q ? '' : 'none';
+                    if (q && anyVisible) appEl.classList.add('open');
+                });
+            });
+        }());
+    </script>
+
 {% endblock extrabody %}

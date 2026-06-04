@@ -21,31 +21,37 @@ class IncomeTypes(models.TextChoices):
     TICARI = 'ticari', 'Ticari Kazanç'
     KIRA = 'kira', 'Kira Geliri'
     YATIRIM = 'yatirim', 'Yatırım Geliri'
+    BELIRSIZ = 'belirsiz', 'Belirsiz Kaynak'
+    KRIPTO = 'kripto', 'Kripto Kazancı'
     DIGER = 'diger', 'Diğer'
 
 class FundSource(models.TextChoices):
-    SATIS = 'satis', 'Satış Geliri'
-    MAAS = 'maas', 'Maaş Birikimi'
+    SATIS = 'satis', 'Duran Varlık Satışı'
+    TICARI = 'ticari', 'Ticari Kazanç'
+    MAAS = 'maas', 'Maaş'
+    MAAS_BIRIKIMI = 'maas_birikimi', 'Maaş Birikimi'
     KIRA = 'kira', 'Kira Geliri'
     MIRAS = 'miras', 'Miras'
     SIRKET = 'sirket', 'Şirket Kazancı'
     YURTDISI = 'yurtdisi', 'Yurt Dışı Transfer'
+    BELIRSIZ = 'belirsiz', 'Belirsiz Kaynak'
+    KRIPTO = 'kripto', 'Kripto Kazancı'
     DIGER = 'diger', 'Diğer'
 
 class Institution(models.TextChoices):
     OZEL = 'ozel', 'Özel Sektör'
     KAMU = 'kamu', 'Kamu Kurumu'
-    SERBEST = 'serbest', 'Serbest Meslek'
     EMEKLI = 'emekli', 'Emekli'
     OGRENCI = 'ogrenci', 'Öğrenci'
     EV = 'ev', 'Ev Hanımı'
-    YOK = 'yok', 'Yok'
+    ISSIZ = 'issiz', 'İşsiz'
 
 class Position(models.TextChoices):
     CALISAN = 'calisan', 'Çalışan'
     YONETICI = 'yonetici', 'Yönetici'
     ORTAK = 'ortak', 'Ortak'
-    YOK = 'yok', 'Yok'
+    ISSIZ = 'issiz', 'İşsiz'
+    FIRMA_SAHIBI = 'firma_sahibi', 'Firma Sahibi'
 
 class AmountTRY(models.TextChoices):
     RANGE_0 = '0', '0 TL'
@@ -242,7 +248,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
         "income_types", "fund_sources","sgk_job", "institution", "position",
         "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets",
         "transaction_amount", "transaction_frequency", "transaction_risk", "job_compliance",
-        "customer_type", "remitter_type"
+        "remitter_type"
     ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -266,6 +272,9 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     bank_deposit_assets = models.CharField(_("Bank Deposit Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
     investment_assets = models.CharField(_("Investment Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
     other_assets = models.CharField(_("Other Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
+    other_assets_amount = models.DecimalField(_("Other Assets Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    other_assets_count = models.PositiveIntegerField(_("Other Assets Count"), default=0)
+    other_assets_description = models.CharField(_("Other Assets Description"), max_length=140, blank=True, null=True)
     # other_assets = models.DecimalField(_("Other Assets"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     transaction_amount = models.CharField(_("Transaction Amount"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)

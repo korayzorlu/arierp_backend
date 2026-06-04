@@ -81,3 +81,113 @@
 .submit-row a.deletelink{
     border-radius: 0!important;
 }
+
+
+/* ── Hide default Django nav sidebar ──────────────────────── */
+#nav-sidebar { display: none !important; }
+#content-main [class^="app-"] { display: none !important; }
+#content-main .current-app { display: block !important; }
+.app-clear-cache { display: none !important; }
+#content-related { float: unset !important; }
+
+/* ── Accordion Nav ─────────────────────────────────────────── */
+
+
+#accordion-nav {
+    width: 240px;
+    min-width: 240px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+    position: sticky;
+    top: 0;
+    border-right: 1px solid #ddd;
+    padding: 8px 0;
+    font-size: 0.875rem;
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue, Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji, Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif !important;
+}
+
+.accordion-search {
+    padding: 6px 10px 10px;
+}
+
+#accordion-search-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+}
+
+.accordion-app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 7px 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    text-align: left;
+}
+
+.accordion-arrow {
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.accordion-app.open .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.accordion-model-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease;
+}
+
+.accordion-app.open .accordion-model-list {
+    max-height: 1000px;
+}
+
+.accordion-model-list li a,
+.accordion-model-list li span {
+    display: block;
+    padding: 5px 12px 5px 22px;
+    text-decoration: none;
+    font-size: 0.82rem;
+}
+
+.accordion-model-list li a.selected {
+    font-weight: 700;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+    #accordion-nav { background: #fff; }
+    .accordion-app-header { color: #333; }
+    .accordion-app-header:hover { background: #f5f5f5; }
+    .accordion-model-list li a { color: #333; }
+    .accordion-model-list li a:hover { background: #f5f5f5; color: #000; }
+    .accordion-model-list li a.selected { color: #980748; }
+    #accordion-search-input { background: #fff; color: #333; }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    #accordion-nav { background: #1b1f23; border-right-color: #333; }
+    .accordion-app-header { color: #000; background-color: #efe237; }
+    .accordion-app-header:hover { background: #c7bc27; }
+    .accordion-model-list li a { color: #ddd; }
+    .accordion-model-list li a:hover { background: #2a2f34; color: #fff; }
+    .accordion-model-list li a.selected { color: #fff; font-weight: 600; text-decoration: underline; }
+    #accordion-search-input { background: #2a2f34; color: #ddd; border-color: #444; }
+}

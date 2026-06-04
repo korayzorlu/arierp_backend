@@ -693,9 +693,10 @@ AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")
 VPOS_VALIDATION_KEY = os.getenv('VPOS_VALIDATION_KEY','')
 
 # Sentry
-sentry_sdk.init(
-    dsn="https://bf1b38ebd9e1b207370a1e2a9f666596@o4511494864961536.ingest.de.sentry.io/4511494867386448",
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-)
+if not DEBUG:
+    sentry_sdk.init(
+        dsn="https://bf1b38ebd9e1b207370a1e2a9f666596@o4511494864961536.ingest.de.sentry.io/4511494867386448",
+        # Add data like request headers and IP for users,
+        # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+        send_default_pii=True,
+    )
