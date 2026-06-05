@@ -23,6 +23,7 @@ class IncomeTypes(models.TextChoices):
     YATIRIM = 'yatirim', 'Yatırım Geliri'
     BELIRSIZ = 'belirsiz', 'Belirsiz Kaynak'
     KRIPTO = 'kripto', 'Kripto Kazancı'
+    YOK = 'yok', 'Gelir Yok'
     DIGER = 'diger', 'Diğer'
 
 class FundSource(models.TextChoices):
@@ -36,6 +37,7 @@ class FundSource(models.TextChoices):
     YURTDISI = 'yurtdisi', 'Yurt Dışı Transfer'
     BELIRSIZ = 'belirsiz', 'Belirsiz Kaynak'
     KRIPTO = 'kripto', 'Kripto Kazancı'
+    YOK = 'yok', 'Kaynak Yok'
     DIGER = 'diger', 'Diğer'
 
 class Institution(models.TextChoices):
@@ -301,6 +303,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
 
     is_suspicious = models.BooleanField(default=False)
     is_blacklisted = models.BooleanField(default=False)
+    is_offshore = models.BooleanField(default=False)
 
     is_warning_notice = models.BooleanField(default=False)
     is_delayed = models.BooleanField(default=False)

@@ -207,6 +207,7 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     remitter_type = serializers.CharField()
     is_suspicious = serializers.BooleanField()
     is_blacklisted = serializers.BooleanField()
+    is_offshore = serializers.BooleanField()
     is_warning_notice = serializers.BooleanField()
     is_delayed = serializers.BooleanField()
     is_kkb_score_low = serializers.BooleanField()

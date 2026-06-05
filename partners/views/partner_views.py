@@ -413,6 +413,7 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
         obj.remitter_type = data.get('remitter_type')
         obj.is_suspicious = data.get('is_suspicious')
         obj.is_blacklisted = data.get('is_blacklisted')
+        obj.is_offshore = data.get('is_offshore')
         obj.is_warning_notice = data.get('is_warning_notice')
         obj.is_delayed = data.get('is_delayed')
         obj.is_kkb_score_low = data.get('is_kkb_score_low')
