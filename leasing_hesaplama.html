@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leasing Hesaplama</title>
+
+    <style type="text/css">.card {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+        .columns {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        }
+
+        .col {
+        flex: 1;
+        min-width: 0;
+        }
+
+        h1 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 32px;
+        color: #111;
+        letter-spacing: -0.3px;
+        }
+
+        .section-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #999;
+        margin: 28px 0 12px;
+        }
+
+        .field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 0;
+        border-bottom: 1px solid #f0f0f0;
+        gap: 16px;
+        }
+
+        .field:last-child { border-bottom: none; }
+
+        .field label {
+        font-size: 14px;
+        color: #333;
+        flex: 1;
+        line-height: 1.4;
+        }
+
+        .field .hint {
+        font-size: 11px;
+        color: #e07000;
+        margin-top: 2px;
+        }
+
+        .field-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        }
+
+        input[type="number"] {
+        width: 160px;
+        padding: 8px 12px;
+        border: 1.5px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #111;
+        text-align: right;
+        outline: none;
+        transition: border-color 0.15s;
+        background: #fff;
+        }
+
+        input[type="number"]:focus {
+        border-color: #555;
+        }
+
+        .unit {
+        font-size: 12px;
+        color: #888;
+        min-width: 20px;
+        }
+
+        .computed {
+        width: 160px;
+        padding: 8px 12px;
+        border: 1.5px solid #eee;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+        text-align: right;
+        background: #fafafa;
+        }
+    </style>
+    
+</head>
+<body>
+
+    <div class="card">
+        <h1>Leasing Hesaplama</h1>
+
+        <div class="columns">
+        <div class="col">
+        <div class="section-label">Girdi Değerleri</div>
+
+        <div class="field">
+        <div><label>Gayrimenkul Fiyatı</label></div>
+
+        <div class="field-right"><input id="fiyat" min="0" oninput="hesapla()" type="number" value="10000000" /> <span class="unit">TRY</span></div>
+        </div>
+
+        <div class="field">
+        <div><label>Gayrimenkulün Kirası</label></div>
+
+        <div class="field-right"><input id="kira" min="0" oninput="hesapla()" type="number" value="50000" /> <span class="unit">TRY</span></div>
+        </div>
+
+        <div class="field">
+        <div><label>Peşinat</label>
+
+        <div class="hint">%30'dan az olamaz</div>
+        </div>
+
+        <div class="field-right"><input id="pesinat" min="0" oninput="hesapla()" type="number" value="3000000" /> <span class="unit">TRY</span></div>
+        </div>
+
+        <div class="field">
+        <div><label>TÜFE + Kar Oranı (Yıllık)</label></div>
+
+        <div class="field-right"><input id="tufe" min="0" oninput="hesapla()" step="0.01" type="number" value="7" /> <span class="unit">%</span></div>
+        </div>
+
+        <div class="field">
+        <div><label>KDV Oranı</label></div>
+
+        <div class="field-right"><input id="kdv" min="0" oninput="hesapla()" step="0.1" type="number" value="10" /> <span class="unit">%</span></div>
+        </div>
+        </div>
+
+        <div class="col">
+        <div class="section-label">Hesaplanan Değerler</div>
+
+        <div class="field"><label>Kira Çarpanı</label>
+
+        <div class="field-right">
+        <div class="computed" id="out_carpan">-</div>
+        </div>
+        </div>
+
+        <div class="field"><label>Kredi Tutarı</label>
+
+        <div class="field-right">
+        <div class="computed" id="out_kredi">-</div>
+        <span class="unit">TRY</span></div>
+        </div>
+
+        <div class="field"><label>TÜFE + Kar Oranı (Aylık)</label>
+
+        <div class="field-right">
+        <div class="computed" id="out_aylik_oran">-</div>
+        <span class="unit">%</span></div>
+        </div>
+
+        <div class="field"><label>Satıcıya Ödenecek 1. Ay Kirası</label>
+
+        <div class="field-right">
+        <div class="computed" id="out_satici_kira">-</div>
+        <span class="unit">TRY</span></div>
+        </div>
+
+        <div class="field"><label>Alıcının Ödeyeceği 1. Ay Kirası</label>
+
+        <div class="field-right">
+        <div class="computed" id="out_alici_kira">-</div>
+        <span class="unit">TRY</span></div>
+        </div>
+
+        <div class="field"><label>Alıcının Ödeyeceği 1. Ay Kirası (KDV Dahil)</label>
+
+        <div class="field-right">
+        <div class="computed" id="out_alici_kira_kdv">-</div>
+        <span class="unit">TRY</span></div>
+        </div>
+        </div>
+        </div>
+
+        <div style="margin-top: 32px; text-align: center;"><button id="btn-hesapla" onmouseout="this.style.background='#222'" onmouseover="this.style.background='#444'" style="
+            padding: 12px 40px;
+            font-size: 15px;
+            font-family: inherit;
+            font-weight: 600;
+            color: #fff;
+            background: #222;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.15s;
+            ">Hesapla</button></div>
+        </div>
+    <script>
+        function fmt(val, decimals = 0) {
+            return val.toLocaleString('tr-TR', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+            });
+        }
+
+        function pmt(rate, nper, pv) {
+            if (rate === 0) return pv / nper;
+            return (rate * pv) / (1 - Math.pow(1 + rate, -nper));
+        }
+
+        function hesapla() {
+            const fiyat   = parseFloat(document.getElementById('fiyat').value)   || 0;
+            const kira    = parseFloat(document.getElementById('kira').value)     || 0;
+            const pesinat = parseFloat(document.getElementById('pesinat').value)  || 0;
+            const tufe    = parseFloat(document.getElementById('tufe').value)     || 0;
+            const kdv     = parseFloat(document.getElementById('kdv').value)      || 0;
+
+            const tufeDecimal = tufe / 100;
+            const kdvDecimal  = kdv  / 100;
+
+            // Kira çarpanı = Gayrimenkul fiyatı / Kira
+            const carpan = kira !== 0 ? fiyat / kira : 0;
+
+            // Kredi tutarı = Fiyat - Peşinat
+            const kredi = fiyat - pesinat;
+
+            // Aylık oran = (1 + yıllık)^(1/12) - 1
+            const aylikOran = Math.pow(1 + tufeDecimal, 1 / 12) - 1;
+
+            // Satıcıya ödenecek 1. ay kirası = PMT(aylık oran, 120, kredi)
+            const saticiKira = pmt(aylikOran, 120, kredi);
+
+            // Alıcının ödeyeceği 1. ay kirası = satıcı kirası * 1.12
+            const aliciKira = saticiKira * 1.12;
+
+            // Alıcının ödeyeceği 1. ay kirası KDV dahil = alıcı kirası * (1 + KDV)
+            const aliciKiraKdv = aliciKira * (1 + kdvDecimal);
+
+            document.getElementById('out_carpan').textContent        = fmt(carpan, 1);
+            document.getElementById('out_kredi').textContent         = fmt(kredi);
+            document.getElementById('out_aylik_oran').textContent    = fmt(aylikOran * 100, 4);
+            document.getElementById('out_satici_kira').textContent   = fmt(saticiKira, 2);
+            document.getElementById('out_alici_kira').textContent    = fmt(aliciKira, 2);
+            document.getElementById('out_alici_kira_kdv').textContent = fmt(aliciKiraKdv, 2);
+        }
+
+        hesapla();
+
+        document.getElementById('btn-hesapla').addEventListener('click', hesapla);
+        </script>
+
+</body>
+</html>
