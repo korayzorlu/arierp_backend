@@ -378,11 +378,13 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
         
         obj.income_types = data.get('income_types')
         obj.other_income = data.get('other_income')
+        obj.income_amount = data.get('income_amount') if data.get('income_amount') != "" else Decimal("0.00")
         obj.fund_sources = data.get('fund_sources')
         obj.other_fund_source = data.get('other_fund_source')
         obj.sgk_job = SgkJob.objects.filter(sgk_job_code = data.get('sgk_job')).first() if data.get('sgk_job') else None
         obj.institution = data.get('institution')
         obj.position = data.get('position')
+        obj.bank_deposit_amount = data.get('bank_deposit_amount') if data.get('bank_deposit_amount') != "" else Decimal("0.00")
         obj.real_estate_assets = data.get('real_estate_assets')
         obj.vehicle_assets = data.get('vehicle_assets')
         obj.bank_deposit_assets = data.get('bank_deposit_assets')
@@ -401,19 +403,30 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
             obj.is_foreign_partner = False
             obj.is_complex_partner = False
             obj.company_type = None
+            obj.balance_sheet_and_capital_structure = None
         else:
             obj.is_transparency = data.get('is_transparency')
             obj.is_foreign_partner = data.get('is_foreign_partner')
             obj.is_complex_partner = data.get('is_complex_partner')
             obj.company_type = data.get('company_type')
+            obj.balance_sheet_and_capital_structure = data.get('balance_sheet_and_capital_structure')
         obj.is_pep = data.get('is_pep')
         obj.is_negative_news = data.get('is_negative_news')
         obj.is_cash_payment = data.get('is_cash_payment')
         obj.is_balloon_payment = data.get('is_balloon_payment')
+        obj.is_institutional_payment = data.get('is_institutional_payment')
+        obj.is_correspondent_bank = data.get('is_correspondent_bank')
+        obj.is_payment_institution = data.get('is_payment_institution')
+        obj.is_cek_senet_payment = data.get('is_cek_senet_payment')
         obj.remitter_type = data.get('remitter_type')
+        obj.vpos_type = data.get('vpos_type')
         obj.is_suspicious = data.get('is_suspicious')
         obj.is_blacklisted = data.get('is_blacklisted')
         obj.is_offshore = data.get('is_offshore')
+        obj.is_low_tax = data.get('is_low_tax')
+        obj.is_complex_structure = data.get('is_complex_structure')
+        obj.is_tax_haven = data.get('is_tax_haven')
+        obj.is_high_risk_country = data.get('is_high_risk_country')
         obj.is_warning_notice = data.get('is_warning_notice')
         obj.is_delayed = data.get('is_delayed')
         obj.is_kkb_score_low = data.get('is_kkb_score_low')

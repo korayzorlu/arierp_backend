@@ -55,6 +55,10 @@ class Position(models.TextChoices):
     ISSIZ = 'issiz', 'İşsiz'
     FIRMA_SAHIBI = 'firma_sahibi', 'Firma Sahibi'
 
+class SuitabilityStatus(models.TextChoices):
+    UYGUN = 'uygun', 'Uygun'
+    UYGUN_DEGIL   = 'uygun_degil', 'Uygun Değil'
+
 class AmountTRY(models.TextChoices):
     RANGE_0 = '0', '0 TL'
     RANGE_0_100K   = '1', '1-100.000'
@@ -93,6 +97,14 @@ class RemitterType(models.TextChoices):
     KENDISI = 'kendisi', 'Kendisi'
     YAKINI = 'yakini', 'Yakını (Aile Bağı)'
     UCUNCU_KISI = 'ucuncu_kisi', '3. Kişi'
+
+class VPosType(models.TextChoices):
+    KENDISI = 'kendisi', 'Kendisi'
+    YAKINI = 'yakini', 'Yakını (Aile Bağı)'
+    UCUNCU_KISI = 'ucuncu_kisi', '3. Kişi'
+    YOK = 'yok', 'Sanal Pos Yok'
+
+
 
 class Sector(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -250,7 +262,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
         "income_types", "fund_sources","sgk_job", "institution", "position",
         "real_estate_assets", "vehicle_assets", "bank_deposit_assets", "investment_assets",
         "transaction_amount", "transaction_frequency", "transaction_risk", "job_compliance",
-        "remitter_type"
+        "remitter_type", "balance_sheet_and_capital_structure", "vpos_type",
     ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -259,6 +271,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     partner = models.OneToOneField(Partner, on_delete=models.CASCADE, primary_key=True, related_name="partner_financial_profile")
     income_types = ArrayField(models.CharField(_("Income Types"), max_length=25, choices=IncomeTypes.choices), default=list, blank=True, null=True)
     other_income = models.CharField(_("Other Income"), max_length=140, blank=True, null=True)
+    income_amount = models.DecimalField(_("Income Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     fund_sources = ArrayField(models.CharField(_("Fund Sources"), max_length=25, choices=FundSource.choices), default=list, blank=True, null=True)
     other_fund_source = models.CharField(_("Other Fund Source"), max_length=140, blank=True, null=True)
@@ -267,6 +280,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     institution = models.CharField(_("Institution"), max_length=25, choices=Institution.choices, blank=True, null=True)
     position = models.CharField(_("Position"), max_length=25, choices=Position.choices, blank=True, null=True)
 
+    bank_deposit_amount = models.DecimalField(_("Bank Deposit Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     real_estate_assets = models.CharField(_("Real Estate Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
     real_estate_assets_count = models.PositiveIntegerField(_("Real Estate Assets Count"), default=0)
     vehicle_assets = models.CharField(_("Vehicle Assets"), max_length=25, choices=AmountTRY.choices, blank=True, null=True)
@@ -296,14 +310,24 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     is_negative_news = models.BooleanField(default=False)
 
     company_type = models.CharField(_("Company Type"), max_length=25, choices=CompanyType.choices, blank=True, null=True)
+    balance_sheet_and_capital_structure = models.CharField(_("Balance Sheet and Capital Structure"), max_length=25, choices=SuitabilityStatus.choices, blank=True, null=True)
 
     is_cash_payment = models.BooleanField(default=False)
     is_balloon_payment = models.BooleanField(default=False)
+    is_institutional_payment = models.BooleanField(default=False)
+    is_correspondent_bank = models.BooleanField(default=False)
+    is_payment_institution = models.BooleanField(default=False)
+    is_cek_senet_payment = models.BooleanField(default=False)
     remitter_type = models.CharField(_("Remitter Type"), max_length=25, choices=RemitterType.choices, blank=True, null=True)
+    vpos_type = models.CharField(_("VPOS Type"), max_length=25, choices=RemitterType.choices, blank=True, null=True)
 
     is_suspicious = models.BooleanField(default=False)
     is_blacklisted = models.BooleanField(default=False)
     is_offshore = models.BooleanField(default=False)
+    is_low_tax = models.BooleanField(default=False)
+    is_complex_structure = models.BooleanField(default=False)
+    is_tax_haven = models.BooleanField(default=False)
+    is_high_risk_country = models.BooleanField(default=False)
 
     is_warning_notice = models.BooleanField(default=False)
     is_delayed = models.BooleanField(default=False)
