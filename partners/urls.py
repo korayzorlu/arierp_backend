@@ -33,6 +33,9 @@ urlpatterns = [
     path('update_partner_note/', UpdatePartnerNoteView.as_view(), name="update_partner_note"),
     path('delete_partner_note/', DeletePartnerNoteView.as_view(), name="delete_partner_note"),
 
+    path('import_partner_information_document/', ImportPartnerInformationDocumentsView.as_view(), name="import_partner_information_document"),
+    path('delete_partner_information_document/', DeletePartnerInformationDocumentView.as_view(), name="delete_partner_information_document"),
+
     path('update_partner_financial_profile/', UpdatePartnerFinancialProfileView.as_view(), name="update_partner_financial_profile"),
 
     path('test/', ExampleView.as_view(), name="test"),

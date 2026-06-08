@@ -225,6 +225,7 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     is_kkb_score_low = serializers.BooleanField()
     is_administrative_follow_up = serializers.BooleanField()
     is_cheque_risk = serializers.BooleanField()
+    partner_information_documents = serializers.SerializerMethodField()
     
     def get_partner(self, obj):
         if obj.partner.tc_vkn_no and obj.partner.tc_vkn_no != '':
@@ -256,3 +257,17 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
             return "tuzel"
         else:
             return ''
+        
+    def get_partner_information_documents(self, obj):
+        documents = obj.partner.partner_partner_information_documents.all()
+        documents_urls = []
+        if documents:
+            for document in documents:
+                documents_urls.append({
+                        "id" : document.uuid,
+                        "label" : document.label,
+                        "url" : document.file.url
+                    })
+            return documents_urls
+        else:
+            return []

@@ -367,6 +367,64 @@ class PartnersExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
 
+
+    
+class ImportPartnerInformationDocumentsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get('data', '{}'))
+        files = request.FILES.getlist('files')
+        
+        if not files:
+            return JsonResponse({'message': 'Yüklenecek dosya bulunamadı!','status':'error'}, status=400)
+        
+        for file in files:
+            if file.size > settings.MAX_UPLOAD_SIZE:
+                return JsonResponse({'message': 'Dosya boyutu fazla! Max 1MB yükleyebilirsiniz.','status':'error'}, status=400)
+
+        if not request.user.is_authenticated:
+            return JsonResponse({'message': 'Yetki hatası!.','status':'error'}, status=401)
+        
+        if request.user.authorization.department != 'kredi_tahsis':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+        
+        company = Company.objects.filter(id = data.get('companyId')).first()
+        active_company = request.user.user_companies.filter(is_active = True, company = company).first()
+        obj = Partner.objects.filter(uuid = data.get('uuid'), company = active_company.company).first()
+
+        if obj.partner_partner_information_documents.count() + len(files) > 10:
+            return JsonResponse({'message': 'Müşteri bilgi formu için maksimum 10 dosya yükleyebilirsiniz!','status':'error'}, status=400)
+        
+        for file in files:
+            if not obj:
+                return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+            
+            PartnerInformationDocument.objects.create(
+                company = active_company.company,
+                partner = obj,
+                label = file.name,
+                file = file,
+            )
+        
+        return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
+
+class DeletePartnerInformationDocumentView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if not request.user.is_authenticated:
+            return JsonResponse({'message': 'Yetki hatası!.','status':'error'}, status=401)
+        
+        if request.user.authorization.department != 'kredi_tahsis':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        company = Company.objects.filter(id = data.get('companyId')).first()
+        active_company = request.user.user_companies.filter(is_active = True, company = company).first()
+
+        obj = PartnerInformationDocument.objects.filter(uuid = data.get('uuid'), company = active_company.company).first()
+        obj.delete()
+        
+        return JsonResponse({'message': 'Dosya başarıyla silindi!','status':'success'}, status=200)
+    
 ###############################
 #CREDIT ALLOCATION
 ###############################
