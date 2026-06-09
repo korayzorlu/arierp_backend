@@ -14,7 +14,8 @@ SELECT
          ELSE 'Hayır'
     END AS IS_TURKKEP_CUSTOMER,
     dbo.CrmInstitutionalCustomer.KEP_ADDRESS,
-    dbo.CrmInstitutionalCustomer.KEP_FINISH_DATE
+    dbo.CrmInstitutionalCustomer.KEP_FINISH_DATE,
+    dbo.CrmInstitutionalCustomer.NaceCode
 
 FROM dbo.CrmInstitutionalCustomer
 

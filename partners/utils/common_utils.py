@@ -35,9 +35,7 @@ def get_partner_types(data):
     return types
 
 def export_partners(self):
-    objs = Partner.objects.select_related().filter(
-        Q(types__contains=['special'])
-    )
+    objs = Partner.objects.select_related().filter()
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -61,6 +59,8 @@ def export_partners(self):
         "crm_kodu": [],
         "email": [],
         "tel": [],
+        "musteri_tipi": [],
+        "nace_kodu": [],
     }
 
     previous_progress = 0
@@ -87,7 +87,8 @@ def export_partners(self):
         data["crm_kodu"].append(obj.crm_code)
         data["email"].append(obj.email)
         data["tel"].append(obj.phone_number)
-
+        data["musteri_tipi"].append("Bireysel" if obj.customer_type == "individual" else "Tüzel")
+        data["nace_kodu"].append(obj.nace_code)
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
 

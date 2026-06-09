@@ -222,6 +222,7 @@ class Partner(models.Model):
     )
     pep_degree = models.CharField(_("Pep Degree"), max_length=25, default='kendisi', choices=PEP_DEGREE_CHOICES, blank=True, null=True)
     pep_description = models.CharField(_("Pep Description"), max_length=500, blank=True, null=True)
+    nace_code = models.CharField(_("NACE Code"), max_length=50, blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

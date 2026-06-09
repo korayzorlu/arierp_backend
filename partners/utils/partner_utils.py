@@ -271,6 +271,7 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None
                     obj.kep_expiry_date = data.KEP_FINISH_DATE.date() if data.KEP_FINISH_DATE else None
                     obj.is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
+                    obj.nace_code = str(data.NaceCode) if data.NaceCode else None
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -292,7 +293,8 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                         customer_type = "institutional",
                         kep = str(data.KEP_ADDRESS) if data.KEP_ADDRESS else None,
                         kep_expiry_date = data.KEP_FINISH_DATE.date() if data.KEP_FINISH_DATE else None,
-                        is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False
+                        is_turkkep = True if data.IS_TURKKEP_CUSTOMER == "Evet" else False,
+                        nace_code = str(data.NaceCode) if data.NaceCode else None
                     ))
                     create_progress += 1
             if update_objs:
@@ -311,6 +313,7 @@ def fetch_partnersi_from_leaseflex(company,BATCH_SIZE=1000):
                     "kep",
                     "kep_expiry_date",
                     "is_turkkep",
+                    "nace_code"
                 ], batch_size=BATCH_SIZE)
             if create_objs:
                 Partner.objects.bulk_create(create_objs, batch_size=BATCH_SIZE)
