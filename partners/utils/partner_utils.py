@@ -531,4 +531,4 @@ def check_partner_ids(company):
     print(f"{objs_count} - {objs.count()}")
     print("--------")
     for obj in objs:
-        print(f"{obj.crm_code} - {obj.name}")
+        obj.delete()
