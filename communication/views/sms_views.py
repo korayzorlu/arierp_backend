@@ -44,8 +44,8 @@ class SendSMSGlobalView(LoginRequiredMixin,View):
         from rest_framework.request import Request
         data = json.loads(request.body)
         
-        # if request.user.authorization.department != 'operasyonn':
-        #     return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+        if request.user.authorization.department != 'operasyon':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
 
         receiver_list = get_receivers_from_queryset(request=request,data=data)
 
@@ -60,7 +60,7 @@ class SendSMSGlobalView(LoginRequiredMixin,View):
 
         send_sms_task.delay(params)
 
-        return JsonResponse({'message': 'SMS gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
+        return JsonResponse({'message': 'SMS gönderimi başlatıldı.','status':'success'}, status=200)
 
 class CheckSMSView(LoginRequiredMixin,View):
     model = SMS

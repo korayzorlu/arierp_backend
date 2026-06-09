@@ -78,8 +78,8 @@ class SendEmailView(LoginRequiredMixin,View):
         from rest_framework.request import Request
         data = json.loads(request.body)
         
-        # if request.user.authorization.department != 'operasyonn':
-        #     return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+        if request.user.authorization.department != 'operasyon':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
 
         receiver_list = get_receivers_from_queryset(request=request,data=data)
 
@@ -98,7 +98,7 @@ class SendEmailView(LoginRequiredMixin,View):
 
         send_email_global_with_setrow_task.delay(params)        
 
-        return JsonResponse({'message': 'Email gönderimi başlatıldı. Mesajların iletim durumunu iletişim sütununda yer alan mesaj butonlarından takip edebilirsiniz.','status':'success'}, status=200)
+        return JsonResponse({'message': 'Email gönderimi başlatıldı.','status':'success'}, status=200)
 
 class SendRiskEmailView(LoginRequiredMixin,View):
     model = Email

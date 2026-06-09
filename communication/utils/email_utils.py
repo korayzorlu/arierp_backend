@@ -98,29 +98,29 @@ def send_email_global_with_setrow(params):
             "variables": recipient.get('variables', {}),
         })
 
-    print(payload)
-    print("------------------------------")
+    # print(payload)
+    # print("------------------------------")
 
-    # session = requests.Session()
-    # session.mount("https://", LegacyTLSAdapter())
+    session = requests.Session()
+    session.mount("https://", LegacyTLSAdapter())
 
-    # chunk_size = 1000
-    # for i in range(0, max(len(payload), 1), chunk_size):
-    #     chunk = payload[i:i + chunk_size]
-    #     response = session.post(url, headers=headers, json=chunk)
-    #     if response.text:
-    #         response_data = response.json()
-    #         for data in response_data.get("message", []):
-    #             SetrowEmail.objects.create(
-    #                 send_id=data.get("send_id"),
-    #                 sender='iletisim@mail.info.arileasing.com.tr',
-    #                 recipient=data.get("email"),
-    #                 status=params.get('status'),
-    #                 send_date=timezone.now(),
-    #                 user=user,
-    #                 company=company,
-    #                 template=params.get('template_name'),
-    #             )
+    chunk_size = 1000
+    for i in range(0, max(len(payload), 1), chunk_size):
+        chunk = payload[i:i + chunk_size]
+        response = session.post(url, headers=headers, json=chunk)
+        if response.text:
+            response_data = response.json()
+            for data in response_data.get("message", []):
+                SetrowEmail.objects.create(
+                    send_id=data.get("send_id"),
+                    sender='iletisim@mail.info.arileasing.com.tr',
+                    recipient=data.get("email"),
+                    status=params.get('status'),
+                    send_date=timezone.now(),
+                    user=user,
+                    company=company,
+                    template=params.get('template_name'),
+                )
 
 def check_last_email(email):
     last_email = SetrowEmail.objects.filter(
