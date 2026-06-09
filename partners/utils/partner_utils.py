@@ -526,9 +526,9 @@ def check_partner_ids(company):
     id_list = df['ID'].tolist()
 
     objs_count = Partner.objects.select_related().filter().count()
-    objs = Partner.objects.select_related().exclude(crm_code__in=id_list)
+    objs = Partner.objects.select_related().filter(crm_code__in=id_list)
 
     print(f"{objs_count} - {objs.count()}")
     print("--------")
     for obj in objs:
-        obj.delete()
+        print(f"{obj.crm_code} - {obj.name}")

@@ -325,7 +325,7 @@ class UpdateTerminationWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequ
             "isim": lease.contract.partner.name,
             "tc_vkn_no": tc_vkn_no,
             "adres": lease.contract.partner.address,
-            "sozlesme_tarih": lease.activation_date.strftime('%d.%m.%Y') if lease.activation_date else '',
+            "sozlesme_tarih": lease.signature_date.strftime('%d.%m.%Y') if lease.signature_date else '',
             "sozlesme_no": lease.contract.code,
             "odenen_tutar": format_currency(obj.paid_amount),
             "kesinti_tutar": format_currency(obj.deduction_amount),
