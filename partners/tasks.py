@@ -279,3 +279,7 @@ def set_partner_scores_task(company, partner=None):
 @shared_task()
 def fetch_sgk_jobs(company):
     fetch_sgk_jobs_from_leaseflex(company)
+
+@shared_task()
+def check_partner_ids_task(company):
+    check_partner_ids(company)

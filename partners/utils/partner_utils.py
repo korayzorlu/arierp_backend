@@ -8,6 +8,7 @@ import traceback
 import logging
 from datetime import datetime
 from decimal import Decimal
+import pandas as pd
 
 from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
@@ -514,3 +515,20 @@ def send_warning_email_for_ignored_partners(params):
     recipient_list = settings.IGNORED_PARTNER_EMAIL_LIST
 
     send_outlook_email(subject, message, from_email, recipient_list)
+
+def check_partner_ids(company):
+    excel_file = pd.ExcelFile("files/partner_ids.xlsx")
+    sheet_name = excel_file.sheet_names[0]
+
+    file_data = pd.read_excel("files/partner_ids.xlsx", sheet_name)
+    df = pd.DataFrame(file_data)
+
+    id_list = df['ID'].tolist()
+
+    objs_count = Partner.objects.select_related().filter().count()
+    objs = Partner.objects.select_related().exclude(crm_code__in=id_list)
+
+    print(f"{objs_count} - {objs.count()}")
+    print("--------")
+    for obj in objs:
+        print(f"{obj.crm_code} - {obj.name}")

@@ -1,0 +1,23 @@
+select OperationProjectId,
+       SequenceNo,
+       ContractHeaderId,
+       ContractProjectId,
+       CustomerId,
+       PaymentTypeId,
+       PaymentDate,
+       InvoiceNo,
+       InvoiceDate,
+       Payment,
+       Principal,
+       Interest,
+       InterestDisplay,
+       PrincipalDisplay,
+       Balance,
+       Risk,
+       VatAmount,
+       TotalPaymentAmount,
+       ISNULL(PaymentDayCount, 0),
+       OperationPaymentId,
+       ISNULL(IsCpiRent, 0)
+  from LeasingOperationPayment
+ where OperationPaymentId != 927246
