@@ -350,7 +350,7 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                 if obj:
                     obj.crm_contract_code = str(data.sozlesme_no) or ""
                     obj.crm_project_id = str(data.proje_id) or ""
-                    obj.crm_bbsn = str(data.stok_no) if data.stok_no else None
+                    #obj.crm_bbsn = str(data.stok_no) if data.stok_no else None
                     obj.crm_durum = str(data.durum) or ""
                     obj.crm_satici = str(data.sirket_unvani) or ""
                     obj.crm_invoice_date = data.fatura_tarihi.date() if data.fatura_tarihi else None
@@ -361,8 +361,8 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                     obj.is_delivery = True if data.teslim_tarihi else False
                     #print(f"{str(data.teslim_tarihi)} - {data.teslim_tarihi} - {type(data.teslim_tarihi)}")
 
-                    if obj.ari_bbsn is None or obj.ari_bbsn == "" or obj.ari_bbsn == "None" or obj.ari_bbsn == "BBSN.140915":
-                        obj.ari_bbsn = str(data.stok_no) if data.stok_no else None
+                    # if obj.ari_bbsn is None or obj.ari_bbsn == "" or obj.ari_bbsn == "None" or obj.ari_bbsn == "BBSN.140915":
+                    #     obj.ari_bbsn = str(data.stok_no) if data.stok_no else None
 
                     update_objs.append(obj)
                     update_progress += 1
@@ -370,8 +370,8 @@ def fetch_leases_from_ifs(company,BATCH_SIZE=1000):
                 Lease.objects.bulk_update(update_objs, [
                     "crm_contract_code",
                     "crm_project_id",
-                    "crm_bbsn",
-                    "ari_bbsn",
+                    #"crm_bbsn",
+                    #"ari_bbsn",
                     "crm_durum",
                     "crm_satici",
                     "crm_invoice_date",
