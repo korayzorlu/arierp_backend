@@ -306,7 +306,7 @@ class UpdateTerminationWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequ
         # word işlemleri
         lease = obj.contract.contract_leases.filter(is_last_project=True).first()
         file_name = obj.contract.code.replace("/","-")
-        doc = DocxTemplate(f"files/fesih-ihtar.docx")
+        doc = DocxTemplate(f"files/fesih-ihtar{'-iadesiz' if obj.paid_amount - obj.deduction_amount == 0 else ''}.docx")
 
         def format_currency(value):
                 return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
