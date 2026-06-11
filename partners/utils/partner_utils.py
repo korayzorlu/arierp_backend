@@ -535,9 +535,13 @@ def check_partner_ids(company):
         .values_list('crm_code', flat=True)
     )
 
-    objs = Partner.objects.select_related().filter(crm_code__in=duplicate_crm_codes).order_by("crm_code")
+    print(duplicate_crm_codes)
+
+    objs = Partner.objects.select_related().filter(crm_code__in=duplicate_crm_codes).order_by("crm_code","id")
 
     print(f"{objs_count} - {objs.count()}")
     print("--------")
     for obj in objs:
-        print(f"{obj.crm_code} - {obj.name}")
+        print(f"{obj.pk} - {obj.crm_code} - {obj.name}")
+
+
