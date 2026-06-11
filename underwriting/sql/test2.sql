@@ -1,0 +1,3 @@
+SELECT *
+FROM
+    ifsapp.TRLEAS_TAPU_ISLEM_TAB

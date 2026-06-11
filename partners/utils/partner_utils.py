@@ -13,6 +13,7 @@ import pandas as pd
 from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
+from leasing.models import Lease
 
 def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -535,13 +536,17 @@ def check_partner_ids(company):
         .values_list('crm_code', flat=True)
     )
 
-    print(duplicate_crm_codes)
-
-    objs = Partner.objects.select_related().filter(crm_code__in=duplicate_crm_codes).order_by("crm_code","id")
+    objs = Partner.objects.select_related().filter()
+    objs_dict = {o.crm_code: o for o in objs if o.crm_code}
 
     print(f"{objs_count} - {objs.count()}")
     print("--------")
-    for obj in objs:
-        print(f"{obj.pk} - {obj.crm_code} - {obj.name}")
+    for code in list(duplicate_crm_codes):
+        partners = Partner.objects.select_related().filter(crm_code=code).order_by("id")
+        for p in partners:
+            leases_count = Lease.objects.filter(contract__partner=p).count()
+            if leases_count == 0:
+                p.delete()
+            print(f"CRM Kodu: {code} - Partner ID: {p.pk} - TC: {p.tc_vkn_no} - Partner Name: {p.name} - Lease Count: {leases_count}")
 
 
