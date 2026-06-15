@@ -93,7 +93,8 @@ INSTALLED_APPS = [
     "compliance",
     "operation",
     "communication",
-    "inventory"
+    "inventory",
+    "agent"
 ]
 
 MIDDLEWARE = [

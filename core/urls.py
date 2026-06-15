@@ -33,6 +33,7 @@ urlpatterns = [
     path('admin/clearcache/', include('clearcache.urls')),
 
     path('api/accounting/', include("accounting.urls")),
+    path('api/agent/', include("agent.urls")),
     path('api/common/', include("common.urls")),
     path('api/communication/', include("communication.urls")),
     path('api/companies/', include("companies.urls")),
