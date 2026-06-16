@@ -60,3 +60,13 @@ def send_notification(message,room):
             "message": message,
         }
     )
+
+def send_agent_status(message,room):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        room,
+        {
+            "type": "send_agent_status",
+            "message": message,
+        }
+    )

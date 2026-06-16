@@ -104,3 +104,33 @@ class DatatablesPagination(LimitOffsetPagination):
             'recordsFiltered': self.count,
             'data': data
         })
+    
+class AgentTaskList(ModelViewSet, QueryListAPIView):
+    serializer_class = AgentTaskListSerializer
+    filterset_class = AgentTaskFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+
+        custom_related_fields = ["company"]
+
+        queryset = AgentTask.objects.select_related(*custom_related_fields).filter(
+            company=active_company.company if active_company else None
+        ).order_by('-created_date')
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["status"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        return queryset

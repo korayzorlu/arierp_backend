@@ -5,6 +5,7 @@ from django.db.models import BooleanField,QuerySet, Q
 from django.db.models.functions import Lower,Upper
 from django.utils.crypto import get_random_string
 from django.utils.timezone import localtime, make_aware, is_naive
+from django.core.files.base import ContentFile
 
 
 import pandas as pd
@@ -36,6 +37,16 @@ class AgentEngine():
         self.status = "pending"
         self.process = None
         self.df = None
+
+    def validate_authorization(self):
+        auths = {
+            "ihtar_cekme" : "kredi_risk_izleme"
+        }
+        
+        if self.user.authorization.department != auths.get(self.agent_name, "") or not self.user.is_authenticated:
+            return {"message": "Bu işlem için yetkiniz yok!", "status":"error"}
+
+        return 200
 
     def validate_file(self):
         if not self.file:
@@ -71,14 +82,24 @@ class AgentEngine():
         agentData.delay(df_json, self.user.id, self.agent_name, self.lf_username, self.lf_password)
 
     def agent_task(self, df_json):
+        df = pd.read_json(io.StringIO(df_json))
+
+        excel_buffer = io.BytesIO()
+        df.to_excel(excel_buffer, index=False, engine="openpyxl")
+        excel_buffer.seek(0)
+
         self.task = AgentTask.objects.create(
             company = self.user.user_companies.filter(is_active=True).first().company,
             user = self.user,
             status = self.status,
             agent_name = self.agent_name,
             lf_username = self.lf_username,
-            lf_password = self.lf_password,
-            file=self.file
+            lf_password = self.lf_password
+        )
+        self.task.file.save(
+            f"{self.task.uuid}.xlsx",
+            ContentFile(excel_buffer.read()),
+            save=True,
         )
         self.task.save()
         

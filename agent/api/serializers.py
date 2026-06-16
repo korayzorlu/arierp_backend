@@ -7,3 +7,13 @@ from datetime import date,timedelta,datetime
 from django.utils import timezone
 
 from agent.models import *
+
+class AgentTaskListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    status = serializers.CharField()
+    agent_name = serializers.CharField()
+    running = serializers.SerializerMethodField()
+
+    def get_running(self, obj):
+        return True if obj.status in ['pending', 'in_progress'] else False

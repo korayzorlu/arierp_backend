@@ -117,7 +117,7 @@ def poll_and_run():
         #     headers={"X-Agent-Token": AGENT_TOKEN},
         #     timeout=5,
         # )
-        update(str(task_id), "rejected")
+        update(str(task_id), "rejected", log=traceback.format_exc())
     except Exception as e:
         # requests.post(
         #     f"{DJANGO_BASE}/bot/agent/task-hata/",
@@ -125,14 +125,14 @@ def poll_and_run():
         #     headers={"X-Agent-Token": AGENT_TOKEN},
         #     timeout=5,
         # )
-        update(str(task_id), "rejected")
+        update(str(task_id), "rejected", log=traceback.format_exc())
     finally:
         try:
             os.remove(excel_path)
             os.remove(bot_path)
             os.rmdir(tmp_dir)
         except Exception:
-            pass
+            update(str(task_id), "rejected", log=traceback.format_exc())
 
 
 # ─── Windows Service ──────────────────────────────────────────────────────────
@@ -169,19 +169,19 @@ class AriLeasingBotService(win32serviceutil.ServiceFramework):
 # ─── Giriş Noktası ────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        servicemanager.Initialize()
-        servicemanager.PrepareToHostSingle(AriLeasingBotService)
-        servicemanager.StartServiceCtrlDispatcher()
-    else:
-        win32serviceutil.HandleCommandLine(AriLeasingBotService)
-
     # if len(sys.argv) == 1:
-    #     # Direkt çalıştırılıyor, test modu
-    #     print(f"Agent başladı (test modu). ID: {AGENT_ID}")
-    #     while True:
-    #         poll_and_run()
-    #         time.sleep(5)
+    #     servicemanager.Initialize()
+    #     servicemanager.PrepareToHostSingle(AriLeasingBotService)
+    #     servicemanager.StartServiceCtrlDispatcher()
     # else:
-    #     # install / start / stop / remove — SCM tarafından çalıştırılıyor
     #     win32serviceutil.HandleCommandLine(AriLeasingBotService)
+
+    if len(sys.argv) == 1:
+        # Direkt çalıştırılıyor, test modu
+        print(f"Agent başladı (test modu). ID: {AGENT_ID}")
+        while True:
+            poll_and_run()
+            time.sleep(5)
+    else:
+        # install / start / stop / remove — SCM tarafından çalıştırılıyor
+        win32serviceutil.HandleCommandLine(AriLeasingBotService)

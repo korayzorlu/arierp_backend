@@ -12,7 +12,7 @@ from django.core.mail import EmailMessage, send_mail
 
 from utils.mixins import CompanyOwnershipRequiredMixin,ActivityLogMixin
 
-from common.utils.websocket_utils import send_alert
+from common.utils.websocket_utils import send_alert,send_agent_status
 from .utils.common_utils import AgentEngine
 from .models import AgentTask
 
@@ -35,15 +35,13 @@ class RunAgentView(LoginRequiredMixin,View):
             lf_password=data.get("lf_password")
         )
 
+        if agent_engine.validate_authorization() != 200:
+            return JsonResponse(agent_engine.validate_authorization(), status=403)
+
         if agent_engine.validate_file() != 200:
             return JsonResponse(agent_engine.validate_file(), status=400)
 
-        if not request.user.is_authenticated:
-            return JsonResponse({'message': 'Yetki hatası!.','status':'error'}, status=401)
-        
-        if request.user.authorization.department != 'kredi_risk_izleme':
-            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
-        
+        send_agent_status({"running": True},room=f"private_{request.user.uuid}")
         send_alert({"message":"Agent işlemi başlatıldı!",'status':'success'},room=f"private_{request.user.uuid}")
 
         df_json = agent_engine.read_file()
@@ -66,6 +64,7 @@ class AgentTemplateView(LoginRequiredMixin,View):
 class GetAgentTaskView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
+        #return JsonResponse({"task": None}, status=400)
 
         agent_token = request.headers.get("X-Agent-Token")
         if agent_token != settings.AGENT_SECRET_TOKEN:
@@ -108,8 +107,15 @@ class UpdateAgentTaskView(View):
         task = AgentTask.objects.filter(
             uuid = data.get("task_id")
         ).first()
-  
+
+        if task is None:
+            return JsonResponse({'message': 'Task bulunamadı!','status':'error'}, status=404)
         task.status = data.get("status", task.status)
+        task.log = data.get("log", task.log)
         task.save()
+
+        if task.status == "completed" or task.status == "rejected":
+            send_agent_status({"running": False},room=f"private_{task.user.uuid}")
+            send_alert({"message": f"{'Agent işlemi başarılı şekilde tamamlandı' if task.status == 'completed' else 'Agent işleminde hata oluştu'}!",'status':'success' if task.status == "completed" else 'error'},room=f"private_{task.user.uuid}")
 
         return JsonResponse({'message': 'Task kaydedildi!','status':'success'}, status=200)
