@@ -14,9 +14,11 @@ from utils.mixins import CompanyOwnershipRequiredMixin,ActivityLogMixin
 
 from common.utils.websocket_utils import send_alert
 from .utils.common_utils import AgentEngine
+from .models import AgentTask
 
 import json
 import os
+import base64
 
 # Create your views here.
 
@@ -24,8 +26,14 @@ class RunAgentView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.POST.get('data', '{}'))
         file = request.FILES.get('file')
-
-        agent_engine = AgentEngine(user_id=request.user.id, agent_name=data.get("agentName"), file=file)
+        
+        agent_engine = AgentEngine(
+            user_id=request.user.id,
+            agent_name=data.get("agentName"),
+            file=file,
+            lf_username=data.get("lf_username"),
+            lf_password=data.get("lf_password")
+        )
 
         if agent_engine.validate_file() != 200:
             return JsonResponse(agent_engine.validate_file(), status=400)
@@ -54,3 +62,54 @@ class AgentTemplateView(LoginRequiredMixin,View):
             return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)
 
         return FileResponse(open(file_path, 'rb'))
+    
+class GetAgentTaskView(View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        agent_token = request.headers.get("X-Agent-Token")
+        if agent_token != settings.AGENT_SECRET_TOKEN:
+            return HttpResponse(status=403)
+
+        task = AgentTask.objects.filter(
+            status = "pending",
+            user__username = data.get("username")
+        ).first()
+
+        if task is None:
+            return JsonResponse({"task": None}, status=400)
+
+        agent_path = os.path.join(settings.BASE_DIR, "agent", "utils", "agents", f"{task.agent_name}.py")
+        try:
+            with open(agent_path, "r", encoding="utf-8") as f:
+                agent_code = f.read()
+        except FileNotFoundError:
+            task.status = "rejected"
+            task.save()
+            return JsonResponse({"task": None}, status=400)
+
+        with task.file.open("rb") as f:
+            excel_b64 = base64.b64encode(f.read()).decode()
+
+        task_data = {
+            "task_id": task.uuid,
+            "agent_code": agent_code,
+            "excel_b64": excel_b64,
+            "username": task.lf_username,
+            "password": task.lf_password
+        }
+
+        return JsonResponse(task_data, status=200)
+    
+class UpdateAgentTaskView(View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        task = AgentTask.objects.filter(
+            uuid = data.get("task_id")
+        ).first()
+  
+        task.status = data.get("status", task.status)
+        task.save()
+
+        return JsonResponse({'message': 'Task kaydedildi!','status':'success'}, status=200)

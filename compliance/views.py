@@ -88,6 +88,7 @@ class UpdateThirdPersonIsCustomerSentView(LoginRequiredMixin,View):
         
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('id')).first()
         obj.is_customer_sent = True
+        obj.customer_sender = request.user
         obj.save()
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)

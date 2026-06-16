@@ -4,7 +4,7 @@ import pandas as pd
 import io
 
 @register("ihtar_cekme")
-def agent_ihtar_cekme(self, df_json):
+def agent_ihtar_cekme(self, file, df_json, lf_username, lf_password):
     df = pd.read_json(io.StringIO(df_json), orient='records')
     
     required_columns = []

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.conf import settings
+
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -51,6 +53,7 @@ class ThirdPerson(models.Model):
 
     is_email_sent = models.BooleanField(default=False)
     is_customer_sent = models.BooleanField(default=False)
+    customer_sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customer_sender_third_persons", null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

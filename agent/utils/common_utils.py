@@ -27,11 +27,12 @@ class AgentEngine():
     max_file_size = 5 * 1024 * 1024
     max_rows = 10_000
 
-    def __init__(self, user_id, agent_name, file=None, task_id=None):
+    def __init__(self, user_id, agent_name, file=None, lf_username=None, lf_password=None):
         self.file = file
         self.user = User.objects.filter(id = int(user_id)).first()
         self.agent_name = agent_name
-        self.task_id = task_id
+        self.lf_username = lf_username
+        self.lf_password = lf_password
         self.status = "pending"
         self.process = None
         self.df = None
@@ -63,36 +64,42 @@ class AgentEngine():
 
             return df.to_json(orient='records')
         except Exception as e:
-            return {"message": f"Dosya okuma hatası: {str(e)}", "status":"error"}
+            send_alert({"message": f"Dosya okuma hatası: {str(e)}", 'status':'error'}, room=f"private_{self.user.uuid}")
 
     def start_agent(self, df_json):
         from agent.tasks import agentData
-        agentData.delay(df_json, self.user.id, self.agent_name)
+        agentData.delay(df_json, self.user.id, self.agent_name, self.lf_username, self.lf_password)
 
     def agent_task(self, df_json):
         self.task = AgentTask.objects.create(
             company = self.user.user_companies.filter(is_active=True).first().company,
             user = self.user,
             status = self.status,
-            task_id = self.task_id
+            agent_name = self.agent_name,
+            lf_username = self.lf_username,
+            lf_password = self.lf_password,
+            file=self.file
         )
         self.task.save()
         
-        agent_function = get_agent_function(self.agent_name.lower())
-        if not agent_function:
-            self.task.status = "rejected"
-            self.task.save()
-            send_alert({"message":"Bir hata oluştu!",'status':'error'},room=f"private_{self.user.uuid}")
-            #return {"message": "Bir hata oluştu!", "status":"error"}
+        # agent_function = get_agent_function(self.agent_name.lower())
 
-        try:
-            agent_function(self, df_json)
-            self.task.status = "completed"
-            self.task.save()
-        except Exception as e:
-            self.task.status = "rejected"
-            self.task.save()
-            return {"message": f"Bir hata oluştu!", "status":"error"}
+        # if not agent_function:
+        #     self.task.status = "rejected"
+        #     self.task.save()
+        #     send_alert({"message":"Bir hata oluştu!",'status':'error'},room=f"private_{self.user.uuid}")
+        
+        # try:
+        #     if self.lf_username and self.lf_password:
+        #         agent_function(self, self.file, df_json, self.lf_username, self.lf_password)
+        #     else:
+        #         agent_function(self, self.file, df_json)
+        #     self.task.status = "completed"
+        #     self.task.save()
+        # except Exception as e:
+        #     self.task.status = "rejected"
+        #     self.task.save()
+        #     send_alert({"message":f"Bir hata oluştu!",'status':'error'},room=f"private_{self.user.uuid}")
 
         
 

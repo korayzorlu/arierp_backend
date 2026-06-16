@@ -701,3 +701,6 @@ if not DEBUG:
         # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
         send_default_pii=True,
     )
+
+# Agent
+AGENT_SECRET_TOKEN = os.getenv('AGENT_SECRET_TOKEN','')

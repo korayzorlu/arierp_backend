@@ -5,9 +5,9 @@ from .models import AgentTask
 @admin.register(AgentTask)
 class AgentTaskAdmin(admin.ModelAdmin):
 
-    list_display = ["company","user","task_id","status","created_date"]
+    list_display = ["company","user","agent_name","status","created_date"]
     list_display_links = ["user"]
-    search_fields = ["company__name","user__name","task_id","status"]
+    search_fields = ["company__name","user__name","agent_name","status"]
     list_filter = []
     inlines = []
     ordering = ["user"]
