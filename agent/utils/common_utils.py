@@ -22,6 +22,7 @@ from users.models import User
 from agent.models import *
 from .registry import get_agent_function
 from common.utils.websocket_utils import send_alert
+from agent.tasks import reject_pending_agent_task
 
 class AgentEngine():
     allowed_extensions = ["xls", "xlsx"]
@@ -102,6 +103,8 @@ class AgentEngine():
             save=True,
         )
         self.task.save()
+
+        reject_pending_agent_task.apply_async(args=[self.task.id], countdown=10)
         
         # agent_function = get_agent_function(self.agent_name.lower())
 
