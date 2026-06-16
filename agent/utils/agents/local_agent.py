@@ -43,7 +43,8 @@ else:
 
 PYTHON_EXE = os.path.join(BASE_DIR, "python_embed", "python.exe")
 
-DJANGO_BASE = "http://localhost:8000/api"
+# DJANGO_BASE = "http://localhost:8000/api"
+DJANGO_BASE = "https://arinet.arileasing.com.tr/api"
 AGENT_TOKEN = "11c168a6bcb394698304244c9873c3bddbfd68970a242783b1d6ac3bf004fe7a"
 AGENT_ID = str(uuid.uuid4())
 

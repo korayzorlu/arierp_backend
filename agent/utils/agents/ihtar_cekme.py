@@ -15,7 +15,8 @@ import getpass
 import traceback
 import argparse
 
-DJANGO_BASE = "http://localhost:8000/api"
+# DJANGO_BASE = "http://localhost:8000/api"
+DJANGO_BASE = "https://arinet.arileasing.com.tr/api"
 AGENT_TOKEN = "__AGENT_TOKEN__"
 
 def get_menu_index(username):
