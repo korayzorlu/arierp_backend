@@ -46,6 +46,7 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
             obj.status = data.get('status')
         elif data.get('status') == 'collection_denied':
             obj.status = data.get('status')
+            obj.is_customer_sent = False
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
 
