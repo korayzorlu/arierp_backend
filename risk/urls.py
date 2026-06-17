@@ -58,6 +58,8 @@ urlpatterns = [
 
     path('create_termination_warning_notice_status/', CreateTerminationWarningNoticeStatusView.as_view(), name="create_termination_warning_notice_status"),
     path('get_termination_warning_notice/', GetTerminationWarningNoticeView.as_view(), name="get_termination_warning_notice"),
+    path('create_committee_form_status/', CreateCommitteeFormStatusView.as_view(), name="create_committee_form_status"),
+    path('get_committee_form/', GetCommitteeFormView.as_view(), name="get_committee_form"),
     
     path('', include("risk.api.urls")),
 ]

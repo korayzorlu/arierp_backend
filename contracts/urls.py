@@ -18,6 +18,8 @@ urlpatterns = [
     path('update_comprehensive_warning_notice/', UpdateComprehensiveWarningNoticeView.as_view(), name="update_comprehensive_warning_notice"),
     path('termination_warning_notice_information/', TerminationWarningNoticeInformationView.as_view(), name="termination_warning_notice_information"),
     path('update_termination_warning_notice/', UpdateTerminationWarningNoticeView.as_view(), name="update_termination_warning_notice"),
+    path('committee_form_information/', CommitteeFormInformationView.as_view(), name="committee_form_information"),
+    path('update_committee_form/', UpdateCommitteeFormView.as_view(), name="update_committee_form"),
 
     path('export_contract_payments/', ExportContractPaymentsView.as_view(), name="export_contract_payments"),
     path('contract_payments_excel/', ContractPaymentsExcelView.as_view(), name="contract_payments_excel"),

@@ -340,6 +340,94 @@ class UpdateTerminationWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequ
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
 
+class CommitteeFormInformationView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        contract = data.get('contract')
+
+        active_company_uuid = data.get('active_company')
+        active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
+        
+        obj = CommitteeForm.objects.filter(company = active_company.company, contract__code = contract).first()
+
+        if not obj:
+            return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
+        
+        committee_form_data = {
+            'uuid': obj.uuid,
+            'contract': obj.contract.code if obj.contract else "",
+            'partner': obj.contract.partner.name if obj.contract else "",
+        }
+
+        return JsonResponse({'committee_form':committee_form_data}, status=200)
+    
+class UpdateCommitteeFormView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = CommitteeForm
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if request.user.authorization.department != 'kredi_risk_izleme':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        obj = CommitteeForm.objects.filter(uuid = data.get('uuid')).first()
+
+        if not obj:
+            return JsonResponse({'message': 'Bir sorun oluştu!','status':'error'}, status=400)
+        
+        paid_amount_str = data.get('paid_amount', '0,00').replace('.', '').replace(',', '.')
+        paid_amount = Decimal(str(paid_amount_str))
+
+        deduction_amount_str = data.get('deduction_amount', '0,00').replace('.', '').replace(',', '.')
+        deduction_amount = Decimal(str(deduction_amount_str))
+
+        try:
+            obj.paid_amount = paid_amount
+            obj.deduction_amount = deduction_amount
+        except ValueError:
+            return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+        
+        obj.save()
+
+        # word işlemleri
+        lease = obj.contract.contract_leases.filter(is_last_project=True).first()
+        file_name = obj.contract.code.replace("/","-")
+        doc = DocxTemplate(f"files/fesih-ihtar{'-iadesiz' if obj.paid_amount - obj.deduction_amount == 0 else ''}.docx")
+
+        def format_currency(value):
+                return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+        
+        if lease.contract.partner.is_commercial:
+            if lease.contract.partner.tc_vkn_no and len(lease.contract.partner.tc_vkn_no) > 0:
+                tc_vkn_no = lease.contract.partner.tc_vkn_no
+            elif lease.contract.partner.vat_no and len(lease.contract.partner.vat_no) > 0:
+                tc_vkn_no = lease.contract.partner.vat_no
+            else:
+                tc_vkn_no = ''
+        else:
+            tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
+
+        context = {
+            "isim": lease.contract.partner.name,
+            "tc_vkn_no": tc_vkn_no,
+            "adres": lease.contract.partner.address,
+            "sozlesme_tarih": lease.signature_date.strftime('%d.%m.%Y') if lease.signature_date else '',
+            "sozlesme_no": lease.contract.code,
+            "odenen_tutar": format_currency(obj.paid_amount),
+            "kesinti_tutar": format_currency(obj.deduction_amount),
+            "toplam_tutar": format_currency(obj.paid_amount - obj.deduction_amount),
+        }
+        
+        doc.render(context)
+
+        files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+        doc.save(files_path)
+        # word işlemleri - end
+
+        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+
+
+
 class ExportContractPaymentsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)

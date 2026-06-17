@@ -17,7 +17,7 @@ from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
 from leasing.models import Lease
 from leasing.utils.lease_utils import get_future_payments
-from contracts.models import TerminationWarningNotice
+from contracts.models import TerminationWarningNotice, CommitteeForm
 
 import os
 import json
@@ -162,6 +162,57 @@ class GetTerminationWarningNoticeView(LoginRequiredMixin,View):
         file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
         
         if not os.path.exists(file_path):
-            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+            return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)
+        
+        return FileResponse(open(file_path, 'rb'))
+    
+class CreateCommitteeFormStatusView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,View):
+    model = Lease
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        lease = Lease.objects.select_related().filter(uuid = data.get('uuid')).first()
+
+        if lease:
+            # kapsamlı ihtar model işlemleri
+            if not CommitteeForm.objects.filter(contract = lease.contract).exists():
+                obj = CommitteeForm.objects.create(
+                    company = lease.company,
+                    contract = lease.contract,
+                )
+            else:
+                obj = CommitteeForm.objects.filter(contract = lease.contract).first()
+
+            # word işlemleri
+            file_name = f"{lease.contract.code.replace("/","-")}-komite-formu"
+            doc = DocxTemplate(f"files/komite-formu.docx")
+
+            context = {
+                "isim": lease.contract.partner.name,
+            }
+
+            doc.render(context)
+
+            files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+            doc.save(files_path)
+
+        if files_path:
+            return FileResponse(open(files_path, 'rb'), as_attachment=True)
+        
+        return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=400)
+    
+class GetCommitteeFormView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuid = data.get('uuid')
+
+        lease = Lease.objects.select_related().filter(uuid = uuid).first()
+
+        file_name = f"{lease.contract.code.replace("/","-")}-komite-formu"
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+        
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)
         
         return FileResponse(open(file_path, 'rb'))

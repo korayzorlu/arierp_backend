@@ -44,6 +44,7 @@ class ThirdPerson(models.Model):
         ('cleared', ('Cleared')),
         ('flagged', ('Flagged')),
         ('need_document', ('Need Document')),
+        ('collection_denied', ('Collection Denied')),
     )
     status = models.CharField(_("Status"), max_length=25, default='pending', choices=STATUS_CHOICES, blank=True, null=True)
 

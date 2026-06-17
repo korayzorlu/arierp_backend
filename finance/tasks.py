@@ -537,7 +537,7 @@ def add_finmaks_bank_account_daily_record(company,BATCH_SIZE = 1000):
 @shared_task()
 def set_bank_activities_date(company):
     try:
-        objs=BankActivity.objects.filter(company__id=int(company), third_person_status__in=['need_document','pending'],bank_activities_third_persons__isnull=False)
+        objs=BankActivity.objects.filter(company__id=int(company), third_person_status__in=['need_document','pending','collection_denied'],bank_activities_third_persons__isnull=False)
 
         new_date = date.today()
         for obj in objs:
