@@ -343,20 +343,20 @@ class UpdateTerminationWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequ
 class CommitteeFormInformationView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        contract = data.get('contract')
+
+        partner = Partner.objects.select_related().filter(uuid = data.get('uuid')).first()
 
         active_company_uuid = data.get('active_company')
         active_company = UserCompany.objects.select_related("company").filter(uuid = active_company_uuid).first()
         
-        obj = CommitteeForm.objects.filter(company = active_company.company, contract__code = contract).first()
+        obj = CommitteeForm.objects.filter(company = active_company.company, partner = partner).first()
 
         if not obj:
             return JsonResponse({'message' : 'Aradığınız veri bulunamadı!','status':'error'}, status=400)
         
         committee_form_data = {
             'uuid': obj.uuid,
-            'contract': obj.contract.code if obj.contract else "",
-            'partner': obj.contract.partner.name if obj.contract else "",
+            'partner': obj.partner.name if obj.partner else "",
         }
 
         return JsonResponse({'committee_form':committee_form_data}, status=200)
@@ -406,9 +406,10 @@ class UpdateCommitteeFormView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,V
                 tc_vkn_no = ''
         else:
             tc_vkn_no = lease.contract.partner.tc_vkn_no if lease.contract.partner.tc_vkn_no else ''
-
+        
         context = {
             "isim": lease.contract.partner.name,
+            "tarih": datetime.today().strftime('%d.%m.%Y'),
             "tc_vkn_no": tc_vkn_no,
             "adres": lease.contract.partner.address,
             "sozlesme_tarih": lease.signature_date.strftime('%d.%m.%Y') if lease.signature_date else '',

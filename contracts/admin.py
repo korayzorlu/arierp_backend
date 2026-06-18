@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice,TerminationWarningNotice
+from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice,TerminationWarningNotice,CommitteeForm
 
 # Register your models here.
 
@@ -107,3 +107,23 @@ class TerminationWarningNoticeAdmin(admin.ModelAdmin):
     
     class Meta:
         model = TerminationWarningNotice
+
+@admin.register(CommitteeForm)
+class CommitteeFormAdmin(admin.ModelAdmin):
+    list_display = ["company","partner","created_date"]
+    list_display_links = ["partner"]
+    search_fields = ["company__name","partner__name","created_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["contract","partner"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+
+    
+    def partner(self,obj):
+        return obj.partner.name if obj.partner else ""
+    
+    class Meta:
+        model = CommitteeForm

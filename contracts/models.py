@@ -156,11 +156,12 @@ class CommitteeForm(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_committee_forms")
 
-    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_committee_forms")
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_committee_forms", blank=True, null=True)
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_committee_forms", blank=True, null=True)
 
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.contract.code)
+        return str(self.partner.name) if self.partner else ""
