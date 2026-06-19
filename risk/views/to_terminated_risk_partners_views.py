@@ -202,9 +202,14 @@ class CreateCommitteeFormStatusView(LoginRequiredMixin,View):
             risk_total_risk_amount_total = Decimal('0.00')
             risk_paid_amount_total = Decimal('0.00')
             refund_installment_amount_total = Decimal('0.00')
+            muhtelif_transactions_total_amount = Decimal('0.00')
             teblig_tarihi_list = []
             for lease in leases:
                 next_installments = Installment.objects.select_related("lease").filter(lease = lease, type__in = ['1'], payment_date__gte = datetime.today()).only("amount").aggregate(total_amount=Sum('amount'))
+                borc_muhtelif_transactions = lease.lease_trade_transactions.filter(amount_type = '1', posting_group_name='Muhtelif Masraf').aggregate(total_amount=Sum('amount'))
+                alacak_muhtelif_transactions = lease.lease_trade_transactions.filter(amount_type = '0', posting_group_name='Muhtelif Masraf').aggregate(total_amount=Sum('amount'))
+                muhtelif_transactions_total_amount += (borc_muhtelif_transactions['total_amount'] or Decimal('0.00')) - (alacak_muhtelif_transactions['total_amount'] or Decimal('0.00'))
+                
                 risk_next_installments_total_amount += next_installments['total_amount'] or Decimal('0.00')
                 risk_overdue_amount_total += lease.overdue_amount
                 risk_total_risk_amount_total += (next_installments['total_amount'] or Decimal('0.00')) + lease.overdue_amount
@@ -223,7 +228,7 @@ class CreateCommitteeFormStatusView(LoginRequiredMixin,View):
 
             tahsil_edilen = risk_paid_amount_total
             ihtar_masrafi = Decimal('3200.00') if not partner.kep else Decimal('1000.00')*Decimal(str(leases.count()))
-            takip_masrafi = risk_overdue_amount_total*Decimal('0.1')
+            takip_masrafi = risk_overdue_amount_total*Decimal('0.1') if risk_overdue_amount_total > muhtelif_transactions_total_amount else muhtelif_transactions_total_amount
             vazgecme_akcesi = refund_installment_amount_total*Decimal('0.1')
             kalan = risk_paid_amount_total - ihtar_masrafi - takip_masrafi - vazgecme_akcesi
 
