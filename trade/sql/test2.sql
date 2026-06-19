@@ -1,7 +1,5 @@
-SELECT COUNT(*)
+SELECT *
 FROM
-    TradeTransaction
-WHERE
-    TrnIsDeleted = 0
-    --TrnId = '13426202'
+    GeneralDeleteControl
+
     

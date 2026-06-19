@@ -27,6 +27,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
             cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
+        TradeTransaction.objects.filter(company__id=int(company)).delete()
+
         # trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
         # partners = Partner.objects.select_related().filter(company__id=int(company))
         # leases = Lease.objects.select_related().all()
