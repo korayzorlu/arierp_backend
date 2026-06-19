@@ -41,7 +41,8 @@ class AgentEngine():
 
     def validate_authorization(self):
         auths = {
-            "ihtar_cekme" : "kredi_risk_izleme"
+            "ihtar_cekme" : "kredi_risk_izleme",
+            "fatura_kesme" : "muhasebe"
         }
         
         if self.user.authorization.department != auths.get(self.agent_name, "") or not self.user.is_authenticated:

@@ -54,7 +54,7 @@ class RunAgentView(LoginRequiredMixin,View):
     
 class AgentTemplateView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
-        file_path = os.path.join(settings.BASE_DIR, "files", "agent", "ihtar-cekilecekler.xlsx")
+        file_path = os.path.join(settings.BASE_DIR, "files", "agent", f"{request.GET.get('templateName')}")
 
         if not os.path.exists(file_path):
             return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)

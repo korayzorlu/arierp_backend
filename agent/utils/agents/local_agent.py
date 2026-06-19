@@ -16,6 +16,7 @@ import win32ts
 import servicemanager
 import traceback
 import shutil
+import logging
 
 
 
@@ -42,13 +43,31 @@ else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 PYTHON_EXE = os.path.join(BASE_DIR, "python_embed", "python.exe")
+LOG_PATH = os.path.join(BASE_DIR, "agent.log")
 
 # DJANGO_BASE = "http://localhost:8000/api"
 DJANGO_BASE = "https://arinet.arileasing.com.tr/api"
 AGENT_TOKEN = "11c168a6bcb394698304244c9873c3bddbfd68970a242783b1d6ac3bf004fe7a"
 AGENT_ID = str(uuid.uuid4())
 
+logging.basicConfig(
+    filename=LOG_PATH,
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    encoding="utf-8",
+)
+
+logger = logging.getLogger("local_agent")
+
 # ─── Task Çalıştırma ──────────────────────────────────────────────────────────
+
+# Yakalanmamış (uncaught) hataları da log dosyasına yazdır
+def log_uncaught_exceptions(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    logger.error("Yakalanmamış hata:", exc_info=(exc_type, exc_value, exc_traceback))
+
 
 def update(task_id, status, log=None):
     try:
@@ -58,7 +77,8 @@ def update(task_id, status, log=None):
             headers={"X-Agent-Token": AGENT_TOKEN},
             timeout=5,
         )
-    except Exception:
+    except Exception as e:
+        logger.error(f"Hata: {e}", exc_info=True)
         pass
 
 def poll_and_run():
@@ -75,11 +95,13 @@ def poll_and_run():
 
     except Exception as e:
         #print(traceback.format_exc())
+        logger.error(f"Hata: {e}", exc_info=True)
         return
 
     if not task_data.get("task_id"):
         return
-
+    
+    
     task_id = task_data["task_id"]
     agent_code = task_data["agent_code"]
     excel_b64 = task_data["excel_b64"]
@@ -99,7 +121,7 @@ def poll_and_run():
         with open(bot_path, "w", encoding="utf-8") as f:
             f.write(agent_code)
 
-        subprocess.run(
+        result  = subprocess.run(
             [
                 PYTHON_EXE,
                 bot_path,
@@ -109,15 +131,31 @@ def poll_and_run():
                 "--task-id", str(task_id),
             ],
             timeout=3600,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
         )
 
-    except subprocess.TimeoutExpired:
+        if result.stdout:
+            logger.info(f"[bot.py stdout - task {task_id}]\n{result.stdout}")
+        if result.stderr:
+            logger.error(f"[bot.py stderr - task {task_id}]\n{result.stderr}")
+
+        if result.returncode != 0:
+            logger.error(f"bot.py hata koduyla sonlandı: {result.returncode} (task {task_id})")
+            update(task_id, "rejected")
+        else:
+            logger.info(f"Task tamamlandı: {task_id}")
+
+    except subprocess.TimeoutExpired as e:
         # requests.post(
         #     f"{DJANGO_BASE}/bot/agent/task-hata/",
         #     json={"task_id": task_id, "hata": "Zaman aşımı (1 saat)"},
         #     headers={"X-Agent-Token": AGENT_TOKEN},
         #     timeout=5,
         # )
+        logger.error(f"Hata: {e}", exc_info=True)
         update(str(task_id), "rejected", log=traceback.format_exc())
     except Exception as e:
         # requests.post(
@@ -126,13 +164,15 @@ def poll_and_run():
         #     headers={"X-Agent-Token": AGENT_TOKEN},
         #     timeout=5,
         # )
+        logger.error(f"Hata: {e}", exc_info=True)
         update(str(task_id), "rejected", log=traceback.format_exc())
     finally:
         try:
             os.remove(excel_path)
             os.remove(bot_path)
             os.rmdir(tmp_dir)
-        except Exception:
+        except Exception as e:
+            logger.error(f"Hata: {e}", exc_info=True)
             update(str(task_id), "rejected", log=traceback.format_exc())
 
 
@@ -166,7 +206,7 @@ class AriLeasingBotService(win32serviceutil.ServiceFramework):
                 pass
             time.sleep(5)
 
-
+sys.excepthook = log_uncaught_exceptions
 # ─── Giriş Noktası ────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -179,7 +219,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) == 1:
         # Direkt çalıştırılıyor, test modu
-        print(f"Agent başladı (test modu). ID: {AGENT_ID}")
         while True:
             poll_and_run()
             time.sleep(5)

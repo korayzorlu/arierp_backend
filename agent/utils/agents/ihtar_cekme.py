@@ -15,8 +15,8 @@ import getpass
 import traceback
 import argparse
 
-# DJANGO_BASE = "http://localhost:8000/api"
-DJANGO_BASE = "https://arinet.arileasing.com.tr/api"
+DJANGO_BASE = "http://localhost:8000/api"
+# DJANGO_BASE = "https://arinet.arileasing.com.tr/api"
 AGENT_TOKEN = "__AGENT_TOKEN__"
 
 def get_menu_index(username):
@@ -63,10 +63,10 @@ def is_browser_closed_error(exception):
 def run_bot(username, password, file_name, task_id):
     update(str(task_id), "in_progress")
 
-    if not username == "koray.zorlu":
-        url = "https://leaseflex.arileasing.com.tr/Ari_Leasing/Logon.aspx"
-    else:
+    if username == "koray.zorlu" or username == "korayzorlu":
         url = "https://testleaseflex.arileasing.com.tr/Ari_Leasing/Logon.aspx"
+    else:
+        url = "https://leaseflex.arileasing.com.tr/Ari_Leasing/Logon.aspx"
 
     options = Options()
 
@@ -171,7 +171,6 @@ def run_bot(username, password, file_name, task_id):
                 musteri_sil_button = wait.until(EC.element_to_be_clickable((By.ID, "cmbContractHeaderIdDeleteImageBtn")))
                 musteri_sil_button.click()
                 ####
-                print(traceback.format_exc())
                 error_list.append(str(row["Sözleşme"]))
 
         update(str(task_id), "completed")
