@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.utils.timezone import make_aware
+from django.db.models import BigIntegerField
+from django.db.models.functions import Cast
 
 import pyodbc
 import os
@@ -27,7 +29,14 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
             cursor.execute(SQL_QUERY)
         cursor.fast_executemany = True
 
-        TradeTransaction.objects.filter(company__id=int(company)).delete()
+        #TradeTransaction.objects.filter(company__id=int(company)).order_by('-created_date')[:10000].delete()
+
+        ids = list(
+            TradeTransaction.objects.annotate(
+                trade_transaction_id_int=Cast('trade_transaction_id', output_field=BigIntegerField())
+            ).order_by('-record_date', '-trade_transaction_id_int').values_list('pk', flat=True)[:10000]
+        )
+        TradeTransaction.objects.filter(pk__in=ids).delete()
 
         # trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
         # partners = Partner.objects.select_related().filter(company__id=int(company))

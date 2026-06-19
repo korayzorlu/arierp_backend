@@ -1,4 +1,4 @@
-SELECT
+SELECT TOP 20000
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,
@@ -81,4 +81,4 @@ WHERE
     AND TrnAccountType = 11
     AND TrnPostingTypeDetail <> 80
 ORDER BY
-    TrnCreateDate DESC
+    TrnId DESC
