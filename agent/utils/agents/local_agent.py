@@ -18,8 +18,6 @@ import traceback
 import shutil
 import logging
 
-
-
 def get_active_username():
     try:
         sessions = win32ts.WTSEnumerateSessions(win32ts.WTS_CURRENT_SERVER_HANDLE)
@@ -68,7 +66,6 @@ def log_uncaught_exceptions(exc_type, exc_value, exc_traceback):
         return
     logger.error("Yakalanmamış hata:", exc_info=(exc_type, exc_value, exc_traceback))
 
-
 def update(task_id, status, log=None):
     try:
         requests.post(
@@ -100,7 +97,6 @@ def poll_and_run():
 
     if not task_data.get("task_id"):
         return
-    
     
     task_id = task_data["task_id"]
     agent_code = task_data["agent_code"]
@@ -174,7 +170,6 @@ def poll_and_run():
         except Exception as e:
             logger.error(f"Hata: {e}", exc_info=True)
             update(str(task_id), "rejected", log=traceback.format_exc())
-
 
 # ─── Windows Service ──────────────────────────────────────────────────────────
 
