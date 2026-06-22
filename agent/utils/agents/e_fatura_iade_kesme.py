@@ -269,7 +269,6 @@ def run_bot(username, password, file_name, task_id):
         except Exception:
             pass
 
-
     data = {
         "Sözleşme": [],
     }

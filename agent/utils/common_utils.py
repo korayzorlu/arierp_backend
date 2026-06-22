@@ -45,6 +45,7 @@ class AgentEngine():
             "fatura_kesme" : "muhasebe",
             "e_fatura_kesme" : "muhasebe",
             "e_fatura_iade_kesme" : "muhasebe",
+            "temerrut_fatura_kesme" : "kredi_risk_izleme"
         }
         
         if self.user.authorization.department != auths.get(self.agent_name, "") or not self.user.is_authenticated:
