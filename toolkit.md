@@ -5,9 +5,10 @@
 
 ## <img src=https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png width=20/> Git
 
-### Token
+### Tokenexport_krs_report 2 --rapor-tarihi 2026-06-22
 
-- Git auth token for sync.
+- Git auth token for sync.export_krs_report 2 --rapor-tarihi 2026-06-22export_krs_report 2 --rapor-tarihi 2026-06-22
+
 ```
 
 ```
@@ -15,6 +16,7 @@
 ### Configure
 
 - Kullanıcı bilgilerini sisteme işlemek.
+
 ```sh
 git config --global user.name "****"
 git config --global user.email "****"
@@ -22,7 +24,8 @@ git config --global user.email "****"
 
 ### New Repo
 
-- Yeni proje için yeni repo oluşturmak için github üzerinde yeni repo oluştur ve terminale dön. 
+- Yeni proje için yeni repo oluşturmak için github üzerinde yeni repo oluştur ve terminale dön.
+
 ```sh
 git init
 git add .
@@ -34,84 +37,94 @@ git push -u origin master
 ### SSH Auth
 
 - SSH key dosyaları konumuna gitmek.
+
 ```sh
 cd /.ssh/
 ```
 
 - SSH key oluşturmak.
+
 ```sh
 # git hesabı email adresini gir
 ssh-keygen -t rsa -C "your_email@example.com"
 ```
 
 - SSH keyi yazdırmak ve kopyalamak.
+
 ```sh
 cat id_rsa.pub
 ```
 
 - Bu adımdan sonra Github hesabına tarayıcıda git ve account settings alanında SSH keys içerisine girip yeni SSH key oluştura gidip bu key'i yapıştır ve kaydet.
-
 - SSH ajanını kullanmak.
+
 ```sh
 eval "$(ssh-agent -s)"
 ```
 
 - Keyi SSH ajanına eklemek.
+
 ```sh
 ssh-add ~/.ssh/id_ed25519
 ```
 
 - Bu adımdan sonra git reponun bağlı olduğu proje konumuna git.
-
 - Bağlı olunan repoyu kontrol etmek.
+
 ```sh
 git remote -v
 ```
 
 - Bağlı olunan repo url'ini düzeltmek.
+
 ```sh
 git remote set-url origin git@github.com:username/repo.git
 ```
-
 
 ## <img src=https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Ubuntu-logo-no-wordmark-2022.svg/1200px-Ubuntu-logo-no-wordmark-2022.svg.png width=20/> Ubuntu
 
 ### Workspace
 
 - Proje konumuna gider ve virtualenv'i başlatır.
+
 ```sh
 cd projects/django/michoapp/ && source myenv/bin/activate && cd michoapp/
 ```
+
 ### Memory Control
 
 - Önbellek temizlemek.
-```sh 
+
+```sh
 sudo sysctl -w vm.drop_caches=3
 ```
 
 ### Disk Control
 
 - Tüm disklerin boyutunu kontrol etmek.
+
 ```sh
 df -h
 ```
 
 - içinde bulunulan klasördeki dosyaların boyutunu kontrol etmek.
+
 ```sh
 sudo du -bsh *
 ```
 
 - Disk alanı genişletmekle ilgili bilgiler; [ChatGPT](https://chatgpt.com/c/66f67f21-2e4c-8002-bfc7-22f738f8651e)
 
-
 ### Dosya Sıkıştırma
 
 - Bir dosyayı sıkıştırmak.
+
 ```sh
 tar -czvf arsiv-ismi.tar.gz arsivlenecek-dosya-ismi-ya-da-klasor
 ```
 
 - Sıkıştırılan bir dosyayı çıkartmak.
+
 ```sh
 # bulunulan konuma çıkacaksa
 tar -xzvf arsiv-ismi.tar.gz
@@ -121,12 +134,15 @@ tar -xzvf arsiv-ismi.tar.gz -C /hedef/klasor
 ```
 
 ### Dosya transferi
+
 - SSH ile karşıya dosya göndermek.
+
 ```sh
 scp /yerel/dosya kullanici_adi@hedef_ip:/hedef/klasor
 ```
 
 - SSH ile karşıdan dosya almak.
+
 ```sh
 # bulunulan konuma gelecekse
 scp kullanici_adi@hedef_ip:/hedef/dosya .
@@ -134,11 +150,13 @@ scp kullanici_adi@hedef_ip:/hedef/dosya .
 # başka bir konuma gelecekse
 scp kullanici_adi@hedef_ip:/hedef/dosya /yerel/konum
 ```
+
 ## <img src=https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png width=20/> Docker
 
 ### Dockerfile
 
 - Bir servis için konteyner oluşturmak istendiğinde bu dosya oluşturulur.
+
 ```sh
 # Dockerfile
 # Django için dockerfile örneği
@@ -172,6 +190,7 @@ EXPOSE 8000
 ### Image
 
 - İmaj oluşturulmak istendiğinde bu dosya oluşturulur.
+
 ```sh
 # docker-compose.yml
 # Django projesi için imaj örneği
@@ -215,6 +234,7 @@ services:
 ### Build
 
 - Docker ile build, sadece ilgili dockerfile dosyasını build eder.
+
 ```sh
 docker build -t your_image_name .
 
@@ -223,6 +243,7 @@ docker build --no-cache -t your_image_name .
 ```
 
 - Docker-compose ile build, hem dockerfile hem de yml dosyalarını build eder.
+
 ```sh
 # Tek servis için imaj oluşturmak istenirse
 docker-compose build servis_adi
@@ -237,11 +258,13 @@ docker-compose build --no-cache
 ### Run
 
 - Çalışan dosyayı durdurmak.
+
 ```sh
 docker-compose -f docker-compose.yml down
 ```
 
 - Dosyayı çalıştırmak.
+
 ```sh
 # terminalde anlık çıktıları görmek için
 docker-compose -f docker-compose.yml up
@@ -254,11 +277,13 @@ docker-compose down && docker-compose -f docker-compose.yml -f docker-compose.pr
 ```
 
 - Log izlemek
+
 ```sh
 docker-compose logs -f
 ```
 
 - Bir konteynerdaki uygulama için bir komut çalıştmak gerekirse.
+
 ```sh
 # burada web konteyner ismini temsil eder başka bir şey de olabilir.
 docker-compose exec web python manage.py makemigration
@@ -267,11 +292,13 @@ docker-compose exec web python manage.py makemigration
 ### Network
 
 - Network oluşturmak.
+
 ```sh
 docker network create shared_network
 ```
 
 - Konteynerleri network'e bağlamak.
+
 ```sh
 #docker-compose.yml
 
@@ -292,6 +319,7 @@ networks:
 ### Join postgres
 
 - Postgres konsoluna erişmek.
+
 ```sh
 sudo -u postgres psql
 ```
@@ -299,23 +327,27 @@ sudo -u postgres psql
 ### Backup & Restore
 
 - Backup dosyası oluştumak.
+
 ```sh
 sudo pg_dump -f "dump_file.sql" -h "<db_host_name>" -U <db_username> "<database_name>"
 ```
-- Bu adımdan itibaren makemigrations ve migrate işlemi yapılmamalı. Yeni ve eski db'ler arasında kesinlikle migration farkı olmamalı.
 
+- Bu adımdan itibaren makemigrations ve migrate işlemi yapılmamalı. Yeni ve eski db'ler arasında kesinlikle migration farkı olmamalı.
 - Backup dosyasını üzerine işleyeceğimiz yeni ve temiz db oluşturmak.
+
 ```sql
 CREATE DATABASE new_db_name;
 ```
 
 - Owner değiştirmek
+
 ```postgres
 GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;
 ALTER DATABASE name OWNER TO new_owner;
 ```
 
 - Restore işlemi.
+
 ```sh
 sudo psql --dbname="<new_database_name>" -h "new_database_host_name" -U "new_db_username" -f dump_file.sql
 ```
@@ -325,6 +357,7 @@ sudo psql --dbname="<new_database_name>" -h "new_database_host_name" -U "new_db_
 ### Markdown
 
 - Önizleme modunda çift tıklama ile oluşan eylemi kapatmak.
+
 ```
 markdown.preview.doubleClickToSwitchToEditor
 ```
@@ -340,6 +373,7 @@ markdown.preview.doubleClickToSwitchToEditor
 ### Conf
 
 - conf dosyasını yapılandırmak.
+
 ```sh
 # nginx.conf
 
@@ -422,11 +456,13 @@ server {
 ### Certificate
 
 - Sertifika almak.
+
 ```sh
 sudo certbot --nginx -d example.com -d www.example.com
 ```
 
 ## Düzenlenecek
+
 ```
 WHERE cha_evrak_tip = 0 OR cha_evrak_tip = 63
 

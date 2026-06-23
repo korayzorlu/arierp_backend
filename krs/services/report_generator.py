@@ -445,7 +445,7 @@ def generate_report(
     """
     buf = io.StringIO()
     # Dosya ilk satırı (IFS'in koyduğu)
-    buf.write("Icerik\t\n")
+    #buf.write("Icerik\t\n")
     # Header
     buf.write(make_header(company_name, period_start, period_end) + "\n")
     # Sözleşme kayıtları
