@@ -80,6 +80,9 @@ class MenuItemListSerializer(serializers.Serializer):
             #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Kredi Tahsis", "icon" : "data_loss_prevention", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Mali Profiller", "icon" : "paid", "route" : "/partner-financial-profiles"},
+                {"type" : "sub_menu", "class" : ["default"], "label" : "KRS Bildirim", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["default"], "label" : "Kapama Detayları", "icon" : "paid", "route" : "/kapama-detaylari"},
+                ]},
             ]},   
             #========================
             #OPERASYON

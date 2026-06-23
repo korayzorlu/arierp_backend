@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 # TODO: gerçek import yolunuza göre düzeltin, örn:
 #   from common.models import Company
-from companies.models import Company  # noqa: F401
+from common.models import Company  # noqa: F401
 
 
 class RiskGrubu(models.TextChoices):
