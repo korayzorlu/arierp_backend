@@ -218,7 +218,7 @@ class Command(BaseCommand):
         )
 
         # ── 6. Dosyaya yaz ────────────────────────────────────────────────────
-        base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "krs", "krs_reports")
+        base_path = os.path.join(os.getcwd(), "media", "docs", str(company.uuid), "krs", "krs_reports")
         if not os.path.exists(base_path):
                 os.makedirs(base_path)
         out_path = options["cikti"] or f"{base_path}/KrsBildirimi_{rapor_tarihi.strftime('%y%m%d')}.txt"
