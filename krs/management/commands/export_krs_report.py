@@ -197,6 +197,9 @@ class Command(BaseCommand):
                 gecikme_faizi=gecikme_faizi,
                 aylik_taksit=aylik_taksit,
                 teminat_kodu="104",  # TODO: Lease/Contract'taki teminat alanından türet
+                # taksit_kodu: Lease.vade = LeasingOperationProject.PaymentCount (IFS'ten doğrulandı)
+                # Yeni sözleşmeler (is_new=True) için make_cs0100 taksit_kodu='01' yazar otomatik.
+                taksit_kodu=str(lease.vade).zfill(2)[:2] if (lease and lease.vade) else "",
                 tc_no=tc_no,
                 soyadi=soyadi,
                 adi=adi,
@@ -217,8 +220,10 @@ class Command(BaseCommand):
         # ── 6. Dosyaya yaz ────────────────────────────────────────────────────
         out_path = options["cikti"] or os.path.join(
             settings.BASE_DIR,
-            "files",
+            "media",
+            "docs",
             "krs",
+            "krs_reports",
             f"KrsBildirimi_{rapor_tarihi.strftime('%y%m%d')}.txt",
         )
         with open(out_path, "wb") as f:

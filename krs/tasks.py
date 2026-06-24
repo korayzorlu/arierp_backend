@@ -1,36 +1,42 @@
 """
 krs/tasks.py
 
-Mevcut common.tasks.fetch_data_from_leaseflex vb. ile aynı stilde tanımlı
-Celery task. CELERY_BEAT_SCHEDULE'a eklemek için settings.py'nizdeki ilgili
-dict'e şunu ekleyebilirsiniz (Otomatik_Kapama'nın orijinalde gece/sabah
-saatlerinde tetiklendiğini gözlemlediğimiz için örnek olarak sabah 05:30
-verildi, kendi ihtiyacınıza göre değiştirin):
+CELERY_BEAT_SCHEDULE örneği (settings.py):
 
-    "run-krs-pipeline-task": {
+    # Günlük: her gün çalışır, o günün vadeli sözleşmelerini işler
+    "run-krs-pipeline-daily": {
         "task": "krs.tasks.run_krs_pipeline_task",
         "schedule": crontab(minute=30, hour="5"),
         "args": [2],
+        "kwargs": {"mod": "daily"},
+    },
+
+    # Aylık: ayın son günü tam BDDK bildirimi için
+    "run-krs-pipeline-monthly": {
+        "task": "krs.tasks.run_krs_pipeline_task",
+        "schedule": crontab(minute=0, hour="6", day_of_month="last"),
+        "args": [2],
+        "kwargs": {"mod": "monthly"},
     },
 """
 
 from __future__ import annotations
-
 from datetime import date
 from typing import Optional
-
 from celery import shared_task
-
 from .services.pipeline import run_krs_pipeline
 
 
 @shared_task(name="krs.tasks.run_krs_pipeline_task")
-def run_krs_pipeline_task(company_id: int, rapor_tarihi: Optional[str] = None) -> str:
+def run_krs_pipeline_task(
+    company_id: int,
+    rapor_tarihi: Optional[str] = None,
+    mod: str = "daily",
+) -> str:
     """
-    rapor_tarihi: "YYYY-MM-DD" formatında string, verilmezse bugünün
-    tarihi kullanılır (None Celery args üzerinden JSON-serileştirilebilir
-    olması için string olarak alınıyor).
+    rapor_tarihi : "YYYY-MM-DD" string veya None (bugün).
+    mod          : "daily" (günlük, varsayılan) veya "monthly" (aylık).
     """
     parsed = date.fromisoformat(rapor_tarihi) if rapor_tarihi else None
-    count = run_krs_pipeline(company_id, parsed)
-    return f"{count} sözleşme için KRS hesaplandı (company={company_id})."
+    count = run_krs_pipeline(company_id, parsed, mod=mod)
+    return f"{count} sözleşme için KRS hesaplandı (company={company_id}, mod={mod})."
