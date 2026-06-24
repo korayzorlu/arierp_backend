@@ -44,11 +44,15 @@ class KapamaDetayFilter(FilterSet):
         return queryset
 
 class KapamaHareketiFilter(FilterSet):
+    contract = CharFilter(method = 'filter_contract')
     tarih = CharFilter(method = 'filter_tarih')
 
     class Meta:
         model = KapamaHareketi
         fields = '__all__'
+
+    def filter_contract(self, queryset, contract, value):
+        return queryset.filter(contract_header_id__in=Contract.objects.filter(code__icontains=value).values_list(Cast('contract_id', IntegerField()), flat=True))
 
     def filter_tarih(self, queryset, tarih, value):
         parsed = parse_datetime(value)

@@ -285,7 +285,9 @@ def make_cs0200(
     """
     ref = f"{INSTITUTION_REF}{contract_header_id:07d}"
     tc_clean = tc_no.strip().zfill(11)[:11]
-    kimlik_blok = f"1{tc_clean}0"          # 13 karakter toplam
+    # IFS CS0200 ekranından doğrulandı: [41]='1' (sıra no), [42]='6' (kimlik tipi:
+    # 6=TC kimlik numarası), [43:54]=TC kimlik (11 hane). Toplam 13 karakter.
+    kimlik_blok = f"16{tc_clean}"
 
     return _record({
         0:   "CS020002",
@@ -323,30 +325,33 @@ def make_cs0301(
 
 def make_footer(
     toplam_cs0100: int,
-    yeni_cs010002: int,
-    musteri_cs020002: int,
+    isim_sayisi: int,
+    adres_sayisi: int,
 ) -> str:
     """
     CS9999: Dosya kapanış özeti.
-    Footer veri bloğu [78:134] = 56 karakter, 7-hane alt alanlar (offset / abs. konum):
-        [0:7]   [78:85]   toplam CS0100 kayıt sayısı
-        [7:14]  [85:92]   0000000
-        [14:21] [92:99]   0000000
-        [21:28] [99:106]  yeni sözleşme (CS010002) sayısı   ← örnek dosyadan doğrulandı
-        [28:35] [106:113] müşteri kaydı (CS020002) sayısı   ← örnek dosyadan doğrulandı
-        [35:42] [113:120] 0000000  (örnek dosyada 0, adres kayıtları sayılmıyor)
-        [42:49] [120:127] 0000000
-        [49:56] [127:134] 0000000
+
+    IFS Kapanış(CS9999) sekmesindeki alan isimleri (sırasıyla, her biri 7 hane):
+        [78:85]   Hesap Kayıt Sayısı       → toplam CS0100 kaydı
+        [85:92]   Hesap Kayıt Sayısı Diğer → 0 (CS0199, geçmiş kayıt)
+        [92:99]   Hesap Geçmisi Sayısı     → 0
+        [99:106]  İsim Kayıt Sayısı        → CS0200 (müşteri) kaydı sayısı
+        [106:113] Adres Kayıt Sayısı       → CS0301 (adres) kaydı sayısı
+        [113:120] Kişisel Bilgi Sayısı     → 0
+        [120:127] İşveren Kayıt Sayısı     → 0
+        [127:134] Banka Kayıt Sayısı       → 0
+
+    Örnek dosya karşılaştırmasıyla doğrulandı: 33 CS0100, 7 CS0200, 7 CS0301 → ✓
     """
     blok = (
-        str(toplam_cs0100).zfill(7)
-        + "0000000"
-        + "0000000"
-        + str(yeni_cs010002).zfill(7)
-        + str(musteri_cs020002).zfill(7)
-        + "0000000"
-        + "0000000"
-        + "0000000"
+        str(toplam_cs0100).zfill(7)   # Hesap Kayıt Sayısı
+        + "0000000"                    # Hesap Kayıt Sayısı Diğer
+        + "0000000"                    # Hesap Geçmisi Sayısı
+        + str(isim_sayisi).zfill(7)    # İsim Kayıt Sayısı   (CS0200)
+        + str(adres_sayisi).zfill(7)   # Adres Kayıt Sayısı  (CS0301)
+        + "0000000"                    # Kişisel Bilgi Sayısı
+        + "0000000"                    # İşveren Kayıt Sayısı
+        + "0000000"                    # Banka Kayıt Sayısı
     )[:56]
     return _record({
         0:  f"CS9999{INSTITUTION_CODE}",
@@ -445,7 +450,7 @@ def generate_report(
     """
     buf = io.StringIO()
     # Dosya ilk satırı (IFS'in koyduğu)
-    #buf.write("Icerik\t\n")
+    buf.write("Icerik\t\n")
     # Header
     buf.write(make_header(company_name, period_start, period_end) + "\n")
     # Sözleşme kayıtları
@@ -453,8 +458,8 @@ def generate_report(
     for row in data_rows:
         buf.write(row + "\n")
     # Footer
-    cs0100_count = sum(1 for c in contracts)
-    yeni_count = sum(1 for c in contracts if c.is_new)
-    musteri_count = sum(1 for c in contracts if c.is_new and c.tc_no)
-    buf.write(make_footer(cs0100_count, yeni_count, musteri_count) + "\n")
+    cs0100_count = len(contracts)
+    isim_count = sum(1 for c in contracts if c.is_new and c.tc_no)
+    adres_count = sum(1 for c in contracts if c.is_new and c.adres)
+    buf.write(make_footer(cs0100_count, isim_count, adres_count) + "\n")
     return ("\ufeff" + buf.getvalue()).encode("utf-8")

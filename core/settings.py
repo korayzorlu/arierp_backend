@@ -95,7 +95,8 @@ INSTALLED_APPS = [
     "communication",
     "inventory",
     "agent",
-    "krs"
+    "krs",
+    "ai"
 ]
 
 MIDDLEWARE = [
