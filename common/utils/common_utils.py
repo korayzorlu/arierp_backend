@@ -309,3 +309,17 @@ def get_emails_from_queryset(request, data):
     queryset = [email for email in queryset if email and email != ""]
 
     return list(queryset), text
+
+def ms_to_hhmmss(ms):
+    seconds = ms // 1000
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    s = seconds % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
+
+def duration_to_hhmmss(duration):
+    total_seconds = int(duration.total_seconds())
+    h = total_seconds // 3600
+    m = (total_seconds % 3600) // 60
+    s = total_seconds % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"

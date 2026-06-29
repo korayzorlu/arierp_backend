@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from . import models
+from .models import *
 
 
-@admin.register(models.KapamaHareketi)
+@admin.register(KapamaHareketi)
 class KapamaHareketiAdmin(admin.ModelAdmin):
     list_display = (
         "contract_header_id", "tarih", "fatura_tutar", "odeme_tutar",
@@ -14,7 +14,7 @@ class KapamaHareketiAdmin(admin.ModelAdmin):
     date_hierarchy = "tarih"
 
 
-@admin.register(models.KapamaDetay)
+@admin.register(KapamaDetay)
 class KapamaDetayAdmin(admin.ModelAdmin):
     list_display = ("contract_header_id", "odeme_tarihi", "fatura_tarihi", "kapatilan_tutar")
     list_filter = ("company",)
@@ -22,7 +22,7 @@ class KapamaDetayAdmin(admin.ModelAdmin):
     date_hierarchy = "odeme_tarihi"
 
 
-@admin.register(models.KrsTemerrutHavuz)
+@admin.register(KrsTemerrutHavuz)
 class KrsTemerrutHavuzAdmin(admin.ModelAdmin):
     list_display = (
         "contract_header_id", "rapor_tarihi", "en_eski_acik_fatura_gecikme_gun",
@@ -31,3 +31,22 @@ class KrsTemerrutHavuzAdmin(admin.ModelAdmin):
     list_filter = ("company", "risk_grubu", "rapor_tarihi")
     search_fields = ("contract_header_id",)
     date_hierarchy = "rapor_tarihi"
+
+@admin.register(KrsReport)
+class KrsReportAdmin(admin.ModelAdmin):
+    list_display = ["company","uuid","contract","created_date"]
+    list_display_links = ["uuid"]
+    search_fields = ["company__name","contract__code","contract__contract_id"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["company","contract"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def contract(self,obj):
+        return obj.contract.code if obj.contract else ""
+    
+    class Meta:
+        model = KrsReport

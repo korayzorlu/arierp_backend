@@ -1,2 +1,3 @@
 SELECT *
-FROM RPR_PROJECT_FREE_PART
+FROM LeasingOperationProject
+WHERE OperationProjectCode = '43204.1.1'

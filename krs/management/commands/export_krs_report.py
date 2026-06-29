@@ -53,7 +53,11 @@ def _parse_date(s):
 
 
 def _risk_int(risk_grubu_str: str | None) -> int:
-    mapping = {"grup_1": 1, "grup_2": 2, "grup_3": 3, "grup_4": 4, "grup_5": 5}
+    """
+    RiskGrubu TextChoices string'ini IFS/BDDK'nın kullandığı integer'a çevirir.
+    IFS: 0=Standart, 1=Yakın İzleme, 2=Tahsil Sınırlı, 3=Şüpheli, 4=Zarar, 5=Zarar(silinmiş)
+    """
+    mapping = {"grup_1": 0, "grup_2": 1, "grup_3": 2, "grup_4": 3, "grup_5": 4}
     return mapping.get(risk_grubu_str or "", 0)
 
 
@@ -100,7 +104,14 @@ class Command(BaseCommand):
                 f"Company {company_id} için {rapor_tarihi} tarihli KRS verisi yok.\n"
                 f"`python manage.py run_krs_pipeline {company_id}` önce çalıştırın."
             )
+        krs_reports = krs_models.KrsReport.objects.filter(company_id=company_id)
 
+        if not krs_reports.exists():
+            raise CommandError(
+                f"Company {company_id} için {rapor_tarihi} tarihli KRS Rapor verisi yok.\n"
+                f"`python manage.py run_krs_pipeline {company_id}` önce çalıştırın."
+            )
+        
         # ── 2. Daha önce raporlanan sözleşmeler → CS010001 vs CS010002 ─────────
         previously_reported = set(
             krs_models.KrsTemerrutHavuz.objects
@@ -154,11 +165,17 @@ class Command(BaseCommand):
         contracts: list[ContractKrsData] = []
 
         for cid, h in havuz_by_cid.items():
+            risk = _risk_int(h.risk_grubu)
+            gecik = h.toplam_acik_bakiye or Decimal("0")
+            is_new = cid not in previously_reported
+
+            # IFS günlük raporunda standart (risk=0) + gecikme=0 olan
+            # sözleşmeler raporlanmaz; sadece yeni veya sorunlu olanlar dahil edilir.
+            if not is_new and risk == 0 and gecik == Decimal("0"):
+                continue
             contract = contracts_by_cid.get(cid)
             lease = leases_by_cid.get(cid)
             partner: Partner | None = contract.partner if contract else None
-
-            # Tarih: IFS Açılış Tarihi = Lease.activation_date
             ref_date = (
                 (lease.activation_date or lease.signature_date)
                 if lease
@@ -168,14 +185,29 @@ class Command(BaseCommand):
                 ref_date = rapor_tarihi
 
             # Finansal alanlar
-            total_payment = (lease.total_payment if lease else Decimal("0")) or Decimal("0")
+            #
+            # tutar_A: musteri_baz_maliyet KDV HARİÇ tutar
+            #   Formül: musteri_baz_maliyet / (1 + vat/100)
+            #   Kaynak: Lease.musteri_baz_maliyet, Lease.vat
+            mbm = (lease.musteri_baz_maliyet if lease else Decimal("0")) or Decimal("0")
+            vat = (lease.vat if lease else Decimal("0")) or Decimal("0")
+            if vat > 0:
+                total_payment = (mbm / (1 + vat / Decimal("100"))).quantize(Decimal("0.01"))
+            else:
+                total_payment = mbm
+
             paid = (lease.paid if lease else Decimal("0")) or Decimal("0")
             kalan_anapara = max(total_payment - paid, Decimal("0"))
             aylik_taksit = (lease.installment_amount if lease else Decimal("0")) or Decimal("0")
             gecikme_faizi = h.toplam_bugune_kadar_temerrut or Decimal("0")
 
-            # CS010001 mi CS010002 mi?
-            is_new = cid not in previously_reported
+            # taksit_kodu: IFS peşinatı da taksit sayar → vade + 1
+            #   Lease.vade = LeasingOperationProject.PaymentCount
+            #   Örnek: vade=31 → taksit_kodu='32' (31 taksit + 1 peşinat = 32)
+            vade_val = (lease.vade) if (lease and lease.vade) else None
+            taksit_kodu_str = str(vade_val).zfill(2)[:2] if vade_val else ""
+
+            # CS010001 mi CS010002 mi? (yukarıda zaten hesaplandı)
 
             # Partner (müşteri) bilgileri
             tc_no = (getattr(partner, "tc_no", "") or "") if partner else ""
@@ -190,16 +222,14 @@ class Command(BaseCommand):
                 contract_header_id=cid,
                 reference_date=ref_date,
                 is_new=is_new,
-                risk_grubu=_risk_int(h.risk_grubu),
+                risk_grubu=risk,                          # zaten _risk_int() ile hesaplandı
                 toplam_acik_bakiye=h.toplam_acik_bakiye or Decimal("0"),
                 total_payment=total_payment,
                 kalan_anapara=kalan_anapara,
                 gecikme_faizi=gecikme_faizi,
                 aylik_taksit=aylik_taksit,
                 teminat_kodu="104",  # TODO: Lease/Contract'taki teminat alanından türet
-                # taksit_kodu: Lease.vade = LeasingOperationProject.PaymentCount (IFS'ten doğrulandı)
-                # Yeni sözleşmeler (is_new=True) için make_cs0100 taksit_kodu='01' yazar otomatik.
-                taksit_kodu=str(lease.vade).zfill(2)[:2] if (lease and lease.vade) else "",
+                taksit_kodu=taksit_kodu_str,
                 tc_no=tc_no,
                 soyadi=soyadi,
                 adi=adi,
@@ -210,9 +240,10 @@ class Command(BaseCommand):
             ))
 
         # ── 5. Rapor üret ─────────────────────────────────────────────────────
-        report_bytes = generate_report(
+        report_bytes, report_bytes_2 = generate_report(
             contracts=contracts,
-            company_name=company_name,
+            krs_reports=krs_reports,
+            company_name="ARI FİNANSAL KİRALAMA A.Ş." if company_id == 2 else company_name,
             period_start=rapor_tarihi,
             period_end=rapor_tarihi,
         )
@@ -222,9 +253,16 @@ class Command(BaseCommand):
         if not os.path.exists(base_path):
                 os.makedirs(base_path)
         out_path = options["cikti"] or f"{base_path}/KrsBildirimi_{rapor_tarihi.strftime('%y%m%d')}.txt"
+        out_path_2 = options["cikti"] or f"{base_path}/KrsBildirimi_{rapor_tarihi.strftime('%y%m%d')}_2.txt"
         with open(out_path, "wb") as f:
             f.write(report_bytes)
+        with open(out_path_2, "wb") as f:
+            f.write(report_bytes_2)
 
         self.stdout.write(self.style.SUCCESS(
             f"{len(contracts)} sözleşme → {out_path} ({len(report_bytes):,} bayt)"
+        ))
+
+        self.stdout.write(self.style.SUCCESS(
+            f"{len(contracts)} sözleşme → {out_path_2} ({len(report_bytes_2):,} bayt)"
         ))

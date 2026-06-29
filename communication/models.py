@@ -122,3 +122,27 @@ class SetrowEmail(models.Model):
 
     def __str__(self):
         return str(f"{self.send_id}")
+
+class Call(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="calls")
+    
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="partner_calls", null=True, blank=True)
+    
+    queue = models.CharField(_("Queue"), max_length=50, null=True, blank=True)
+    agent = models.CharField(_("Agent"), max_length=50, null=True, blank=True)
+    direction = models.CharField(_("Direction"), max_length=50, null=True, blank=True)
+    phone_number = models.CharField(_("Phone Number"), max_length=140, null=True, blank=True)
+
+    start_time = models.DateTimeField(_("Start Time"), blank=True, null=True)
+    end_time = models.DateTimeField(_("End Time"), blank=True, null=True)
+    connected_length = models.DurationField(_("Connected Length"), null=True, blank=True)
+
+    disposition = models.CharField(_("Disposition"), max_length=50, null=True, blank=True)
+    verdict = models.CharField(_("Verdict"), max_length=50, null=True, blank=True)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(f"{self.phone_number} - {self.queue}")

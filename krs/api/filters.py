@@ -62,3 +62,11 @@ class KapamaHareketiFilter(FilterSet):
         if date_parsed:
             return queryset.filter(tarih=date_parsed)
         return queryset
+    
+class KrsReportFilter(FilterSet):
+    code = CharFilter(field_name='contract__code', lookup_expr='icontains')
+    hesap_numarasi = CharFilter(field_name='hesap_numarasi', lookup_expr='icontains')
+
+    class Meta:
+        model = KrsReport
+        fields = '__all__'

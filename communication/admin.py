@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django import forms
 
-from .models import SMS,Email,EmailReceiver,SetrowEmail
+from .models import SMS,Email,EmailReceiver,SetrowEmail,Call
+from common.utils.common_utils import duration_to_hhmmss
 
 # Register your models here.
 
@@ -83,3 +84,27 @@ class SetrowEmailAdmin(admin.ModelAdmin):
     
     class Meta:
         model = SetrowEmail
+
+@admin.register(Call)
+class CallAdmin(admin.ModelAdmin):
+    list_display = ["company","partner","queue","agent","direction","phone_number","start_time","end_time","connected_length_method","disposition","verdict"]
+    list_display_links = ["phone_number"]
+    search_fields = ["company__name","partner__name","queue","agent","direction","phone_number","start_time","end_time","disposition","verdict"]
+    list_filter = []
+    inlines = []
+    ordering = ["-start_time"]
+    autocomplete_fields = ["company","partner"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def partner(self,obj):
+        return obj.partner.name if obj.partner else ""
+    
+    def connected_length_method(self,obj):
+        if obj.connected_length:
+            return duration_to_hhmmss(obj.connected_length)
+        return ""
+    
+    class Meta:
+        model = Call

@@ -168,6 +168,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     crm_invoice_kdv_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     crm_invoice_total_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     risk_status = serializers.SerializerMethodField()
+    signature_date = serializers.DateField()
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):

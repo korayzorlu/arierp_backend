@@ -38,6 +38,7 @@ from datetime import date
 from itertools import groupby
 from operator import itemgetter
 from typing import Literal, Optional
+from datetime import datetime, date
 
 from django.db import transaction
 
@@ -50,6 +51,10 @@ from .kapama import (
     normalize_fatura_odeme,
 )
 from .mssql import fetch_kapama_hareketleri
+
+from leasing.models import Lease
+from contracts.models import Contract
+from krs.models import *
 
 logger = logging.getLogger(__name__)
 
@@ -132,9 +137,10 @@ def run_krs_pipeline(
         )
 
     # ── 3. FIFO eşleştirme ve temerrüt hesabı ─────────────────────────────────
-    kapama_objs: list[models.KapamaHareketi] = []
-    detay_objs:  list[models.KapamaDetay]    = []
-    havuz_objs:  list[models.KrsTemerrutHavuz] = []
+    kapama_objs: list[KapamaHareketi] = []
+    detay_objs:  list[KapamaDetay]    = []
+    havuz_objs:  list[KrsTemerrutHavuz] = []
+    report_objs: list[KrsReport] = []
 
     for contract_id, group in groupby(rows, key=itemgetter("ContractHeaderId")):
         cid = int(contract_id)
@@ -147,7 +153,7 @@ def run_krs_pipeline(
         risk_grubu = classify_risk_group(durum["en_eski_acik_fatura_gecikme_gun"])
 
         for s in satirlar:
-            kapama_objs.append(models.KapamaHareketi(
+            kapama_objs.append(KapamaHareketi(
                 company_id=company_id,
                 contract_header_id=s.contract_header_id,
                 tarih=s.tarih,
@@ -162,14 +168,14 @@ def run_krs_pipeline(
                 sentetik=s.sentetik,
             ))
         for d in detaylar:
-            detay_objs.append(models.KapamaDetay(
+            detay_objs.append(KapamaDetay(
                 company_id=company_id,
                 contract_header_id=d.contract_header_id,
                 odeme_tarihi=d.odeme_tarihi,
                 fatura_tarihi=d.fatura_tarihi,
                 kapatilan_tutar=d.kapatilan_tutar,
             ))
-        havuz_objs.append(models.KrsTemerrutHavuz(
+        havuz_objs.append(KrsTemerrutHavuz(
             company_id=company_id,
             contract_header_id=cid,
             rapor_tarihi=rapor_tarihi,
@@ -180,20 +186,58 @@ def run_krs_pipeline(
             risk_grubu=risk_grubu,
         ))
 
+        contract = Contract.objects.filter(contract_id=str(contract_id)).first()
+        if contract:
+            if contract.currency.code == "TRY":
+                doviz_kodu = "949"
+            elif contract.currency.code == "USD":
+                doviz_kodu = "840"
+            elif contract.currency.code == "EUR":
+                doviz_kodu = "978"
+            else:
+                doviz_kodu = "000"
+
+        lease = Lease.objects.filter(contract=contract, is_last_project=True,is_last_project_arinet=True).first() if contract else None
+
+        report_objs.append(KrsReport(
+            company_id=company_id,
+            contract=contract,
+            lease=lease,
+            kayit_turu=KayitTuru.CS0100,
+            versiyon=Versiyon._01,
+            uye_kodu="00309",
+            portfoy_kodu="309",
+            portfoy_alt_kodu="00",
+            hesap_numarasi=str(contract_id).ljust(20),
+            sube_kodu="  ",
+            birim_kodu="  ",
+            hesapla_iliskili_kisi_sayisi="1",
+            doviz_kodu=doviz_kodu,
+            doviz_boleni="0",
+            ozel_talimat_gostergesi="  ",
+            acilis_tarihi=lease.activation_date.strftime("%Y%m%d") if lease and lease.activation_date else "00000000",
+            basvuru_referans_numarasi="                    ",
+            kredi_turu=KrediTuru._03,
+            faiz_orani_gostergesi=FaizOraniGostergesi._1,
+            kredi_kullanim_amaci=KrediKullanimAmaci._12
+        ))
+
     # ── 4. Postgres'e yaz ──────────────────────────────────────────────────────
-    models.KapamaHareketi.objects.filter(company_id=company_id).delete()
-    models.KapamaDetay.objects.filter(company_id=company_id).delete()
-    models.KrsTemerrutHavuz.objects.filter(
+    KapamaHareketi.objects.filter(company_id=company_id).delete()
+    KapamaDetay.objects.filter(company_id=company_id).delete()
+    KrsTemerrutHavuz.objects.filter(
         company_id=company_id, rapor_tarihi=rapor_tarihi
     ).delete()
+    KrsReport.objects.filter(company_id=company_id).delete()
 
-    models.KapamaHareketi.objects.bulk_create(kapama_objs, batch_size=1000)
-    models.KapamaDetay.objects.bulk_create(detay_objs, batch_size=1000)
-    models.KrsTemerrutHavuz.objects.bulk_create(havuz_objs, batch_size=1000)
+    KapamaHareketi.objects.bulk_create(kapama_objs, batch_size=1000)
+    KapamaDetay.objects.bulk_create(detay_objs, batch_size=1000)
+    KrsTemerrutHavuz.objects.bulk_create(havuz_objs, batch_size=1000)
+    KrsReport.objects.bulk_create(report_objs, batch_size=1000)
 
     logger.info(
-        "KRS pipeline tamamlandı (company=%s, %s, mod=%s): %s sözleşme, %s kapama, %s detay",
+        "KRS pipeline tamamlandı (company=%s, %s, mod=%s): %s sözleşme, %s kapama, %s detay, %s rapor",
         company_id, rapor_tarihi, mod,
-        len(havuz_objs), len(kapama_objs), len(detay_objs),
+        len(havuz_objs), len(kapama_objs), len(detay_objs), len(report_objs),
     )
     return len(havuz_objs)

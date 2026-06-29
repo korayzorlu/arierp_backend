@@ -1,3 +1,3 @@
-SELECT TOP 10 *
-FROM LPLOCPaymentType
-
+SELECT TOP 100 *
+FROM ContractHeaderLightList
+ORDER BY OpenDate DESC

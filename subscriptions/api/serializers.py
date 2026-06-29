@@ -83,6 +83,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "sub_menu", "class" : ["default"], "label" : "KRS Bildirim", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Kapama Detayları", "icon" : "paid", "route" : "/kapama-detaylari"},
                     {"type" : "item", "class" : ["default"], "label" : "Kapama Hareketleri", "icon" : "paid", "route" : "/kapama-hareketleri"},
+                    {"type" : "item", "class" : ["default"], "label" : "KRS Raporları", "icon" : "paid", "route" : "/krs-raporlari"},
                 ]},
             ]},   
             #========================

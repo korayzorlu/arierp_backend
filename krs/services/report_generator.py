@@ -37,8 +37,8 @@ Kayıt türleri ve konumları kesin olarak çözülmüştür.
 [150:184] (boş)
 [184:185] risk_grubu 0/1/2/3/4/5
 [186:196] kalan_ana  kalan anapara (kuruş)
-[205:216] gecik_ana  gecikmedeki anapara (kuruş, ×1000 precision → /1000 TRY)
-[300:309] gecik_lira gecikmedeki anapara lira olarak (= int(gecik_ana/1000))
+[205:216] gecik_ana  gecikmedeki anapara (kuruş, ÷100 = TL) — IFS teyitli
+[300:309] gecik_lira gecikmedeki anapara tam TL (= round(gecik_ana/100))
 [310:311] "0"
 [321:330] "000000000"
 [339:341] vade_kodu  00=gecikme yok / 08=risk1 / 39=risk2 / 69=risk3
@@ -91,6 +91,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 from typing import Optional
+from weakref import ref
 
 RECORD_LEN = 500
 ZERO = Decimal("0")
@@ -149,17 +150,32 @@ def _n(val, width: int) -> str:
 
 
 def _n_milli(val, width: int) -> str:
-    """Binlik (1/1000 TRY) precision: Decimal('4899.300') → '00004899300' (11 haneli)."""
+    """
+    [205:216] gecik_ana alanı: kuruş formatı (1/100 TRY).
+
+    Daha önce ×1000 kullanıyorduk — HATALI.
+    IFS [205:216] ve [300:309] karşılaştırmasıyla doğrulandı:
+      '00000590100' / 100 = 5901.00 TL  ←  kullanıcı tarafından teyit edildi
+      '000005901'         = 5901 TL      ← [300:309] tam TL, birbirini doğruluyor
+
+    Decimal('5900.94') → int(5900.94 × 100) = 590094 → '00000590094' (≈ 5901 TL, 6 kuruş yuvarlama)
+    """
     if isinstance(val, Decimal):
-        val = int(val * 1000)
+        val = int(val * 100)
     return str(int(val)).zfill(width)[:width]
 
 
 def _n_lira(val, width: int) -> str:
-    """Sadece tam lira kısmı: Decimal('4899.300') → '000004899' (9 haneli)."""
+    """
+    [300:309] gecik_lira alanı: tam TL (yuvarlama).
+
+    int() yerine round() kullanılır — aksi halde kesme hatası oluşur:
+      int(5900.94)   = 5900  → '000005900'  ✗
+      round(5900.94) = 5901  → '000005901'  ✓
+    """
     if isinstance(val, Decimal):
-        val = int(val)
-    return str(int(val)).zfill(width)[:width]
+        val = round(val)
+    return str(int(round(val))).zfill(width)[:width]
 
 
 def _date(d: Optional[date]) -> str:
@@ -248,16 +264,16 @@ def make_cs0100(
         51:  CURRENCY_CODE,                    # [51:56]
         58:  _date(reference_date),            # [58:66]
         86:  CREDIT_TYPE_CODE,                 # [86:91]
-        103: _n(toplam_tahakkuk, 10),          # [103:113] tutar_A
-        113: _n(gecikme_faizi, 10),            # [113:123] tutar_B
+        103: _n_lira(toplam_tahakkuk, 10),          # [103:113] tutar_A
+        113: _n_lira(gecikme_faizi, 10),            # [113:123] tutar_B
         123: taksit,                           # [123:125]
         125: "01",                             # [125:127] sabit
         127: tutar_c_raw,                      # [127:137] tutar_C
         137: tutar_d_raw,                      # [137:147] tutar_D
         147: teminat_kodu,                     # [147:150]
         184: str(risk_grubu),                  # [184:185]
-        186: _n(kalan_anapara, 10),            # [186:196]
-        205: _n_milli(gecikmedeki_anapara, 11), # [205:216]
+        186: _n_lira(kalan_anapara, 10),            # [186:196]
+        205: _n_lira(gecikmedeki_anapara, 11), # [205:216]
         300: gecik_lira_str,                   # [300:309]
         310: "0",                              # [310:311]
         321: "000000000",                      # [321:330]
@@ -399,12 +415,13 @@ class ContractKrsData:
     adres: str = ""
 
 
-def build_records(contracts: list[ContractKrsData]) -> list[str]:
+def build_records(contracts: list[ContractKrsData],krs_reports) -> list[str]:
     """
     Sözleşme listesinden tüm satırları üretir (header/footer HARİÇ).
     Her sözleşme için 1 CS0100 + (gerekirse) 1 CS0200 + 1 CS0301 üretir.
     """
     rows: list[str] = []
+    r_rows: list[str] = []
     for c in contracts:
         rows.append(make_cs0100(
             contract_header_id=c.contract_header_id,
@@ -434,11 +451,33 @@ def build_records(contracts: list[ContractKrsData]) -> list[str]:
                     contract_header_id=c.contract_header_id,
                     adres_metin=c.adres,
                 ))
-    return rows
+    for kr in krs_reports:
+        r_rows.append(_record({
+            0: kr.kayit_turu,
+            6: kr.versiyon,
+            8: kr.uye_kodu,
+            13: kr.portfoy_kodu,
+            16: kr.portfoy_alt_kodu,
+            18: kr.hesap_numarasi,
+            38: kr.sube_kodu,
+            46: kr.birim_kodu,
+            51: kr.hesapla_iliskili_kisi_sayisi,
+            52: kr.doviz_kodu,
+            55: kr.doviz_boleni,
+            56: kr.ozel_talimat_gostergesi,
+            58: kr.acilis_tarihi,
+            66: kr.basvuru_referans_numarasi,
+            86: kr.kredi_turu,
+            88: kr.faiz_orani_gostergesi,
+            89: kr.kredi_kullanim_amaci,
+            91: "            "
+        }))
+    return rows, r_rows
 
 
 def generate_report(
     contracts: list[ContractKrsData],
+    krs_reports,
     company_name: str,
     period_start: date,
     period_end: date,
@@ -449,17 +488,22 @@ def generate_report(
     indirilebilir.
     """
     buf = io.StringIO()
+    buf_2 = io.StringIO()
     # Dosya ilk satırı (IFS'in koyduğu)
     buf.write("Icerik\t\n")
     # Header
     buf.write(make_header(company_name, period_start, period_end) + "\n")
+    buf_2.write(make_header(company_name, period_start, period_end) + "\n")
     # Sözleşme kayıtları
-    data_rows = build_records(contracts)
+    data_rows, data_r_rows = build_records(contracts, krs_reports)
     for row in data_rows:
         buf.write(row + "\n")
+    for r_row in data_r_rows:
+        buf_2.write(r_row + "\n")
     # Footer
     cs0100_count = len(contracts)
     isim_count = sum(1 for c in contracts if c.is_new and c.tc_no)
     adres_count = sum(1 for c in contracts if c.is_new and c.adres)
     buf.write(make_footer(cs0100_count, isim_count, adres_count) + "\n")
-    return ("\ufeff" + buf.getvalue()).encode("utf-8")
+    buf_2.write(make_footer(cs0100_count, isim_count, adres_count) + "\n")
+    return ("\ufeff" + buf.getvalue()).encode("utf-8"), ("\ufeff" + buf_2.getvalue()).encode("utf-8")
