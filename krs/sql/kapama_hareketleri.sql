@@ -44,7 +44,7 @@ FROM (
     WHERE lt.postingType = 5052
       AND lt.TradeAccountType = 11
       AND (lt.IsReverse + lt.IsReverted) = 0
-      AND k.RiskIncludingTypeName NOT IN ('İptal Edildi', 'Feshedildi')
+      AND k.RiskIncludingTypeName NOT IN ('İptal Edildi', 'Feshedildi','planlandi')
     GROUP BY k.ContractHeaderId, lt.DueDate
     HAVING SUM(lt.AmountLocal) > 0
 
