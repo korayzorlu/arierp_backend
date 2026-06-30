@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
+from django.utils.timezone import localtime
 
 from trade.models import *
 from companies.models import Company,UserCompany
@@ -84,7 +85,7 @@ class TradeTransactionListSerializer(serializers.Serializer):
         return obj.currency.code if obj.currency else ''
     
     def get_due_date(self, obj):
-        return obj.due_date.date() if obj.due_date else ''
+        return localtime(obj.due_date.date()) if obj.due_date else ''
 
     def get_balances(self, obj):
         objs = TradeTransaction.objects.select_related().filter(lease = obj.lease).exclude(delete_status__in=['2']).order_by('posting_group_id','due_date','record_date','trade_transaction_id')
