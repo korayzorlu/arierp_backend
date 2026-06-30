@@ -85,7 +85,7 @@ class TradeTransactionListSerializer(serializers.Serializer):
         return obj.currency.code if obj.currency else ''
     
     def get_due_date(self, obj):
-        return localtime(obj.due_date.date()) if obj.due_date else ''
+        return localtime(obj.due_date).date() if obj.due_date else ''
 
     def get_balances(self, obj):
         objs = TradeTransaction.objects.select_related().filter(lease = obj.lease).exclude(delete_status__in=['2']).order_by('posting_group_id','due_date','record_date','trade_transaction_id')
