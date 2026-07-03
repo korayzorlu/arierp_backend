@@ -4,6 +4,7 @@ from django.db.models.functions import Lower,Upper
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
+from django.utils.timezone import localtime, timedelta
 
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django_filters import CharFilter
@@ -17,6 +18,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
+from leasing.models import Installment
 
 from .serializers import *
 from .filters import *
@@ -217,3 +219,187 @@ class TradeTransactionForLeaseList(ModelViewSet, QueryListAPIView):
             
             queryset = queryset.filter(q_objects)
         return queryset
+    
+class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
+    queryset = TradeTransaction.objects.none()
+    serializer_class = TradeTransactionForCustomerInLeaseListSerializer
+    # filterset_class = TradeTransactionFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    pagination_class = DatatablesPagination
+
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def list(self, request):
+        active_company_uuid = request.query_params.get('ac')
+        active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
+
+        result = []
+        
+        trade_transactions = TradeTransaction.objects.select_related("company","lease","currency").filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lease__uuid=request.query_params.get('lease_uuid')) &
+            ~Q(delete_status__in=['2']) &
+            ~Q(description__icontains='Kira Ödemeleri')
+        ).exclude(delete_status__in=['2']).order_by('posting_group_id','due_date','record_date','trade_transaction_id')
+
+        installments = Installment.objects.select_related("company","lease__currency").filter(
+            Q(company=active_company.company if active_company else None) &
+            Q(lease__uuid=request.query_params.get('lease_uuid')) &
+            Q(payment_date__lte=localtime().date())
+        ).order_by('sequency','payment_date')
+
+        transaction_sequency = 1
+        for trade_transaction in trade_transactions:
+            result.append({
+                "uuid": trade_transaction.uuid,
+                "transaction_type": "trade_transaction",
+                "amount_type": trade_transaction.amount_type,
+                "date_obj": localtime(trade_transaction.due_date).date(),
+                "date": localtime(trade_transaction.due_date).date().strftime('%d.%m.%Y'),
+                "posting_group_id": trade_transaction.posting_group_id,
+                "posting_group_name": trade_transaction.posting_group_name,
+                "description": trade_transaction.description,
+                "amount": trade_transaction.amount,
+                "currency": trade_transaction.currency.code if trade_transaction.currency else None,
+                "overdue_days": 0,
+                "applied_status": "",
+                "sequency": transaction_sequency if trade_transaction.amount_type == '0' else 0
+            })
+            transaction_sequency += 1
+
+        for installment in installments:
+            if installment.type == "2":
+                description = "Peşinat Vadesi"
+            elif installment.type == "5":
+                description = "Devir Bedeli Vadesi"
+            else:
+                description = f"{installment.sequency}. Kira Taksiti Vadesi"
+
+            result.append({
+                "uuid": installment.uuid,
+                "transaction_type": "installment",
+                "amount_type": "1",
+                "date_obj": installment.payment_date,
+                "date": installment.payment_date.strftime('%d.%m.%Y'),
+                "posting_group_id": "1",
+                "posting_group_name": "Kira",
+                "description": description,
+                "amount": installment.amount,
+                "currency": installment.lease.currency.code if installment.lease.currency else None,
+                "overdue_days": (localtime().date() - installment.payment_date).days,
+                "applied_status": "Ödenmedi",
+                "sequency": 0
+            })
+
+        result.sort(key=lambda x: (x['posting_group_id'], x['date_obj'], -int(x['amount_type'])))
+
+        for item in result:
+            # if item["date_obj"] > localtime().date():
+            #     balance = {
+            #         "balance": "",
+            #     }
+            #     item["balances"] = balance
+            #     continue
+            objs = result
+            prev_balance = 0
+            group = ""
+            for o in objs:
+                if group != "" and group != o["posting_group_id"]:
+                    prev_balance = 0
+                current_amount = o["amount"] if o["amount_type"] == '1' else -o["amount"]
+                prev_balance += current_amount
+                if o["uuid"] == item["uuid"]:
+                    balance = {
+                        "balance": prev_balance,
+                    }
+                    break
+                group = o["posting_group_id"]
+            item["balances"] = balance
+
+        remaining_amount = Decimal('0.00')
+        payment_sequency = 1
+        for index, item in enumerate(filter(lambda x: x["transaction_type"] == "installment", result)):
+            skip = False
+
+            payments = list(filter(lambda x: x["transaction_type"] == "trade_transaction" and x["posting_group_id"] == item["posting_group_id"] and x["amount_type"] == '0' and x["sequency"] >= payment_sequency, result))
+            item_remaining = item["amount"]
+            
+            for payment in payments:
+                remaining_amount += payment["amount"]
+
+                if remaining_amount >= item_remaining:
+                    remaining_amount -= item_remaining
+                    item["overdue_days"] = (payment["date_obj"] - item["date_obj"]).days
+                    item["applied_status"] = "Ödendi"
+                    skip = True
+                    payment_sequency = payment["sequency"] + 1
+                    break
+
+            if skip:
+                continue
+
+
+
+        # for index, item in enumerate(result):
+        #     key_index = index + 1
+        #     remaining = Decimal('0.00')
+
+        #     while key_index < len(result):
+        #         next_item = result[key_index] if key_index < len(result) else None
+
+        #         if item["transaction_type"] == "installment":
+        #             if next_item:
+        #                 if item["posting_group_id"] == next_item["posting_group_id"] and next_item["amount_type"] == '0':
+        #                     remaining += next_item["amount"]
+        #                     if remaining >= item["amount"] and item["balances"]["balance"] <= item["amount"]:
+        #                         item["overdue_days"] = (next_item["date_obj"] - item["date_obj"]).days
+        #                         item["applied_status"] = "Ödendi"
+        #                         break
+                            
+        #                     if item["date"] != next_item["date"]:
+        #                         if key_index - index > 1:
+        #                             if remaining >= item["amount"]:
+        #                                 item["overdue_days"] = (next_item["date_obj"] - item["date_obj"]).days
+        #                                 item["applied_status"] = "Ödendi"
+        #                                 break
+        #                             else:
+        #                                 key_index += 1
+        #                                 continue
+        #                         elif next_item["balances"]["balance"] <= 0:
+        #                             item["overdue_days"] = (next_item["date_obj"] - item["date_obj"]).days
+        #                             item["applied_status"] = "Ödendi"
+        #                             break
+        #                         else:
+        #                             key_index += 1
+        #                             continue
+        #                     elif item["date"] == next_item["date"]:
+        #                         if next_item["balances"]["balance"] <= 0:
+        #                             item["applied_status"] = "Ödendi"
+        #                             break
+        #                         else:
+        #                             key_index += 1
+        #                             continue
+        #                 elif item["posting_group_id"] == next_item["posting_group_id"] and next_item["amount_type"] == '1':
+        #                     key_index += 1
+        #                     continue
+        #                 elif next_item["posting_group_id"] != item["posting_group_id"]:
+        #                     if item["balances"]["balance"] > 0:
+        #                         item["overdue_days"] = (localtime().date() - item["date_obj"]).days
+        #                         item["applied_status"] = "Ödenmedi"
+        #                         break
+        #                     else:
+        #                         item["applied_status"] = "Ödendi"
+        #                         break
+        #             else:
+        #                 if item["balances"]["balance"] > 0:
+        #                     item["overdue_days"] = (localtime().date() - item["date_obj"]).days
+        #                     item["applied_status"] = "Ödenmedi"
+        #                     break
+        #                 else:
+        #                     item["applied_status"] = "Ödendi"
+        #                     break
+        #         key_index += 1
+
+        return Response(result)

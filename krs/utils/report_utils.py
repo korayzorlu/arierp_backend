@@ -10,6 +10,10 @@ def make_krs_report(company, date):
         record_date__date=datetime.strptime(date, "%d.%m.%Y").date(),
         posting_group_name__in=["Kira"],
         lease__lease_status__in=["aktiflestirildi"],
+        amount_type = '0',
+    ).exclude(
+        amount = 0,
+        local_amount = 0,
     )
 
     if trade_transactions:

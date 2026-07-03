@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.utils.timezone import localtime
 
 from utils.mixins import CompanyOwnershipRequiredMixin
 
@@ -159,15 +160,80 @@ class InstallmentInformationView(LoginRequiredMixin,View):
         compute_tufe_endeks(lease)
         
         if data.get('lease_code'):
-            objs = Installment.objects.filter(lease__code = str(data.get('lease_code'))).order_by("sequency")
+            objs = Installment.objects.select_related('lease','lease__contract','lease__currency').filter(lease__code = str(data.get('lease_code'))).order_by("sequency")
         else:
-            objs = Installment.objects.filter(lease__uuid = str(data.get('lease_id'))).order_by("sequency")
+            objs = Installment.objects.select_related('lease','lease__contract','lease__currency').filter(lease__uuid = str(data.get('lease_id'))).order_by("sequency")
     
         if not objs:
             return JsonResponse({'installment':[]}, status=200)
         
+        tts = lease.lease_trade_transactions.filter(amount_type = '0', posting_group_name = 'Kira').order_by("due_date","record_date")
+        lease_tts = [
+            {
+                'id': tt.uuid,
+                'amount': tt.amount,
+                'applied_amount' : Decimal('0.00'),
+                'remaining_amount' : tt.amount
+            }
+            for tt in tts
+        ]
+
+        payment_tts = [tt for tt in tts if tt.amount_type == '0']
+
+        # Remaining balance per TT — used for carryover allocation
+        tt_remaining = {tt.id: tt.amount for tt in payment_tts}
+
+        installments_list = list(objs)
+        inst_trans_map = {}
+
+        for inst in installments_list:
+            applied = []
+
+            if not inst.payment_date:
+                inst_trans_map[inst.id] = applied
+                continue
+
+            still_needed = inst.amount
+
+            # First consume any carryover from TTs whose date precedes this installment
+            for tt in payment_tts:
+                if still_needed <= 0:
+                    break
+                if not tt.due_date:
+                    continue
+                tt_date = localtime(tt.due_date).date()
+                avail = tt_remaining[tt.id]
+                if avail > 0 and (
+                    tt_date.year < inst.payment_date.year or
+                    (tt_date.year == inst.payment_date.year and tt_date.month < inst.payment_date.month)
+                ):
+                    apply = min(avail, still_needed)
+                    applied.append({'tt': tt, 'applied': apply})
+                    tt_remaining[tt.id] -= apply
+                    still_needed -= apply
+
+            # Then match TTs whose due_date falls in the same month/year as this installment
+            for tt in payment_tts:
+                if still_needed <= 0:
+                    break
+                if not tt.due_date:
+                    continue
+                tt_date = localtime(tt.due_date).date()
+                avail = tt_remaining[tt.id]
+                if (
+                    avail > 0
+                    and tt_date.year == inst.payment_date.year
+                    and tt_date.month == inst.payment_date.month
+                ):
+                    apply = min(avail, still_needed)
+                    applied.append({'tt': tt, 'applied': apply})
+                    tt_remaining[tt.id] -= apply
+                    still_needed -= apply
+
+            inst_trans_map[inst.id] = applied
+
         installment_data = [
-            {   
+            {
                 'id': obj.uuid,
                 'project':obj.lease.contract.project if obj.lease.contract else "",
                 'lease':obj.lease.code if obj.lease else "",
@@ -176,12 +242,29 @@ class InstallmentInformationView(LoginRequiredMixin,View):
                 'vat_amount': obj.vat_amount,
                 'payment': obj.payment,
                 'amount' : obj.amount,
-                'payment_date':obj.payment_date,
+                'payment_date':obj.payment_date.strftime('%d.%m.%Y') if obj.payment_date else "",
                 'currency':obj.lease.currency.code if obj.lease.currency else "",
                 'type': obj.type,
                 'type_display': obj.get_type_display() if obj.type else "",
+                'transactions': [
+                    {
+                        'id': str(item['tt'].uuid),
+                        'amount': item['tt'].amount,
+                        'applied_amount': item['applied'],
+                        'remaining_amount': item['tt'].amount - item['applied'],
+                        'due_date': localtime(item['tt'].due_date).strftime('%d.%m.%Y') if item['tt'].due_date else None,
+                        'description': item['tt'].description,
+                        'document_no': item['tt'].document_no,
+                        'currency': item['tt'].currency.code if item['tt'].currency else "",
+                    }
+                    for item in inst_trans_map.get(obj.id, [])
+                ],
+                'islenen_tutar': sum(t['applied'] for t in inst_trans_map.get(obj.id, [])),
+                'bakiye': obj.amount - sum(t['applied'] for t in inst_trans_map.get(obj.id, []))
             }
-            for obj in objs
+            for obj in installments_list
         ]
+
+
 
         return JsonResponse({'installment':installment_data}, status=200)

@@ -1,2 +1,2 @@
-SELECT TOP 1000 *
-FROM LeasingOperationProjectList
+SELECT *
+FROM TRLEAS_KRS_TAB

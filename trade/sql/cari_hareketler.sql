@@ -13,6 +13,7 @@ SELECT TOP 20000
     TrnAmountType,
     TrnAmount,
     TrnAmountLocal,
+    TrnAmountCompany,
     TrnIsDeleted
 FROM
     TradeTransaction (NOLOCK)

@@ -21,6 +21,13 @@
         min-width: 0;
         }
 
+        @media (max-width: 640px) {
+        .columns {
+            flex-direction: column;
+            gap: 24px;
+        }
+        }
+
         h1 {
         font-size: 20px;
         font-weight: 700;
@@ -69,7 +76,8 @@
         flex-shrink: 0;
         }
 
-        input[type="number"] {
+        input.currency-input,
+        input.number-input {
         width: 160px;
         padding: 8px 12px;
         border: 1.5px solid #ddd;
@@ -81,11 +89,21 @@
         outline: none;
         transition: border-color 0.15s;
         background: #fff;
+        cursor: text;
         }
 
-        input[type="number"]:focus {
+        input.currency-input:focus,
+        input.number-input:focus {
         border-color: #555;
         }
+
+        input.number-input::-webkit-inner-spin-button,
+        input.number-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+        }
+        input.number-input { -moz-appearance: textfield; appearance: textfield; }
 
         .unit {
         font-size: 12px;
@@ -110,112 +128,245 @@
 <body>
 
     <div class="card">
-        <h1>Leasing Hesaplama</h1>
+        <h1>Gayrimenkul Leasing Hesaplama</h1>
 
         <div class="columns">
-        <div class="col">
-        <div class="section-label">Girdi Değerleri</div>
+            <div class="col">
+                <div class="section-label">Girdi Değerleri</div>
 
-        <div class="field">
-        <div><label>Gayrimenkul Fiyatı</label></div>
+                <div class="field">
+                    <div><label>Gayrimenkul Fiyatı</label></div>
+                    <div class="field-right"><input id="fiyat" class="currency-input" type="text" inputmode="numeric" autocomplete="off" /> <span class="unit">TRY</span></div>
+                </div>
 
-        <div class="field-right"><input id="fiyat" min="0" oninput="hesapla()" type="number" value="10000000" /> <span class="unit">TRY</span></div>
+                <!-- <div class="field">
+                    <div><label>Gayrimenkulün Kirası</label></div>
+                    <div class="field-right"><input id="kira" class="currency-input" type="text" inputmode="numeric" autocomplete="off" /> <span class="unit">TRY</span></div>
+                </div> -->
+
+                <div class="field">
+                    <div><label>Vade (Ay)</label></div>
+                    <div class="field-right"><input id="vade" class="number-input" type="number" inputmode="numeric" min="1" max="360" value="120" autocomplete="off" /> <span class="unit">Ay</span></div>
+                </div>
+
+                <div class="field">
+                    <div>
+                        <label>Peşinat **</label>
+                        <div class="hint">%30'dan az olamaz</div>
+                    </div>
+                    <div class="field-right"><input id="pesinat" class="currency-input" type="text" inputmode="numeric" autocomplete="off" /> <span class="unit">TRY</span></div>
+                </div>
+
+                <!-- <div class="field">
+                <div><label>TÜFE + Kar Oranı (Yıllık)</label></div>
+
+                <div class="field-right"><input id="tufe" min="0" oninput="hesaplaa()" step="0.01" type="number" value="7" /> <span class="unit">%</span></div>
+                </div> -->
+
+                <div class="field">
+                    <label>TÜFE + Kar Oranı (Yıllık)</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_yillik_oran">-</div>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+
+                <!-- <div class="field">
+                <div><label>KDV Oranı</label></div>
+
+                <div class="field-right"><input id="kdv" min="0" oninput="hesaplaa()" step="0.1" type="number" value="10" /> <span class="unit">%</span></div>
+                </div>
+                </div> -->
+
+                <div class="field">
+                    <label>TÜFE + Kar Oranı (Aylık)</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_aylik_oran">-</div>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="section-label">Hesaplanan Değerler</div>
+
+                <div class="field">
+                    <label>Alıcının Ödeyeceği Peşinat *</label>
+                    <div class="field-right">
+                        <div class="computed" id="alici_pesinat">-</div>
+                        <span class="unit">TRY</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Kredi Tutarı</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_kredi">-</div>
+                        <span class="unit">TRY</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Satıcıya Ödenecek 1. Ay Kirası</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_satici_kira">-</div>
+                        <span class="unit">TRY</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Leasing Oranı (KDV Dahil)</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_kdv_orani">-</div>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+
+                <div class="field" style="display: none;">
+                    <label>Alıcının Ödeyeceği 1. Ay Kirası</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_alici_kira">-</div>
+                        <span class="unit">TRY</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Alıcının Ödeyeceği 1. Ay Kirası (KDV Dahil)</label>
+                    <div class="field-right">
+                        <div class="computed" id="out_alici_kira_kdv">-</div>
+                        <span class="unit">TRY</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="field">
-        <div><label>Gayrimenkulün Kirası</label></div>
-
-        <div class="field-right"><input id="kira" min="0" oninput="hesapla()" type="number" value="50000" /> <span class="unit">TRY</span></div>
+        <div style="margin-top: 32px; text-align: center;">
+            <button
+                id="btn-hesapla"
+                onmouseout="this.style.background='#222'"
+                onmouseover="this.style.background='#444'"
+                style="
+                    padding: 12px 40px;
+                    font-size: 15px;
+                    font-family: inherit;
+                    font-weight: 600;
+                    color: #fff;
+                    background: #222;
+                    border: none;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    transition: background 0.15s;
+                ">Hesapla</button>
         </div>
 
-        <div class="field">
-        <div><label>Peşinat</label>
-
-        <div class="hint">%30'dan az olamaz</div>
+        <div style="margin-top: 32px; text-align: left;">
+            <p>* Peşinat tutarına &#37;16,50 Leasing Oranı (KDV dahil) eklenecektir.</p>
+            <p>** Gayrimenkul Fiyatı üzerinden %2 tapu harcı mahsup edilerek Satıcıya ödenecektir.</p>
         </div>
 
-        <div class="field-right"><input id="pesinat" min="0" oninput="hesapla()" type="number" value="3000000" /> <span class="unit">TRY</span></div>
-        </div>
+    </div>
 
-        <div class="field">
-        <div><label>TÜFE + Kar Oranı (Yıllık)</label></div>
-
-        <div class="field-right"><input id="tufe" min="0" oninput="hesapla()" step="0.01" type="number" value="7" /> <span class="unit">%</span></div>
-        </div>
-
-        <div class="field">
-        <div><label>KDV Oranı</label></div>
-
-        <div class="field-right"><input id="kdv" min="0" oninput="hesapla()" step="0.1" type="number" value="10" /> <span class="unit">%</span></div>
-        </div>
-        </div>
-
-        <div class="col">
-        <div class="section-label">Hesaplanan Değerler</div>
-
-        <div class="field"><label>Kira Çarpanı</label>
-
-        <div class="field-right">
-        <div class="computed" id="out_carpan">-</div>
-        </div>
-        </div>
-
-        <div class="field"><label>Kredi Tutarı</label>
-
-        <div class="field-right">
-        <div class="computed" id="out_kredi">-</div>
-        <span class="unit">TRY</span></div>
-        </div>
-
-        <div class="field"><label>TÜFE + Kar Oranı (Aylık)</label>
-
-        <div class="field-right">
-        <div class="computed" id="out_aylik_oran">-</div>
-        <span class="unit">%</span></div>
-        </div>
-
-        <div class="field"><label>Satıcıya Ödenecek 1. Ay Kirası</label>
-
-        <div class="field-right">
-        <div class="computed" id="out_satici_kira">-</div>
-        <span class="unit">TRY</span></div>
-        </div>
-
-        <div class="field"><label>Alıcının Ödeyeceği 1. Ay Kirası</label>
-
-        <div class="field-right">
-        <div class="computed" id="out_alici_kira">-</div>
-        <span class="unit">TRY</span></div>
-        </div>
-
-        <div class="field"><label>Alıcının Ödeyeceği 1. Ay Kirası (KDV Dahil)</label>
-
-        <div class="field-right">
-        <div class="computed" id="out_alici_kira_kdv">-</div>
-        <span class="unit">TRY</span></div>
-        </div>
-        </div>
-        </div>
-
-        <div style="margin-top: 32px; text-align: center;"><button id="btn-hesapla" onmouseout="this.style.background='#222'" onmouseover="this.style.background='#444'" style="
-            padding: 12px 40px;
-            font-size: 15px;
-            font-family: inherit;
-            font-weight: 600;
-            color: #fff;
-            background: #222;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.15s;
-            ">Hesapla</button></div>
-        </div>
     <script>
         function fmt(val, decimals = 0) {
             return val.toLocaleString('tr-TR', {
-            minimumFractionDigits: decimals,
-            maximumFractionDigits: decimals
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
             });
+        }
+
+        function formatCurrency(raw) {
+            const num = parseInt(raw, 10) || 0;
+            return num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function getRawValue(id) {
+            return parseInt(document.getElementById(id).dataset.raw || '0', 10) || 0;
+        }
+
+        function getMinPesinat() {
+            return Math.round(getRawValue('fiyat') * 0.30);
+        }
+
+        function applyPesinatRaw(raw) {
+            const input = document.getElementById('pesinat');
+            input.dataset.raw = raw;
+            input.value = formatCurrency(raw);
+        }
+
+        function syncPesinatToFiyat() {
+            const min = getMinPesinat();
+            const current = getRawValue('pesinat');
+            if (current < min) {
+                applyPesinatRaw(String(min));
+                hesaplaa();
+            }
+        }
+
+        function setupCurrencyInput(id, initialValue, opts) {
+            opts = opts || {};
+            const input = document.getElementById(id);
+            input.dataset.raw = String(initialValue);
+            input.value = formatCurrency(String(initialValue));
+
+            input.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) return;
+                if (e.key === 'Tab' || e.key === 'Enter') return;
+
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                    e.preventDefault();
+                    const hasSelection = this.selectionStart !== this.selectionEnd;
+                    const newRaw = hasSelection ? '' : (this.dataset.raw || '').slice(0, -1);
+                    // Blok: seçim yokken silme min'in altına düşürüyorsa engelle
+                    if (opts.getMin && !hasSelection) {
+                        const min = opts.getMin();
+                        if ((parseInt(newRaw, 10) || 0) < min) return;
+                    }
+                    this.dataset.raw = newRaw;
+                    this.value = formatCurrency(newRaw);
+                    hesaplaa();
+                    if (opts.afterChange) opts.afterChange();
+                } else if (e.key >= '0' && e.key <= '9') {
+                    e.preventDefault();
+                    const hasSelection = this.selectionStart !== this.selectionEnd;
+                    const base = hasSelection ? '' : (this.dataset.raw || '');
+                    const raw = base + e.key;
+                    if (raw.length > 13) return;
+                    this.dataset.raw = raw;
+                    this.value = formatCurrency(raw);
+                    hesaplaa();
+                    if (opts.afterChange) opts.afterChange();
+                } else {
+                    e.preventDefault();
+                }
+            });
+
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                let digits = text.replace(/[^\d]/g, '');
+                if (!digits) return;
+                if (opts.getMin) {
+                    const min = opts.getMin();
+                    if ((parseInt(digits, 10) || 0) < min) digits = String(min);
+                }
+                this.dataset.raw = digits;
+                this.value = formatCurrency(digits);
+                hesaplaa();
+                if (opts.afterChange) opts.afterChange();
+            });
+
+            // Alandan çıkılınca minimum kontrolü
+            if (opts.getMin) {
+                input.addEventListener('blur', function() {
+                    const min = opts.getMin();
+                    const current = parseInt(this.dataset.raw, 10) || 0;
+                    if (current < min) {
+                        this.dataset.raw = String(min);
+                        this.value = formatCurrency(String(min));
+                        hesaplaa();
+                    }
+                });
+            }
         }
 
         function pmt(rate, nper, pv) {
@@ -223,46 +374,45 @@
             return (rate * pv) / (1 - Math.pow(1 + rate, -nper));
         }
 
-        function hesapla() {
-            const fiyat   = parseFloat(document.getElementById('fiyat').value)   || 0;
-            const kira    = parseFloat(document.getElementById('kira').value)     || 0;
-            const pesinat = parseFloat(document.getElementById('pesinat').value)  || 0;
-            const tufe    = parseFloat(document.getElementById('tufe').value)     || 0;
-            const kdv     = parseFloat(document.getElementById('kdv').value)      || 0;
+        function hesaplaa() {
+            const fiyat   = getRawValue('fiyat');
+            const pesinat = getRawValue('pesinat');
+            const vade    = parseInt(document.getElementById('vade').value) || 120;
+            const tufe    = 7;
+            const kdv     = 16.5;
 
             const tufeDecimal = tufe / 100;
             const kdvDecimal  = kdv  / 100;
 
-            // Kira çarpanı = Gayrimenkul fiyatı / Kira
-            const carpan = kira !== 0 ? fiyat / kira : 0;
-
-            // Kredi tutarı = Fiyat - Peşinat
             const kredi = fiyat - pesinat;
-
-            // Aylık oran = (1 + yıllık)^(1/12) - 1
             const aylikOran = Math.pow(1 + tufeDecimal, 1 / 12) - 1;
-
-            // Satıcıya ödenecek 1. ay kirası = PMT(aylık oran, 120, kredi)
-            const saticiKira = pmt(aylikOran, 120, kredi);
-
-            // Alıcının ödeyeceği 1. ay kirası = satıcı kirası * 1.12
+            const saticiKira = pmt(aylikOran, vade, kredi);
             const aliciKira = saticiKira * 1.12;
+            const aliciKiraKdv = saticiKira * (1 + kdvDecimal);
+            const aliciPesinat = pesinat * (1 + kdvDecimal);
 
-            // Alıcının ödeyeceği 1. ay kirası KDV dahil = alıcı kirası * (1 + KDV)
-            const aliciKiraKdv = aliciKira * (1 + kdvDecimal);
-
-            document.getElementById('out_carpan').textContent        = fmt(carpan, 1);
-            document.getElementById('out_kredi').textContent         = fmt(kredi);
-            document.getElementById('out_aylik_oran').textContent    = fmt(aylikOran * 100, 4);
-            document.getElementById('out_satici_kira').textContent   = fmt(saticiKira, 2);
-            document.getElementById('out_alici_kira').textContent    = fmt(aliciKira, 2);
+            document.getElementById('out_kredi').textContent          = fmt(kredi, 2);
+            document.getElementById('out_aylik_oran').textContent     = fmt(aylikOran * 100, 2);
+            document.getElementById('out_yillik_oran').textContent    = fmt(tufeDecimal * 100, 2);
+            document.getElementById('out_kdv_orani').textContent      = fmt(kdvDecimal * 100, 2);
+            document.getElementById('out_satici_kira').textContent    = fmt(saticiKira, 2);
+            document.getElementById('out_alici_kira').textContent     = fmt(aliciKira, 2);
             document.getElementById('out_alici_kira_kdv').textContent = fmt(aliciKiraKdv, 2);
+            document.getElementById('alici_pesinat').textContent      = fmt(aliciPesinat, 2);
         }
 
-        hesapla();
+        setupCurrencyInput('fiyat',   10000000, { afterChange: syncPesinatToFiyat });
+        setupCurrencyInput('pesinat', 3000000,  { getMin: getMinPesinat });
 
-        document.getElementById('btn-hesapla').addEventListener('click', hesapla);
-        </script>
+        document.getElementById('vade').addEventListener('input', hesaplaa);
+
+        hesaplaa();
+
+        document.getElementById('btn-hesapla').addEventListener('click', function() {
+            syncPesinatToFiyat();
+            hesaplaa();
+        });
+    </script>
 
 </body>
 </html>
