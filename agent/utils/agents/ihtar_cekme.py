@@ -30,6 +30,11 @@ def get_menu_index(username):
                 "musteri_risk_yonetimi": "12",
                 "ihtar_hazirlama": "12_2",
             }
+    elif username == "selda.ergon":
+        return {
+                "musteri_risk_yonetimi": "12",
+                "ihtar_hazirlama": "12_2",
+            }
     else:
         return "300"
     
