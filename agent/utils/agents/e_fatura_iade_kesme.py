@@ -65,6 +65,12 @@ def get_menu_index(username):
                 "tahsil_tediye_fatura": "10_4",
                 "e_arsiv": "10_4_5"
             }
+    elif username == "ilsu.calik":
+        return {
+                "cari_islemler": "11",
+                "tahsil_tediye_fatura": "11_3",
+                "e_arsiv": "11_3_5"
+            }
     else:
         return "300"
     

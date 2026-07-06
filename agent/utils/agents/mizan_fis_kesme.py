@@ -94,6 +94,10 @@ def run_bot(username, password, file_name, task_id):
             menu_sira_1 = "11"
             menu_sira_2 = "11_4"
             menu_sira_3 = "11_4_3"
+        elif username == "ilsu.calik":
+            menu_sira_1 = "12"
+            menu_sira_2 = "12_4"
+            menu_sira_3 = "12_4_2"
         else:
             if not username == "koray.zorlu" or username == "korayzorlu":
                 menu_sira_1 = "14"
