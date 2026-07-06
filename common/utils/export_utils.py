@@ -38,6 +38,7 @@ from finance.utils import export_finmaks_bank_account_balances
 from compliance.utils.export_utils import export_third_persons
 from operation.utils import export_title_deed_invoice_controls
 from projects.utils.real_estate_utils import export_real_estates
+from trade.utils.common_utils import export_trade_transactions_for_customers
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -194,3 +195,6 @@ class BaseExporter():
 
     def export_realestate(self):
         export_real_estates(self)
+
+    def export_tradetransactionsforcustomer(self):
+        export_trade_transactions_for_customers(self)
