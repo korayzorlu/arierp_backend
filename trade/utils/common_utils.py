@@ -7,6 +7,7 @@ import pandas as pd
 import io
 from decimal import Decimal
 import os
+from openpyxl.styles import Font, PatternFill
 
 from trade.models import *
 from common.models import Status
@@ -48,7 +49,7 @@ def import_leases(self, df_json):
         self.process.status = "completed"
         self.process.save()
 
-def export_trade_transactions_for_customers(self):
+def export_trade_transactions_for_customer(self):
     objs = TradeTransaction.objects.select_related("company","lease","currency").filter(
         Q(lease__uuid=self.params.get('lease')) &
         ~Q(delete_status__in=['2']) &
@@ -176,14 +177,13 @@ def export_trade_transactions_for_customers(self):
             self.process.save()
             previous_progress = current_progress
 
-
-        data["Tarih"].append(obj.date)
-        data["Açıklama"].append(obj.description)
-        data["Tutar"].append(obj.amount)
-        data["PB"].append(obj.currency)
-        data["Bakiye"].append(obj.balances["balance"])
-        data["Gecikme"].append(obj.overdue_days)
-        data["Durum"].append(obj.applied_status)
+        data["Tarih"].append(obj["date"])
+        data["Açıklama"].append(obj["description"])
+        data["Tutar"].append(f"-{obj['amount']}" if obj["amount_type"] == '0' else f"{obj['amount']}")
+        data["PB"].append(obj["currency"])
+        data["Bakiye"].append(obj["balances"]["balance"])
+        data["Gecikme"].append(f"-{obj['overdue_days']}" if obj["amount_type"] == '1' else "")
+        data["Durum"].append(obj["applied_status"])
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
@@ -195,6 +195,7 @@ def export_trade_transactions_for_customers(self):
 
     for col in numeric_columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+
     
     base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "trade", "trade_transactions", "documents")
     if not os.path.exists(base_path):
@@ -216,7 +217,21 @@ def export_trade_transactions_for_customers(self):
                     for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
                         for c in cell:
                             c.number_format = '#,##0.00'   # İstediğin format
-        
+
+            # Hücre rengi değiştirme
+            description_col_idx = df.columns.get_loc("Açıklama") + 1
+            applied_status_col_idx = df.columns.get_loc("Durum") + 1
+            for row_idx, tutar_degeri in enumerate(df["Tutar"], start=2):
+                if tutar_degeri and Decimal(str(tutar_degeri).replace(".", "").replace(",", ".")) > 0:
+                    cell = worksheet.cell(row=row_idx, column=description_col_idx)
+                    cell.font = Font(color="FF0000")
+            # for row_idx, value in enumerate(df["Gecikme"], start=2):
+            #     if value and int(value) > 0:
+            #         cell = worksheet.cell(row=row_idx, column=applied_status_col_idx)
+            #         cell.font = Font(color="FF0000")
+    
+
+
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()

@@ -25,17 +25,17 @@ from datetime import datetime
 
 # Create your views here.
 
-class ExportTradeTransactionForCustomersView(LoginRequiredMixin,View):
+class ExportTradeTransactionsForCustomerView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
         exporter = BaseExporter(
             user_id=request.user.id,
             app="trade",
-            model_name="TradeTransactionForCustomer",
+            model_name="TradeTransactionsForCustomer",
             file_name=f"{datetime.today().strftime('%d-%m-%Y')}-odeme-ekstresi.xlsx",
-            export_url="/trade/trade_transactions_for_customers_excel",
-            params={"status":data.get('status')}
+            export_url="/trade/trade_transactions_for_customer_excel",
+            params={"lease":data.get('lease')}
         )
 
         send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
@@ -44,12 +44,12 @@ class ExportTradeTransactionForCustomersView(LoginRequiredMixin,View):
 
         return HttpResponse(status=200)
 
-class TradeTransactionForCustomersExcelView(LoginRequiredMixin,View):
+class TradeTransactionsForCustomerExcelView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "trade", "trade_transactions", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-odeme-ekstresi.xlsx")
       
         if not os.path.exists(file_path):
-            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+            return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)
 
         objs = ExportProcess.objects.filter(status = "in_progress")
         for obj in objs:

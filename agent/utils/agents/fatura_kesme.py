@@ -22,9 +22,9 @@ AGENT_TOKEN = "__AGENT_TOKEN__"
 def get_menu_index(username):
     if username == "koray.zorlu":
         return {
-                "cari_islemler": "13",
-                "tahsil_tediye_fatura": "13_4",
-                "e_arsiv": "13_4_4"
+                "cari_islemler": "11",
+                "tahsil_tediye_fatura": "11_4",
+                "e_arsiv": "11_4_4"
             }
     elif username == "cemil.baritci":
         return {

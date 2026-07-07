@@ -19,6 +19,7 @@ from common.models import ImportProcess,Country,City,ExportProcess
 from partners.models import Partner,Sector
 from converters.models import BankaHareketi, BankaTahsilati, BankaTahsilatiOdoo
 from leasing.utils.export_utils import export_bank_activities,export_kdv_risk_partners,export_deposite_partners,export_delivery_confirms,export_active_leases
+from leasing.utils.manager_summary_utils import export_manager_summary
 from purchasing.utils.common_utils import export_purchase_payments,export_purchase_documents
 from risk.utils.risk_partners_utils import *
 from risk.utils.to_warned_risk_partners_utils import *
@@ -38,7 +39,7 @@ from finance.utils import export_finmaks_bank_account_balances
 from compliance.utils.export_utils import export_third_persons
 from operation.utils import export_title_deed_invoice_controls
 from projects.utils.real_estate_utils import export_real_estates
-from trade.utils.common_utils import export_trade_transactions_for_customers
+from trade.utils.common_utils import export_trade_transactions_for_customer
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -197,4 +198,7 @@ class BaseExporter():
         export_real_estates(self)
 
     def export_tradetransactionsforcustomer(self):
-        export_trade_transactions_for_customers(self)
+        export_trade_transactions_for_customer(self)
+
+    def export_managersummary(self):
+        export_manager_summary(self)

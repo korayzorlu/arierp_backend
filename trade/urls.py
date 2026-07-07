@@ -6,7 +6,7 @@ from .tests import *
 app_name = "trade"
 
 urlpatterns = [
-    path('export_trade_transactions_for_customers/', ExportTradeTransactionForCustomersView.as_view(), name="export_trade_transactions_for_customers"),
-    path('trade_transactions_for_customers_excel/', TradeTransactionForCustomersExcelView.as_view(), name="trade_transactions_for_customers_excel"),
+    path('export_trade_transactions_for_customer/', ExportTradeTransactionsForCustomerView.as_view(), name="export_trade_transactions_for_customer"),
+    path('trade_transactions_for_customer_excel/', TradeTransactionsForCustomerExcelView.as_view(), name="trade_transactions_for_customer_excel"),
     path('', include("trade.api.urls")),
 ]

@@ -31,8 +31,17 @@ import json
 import pandas as pd
 from decimal import Decimal
 from datetime import datetime
+from collections import Counter
+from docxtpl import DocxTemplate
+import io, zipfile
+from copy import deepcopy
+from docx.oxml.ns import qn
 
 # Create your views here.
+
+def format_currency(value):
+    return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+
 
 class AddLeaseView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
@@ -671,3 +680,184 @@ class DeliveryConfirmsExcelView(LoginRequiredMixin,View):
 
         return FileResponse(open(file_path, 'rb'))
     
+
+class CreateManagerSummaryStatusView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        
+        partner = Partner.objects.select_related().filter(uuid = data.get('uuid')).first()
+        leases = Lease.objects.select_related().filter(uuid__in = data.get('uuids', []))
+
+        if partner:
+            # word işlemleri
+            file_name = f"{partner.name.lower().replace(' ', '_')}-{str(partner.crm_code)}-yonetici-ozeti"
+            doc = DocxTemplate(f"files/yonetici-ozeti.docx")
+
+            #hesaplamalar
+            risk_next_installments_total_amount = Decimal('0.00')
+            risk_overdue_amount_total = Decimal('0.00')
+            risk_total_risk_amount_total = Decimal('0.00')
+            risk_paid_amount_total = Decimal('0.00')
+            refund_installment_amount_total = Decimal('0.00')
+            muhtelif_transactions_total_amount = Decimal('0.00')
+            teblig_tarihi_list = []
+            for lease in leases:
+                next_installments = Installment.objects.select_related("lease").filter(lease = lease, type__in = ['1'], payment_date__gte = datetime.today()).only("amount").aggregate(total_amount=Sum('amount'))
+                borc_muhtelif_transactions = lease.lease_trade_transactions.filter(amount_type = '1', posting_group_name='Muhtelif Masraf').aggregate(total_amount=Sum('amount'))
+                alacak_muhtelif_transactions = lease.lease_trade_transactions.filter(amount_type = '0', posting_group_name='Muhtelif Masraf').aggregate(total_amount=Sum('amount'))
+                muhtelif_transactions_total_amount += (borc_muhtelif_transactions['total_amount'] or Decimal('0.00')) - (alacak_muhtelif_transactions['total_amount'] or Decimal('0.00'))
+                
+                risk_next_installments_total_amount += next_installments['total_amount'] or Decimal('0.00')
+                risk_overdue_amount_total += lease.overdue_amount
+                risk_total_risk_amount_total += (next_installments['total_amount'] or Decimal('0.00')) + lease.overdue_amount
+                risk_paid_amount_total += lease.paid_amount
+                refund_installment_amount_total += lease.installment_amount
+
+            tahsil_edilen = risk_paid_amount_total
+            ihtar_masrafi = Decimal('3200.00') if not partner.kep else Decimal('1000.00')*Decimal(str(leases.count()))
+            takip_masrafi = risk_overdue_amount_total*Decimal('0.1') if risk_overdue_amount_total > muhtelif_transactions_total_amount else muhtelif_transactions_total_amount
+            vazgecme_akcesi = refund_installment_amount_total*Decimal('0.1')
+            kalan = risk_paid_amount_total - ihtar_masrafi - takip_masrafi - vazgecme_akcesi
+
+            context = {
+                "isim": partner.name,
+                "adres": partner.address,
+                "tel": partner.phone,
+                "tarih": datetime.today().strftime('%d.%m.%Y'),
+                "kalan": format_currency(kalan),
+                "pb": leases[0].currency.code if leases and leases[0].currency.code != "TRY" else "TL",
+            }
+
+            doc.render(context)
+
+            files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "to_terminated_risk_partners", "documents",f"{file_name}.docx")
+            doc.save(files_path)
+
+            # tabloya satır ekleme
+            from docx import Document
+            document = Document(files_path)
+
+            project_table = document.tables[2]
+            template_lease_row_project_table = project_table.rows[2]
+            template_total_row_project_table = project_table.rows[3]
+
+            risk_table = document.tables[3]
+            template_lease_row_risk_table = risk_table.rows[2]
+            template_total_row_risk_table = risk_table.rows[3]
+
+            for lease in leases:
+                #projeler tablosu___________________________________________________________________________________________
+                lease_row_project_table = deepcopy(template_lease_row_project_table._tr)
+                cells_lease_project_table = lease_row_project_table.findall(qn('w:tc'))
+                cells_lease_project_table[0].find('.//' + qn('w:t')).text = lease.contract.vendor.name if lease.contract and lease.contract.vendor else ""
+                cells_lease_project_table[1].find('.//' + qn('w:t')).text = lease.item.stock_name if lease.item else ""
+                cells_lease_project_table[2].find('.//' + qn('w:t')).text = lease.contract.code if lease.contract else ""
+                cells_lease_project_table[3].find('.//' + qn('w:t')).text = lease.get_lease_status_display()
+                cells_lease_project_table[4].find('.//' + qn('w:t')).text = lease.signature_date.strftime('%d.%m.%Y') if lease.signature_date else ""
+                cells_lease_project_table[5].find('.//' + qn('w:t')).text = str(int(lease.vat))
+                cells_lease_project_table[6].find('.//' + qn('w:t')).text = str(lease.vade)
+                cells_lease_project_table[7].find('.//' + qn('w:t')).text = format_currency(lease.installment_amount)
+                cells_lease_project_table[8].find('.//' + qn('w:t')).text = lease.currency.code if lease.currency.code != "TRY" else "TL"
+                project_table._tbl.append(lease_row_project_table)
+
+                #risk bilgileri tablosu___________________________________________________________________________________________
+                risk_row_risk_table = deepcopy(template_lease_row_risk_table._tr)
+                cells_risk_risk_table = risk_row_risk_table.findall(qn('w:tc'))
+                cells_risk_risk_table[0].find('.//' + qn('w:t')).text = lease.contract.code if lease.contract else ""
+                cells_risk_risk_table[1].find('.//' + qn('w:t')).text = datetime.today().strftime('%d.%m.%Y')
+                cells_risk_risk_table[2].find('.//' + qn('w:t')).text = str(lease.overdue_days)
+                cells_risk_risk_table[3].find('.//' + qn('w:t')).text = format_currency(next_installments['total_amount'] or Decimal('0.00'))
+                cells_risk_risk_table[4].find('.//' + qn('w:t')).text = format_currency(lease.overdue_amount)
+                cells_risk_risk_table[5].find('.//' + qn('w:t')).text = format_currency((next_installments['total_amount'] or Decimal('0.00')) + lease.overdue_amount)
+                cells_risk_risk_table[6].find('.//' + qn('w:t')).text = format_currency(lease.paid_amount)
+                risk_table._tbl.append(risk_row_risk_table)
+
+            #toplam satırı ekleme
+            #projeler tablosu___________________________________________________________________________________________
+            project_total_amount = leases.aggregate(total_amount=Sum('installment_amount'))['total_amount'] or Decimal('0.00')
+            project_total_row = deepcopy(template_total_row_project_table._tr)
+            cells_total_project_table = project_total_row.findall(qn('w:tc'))
+            cells_total_project_table[6].find('.//' + qn('w:t')).text = "Toplam"
+            cells_total_project_table[7].find('.//' + qn('w:t')).text = format_currency(project_total_amount)
+            cells_total_project_table[8].find('.//' + qn('w:t')).text = lease.currency.code if lease.currency.code != "TRY" else "TL"
+            project_table._tbl.append(project_total_row)
+            #risk bilgileri tablosu___________________________________________________________________________________________
+            risk_total_row = deepcopy(template_total_row_risk_table._tr)
+            cells_total_risk_table = risk_total_row.findall(qn('w:tc'))
+            cells_total_risk_table[2].find('.//' + qn('w:t')).text = "Toplam"
+            cells_total_risk_table[3].find('.//' + qn('w:t')).text = format_currency(risk_next_installments_total_amount)
+            cells_total_risk_table[4].find('.//' + qn('w:t')).text = format_currency(risk_overdue_amount_total)
+            cells_total_risk_table[5].find('.//' + qn('w:t')).text = format_currency(risk_total_risk_amount_total)
+            cells_total_risk_table[6].find('.//' + qn('w:t')).text = format_currency(risk_paid_amount_total)
+            risk_table._tbl.append(risk_total_row)
+
+            #şablon satırı silmek
+            project_table._tbl.remove(template_lease_row_project_table._tr)
+            project_table._tbl.remove(template_total_row_project_table._tr)
+            risk_table._tbl.remove(template_lease_row_risk_table._tr)
+            risk_table._tbl.remove(template_total_row_risk_table._tr)
+            document.save(files_path)
+
+            if files_path:
+                return FileResponse(open(files_path, 'rb'), as_attachment=True)
+        
+        return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=400)
+    
+class GetManagerSummaryView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuid = data.get('uuid')
+
+        partner = Partner.objects.select_related().filter(uuid = uuid).first()
+
+        file_name = f"{partner.name.lower().replace(' ', '_')}-{str(partner.crm_code)}-yonetici-ozeti"
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "partners", "manager_summary", "documents",f"{file_name}.docx")
+        
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)
+        
+        return FileResponse(open(file_path, 'rb'))
+    
+class ExportManagerSummaryView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuid = data.get('partner')
+
+        partner = Partner.objects.select_related().filter(uuid = uuid).first()
+        file_name = f"{partner.name.lower().replace(' ', '_')}-{str(partner.crm_code)}-yonetici-ozeti"
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="leasing",
+            model_name="ManagerSummary",
+            file_name=f"{file_name}.docx",
+            export_url=f"/leasing/manager_summary_word/?partner={data.get('partner')}",
+            params={"partner":data.get('partner')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class ManagerSummaryExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        #data = json.loads(request.body)
+        uuid = request.GET.get('partner')
+
+        partner = Partner.objects.select_related().filter(uuid = uuid).first()
+
+        file_name = f"{partner.name.lower().replace(' ', '_')}-{str(partner.crm_code)}-yonetici-ozeti"
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "manager_summary", "documents",f"{file_name}.docx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))
+  

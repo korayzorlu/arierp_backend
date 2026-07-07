@@ -78,5 +78,11 @@ urlpatterns = [
 
     path('manager_summary/', ManagerSummaryView.as_view(), name="manager_summary"),
 
+    path('create_manager_summary_status/', CreateManagerSummaryStatusView.as_view(), name="create_manager_summary_status"),
+    path('get_manager_summary/', GetManagerSummaryView.as_view(), name="get_manager_summary"),
+
+    path('export_manager_summary/', ExportManagerSummaryView.as_view(), name="export_manager_summary"),
+    path('manager_summary_word/', ManagerSummaryExcelView.as_view(), name="manager_summary_word"),
+
     path('', include("leasing.api.urls")),
 ]
