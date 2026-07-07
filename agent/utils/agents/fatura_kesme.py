@@ -166,7 +166,7 @@ def run_bot(username, password, file_name, task_id):
 
                 tarih_input = wait.until(EC.presence_of_element_located((By.ID, "dtInvoiceDate_input")))
                 tarih_input.click()
-                tarih_input.send_keys(row["Fatura Tarihi"].strftime("%d.%m.%Y"))
+                tarih_input.send_keys(row["Fatura Tarihi"])
 
                 vade_input = wait.until(EC.presence_of_element_located((By.ID, "dtDueDate_input")))
                 vade_input.click()
