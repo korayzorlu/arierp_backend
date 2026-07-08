@@ -288,7 +288,7 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
                 "description": description,
                 "amount": installment.amount,
                 "currency": installment.lease.currency.code if installment.lease.currency else None,
-                "overdue_days": (localtime().date() - installment.payment_date).days,
+                "overdue_days": (localtime().date() - installment.payment_date).days if localtime().date() > installment.payment_date else 0,
                 "applied_status": "Ödenmedi",
                 "sequency": 0
             })
@@ -331,7 +331,7 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
 
                 if remaining_amount >= item_remaining:
                     remaining_amount -= item_remaining
-                    item["overdue_days"] = (payment["date_obj"] - item["date_obj"]).days
+                    item["overdue_days"] = (payment["date_obj"] - item["date_obj"]).days if payment["date_obj"] > item["date_obj"] else 0
                     item["applied_status"] = "Ödendi"
                     skip = True
                     payment_sequency = payment["sequency"] + 1

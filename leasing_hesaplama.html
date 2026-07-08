@@ -166,8 +166,7 @@
                 <div class="field">
                     <label>TÜFE + Kar Oranı (Yıllık)</label>
                     <div class="field-right">
-                        <div class="computed" id="out_yillik_oran">-</div>
-                        <span class="unit">%</span>
+                        <div class="field-right"><input id="out_yillik_oran" class="number-input" type="number" inputmode="numeric" min="1" max="360" value="7" autocomplete="off" /> <span class="unit">%</span></div>
                     </div>
                 </div>
 
@@ -378,7 +377,7 @@
             const fiyat   = getRawValue('fiyat');
             const pesinat = getRawValue('pesinat');
             const vade    = parseInt(document.getElementById('vade').value) || 120;
-            const tufe    = 7;
+            const tufe    = parseInt(document.getElementById('out_yillik_oran').value) || 7;
             const kdv     = 16.5;
 
             const tufeDecimal = tufe / 100;
@@ -393,7 +392,7 @@
 
             document.getElementById('out_kredi').textContent          = fmt(kredi, 2);
             document.getElementById('out_aylik_oran').textContent     = fmt(aylikOran * 100, 2);
-            document.getElementById('out_yillik_oran').textContent    = fmt(tufeDecimal * 100, 2);
+            //document.getElementById('out_yillik_oran').textContent    = fmt(tufeDecimal * 100, 2);
             document.getElementById('out_kdv_orani').textContent      = fmt(kdvDecimal * 100, 2);
             document.getElementById('out_satici_kira').textContent    = fmt(saticiKira, 2);
             document.getElementById('out_alici_kira').textContent     = fmt(aliciKira, 2);
