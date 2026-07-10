@@ -1,6 +1,8 @@
 from django.urls import path, include
+from django.views.decorators.csrf import csrf_exempt
 
-from .views import *
+from .views.contract_views import *
+from .views.crm_views import *
 from .tests import *
 
 app_name = "contracts"
@@ -26,6 +28,8 @@ urlpatterns = [
 
     path('export_warning_notices/', ExportWarningNoticesView.as_view(), name="export_warning_notices"),
     path('warning_notices_excel/', WarningNoticesExcelView.as_view(), name="warning_notices_excel"),
+
+    path('create_contract_forms/', csrf_exempt(CreateContractFormsView.as_view()), name="create_contract_forms"),
 
     path('', include("contracts.api.urls")),
 ]

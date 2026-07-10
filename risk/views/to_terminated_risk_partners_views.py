@@ -231,15 +231,20 @@ class CreateCommitteeFormStatusView(LoginRequiredMixin,View):
             takip_masrafi = risk_overdue_amount_total*Decimal('0.1') if risk_overdue_amount_total > muhtelif_transactions_total_amount else muhtelif_transactions_total_amount
             vazgecme_akcesi = refund_installment_amount_total*Decimal('0.1')
             kalan = risk_paid_amount_total - ihtar_masrafi - takip_masrafi - vazgecme_akcesi
+            if kalan < 0:
+                kalan = Decimal('0.00')
+
+            pb = leases[0].currency.code if leases and leases[0].currency.code != "TRY" else "TL"
 
             context = {
                 "isim": partner.name,
                 "tarih": datetime.today().strftime('%d.%m.%Y'),
                 "kalan": format_currency(kalan),
-                "pb": leases[0].currency.code if leases and leases[0].currency.code != "TRY" else "TL",
+                "pb": pb,
                 "teblig": "kep" if partner.kep else "noter",
                 #"teblig_tarihi_list": "\n".join(teblig_tarihi['tarih_eki'] for teblig_tarihi in teblig_tarihi_list),
                 "ihtar_kelimesi": "ihtarlari" if leases.count() > 1 else "ihtarı",
+                "iade_yazisi": f"Müşteriye {format_currency(kalan)} {pb} iade edilecek tutar bulunmaktadır." if kalan > 0 else "Müşteriye iade edilecek tutar bulunmamaktadır.",
             }
 
             doc.render(context)
@@ -353,7 +358,7 @@ class CreateCommitteeFormStatusView(LoginRequiredMixin,View):
             #++++++++++++
             refund_remaining_row = deepcopy(template_remaining_row_refund_table._tr)
             cells_remaining_refund_table = refund_remaining_row.findall(qn('w:tc'))
-            cells_remaining_refund_table[1].find('.//' + qn('w:t')).text = format_currency(kalan)
+            cells_remaining_refund_table[1].find('.//' + qn('w:t')).text = format_currency(kalan) if kalan > 0 else "-"
             refund_table._tbl.append(refund_remaining_row)
 
             #şablon satırı silmek

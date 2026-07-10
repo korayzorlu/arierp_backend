@@ -695,6 +695,9 @@ AI_CLIENT = ollama.Client(host="http://192.168.81.5:11434")
 # vpos
 VPOS_VALIDATION_KEY = os.getenv('VPOS_VALIDATION_KEY','')
 
+# contract form
+CONTRACT_FORM_VALIDATION_KEY = os.getenv('CONTRACT_FORM_VALIDATION_KEY','')
+
 # Sentry
 if not DEBUG:
     sentry_sdk.init(
