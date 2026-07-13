@@ -1,0 +1,69 @@
+{
+  "info": {
+    "name": "Contract Forms API",
+    "description": "Sanal POS işlemlerini sisteme kaydetmek için kullanılan endpoint.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Contract Forms",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+            "raw": "{\n  \"CompanyId\": \"00000000-0000-0000-0000-000000000000\",\n  \"ValidationKey\": \"your-validation-key\",\n  \"ProcessDate\": \"2024-01-15T10:30:00\",\n  \"MusteriTipi\": 1,\n  \"PaidAmount\": 1500.00,\n  \"LeasePostingGroupId\": true,\n\n  \"FirmaAdi\": \"Örnek Firma A.Ş.\",\n  \"KurumTipi\": \"LimitedSirketi\",\n  \"VergiDairesi\": \"Kadıköy\",\n  \"VergiNo\": \"1234567890\",\n  \"WebSitesi\": \"https://ornekfirma.com\",\n  \"Adres\": \"Atatürk Cad. No:1\",\n  \"Ulke\": \"Türkiye\",\n  \"Sehir\": \"İstanbul\",\n  \"Ilce\": \"Kadıköy\",\n  \"Posta\": \"34710\",\n  \"IletisimList\": [\n    { \"IletisimTuru\": \"Telefon\", \"IletisimDegeri\": \"+905001234567\" },\n    { \"IletisimTuru\": \"Email\", \"IletisimDegeri\": \"info@ornekfirma.com\" }\n  ],\n\n  \"Ad\": \"Ahmet\",\n  \"IkinciAd\": \"\",\n  \"OrtaAd\": \"\",\n  \"SoyAd\": \"Yılmaz\",\n  \"Cinsiyet\": \"E\",\n  \"TCKimlikNo\": \"12345678901\",\n  \"PasaportNo\": \"\",\n  \"Uyruk\": \"TC\",\n  \"DogumTarih\": \"1990-05-15\",\n  \"VergiDairesi_Birey\": \"Kadıköy\",\n  \"VergiNo_Birey\": \"1234567890\",\n  \"Adres_Birey\": \"Atatürk Cad. No:1\",\n  \"Ulke_Birey\": \"Türkiye\",\n  \"Sehir_Birey\": \"İstanbul\",\n  \"Ilce_Birey\": \"Kadıköy\",\n  \"Posta_Birey\": \"34710\",\n  \"IletisimList_Birey\": [\n    { \"IletisimTuru\": \"Telefon\", \"IletisimDegeri\": \"+905001234567\" },\n    { \"IletisimTuru\": \"Email\", \"IletisimDegeri\": \"ahmet@email.com\" }\n  ],\n\n  \"UserName\": \"kullanici_adi\",\n  \"Password\": \"sifre\",\n  \"Telefon\": \"+905001234567\",\n  \"EMail\": \"info@ornekfirma.com\",\n  \"Fax\": \"\",\n  \"BankCode\": \"0001\",\n  \"ContractCode\": \"KONTR-001\",\n  \"CurrencyCode\": \"TRY\",\n  \"ExtTransactionId\": \"EXT-TX-001\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/contracts/create_contract_forms/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "contracts", "create_contract_forms", ""]
+        },
+        "description": "Leasing'e aktarma işleminde sırasında gerekli parametreler ile sözleşme formları oluşturulur.\n\n**ZORUNLU ALANLAR:**\n- CompanyId string — Arı Leasing Şirket ID'si\n- ValidationKey — Doğrulama Kodu\n- ContractHeaderCode — Sözleşme Kodu\n- ValidationKey (string) — Arınet doğrulama anahtarı\n- ProcessDate (dateTime) — İşlem tarihi\n- MusteriTipi (integer) — 1: Kurumsal, 2: Bireysel\n- PaidAmount (decimal) — Ödenen tutar (> 0)\n- LeasePostingGroupId (boolean) — Leasing posting grup ID\n\n**OPSİYONEL — Kurumsal (MusteriTipi=1):**\nFirmaAdi, KurumTipi, VergiDairesi, VergiNo, WebSitesi, Adres, Ulke, Sehir, Ilce, Posta\nIletisimList: [{ IletisimTuru: string, IletisimDegeri: string }]\n\n**OPSİYONEL — Bireysel (MusteriTipi=2):**\nAd, IkinciAd, OrtaAd, SoyAd, Cinsiyet, TCKimlikNo, PasaportNo, Uyruk, DogumTarih, VergiDairesi_Birey, VergiNo_Birey, Adres_Birey, Ulke_Birey, Sehir_Birey, Ilce_Birey, Posta_Birey\nIletisimList_Birey: [{ IletisimTuru: string, IletisimDegeri: string }]\n\n**OPSİYONEL — Ortak:**\nUserName, Password, Telefon, EMail, Fax, BankCode, ContractCode, CurrencyCode, ExtTransactionId"
+      },
+      "response": [
+        {
+          "name": "Başarılı",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"message\": \"Başarıyla kaydedildi!\",\n  \"status\": \"success\"\n}"
+        },
+        {
+          "name": "Hata (400)",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"message\": \"Hata açıklaması (AlanAdi)\",\n  \"status\": \"error\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://arinet.arileasing.com.tr",
+      "description": "API'nin çalıştığı sunucunun base URL'i"
+    }
+  ]
+}
