@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("processing...")
 
-        url = "https://arinet.arileasing.com.tr/api/contracts/create_contract_forms/"
+        url = "http://localhost:8000/api/contracts/create_contract_forms/"
 
         payload = {
             "CompanyId": "8ca8cc74-02d6-417e-bd4c-6568286187a3",
@@ -60,15 +60,16 @@ class Command(BaseCommand):
             "CurrencyCode": "TRY"
         }
 
-        response = requests.post(
-            url,
-            json=payload,
-            cert=(
-                "/mnt/c/Users/koray.zorlu/projects/arierp/arierp_backend/certs/client-cert.pem",
-                "/mnt/c/Users/koray.zorlu/projects/arierp/arierp_backend/certs/client-key.pem"
-            ),
-            verify=False
-        )
+        # response = requests.post(
+        #     url,
+        #     json=payload,
+        #     cert=(
+        #         "/mnt/c/Users/koray.zorlu/projects/arierp/arierp_backend/certs/client-cert.pem",
+        #         "/mnt/c/Users/koray.zorlu/projects/arierp/arierp_backend/certs/client-key.pem"
+        #     ),
+        #     verify="/mnt/c/Users/koray.zorlu/projects/arierp/arierp_backend/certs/company-ca-bundle.pem"
+        # )
+        response = requests.post(url,json=payload)
         print(response.status_code, response.json())
 
         print("done!")

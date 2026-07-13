@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice,TerminationWarningNotice,CommitteeForm
+from .models import Contract,ContractPayment,WarningNotice,ComprehensiveWarningNotice,TerminationWarningNotice,CommitteeForm,ContractDocument
 
 # Register your models here.
 
@@ -32,6 +32,25 @@ class ContractAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Contract
+
+@admin.register(ContractDocument)
+class ContractDocumentAdmin(admin.ModelAdmin):
+    list_display = ["company","label","contract","created_date"]
+    list_display_links = ["label"]
+    search_fields = ["company__name","contract__code","label"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["company","contract"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def contract(self,obj):
+        return obj.contract.code if obj.contract else ""
+    
+    class Meta:
+        model = ContractDocument
 
 @admin.register(ContractPayment)
 class ContractPaymentAdmin(admin.ModelAdmin):

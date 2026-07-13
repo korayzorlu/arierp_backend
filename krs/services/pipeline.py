@@ -197,7 +197,7 @@ def run_krs_pipeline(
             else:
                 doviz_kodu = "000"
 
-        lease = Lease.objects.filter(contract=contract, is_last_project=True,is_last_project_arinet=True).first() if contract else None
+        lease = Lease.objects.filter(contract=contract, is_last_project=True,is_last_project_arinet=True, lease_status__in=["aktiflestirildi"]).first() if contract else None
 
         report_objs.append(KrsReport(
             company_id=company_id,

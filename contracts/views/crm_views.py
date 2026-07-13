@@ -23,11 +23,13 @@ from common.utils.websocket_utils import send_alert
 from common.utils.common_utils import parse_datetime,safe_decimal
 from purchasing.models import PurchasePayment
 from leasing.models import BankActivity
+from contracts.models import ContractDocument,Contract
 
 import json
 import os
 from django.utils.timezone import localtime
 from docxtpl import DocxTemplate
+from io import BytesIO
 
 # Create your views here.
 
@@ -44,13 +46,30 @@ class CreateContractFormsView(View):
         
         company = Company.objects.filter(uuid = data.get('CompanyId')).first()
 
+        
+
         # word işlemleri
         file_name = f"Kod11"
         doc = DocxTemplate(f"files/kod11.docx")
 
+        context = {
+            "ContractHeaderCode": data.get('ContractHeaderCode'),
+        }
 
+        doc.render(context)
+        buffer = BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+        # files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(company.uuid), "contracts", "contracts", "documents",f"{file_name}.docx")
+        # doc.save(files_path)
 
-        print(data)
+        # model işlemleri
+        ContractDocument.objects.create(
+            company = company,
+            label = data.get('ContractHeaderCode'),
+            file = ContentFile(buffer.read(), name=f"{file_name}.docx")
+        )
+
 
 
         return JsonResponse({'message': 'Başarıyla gönderildi!','status':'success'}, status=200)
