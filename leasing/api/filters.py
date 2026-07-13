@@ -1,6 +1,7 @@
 from django.core.validators import EMPTY_VALUES
 from django.db.models import Q,Sum,F
 from django.db.models.functions import Lower,Upper,Abs
+from django.utils.dateparse import parse_datetime, parse_date
 
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter,DateFromToRangeFilter
@@ -41,6 +42,8 @@ class LeaseFilter(FilterSet):
     vendor = CharFilter(method = 'filter_vendor')
     is_agreement = CharFilter(method = 'filter_is_agreement')
     risk_status = CharFilter(method = 'filter_risk_status')
+    activation_date = CharFilter(method = 'filter_activation_date')
+    signature_date = CharFilter(method = 'filter_signature_date_date')
 
     class Meta:
         model = Lease
@@ -142,6 +145,24 @@ class LeaseFilter(FilterSet):
         if value == 'all':
             return queryset
         return queryset.filter(risk_status = value)
+    
+    def filter_activation_date(self, queryset, activation_date, value):
+        parsed = parse_datetime(value)
+        if parsed:
+            return queryset.filter(activation_date=parsed.date())
+        date_parsed = parse_date(value)
+        if date_parsed:
+            return queryset.filter(activation_date=date_parsed)
+        return queryset
+    
+    def filter_signature_date_date(self, queryset, signature_date_date, value):
+        parsed = parse_datetime(value)
+        if parsed:
+            return queryset.filter(signature_date_date=parsed.date())
+        date_parsed = parse_date(value)
+        if date_parsed:
+            return queryset.filter(signature_date_date=date_parsed)
+        return queryset
 
 class ActiveLeaseFilter(LeaseFilter):
     class Meta:
