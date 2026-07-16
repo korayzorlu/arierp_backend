@@ -261,7 +261,7 @@ class CreateCommitteeFormStatusView(LoginRequiredMixin,View):
                     for teblig in teblig_tarihi_list:
                         new_para = deepcopy(paragraph._p)
                         new_para.find('.//' + qn('w:t')).text = (
-                            f"{teblig['adet']} dönem için tebliğ {"tarihleri" if leases.count() > 1 else "tarihi"} "
+                            f"{teblig['adet']} sözleşme için tebliğ {"tarihleri" if leases.count() > 1 else "tarihi"} "
                             f"{teblig['tarih']}{teblig['tarih_eki']}"
                         )
                         paragraph._p.addprevious(new_para)
