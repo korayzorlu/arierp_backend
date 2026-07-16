@@ -50,3 +50,19 @@ class KrsReportAdmin(admin.ModelAdmin):
     
     class Meta:
         model = KrsReport
+
+@admin.register(KrsReportDocument)
+class KrsReportDocumentAdmin(admin.ModelAdmin):
+    list_display = ["company","label","created_date"]
+    list_display_links = ["label"]
+    search_fields = ["company__name","label"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["company"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    class Meta:
+        model = KrsReportDocument

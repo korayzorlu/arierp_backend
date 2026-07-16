@@ -203,8 +203,8 @@ class KrsReportList(ModelViewSet, QueryListAPIView):
     serializer_class = KrsReportListSerializer
     filterset_class = KrsReportFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ["created_date","contract__code"]
-    ordering = ['-created_date']
+    ordering_fields = ["contract__contract_id","kayit_turu","hesap_numarasi","created_date","contract__code"]
+    ordering = ['-hesap_numarasi','kayit_turu','-created_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')

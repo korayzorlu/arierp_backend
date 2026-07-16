@@ -169,6 +169,55 @@ class TedbirKarariGostergesi(models.TextChoices):
     _ = ' ', 'Mahkeme tarafından verilen kredi ödemelerinin durdurulmasına yönelik hiç bir tedbir kararı bulunmuyor.'
     _1 = '1', 'Mahkeme tarafından kredi ödemelerinin durdurulmasına yönelik verilen tedbir kararı bulunuyor.'
 
+class BasvuruSahibiTuru(models.TextChoices):
+    _1 = '1', 'Esas'
+    _2 = '2', 'Müşterek Borçlu'
+    _3 = '3', 'Kefil'
+    _4 = '4', 'Diğer Teminatın Sahibi'
+    _5 = '5', 'Ek kart kullanıcısı'
+    _8 = '8', 'Diğer'
+    _9 = '9', 'Bilinmiyor'
+
+class KimlikTuru(models.TextChoices):
+    _1 = '1', 'Pasaport'
+    _2 = '2', 'Sürücü Belgesi'
+    _3 = '3', 'Nüfus Cüzdanı'
+    _4 = '4', 'Ayrılmış Alan'
+    _5 = '5', 'Vergi Numarası'
+    _6 = '6', 'TC Kimlik Numarası / Yabancı Kimlik Numarası'
+    _7 = '7', 'KKTC Kimlik No'
+    _8 = '8', 'Diğer'
+    _9 = '9', 'Bilinmiyor'
+
+class Uyruk(models.TextChoices):
+    _01 = '01', 'İngiltere'
+    _02 = '02', 'Almanya'
+    _03 = '03', 'Fransa'
+    _04 = '04', 'İtalya'
+    _05 = '05', 'İspanya'
+    _06 = '06', 'Hollanda'
+    _07 = '07', 'Yunanistan'
+    _08 = '08', 'Türkiye'
+    _09 = '09', 'KKTC'
+    _21 = '21', 'Güney Afrika Cumhuriyeti'
+    _41 = '41', 'Amerika Birleşik Devletleri'
+    _42 = '42', 'Kanada'
+    _43 = '43', 'Meksika'
+    _44 = '44', 'Orta Amerika'
+    _45 = '45', 'Güney Amerika'
+    _61 = '61', 'Hindistan'
+    _62 = '62', 'Iran'
+    _63 = '63', 'Irak'
+    _64 = '64', 'Çin'
+    _65 = '65', 'Japonya'
+    _81 = '81', 'Avusturalya'
+    _98 = '98', 'Diğer'
+    _99 = '99', 'Bilinmeyen'
+
+class Cinsiyet(models.TextChoices):
+    ERKEK = '1', 'Erkek'
+    KADIN = '2', 'Kadın'
+
 class RiskGrubu(models.TextChoices):
     """
     !!! YER TUTUCU SINIFLANDIRMA !!!
@@ -315,6 +364,22 @@ class KrsReport(models.Model):
     olusturma_tarihi = models.CharField(_("Oluşturma Tarihi"), max_length=8, null=True, blank=True)
     bildirim_tarihi = models.CharField(_("Bildirim Tarihi"), max_length=8, null=True, blank=True)
 
+    #CS0200 özel alanlar
+    hesap_sahibinin_numarasi = models.CharField(_("Hesap Sahibinin Numarası"), max_length=1, null=True, blank=True)
+    hesap_sahibi_turu = models.CharField(_("Hesap Sahibi Türü"), max_length=25, choices=BasvuruSahibiTuru.choices, blank=True, null=True)
+    birinci_kimlik_turu = models.CharField(_("Birinci Kimlik Türü"), max_length=25, choices=KimlikTuru.choices, blank=True, null=True)
+    birinci_kimlik_numarasi = models.CharField(_("Birinci Kimlik Numarası"), max_length=20, null=True, blank=True)
+    ikinci_kimlik_turu = models.CharField(_("İkinci Kimlik Türü"), max_length=25, choices=KimlikTuru.choices, blank=True, null=True)
+    ikinci_kimlik_numarasi = models.CharField(_("İkinci Kimlik Numarası"), max_length=20, null=True, blank=True)
+    uyruk = models.CharField(_("Uyruk"), max_length=2, choices=Uyruk.choices, blank=True, null=True)
+    soyadi = models.CharField(_("Soyadı"), max_length=30, null=True, blank=True)
+    soyadi_eki = models.CharField(_("Soyadı Eki"), max_length=10, null=True, blank=True)
+    ilk_ad_1 = models.CharField(_("İlk Ad 1"), max_length=15, null=True, blank=True)
+    ilk_ad_2 = models.CharField(_("İlk Ad 2"), max_length=15, null=True, blank=True)
+    anne_adi = models.CharField(_("Anne Adı"), max_length=15, null=True, blank=True)
+    baba_adi = models.CharField(_("Baba Adı"), max_length=15, null=True, blank=True)
+    cinsiyet = models.CharField(_("Cinsiyet"), max_length=1, choices=Cinsiyet.choices, blank=True, null=True)
+
     hesap_numarasi = models.CharField(_("Hesap Numarası"), max_length=20, null=True, blank=True)
     sube_kodu = models.CharField(_("Şube Kodu"), max_length=8, null=True, blank=True)
     birim_kodu = models.CharField(_("Birim Kodu"), max_length=5, null=True, blank=True)
@@ -375,3 +440,23 @@ class KrsReport(models.Model):
 
     def __str__(self):
         return str(self.uuid)
+    
+def krs_report_document_upload_path(instance, filename):
+    return f"docs/{instance.company.uuid}/krs/krs_reports/documents/{filename}"
+
+class KrsReportDocument(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="krs_report_documents")
+
+    label = models.CharField(_("Label"), max_length=250, null=True, blank=True)
+    file = models.FileField(_("File"), upload_to=krs_report_document_upload_path, null=True, blank=True, help_text=_("Please upload a file."))
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("KRS Rapor Dosyası")
+        verbose_name_plural = _("KRS Rapor Dosyaları")
+
+    def __str__(self):
+        return str(f"{self.label}")

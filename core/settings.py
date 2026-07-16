@@ -544,6 +544,7 @@ MAINTENANCE_MODE = config('MAINTENANCE_MODE', cast = bool, default = False)
 CORS_ALLOW_CREDENTIALS = True
 #CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if os.getenv("CORS_ALLOWED_ORIGINS", "") else []
+CORS_EXPOSE_HEADERS = ["Content-Disposition"] #????
 
 CSRF_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if os.getenv("CSRF_TRUSTED_ORIGINS", "") else []

@@ -51,6 +51,7 @@ class KrsReportListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
     contract = serializers.SerializerMethodField()
+    contract_id = serializers.SerializerMethodField()
     kayit_turu = serializers.CharField()
     versiyon = serializers.CharField()
     uye_kodu = serializers.CharField()
@@ -116,3 +117,6 @@ class KrsReportListSerializer(serializers.Serializer):
     
     def get_contract(self, obj):
         return obj.contract.code if obj.contract else ''
+    
+    def get_contract_id(self, obj):
+        return obj.contract.contract_id if obj.contract else ''

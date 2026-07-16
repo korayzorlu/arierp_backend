@@ -183,7 +183,9 @@ class Partner(models.Model):
     is_turkkep = models.BooleanField(default=False)
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE, related_name="sector_partners", blank=True, null=True)
 
+    mother_name = models.CharField(_("Mother Name"), max_length=140, blank=True, null=True)
     father_name = models.CharField(_("Father Name"), max_length=140, blank=True, null=True)
+    sex = models.CharField(_("Sex"), max_length=25, blank=True, null=True)
     birthday = models.DateField(_("Birthday"), blank=True, null=True)
     birth_place = models.CharField(_("Birth Place"), max_length=140, blank=True, null=True)
 

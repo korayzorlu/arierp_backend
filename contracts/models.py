@@ -51,13 +51,16 @@ class Contract(models.Model):
     def __str__(self):
         return str(self.code)
     
+def contract_document_upload_path(instance, filename):
+    return f"docs/{instance.company.uuid}/contracts/contract_documents/documents/{filename}"
+
 class ContractDocument(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="contract_documents")
 
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_contract_documents", null=True, blank=True)
     label = models.CharField(_("Label"), max_length=250, null=True, blank=True)
-    file = models.FileField(_("File"), upload_to='docs/contracts/contract/documents/', null=True, blank=True, help_text=_("Please upload a file."))
+    file = models.FileField(_("File"), upload_to=contract_document_upload_path, null=True, blank=True, help_text=_("Please upload a file."))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

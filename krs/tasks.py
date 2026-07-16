@@ -26,6 +26,8 @@ from typing import Optional
 from celery import shared_task
 from .services.pipeline import run_krs_pipeline
 
+from .utils.report_utils import create_krs_report
+
 
 @shared_task(name="krs.tasks.run_krs_pipeline_task")
 def run_krs_pipeline_task(
@@ -40,3 +42,8 @@ def run_krs_pipeline_task(
     parsed = date.fromisoformat(rapor_tarihi) if rapor_tarihi else None
     count = run_krs_pipeline(company_id, parsed, mod=mod)
     return f"{count} sözleşme için KRS hesaplandı (company={company_id}, mod={mod})."
+
+@shared_task()
+def generate_report_task(company_uuid):
+    create_krs_report(company_uuid)
+    
