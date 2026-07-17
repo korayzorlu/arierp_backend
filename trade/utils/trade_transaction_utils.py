@@ -45,7 +45,7 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
             ids = list(
                 TradeTransaction.objects.annotate(
                     trade_transaction_id_int=Cast('trade_transaction_id', output_field=BigIntegerField())
-                ).order_by('-record_date', '-trade_transaction_id_int').values_list('pk', flat=True)[:10000]
+                ).order_by('-trade_transaction_id_int').values_list('pk', flat=True)[:10000]
             )
             TradeTransaction.objects.filter(pk__in=ids).delete()
 
