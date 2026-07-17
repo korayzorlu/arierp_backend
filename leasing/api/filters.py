@@ -16,6 +16,7 @@ from .serializers import *
 class LeaseFilter(FilterSet):
     code = CharFilter(field_name='code', lookup_expr='icontains')
     contract = CharFilter(field_name='contract__code', lookup_expr='exact')
+    contract_id = CharFilter(field_name='contract__contract_id', lookup_expr='exact')
     partner = CharFilter(field_name='contract__partner__name', lookup_expr='icontains')
     partner_tc = CharFilter(field_name='contract__partner__tc_vkn_no', lookup_expr='icontains')
     activation_date = CharFilter(field_name='activation_date', lookup_expr='icontains')
