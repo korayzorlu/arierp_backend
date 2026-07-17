@@ -84,6 +84,11 @@ class MenuItemListSerializer(serializers.Serializer):
                     {"type" : "item", "class" : ["default"], "label" : "Kapama Detayları", "icon" : "paid", "route" : "/kapama-detaylari"},
                     {"type" : "item", "class" : ["default"], "label" : "Kapama Hareketleri", "icon" : "paid", "route" : "/kapama-hareketleri"},
                     {"type" : "item", "class" : ["default"], "label" : "KRS Raporları", "icon" : "paid", "route" : "/krs-raporlari"},
+                    {"type" : "item", "class" : ["default"], "label" : "CS0000 Başlık Kaydı", "icon" : "paid", "route" : "/krs-reports-cs0000"},
+                    {"type" : "item", "class" : ["default"], "label" : "CS0100 Hesap Kaydı", "icon" : "paid", "route" : "/krs-reports-cs0100"},
+                    {"type" : "item", "class" : ["default"], "label" : "CS0200 Müşteri Kaydı", "icon" : "paid", "route" : "/krs-reports-cs0200"},
+                    {"type" : "item", "class" : ["default"], "label" : "CS0301 Adres Kaydı", "icon" : "paid", "route" : "/krs-reports-cs0301"},
+                    {"type" : "item", "class" : ["default"], "label" : "CS9999 Bitiş Kaydı", "icon" : "paid", "route" : "/krs-reports-cs9999"},
                 ]},
             ]},   
             #========================

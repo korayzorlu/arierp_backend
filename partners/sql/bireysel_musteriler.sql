@@ -57,3 +57,4 @@ LEFT OUTER JOIN dbo.CRM_SGK_JOB_CODE_COMBO sgk
 --     dbo.CrmContact.PepList = '1'
 -- ORDER BY
 --     dbo.CrmContact.FullName ASC
+

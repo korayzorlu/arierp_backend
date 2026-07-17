@@ -11,6 +11,7 @@ from krs.models import *
 from datetime import date, datetime
 import io
 import os
+from decimal import Decimal, ROUND_HALF_UP
 
 INSTITUTION_CODE = "0100309309"          # CS0000/CS9999 header'ındaki 10-haneli kurum kodu
 INSTITUTION_REF  = INSTITUTION_CODE[2:10]  # sözleşme refansında kullanılan 8 haneli kısım
@@ -60,7 +61,15 @@ def make_cs0100(krs_report):
         86: krs_report.kredi_turu,
         88: krs_report.faiz_orani_gostergesi,
         89: krs_report.kredi_kullanim_amaci,
-        91: "            "
+        91: " " * 12,
+        103: krs_report.teminat_gostergesi,
+        104: krs_report.kredi_tutari,
+        113: krs_report.depozito_tutari,
+        122: krs_report.sozlesme_suresi,
+        125: krs_report.odeme_sikligi,
+        127: krs_report.taksit_tutari,
+        136: krs_report.son_taksit_tutari,
+        145: krs_report.taksit_sayisi,
     })
 
 def make_cs0200(krs_report):
@@ -89,9 +98,57 @@ def make_cs0200(krs_report):
         198: " " * 30,
         228: krs_report.anne_adi,
         243: krs_report.baba_adi,
+        258: krs_report.cinsiyet,
+        259: " " * 60,
+        319: krs_report.dogum_tarihi,
+        327: krs_report.dogum_yeri,
+        357: " " * 30,
+        387: " " * 10,
+        397: " ",
+        398: " " * 102,
     })
 
+def make_cs0301(krs_report):
+    return _record({
+        0: krs_report.kayit_turu,
+        6: krs_report.versiyon,
+        8: krs_report.uye_kodu,
+        13: krs_report.portfoy_kodu,
+        16: krs_report.portfoy_alt_kodu,
+        18: krs_report.hesap_numarasi,
+        38: krs_report.hesap_sahibinin_numarasi,
+        39: krs_report.ozel_talimat_gostergesi,
+        41: krs_report.adres_tipi,
+        42: krs_report.simdiki_onceki_adres_gostergesi,
+        43: " " * 8,
+        51: " " * 8,
+        59: " " * 4,
+        63: krs_report.satir_1,
+        93: krs_report.satir_2,
+        123: krs_report.satir_3,
+        153: krs_report.satir_4,
+        183: " " * 10,
+        193: " " * 307,
+    })
 
+def make_cs9999(krs_report):
+    return _record({
+        0: krs_report.kayit_turu,
+        6: krs_report.versiyon,
+        8: krs_report.uye_kodu,
+        13: krs_report.portfoy_kodu,
+        16: " " * 62,
+        78: krs_report.hesap_kayitlarinin_toplam_sayisi,
+        85: krs_report.diger_para_birimine_gore_hesap_kayitlarinin_toplam_sayisi,
+        92: krs_report.hesap_gecmisi_kayitlarinin_toplam_sayisi,
+        99: krs_report.isim_kayitlarinin_toplam_sayisi,
+        106: krs_report.formatlanmamis_adres_kayitlarinin_toplam_sayisi,
+        113: krs_report.detayli_kisisel_bilgiler_kayitlarinin_toplam_sayisi,
+        120: krs_report.detayli_isveren_bilgileri_kayitlarinin_toplam_sayisi,
+        127: krs_report.detayli_banka_bilgileri_kayitlarinin_toplam_sayisi,
+        134: " " * 366,
+        
+    })
 
 
 def make_krs_report(company, date):
@@ -120,7 +177,7 @@ def create_krs_report(company_uuid):
         Q(is_last_project=True) &
         # Q(is_last_project_arinet=True) &
         ~Q(lease_status__in=["iptal_edildi","feshedildi","planlandi"]) &
-        Q(activation_date=date(2026,7,9))
+        Q(activation_date=date(2026,7,13))
     )
 
     print(leases)
@@ -141,6 +198,7 @@ def create_krs_report(company_uuid):
     
     #satır kaydı
     for lease in leases:
+        #para birimi
         if lease.currency.code == "TRY":
             doviz_kodu = "949"
         elif lease.currency.code == "USD":
@@ -150,7 +208,25 @@ def create_krs_report(company_uuid):
         else:
             doviz_kodu = "000"
 
-        if lease.activation_date == date(2026,7,9):
+        #cinsiyet
+        if lease.contract and lease.contract.partner and lease.contract.partner.sex:
+            if lease.contract.partner.sex == "Bay":
+                cinsiyet = Cinsiyet._1
+            elif lease.contract.partner.sex == "Bayan":
+                cinsiyet = Cinsiyet._2
+            else:
+                cinsiyet = Cinsiyet._9
+        else:
+            cinsiyet = Cinsiyet._9
+
+        if lease.contract and lease.contract.partner and lease.contract.partner.address:
+            adres = lease.contract.partner.address
+            satir1 = adres[0:30].ljust(30)
+            satir2 = adres[30:60].ljust(30)
+            satir3 = adres[60:90].ljust(30)
+            satir4 = adres[90:120].ljust(30)
+
+        if lease.activation_date == date(2026,7,13):
             KrsReport.objects.create(
                 company=company,
                 contract=lease.contract,
@@ -171,7 +247,54 @@ def create_krs_report(company_uuid):
                 ilk_ad_1=lease.contract.partner.first_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.first_name else " " * 15,
                 anne_adi=lease.contract.partner.mother_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.mother_name else " " * 15,
                 baba_adi=lease.contract.partner.father_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.father_name else " " * 15,
+                cinsiyet=cinsiyet,
+                dogum_tarihi=lease.contract.partner.birthday.strftime("%Y%m%d") if lease.contract and lease.contract.partner and lease.contract.partner.birthday else "99999999",
+                dogum_yeri=lease.contract.partner.birth_place.ljust(30) if lease.contract and lease.contract.partner and lease.contract.partner.birth_place else " " * 30,
+
             )
+
+            KrsReport.objects.create(
+                company=company,
+                contract=lease.contract,
+                lease=lease,
+                kayit_turu=KayitTuru.CS0301,
+                versiyon=Versiyon._02,
+                uye_kodu="00309",
+                portfoy_kodu="309",
+                portfoy_alt_kodu="00",
+                hesap_numarasi=str(lease.contract.contract_id).ljust(20),
+                hesap_sahibinin_numarasi="1",
+                ozel_talimat_gostergesi="  ",
+                adres_tipi=AdresTuru._1,
+                simdiki_onceki_adres_gostergesi=SimdikiOncekiAdresKodu._0,
+                adrese_tasindigi_tarih="99999999",
+                adresten_ayrildigi_tarih="99999999",
+                satir_1=satir1,
+                satir_2=satir2,
+                satir_3=satir3,
+                satir_4=satir4
+            )
+
+        #kredi tutarı
+        if lease.operasyon_baz_maliyet <= 2:
+            old_lease = Lease.objects.filter(
+                ~Q(lease_id=lease.lease_id) &
+                Q(main_lease_id=lease.main_lease_id) &
+                Q(lease_status__in=["baskasina_transfer_edildi"]) &
+                Q(operasyon_baz_maliyet__gt=2)
+            ).order_by("-lease_id").first()
+
+            kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
+        else:
+            kredi_tutari = lease.operasyon_baz_maliyet
+
+        #peşinat
+        installment = lease.lease_installments.filter(type='2').first()
+        depozito_tutari = installment.amount if installment else Decimal("0.00")
+
+        #taksit
+        last_installment = lease.lease_installments.filter(type='1').order_by("-sequency").first()
+        taksit_tutari = last_installment.payment_amount if last_installment else Decimal("0.00")
 
         KrsReport.objects.create(
             company=company,
@@ -189,13 +312,37 @@ def create_krs_report(company_uuid):
             doviz_kodu=doviz_kodu,
             doviz_boleni="0",
             ozel_talimat_gostergesi="  ",
-            acilis_tarihi=lease.activation_date.strftime("%Y%m%d") if lease and lease.activation_date else "00000000",
+            acilis_tarihi=lease.activation_date.strftime("%Y%m%d") if lease and lease.activation_date else "99999999",
             basvuru_referans_numarasi="                    ",
             kredi_turu=KrediTuru._03,
             faiz_orani_gostergesi=FaizOraniGostergesi._1,
-            kredi_kullanim_amaci=KrediKullanimAmaci._12
+            kredi_kullanim_amaci=KrediKullanimAmaci._12,
+            teminat_gostergesi = TeminatGostergesi._0,
+            kredi_tutari=str(int(kredi_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            depozito_tutari=str(int(depozito_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            sozlesme_suresi=str(lease.vade).rjust(3, "0") if lease else "000",
+            odeme_sikligi="01",
+            taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            son_taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            taksit_sayisi=str(lease.vade).rjust(3, "0") if lease else "000"
         )
         
+    #bitiş kaydı
+    KrsReport.objects.create(
+        company=company,
+        kayit_turu=KayitTuru.CS9999,
+        versiyon=Versiyon._01,
+        uye_kodu="00309",
+        portfoy_kodu="309",
+        hesap_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0100).count()).rjust(7, "0"),
+        diger_para_birimine_gore_hesap_kayitlarinin_toplam_sayisi="0000000",
+        hesap_gecmisi_kayitlarinin_toplam_sayisi="0000000",
+        isim_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0200).count()).rjust(7, "0"),
+        formatlanmamis_adres_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0301).count()).rjust(7, "0"),
+        detayli_kisisel_bilgiler_kayitlarinin_toplam_sayisi="0000000",
+        detayli_isveren_bilgileri_kayitlarinin_toplam_sayisi="0000000",
+        detayli_banka_bilgileri_kayitlarinin_toplam_sayisi="0000000",
+    )
 
     buf = io.StringIO()
 
@@ -206,13 +353,18 @@ def create_krs_report(company_uuid):
             output_field=IntegerField(),
         ),
         kayit_turu_sira=Case(
-            When(kayit_turu=KayitTuru.CS0200, then=Value(0)),
-            When(kayit_turu=KayitTuru.CS0100, then=Value(1)),
+            When(kayit_turu=KayitTuru.CS0100, then=Value(0)),
+            When(kayit_turu=KayitTuru.CS0200, then=Value(1)),
             When(kayit_turu=KayitTuru.CS0301, then=Value(2)),
             default=Value(3),
             output_field=IntegerField(),
         ),
-    ).order_by("cs0000_first", "hesap_numarasi", "kayit_turu_sira")
+        cs9999_last=Case(
+            When(kayit_turu=KayitTuru.CS9999, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        ),
+    ).order_by("cs0000_first", "hesap_numarasi", "kayit_turu_sira", "cs9999_last")
     for krs_report in krs_reports:
         if krs_report.kayit_turu == KayitTuru.CS0000:
             buf.write(make_cs0000(krs_report) + "\n")
@@ -220,6 +372,10 @@ def create_krs_report(company_uuid):
             buf.write(make_cs0100(krs_report) + "\n")
         elif krs_report.kayit_turu == KayitTuru.CS0200:
             buf.write(make_cs0200(krs_report) + "\n")
+        elif krs_report.kayit_turu == KayitTuru.CS0301:
+            buf.write(make_cs0301(krs_report) + "\n")
+        elif krs_report.kayit_turu == KayitTuru.CS9999:
+            buf.write(make_cs9999(krs_report) + "\n")
 
     base_path = os.path.join(os.getcwd(), "media", "docs", str(company.uuid), "krs", "krs_reports")
     if not os.path.exists(base_path):

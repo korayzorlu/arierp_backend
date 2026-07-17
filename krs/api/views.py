@@ -203,8 +203,8 @@ class KrsReportList(ModelViewSet, QueryListAPIView):
     serializer_class = KrsReportListSerializer
     filterset_class = KrsReportFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ["contract__contract_id","kayit_turu","hesap_numarasi","created_date","contract__code"]
-    ordering = ['-hesap_numarasi','kayit_turu','-created_date']
+    # ordering_fields = ["created_date"]
+    # ordering = ['-created_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')
@@ -229,6 +229,249 @@ class KrsReportList(ModelViewSet, QueryListAPIView):
 
         queryset = KrsReport.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None)
+        ).annotate(
+            cs0000_first=Case(
+                When(kayit_turu=KayitTuru.CS0000, then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            ),
+            kayit_turu_sira=Case(
+                When(kayit_turu=KayitTuru.CS0100, then=Value(0)),
+                When(kayit_turu=KayitTuru.CS0200, then=Value(1)),
+                When(kayit_turu=KayitTuru.CS0301, then=Value(2)),
+                default=Value(3),
+                output_field=IntegerField(),
+            ),
+            cs9999_last=Case(
+                When(kayit_turu=KayitTuru.CS9999, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            ),
+        ).order_by("cs0000_first", "hesap_numarasi", "kayit_turu_sira", "cs9999_last")
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class KrsReportCS0000List(ModelViewSet, QueryListAPIView):
+    serializer_class = KrsReportCS0000ListSerializer
+    filterset_class = KrsReportFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ["created_date"]
+    ordering = ['-created_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = KrsReport.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(kayit_turu=KayitTuru.CS0000)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class KrsReportCS0100List(ModelViewSet, QueryListAPIView):
+    serializer_class = KrsReportCS0100ListSerializer
+    filterset_class = KrsReportFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ["created_date"]
+    ordering = ['-created_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = KrsReport.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(kayit_turu=KayitTuru.CS0100)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class KrsReportCS0200List(ModelViewSet, QueryListAPIView):
+    serializer_class = KrsReportCS0200ListSerializer
+    filterset_class = KrsReportFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ["created_date"]
+    ordering = ['-created_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = KrsReport.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(kayit_turu=KayitTuru.CS0200)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class KrsReportCS0301List(ModelViewSet, QueryListAPIView):
+    serializer_class = KrsReportCS0301ListSerializer
+    filterset_class = KrsReportFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ["created_date"]
+    ordering = ['-created_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = KrsReport.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(kayit_turu=KayitTuru.CS0301)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["contract__code"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset
+    
+class KrsReportCS9999List(ModelViewSet, QueryListAPIView):
+    serializer_class = KrsReportCS9999ListSerializer
+    filterset_class = KrsReportFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ["created_date"]
+    ordering = ['-created_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
+
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company"]
+
+        queryset = KrsReport.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None) &
+            Q(kayit_turu=KayitTuru.CS9999)
         )
 
         query = self.request.query_params.get('search[value]', None)

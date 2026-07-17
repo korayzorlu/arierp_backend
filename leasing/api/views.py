@@ -1,6 +1,6 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,F
-from django.db.models.functions import Lower,Upper
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,F,IntegerField
+from django.db.models.functions import Lower,Upper,Cast
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -261,9 +261,21 @@ class ActiveLeaseList(ModelViewSet, QueryListAPIView):
         page = self.paginate_queryset(queryset)
         objects = page if page is not None else queryset
 
+        # Tüm main_lease_id'leri topla, tek sorguda çek
+        main_lease_ids = [obj.main_lease_id for obj in objects if obj.main_lease_id]
+        all_old_leases = Lease.objects.filter(
+            main_lease_id__in=main_lease_ids
+        ).annotate(
+            lease_id_int=Cast('lease_id', IntegerField())
+        ).only('uuid', 'code', 'main_lease_id').order_by('-lease_id_int')
+        
+        old_leases_map = {}
+        for lease in all_old_leases:
+            old_leases_map.setdefault(lease.main_lease_id, []).append(lease)
+
         serializer = self.get_serializer(
             objects, many=True,
-            context={**self.get_serializer_context()}
+            context={**self.get_serializer_context(), 'old_leases_map': old_leases_map}
         )
 
         if page is not None:

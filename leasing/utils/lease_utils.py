@@ -142,6 +142,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.lease_status_update_date = make_aware(data.RiskIncludingLastUpdateDate) if data.RiskIncludingLastUpdateDate else None
                     obj.currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode)
                     obj.musteri_baz_maliyet = safe_decimal(data.CustomerBaseCost)
+                    obj.operasyon_baz_maliyet = safe_decimal(data.OperationBaseCost)
                     obj.vade = int(data.PaymentCount) or ""
                     obj.leasing_rate = safe_decimal(data.AnnualRate)
                     obj.irr = safe_decimal(data.OperationBaseIRR)
@@ -231,6 +232,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         lease_status_update_date = make_aware(data.RiskIncludingLastUpdateDate) if data.RiskIncludingLastUpdateDate else None,
                         currency = currencies_dict.get("TRY" if data.CurrencyCode == "TL" else data.CurrencyCode),
                         musteri_baz_maliyet = safe_decimal(data.CustomerBaseCost),
+                        operasyon_baz_maliyet = safe_decimal(data.OperationBaseCost),
                         vade = int(data.PaymentCount) or "",
                         leasing_rate = safe_decimal(data.AnnualRate),
                         irr = safe_decimal(data.OperationBaseIRR),
@@ -269,6 +271,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "lease_status_update_date",
                     "currency",
                     "musteri_baz_maliyet",
+                    "operasyon_baz_maliyet",
                     "vade",
                     "leasing_rate",
                     "irr",

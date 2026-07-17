@@ -169,6 +169,8 @@ class TedbirKarariGostergesi(models.TextChoices):
     _ = ' ', 'Mahkeme tarafından verilen kredi ödemelerinin durdurulmasına yönelik hiç bir tedbir kararı bulunmuyor.'
     _1 = '1', 'Mahkeme tarafından kredi ödemelerinin durdurulmasına yönelik verilen tedbir kararı bulunuyor.'
 
+
+
 class BasvuruSahibiTuru(models.TextChoices):
     _1 = '1', 'Esas'
     _2 = '2', 'Müşterek Borçlu'
@@ -215,8 +217,25 @@ class Uyruk(models.TextChoices):
     _99 = '99', 'Bilinmeyen'
 
 class Cinsiyet(models.TextChoices):
-    ERKEK = '1', 'Erkek'
-    KADIN = '2', 'Kadın'
+    _1 = '1', 'Erkek'
+    _2 = '2', 'Kadın'
+    _3 = '3', 'Ayrılmış Alan'
+    _9 = '9', 'Bilinmiyor'
+
+class AdresTuru(models.TextChoices):
+    _1 = '1', 'Ev Adresi'
+    _2 = '2', 'Posta Adresi'
+    _3 = '3', 'Posta Kutusu'
+    _4 = '4', 'İş Adresi'
+    _8 = '8', 'Diğer'
+    _9 = '9', 'Bilinmiyor'
+
+class SimdikiOncekiAdresKodu(models.TextChoices):
+    _0 = '0', 'Şimdiki'
+    _1 = '1', 'Önceki'
+    _2 = '2', 'İlişkili Adres'
+    _8 = '8', 'Diğer'
+    _9 = '9', 'Bilinmiyor'
 
 class RiskGrubu(models.TextChoices):
     """
@@ -379,6 +398,32 @@ class KrsReport(models.Model):
     anne_adi = models.CharField(_("Anne Adı"), max_length=15, null=True, blank=True)
     baba_adi = models.CharField(_("Baba Adı"), max_length=15, null=True, blank=True)
     cinsiyet = models.CharField(_("Cinsiyet"), max_length=1, choices=Cinsiyet.choices, blank=True, null=True)
+    firma_adi = models.CharField(_("Firma Adı"), max_length=60, null=True, blank=True)
+    dogum_tarihi = models.CharField(_("Doğum Tarihi"), max_length=8, null=True, blank=True)
+    dogum_yeri = models.CharField(_("Doğum Yeri"), max_length=30, null=True, blank=True)
+    kisinin_dogduru_bolge_il = models.CharField(_("Kişinin Doğduğu Bölge/İl"), max_length=30, null=True, blank=True)
+    dogum_yeri_kod = models.CharField(_("Doğum Yeri Kod"), max_length=10, null=True, blank=True)
+
+    #cs0301 özel alanlar
+    adres_tipi = models.CharField(_("Adres Tipi"), max_length=25, choices=AdresTuru.choices, blank=True, null=True)
+    simdiki_onceki_adres_gostergesi = models.CharField(_("Şimdiki/Önceki Adres Göstergesi"), max_length=25, choices=SimdikiOncekiAdresKodu.choices, blank=True, null=True)
+    adrese_tasindigi_tarih = models.CharField(_("Adrese Taşındığı Tarih"), max_length=8, null=True, blank=True)
+    adresten_ayrildigi_tarih = models.CharField(_("Adresten Ayrıldığı Tarih"), max_length=8, null=True, blank=True)
+    satir_1 = models.CharField(_("Satır 1"), max_length=30, null=True, blank=True)
+    satir_2 = models.CharField(_("Satır 2"), max_length=30, null=True, blank=True)
+    satir_3 = models.CharField(_("Satır 3"), max_length=30, null=True, blank=True)
+    satir_4 = models.CharField(_("Satır 4"), max_length=30, null=True, blank=True)
+    posta_kodu = models.CharField(_("Posta Kodu"), max_length=10, null=True, blank=True)
+
+    #cs9999 özel alanlar
+    hesap_kayitlarinin_toplam_sayisi = models.CharField(_("Hesap Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    diger_para_birimine_gore_hesap_kayitlarinin_toplam_sayisi = models.CharField(_("Diğer Para Birimine göre Hesap Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    hesap_gecmisi_kayitlarinin_toplam_sayisi = models.CharField(_("Hesap Geçmişi Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    isim_kayitlarinin_toplam_sayisi = models.CharField(_("İsim Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    formatlanmamis_adres_kayitlarinin_toplam_sayisi = models.CharField(_("Formatlanmamış Adres Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    detayli_kisisel_bilgiler_kayitlarinin_toplam_sayisi = models.CharField(_("Detaylı Kişisel Bilgiler Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    detayli_isveren_bilgileri_kayitlarinin_toplam_sayisi = models.CharField(_("Detaylı İşveren Bilgileri Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
+    detayli_banka_bilgileri_kayitlarinin_toplam_sayisi = models.CharField(_("Detaylı Banka Bilgileri Kayıtlarının Toplam Sayısı"), max_length=7, null=True, blank=True)
 
     hesap_numarasi = models.CharField(_("Hesap Numarası"), max_length=20, null=True, blank=True)
     sube_kodu = models.CharField(_("Şube Kodu"), max_length=8, null=True, blank=True)

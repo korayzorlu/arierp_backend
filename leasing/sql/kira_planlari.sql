@@ -16,6 +16,7 @@ SELECT
     lop.AnnualRate,
     d.DefinitionName AS SubStatuteName,
     lop.OperationBaseIRR,
+    lop.OperationBaseCost,
     (
         CASE
             WHEN lop.ApplicationID < 0 THEN 'S' + CAST(ABS(lop.ApplicationID) AS VARCHAR(50))
