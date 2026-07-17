@@ -52,6 +52,14 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         warning_notices = WarningNotice.objects.select_related().filter(Q(state__in=['Yeni', 'Geçerli']))
         comprehensive_warning_notices = ComprehensiveWarningNotice.objects.select_related().all()
         trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name='Kira').only("amount", "lease", "lease__lease_id")
+        virman_trade_transactions = TradeTransaction.objects.select_related("lease").filter(
+            Q(amount_type = '1')&
+            Q(posting_group_name='Kira')&
+            (
+                Q(description__icontains='virman')|
+                Q(description__icontains='Virman')
+            )
+        ).only("amount", "lease", "lease__lease_id")
         purchase_documents = PurchaseDocument.objects.select_related("lease").filter(lease__isnull=False).only("total_amount", "lease", "lease__lease_id")
         installments = Installment.objects.select_related("lease").filter(type__in = ['1','2']).only("amount", "type", "lease", "lease__lease_id")
         transfer_installments = Installment.objects.select_related("lease").filter(type = '5').only("amount", "type", "lease", "lease__lease_id")
@@ -63,6 +71,10 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         for tt in trade_transactions:
             if tt.lease and tt.lease.lease_id:
                 trade_transactions_dict[tt.lease.lease_id].append(tt)
+        virman_trade_transactions_dict = defaultdict(list)
+        for virman_tt in virman_trade_transactions:
+            if virman_tt.lease and virman_tt.lease.lease_id:
+                virman_trade_transactions_dict[virman_tt.lease.lease_id].append(virman_tt)
         purchase_documents_dict = defaultdict(list)
         for pd in purchase_documents:
             if pd.lease and pd.lease.lease_id:
@@ -160,7 +172,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     #ödeme kontrolü
                     obj_trade_transactions = trade_transactions_dict.get(obj.lease_id, [])
                     if obj_trade_transactions:
-                        paid_amount = sum([tt.amount for tt in obj_trade_transactions], Decimal('0.00'))
+                        paid_amount = sum([tt.amount for tt in obj_trade_transactions], Decimal('0.00')) - sum([virman_tt.amount for virman_tt in virman_trade_transactions_dict.get(obj.lease_id, [])], Decimal('0.00'))
                     else:
                         paid_amount = Decimal('0.00')
                     obj.paid_amount = paid_amount
