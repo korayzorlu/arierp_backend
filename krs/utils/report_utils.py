@@ -177,7 +177,7 @@ def create_krs_report(company_uuid):
         Q(is_last_project=True) &
         # Q(is_last_project_arinet=True) &
         ~Q(lease_status__in=["iptal_edildi","feshedildi","planlandi"]) &
-        Q(activation_date=date(2026,7,9))
+        Q(activation_date=date(2026,7,13))
     )
 
     print(leases)
@@ -226,7 +226,7 @@ def create_krs_report(company_uuid):
             satir3 = adres[60:90].ljust(30)
             satir4 = adres[90:120].ljust(30)
 
-        if lease.activation_date == date(2026,7,9):
+        if lease.activation_date == date(2026,7,13):
             KrsReport.objects.create(
                 company=company,
                 contract=lease.contract,
@@ -294,7 +294,7 @@ def create_krs_report(company_uuid):
 
         #taksit
         last_installment = lease.lease_installments.filter(type='1').order_by("-sequency").first()
-        taksit_tutari = last_installment.payment_amount if last_installment else Decimal("0.00")
+        taksit_tutari = last_installment.payment if last_installment else Decimal("0.00")
 
         KrsReport.objects.create(
             company=company,
