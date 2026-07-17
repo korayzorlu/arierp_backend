@@ -13,11 +13,16 @@ from common.utils.common_utils import normalize,safe_decimal
 from trade.models import *
 from contracts.models import Contract
 
-def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_code=None):
+def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_code=None, all=False):
     try:
         conn = pyodbc.connect(settings.ARI_CONNECTION_STRING)
-
-        SQL_PATH = os.path.join(settings.BASE_DIR, "trade","sql",f"cari_hareketler.sql" if not contract_code else f"cari_hareketler_filtreli.sql")
+        
+        if all:
+            SQL_PATH = os.path.join(settings.BASE_DIR, "trade","sql",f"cari_hareketler_all.sql")
+        elif contract_code:
+            SQL_PATH = os.path.join(settings.BASE_DIR, "trade","sql",f"cari_hareketler_filtreli.sql")
+        else:
+            SQL_PATH = os.path.join(settings.BASE_DIR, "trade","sql",f"cari_hareketler.sql")
         with open(SQL_PATH, "r", encoding="utf-8") as file:
             SQL_QUERY = file.read()
 
@@ -31,12 +36,18 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
 
         #TradeTransaction.objects.filter(company__id=int(company)).order_by('-created_date')[:10000].delete()
 
-        ids = list(
-            TradeTransaction.objects.annotate(
-                trade_transaction_id_int=Cast('trade_transaction_id', output_field=BigIntegerField())
-            ).order_by('-record_date', '-trade_transaction_id_int').values_list('pk', flat=True)[:10000]
-        )
-        TradeTransaction.objects.filter(pk__in=ids).delete()
+        if all:
+            TradeTransaction.objects.filter(company__id=int(company)).delete()
+        elif contract_code:
+            contract = Contract.objects.select_related().filter(company__id=int(company), code=contract_code).first()
+            TradeTransaction.objects.filter(company__id=int(company), lease__contract=contract).delete()
+        else:
+            ids = list(
+                TradeTransaction.objects.annotate(
+                    trade_transaction_id_int=Cast('trade_transaction_id', output_field=BigIntegerField())
+                ).order_by('-record_date', '-trade_transaction_id_int').values_list('pk', flat=True)[:10000]
+            )
+            TradeTransaction.objects.filter(pk__in=ids).delete()
 
         # trade_transactions = TradeTransaction.objects.select_related("partner","lease","currency").filter(company__id=int(company))
         # partners = Partner.objects.select_related().filter(company__id=int(company))

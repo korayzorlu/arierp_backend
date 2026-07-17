@@ -70,6 +70,11 @@ def make_cs0100(krs_report):
         127: krs_report.taksit_tutari,
         136: krs_report.son_taksit_tutari,
         145: krs_report.taksit_sayisi,
+        148: krs_report.odeme_sekli,
+        150: " " * 9,
+        159: " " * 25,
+        184: krs_report.hesap_odeme_durumu,
+        185: " " * 1,
     })
 
 def make_cs0200(krs_report):
@@ -290,11 +295,32 @@ def create_krs_report(company_uuid):
 
         #peşinat
         installment = lease.lease_installments.filter(type='2').first()
-        depozito_tutari = installment.amount if installment else Decimal("0.00")
+        depozito_tutari = installment.payment if installment else Decimal("0.00")
 
         #taksit
         last_installment = lease.lease_installments.filter(type='1').order_by("-sequency").first()
         taksit_tutari = last_installment.payment if last_installment else Decimal("0.00")
+
+        #gecikme
+        if lease.overdue_days > 0:
+            overdue_start_date = datetime.now().date() - timezone.timedelta(days=lease.overdue_days)
+            overdue_installments_count = lease.lease_installments.filter(type='1', payment_date__gte=overdue_start_date).count()
+            if overdue_installments_count == 1:
+                hesap_odeme_durumu = HesapOdemeDurumu._1
+            elif overdue_installments_count == 2:
+                hesap_odeme_durumu = HesapOdemeDurumu._2
+            elif overdue_installments_count == 3:
+                hesap_odeme_durumu = HesapOdemeDurumu._3
+            elif overdue_installments_count == 4:
+                hesap_odeme_durumu = HesapOdemeDurumu._4
+            elif overdue_installments_count == 5:
+                hesap_odeme_durumu = HesapOdemeDurumu._5
+            elif overdue_installments_count == 6:
+                hesap_odeme_durumu = HesapOdemeDurumu._6
+            elif overdue_installments_count > 6:
+                hesap_odeme_durumu = HesapOdemeDurumu._6
+        else:
+            hesap_odeme_durumu = HesapOdemeDurumu._0
 
         KrsReport.objects.create(
             company=company,
@@ -324,7 +350,9 @@ def create_krs_report(company_uuid):
             odeme_sikligi="01",
             taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
             son_taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            taksit_sayisi=str(lease.vade).rjust(3, "0") if lease else "000"
+            taksit_sayisi=str(lease.vade).rjust(3, "0") if lease else "000",
+            odeme_sekli=OdemeSekli._04,
+            hesap_odeme_durumu=hesap_odeme_durumu
         )
         
     #bitiş kaydı

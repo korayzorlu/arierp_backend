@@ -23,12 +23,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-c', type=str, help='Company to associate with operation')
         parser.add_argument('-k', type=str, help='Contract ID to associate with operation')
+        parser.add_argument('-a', action='store_true', default=False, help='All flag for operation')
 
     def handle(self, *args, **options):
         company = options.get('c')
         contract_code = options.get('k')
+        all = options.get('a')
 
         print("processing...")
 
-        fetch_trade_transactions.delay(company,contract_code=contract_code)
+        fetch_trade_transactions.delay(company, contract_code=contract_code, all=all)
         print("done!")

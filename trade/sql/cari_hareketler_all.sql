@@ -1,4 +1,4 @@
-SELECT TOP 20000
+SELECT
     TrnId,
     CrmCustomerWithTypesLightTradeRisk.CustomerId AS CustomerId,
     TrnDescription,
@@ -67,9 +67,9 @@ WHERE
     AND NOT (TrnIsDeleted = 2 AND TrnPostingType > 120 AND TrnPostingType < 110)
     -- AND TrnAccountId = 36077
     AND TrnPostingType <> 461
-    AND TrnOprContractId = ?
+    -- AND TrnOprContractId = 42601
     -- AND TrnOprProjectId = 61034
-    --AND TrnOprLeasingOperationPrjId = 94391
+    -- AND TrnOprLeasingOperationPrjId = 97479
     AND (
         lopStatu.LastSubStatuId IN (
             405, 416, 415, 402, 2028, 2057, 2041, 2058, 2059, 408, 2073, 806, 412, 2047, 503, 1026, 1014, 2032, 2072,
@@ -80,6 +80,6 @@ WHERE
     )
     AND TrnPostingGroupId IN (1, 4, 6, 7, 9, 13, 16, 17, 19, 20, 21, 23, 27, 28, 29)
     AND TrnAccountType = 11
-    AND TrnPostingTypeDetail <> 80 
+    AND TrnPostingTypeDetail <> 80
 ORDER BY
-    TrnCreateDate DESC
+    TrnId DESC
