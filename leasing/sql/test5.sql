@@ -1,8 +1,5 @@
-SELECT TOP 1000 MainLopId,TransferPeriodTypeId,IsRevision,IS_LAST_PROJECT,Incite,ProjectLeasingTypeId,LeasingTypeId,*
+SELECT TOP 1000 *
 
 FROM
     LeasingOperationProject
-WHERE
-    MainLopId = '50116'
-ORDER BY
-    OperationProjectId DESC
+WHERE MainLopId = '90992'
