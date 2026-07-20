@@ -241,6 +241,8 @@ class InstallmentInformationView(LoginRequiredMixin,View):
                 'vat': obj.vat,
                 'vat_amount': obj.vat_amount,
                 'payment': obj.payment,
+                'interest': obj.interest,
+                'principal': obj.principal,
                 'amount' : obj.amount,
                 'payment_date':obj.payment_date.strftime('%d.%m.%Y') if obj.payment_date else "",
                 'currency':obj.lease.currency.code if obj.lease.currency else "",

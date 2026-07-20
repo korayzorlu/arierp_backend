@@ -1,4 +1,4 @@
-from django.db.models import QuerySet, Q, Case, When, Value, IntegerField
+from django.db.models import QuerySet, Q, Case, When, Value, IntegerField, Sum
 from django.utils import timezone
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -75,6 +75,13 @@ def make_cs0100(krs_report):
         159: " " * 25,
         184: krs_report.hesap_odeme_durumu,
         185: " " * 1,
+        186: krs_report.toplam_borc_bakiyesi,
+        195: krs_report.kredi_bakiyesi_gostergesi,
+        196: krs_report.borc_faizi_bakiyesi,
+        205: krs_report.gecikmedeki_bakiye,
+        214: krs_report.vadesinde_yapilmayan_odeme,
+        216: krs_report.son_odeme_tutari,
+        225: krs_report.son_odeme_tarihi
     })
 
 def make_cs0200(krs_report):
@@ -182,7 +189,10 @@ def create_krs_report(company_uuid):
         Q(is_last_project=True) &
         # Q(is_last_project_arinet=True) &
         ~Q(lease_status__in=["iptal_edildi","feshedildi","planlandi"]) &
-        Q(activation_date=date(2026,7,13))
+        (
+            Q(activation_date=date(2026,7,9)) |
+            Q(code='60702/3.1.1')
+        )
     )
 
     print(leases)
@@ -231,7 +241,7 @@ def create_krs_report(company_uuid):
             satir3 = adres[60:90].ljust(30)
             satir4 = adres[90:120].ljust(30)
 
-        if lease.activation_date == date(2026,7,13):
+        if lease.activation_date == date(2026,7,9) or lease.code == '60702/3.1.1':
             KrsReport.objects.create(
                 company=company,
                 contract=lease.contract,
@@ -281,14 +291,24 @@ def create_krs_report(company_uuid):
             )
 
         #kredi tutarı
-        if lease.operasyon_baz_maliyet <= 2:
+        if lease.operasyon_baz_maliyet <= Decimal("2.00"):
             old_lease = Lease.objects.filter(
                 ~Q(lease_id=lease.lease_id) &
                 Q(main_lease_id=lease.main_lease_id) &
                 Q(lease_status__in=["baskasina_transfer_edildi"]) &
-                Q(operasyon_baz_maliyet__gt=2)
+                Q(operasyon_baz_maliyet__gt=Decimal("2.00"))
             ).order_by("-lease_id").first()
-
+            kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
+        elif "/" in lease.code:
+            cleaned_code = lease.code.split("/")[0] + ".1.1"
+            old_lease = Lease.objects.filter(
+                code=cleaned_code
+            ).first()
+            if not old_lease:
+                cleaned_code = lease.code.split("/")[0] + ".1.0"
+                old_lease = Lease.objects.filter(
+                code=cleaned_code
+            ).first()
             kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
         else:
             kredi_tutari = lease.operasyon_baz_maliyet
@@ -301,10 +321,14 @@ def create_krs_report(company_uuid):
         last_installment = lease.lease_installments.filter(type='1').order_by("-sequency").first()
         taksit_tutari = last_installment.payment if last_installment else Decimal("0.00")
 
+        #son taksit
+        last2_installment = lease.lease_installments.filter(type='1', payment_date__lt=datetime.now().date()).order_by("-sequency").first()
+        taksit_tutari = last2_installment.payment if last2_installment else Decimal("0.00")
+
         #gecikme
         if lease.overdue_days > 0:
             overdue_start_date = datetime.now().date() - timezone.timedelta(days=lease.overdue_days)
-            overdue_installments_count = lease.lease_installments.filter(type='1', payment_date__gte=overdue_start_date).count()
+            overdue_installments_count = lease.lease_installments.filter(type='1', payment_date__gte=overdue_start_date, payment_date__lt=datetime.now().date()).count()
             if overdue_installments_count == 1:
                 hesap_odeme_durumu = HesapOdemeDurumu._1
             elif overdue_installments_count == 2:
@@ -321,6 +345,15 @@ def create_krs_report(company_uuid):
                 hesap_odeme_durumu = HesapOdemeDurumu._6
         else:
             hesap_odeme_durumu = HesapOdemeDurumu._0
+
+        #toplam borc
+        next_installments_total = lease.lease_installments.filter(type='1', payment_date__gte=datetime.now().date()).aggregate(total=Sum('principal'))['total'] or Decimal("0.00")
+        toplam_borc_bakiyesi = (lease.overdue_amount) + next_installments_total
+        if toplam_borc_bakiyesi < 0:
+            toplam_borc_bakiyesi = abs(toplam_borc_bakiyesi)
+            kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._1
+        else:
+            kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._0
 
         KrsReport.objects.create(
             company=company,
@@ -352,7 +385,14 @@ def create_krs_report(company_uuid):
             son_taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
             taksit_sayisi=str(lease.vade).rjust(3, "0") if lease else "000",
             odeme_sekli=OdemeSekli._04,
-            hesap_odeme_durumu=hesap_odeme_durumu
+            hesap_odeme_durumu=hesap_odeme_durumu,
+            toplam_borc_bakiyesi=str(int(toplam_borc_bakiyesi.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            kredi_bakiyesi_gostergesi=kredi_bakiyesi_gostergesi,
+            borc_faizi_bakiyesi = " " * 9,
+            gecikmedeki_bakiye = str(int(lease.overdue_amount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            vadesinde_yapilmayan_odeme = " " * 2, #tekrar bakılacak
+            son_odeme_tutari = " " * 9, #tekrar bakılacak
+            son_odeme_tarihi = " " * 8, #tekrar bakılacak
         )
         
     #bitiş kaydı

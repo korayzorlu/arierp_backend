@@ -96,6 +96,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                     obj.lease = leases_dict.get(str(data.TrnOprLeasingOperationPrjId))
                     obj.posting_group_id = str(data.TrnPostingGroupId) or ""
                     obj.posting_group_name = str(data.JrnStpPstGrpName) or ""
+                    obj.posting_type_id = str(data.TrnPostingType) or ""
+                    obj.posting_type_name = str(data.JrnStpEnumDescription) or ""
                     obj.description = str(data.TrnDescription) or ""
                     obj.document_no = str(data.TrnReturnDocumentNo) or ""
                     obj.amount_type = str(data.TrnAmountType) or ""
@@ -116,6 +118,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                         lease = leases_dict.get(str(data.TrnOprLeasingOperationPrjId)),
                         posting_group_id = str(data.TrnPostingGroupId) or "",
                         posting_group_name = str(data.JrnStpPstGrpName) or "",
+                        posting_type_id = str(data.TrnPostingType) or "",
+                        posting_type_name = str(data.JrnStpEnumDescription) or "",
                         description = str(data.TrnDescription) or "",
                         document_no = str(data.TrnReturnDocumentNo) or "",
                         amount_type = str(data.TrnAmountType) or "",
@@ -136,6 +140,8 @@ def fetch_trade_transactions_from_leaseflex(company,BATCH_SIZE=1000,contract_cod
                     "lease",
                     "posting_group_id",
                     "posting_group_name",
+                    "posting_type_id",
+                    "posting_type_name",
                     "description",
                     "document_no",
                     "amount_type",

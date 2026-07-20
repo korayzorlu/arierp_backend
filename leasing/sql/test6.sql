@@ -1,3 +1,5 @@
-SELECT TOP 1000 *
-FROM
-    FoundationStatuteMenu
+SELECT *
+FROM LopPaymentList
+WHERE OperationProjectId = '98996'
+ORDER BY
+    SequenceNo

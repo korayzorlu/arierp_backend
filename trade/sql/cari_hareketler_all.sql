@@ -5,6 +5,8 @@ SELECT
     TrnCurrencyCode,
     TrnPostingGroupId,
     JrnStpPstGrpName AS JrnStpPstGrpName,
+    TrnPostingType,
+    JrnStpEnumDescription AS JrnStpEnumDescription,
     TrnReturnDocumentNo,
     TrnDueDate,
     TrnExchangeRateLocal,
@@ -26,6 +28,8 @@ FROM
         ON AccCrmId = CrmCustomerWithTypesLightTradeRisk.CustomerId
     LEFT JOIN JournalSetupPostingTypeGroups (NOLOCK)
         ON TrnPostingGroupId = JournalSetupPostingTypeGroups.JrnStpPstGrpId
+    LEFT JOIN JournalSetupEnumsPostingTypeList (NOLOCK)
+        ON TrnPostingType = JournalSetupEnumsPostingTypeList.JrnStpEnumValue
     LEFT JOIN ContractProject cp (NOLOCK)
         ON TrnOprProjectId = cp.ContractProjectId
     LEFT JOIN QuotationProject qp (NOLOCK)

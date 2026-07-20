@@ -28,6 +28,7 @@ class LeaseListSerializer(serializers.Serializer):
     currency = serializers.SerializerMethodField()
     musteri_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
     operasyon_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
+    paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     vade = serializers.IntegerField()
     leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -55,6 +56,9 @@ class LeaseListSerializer(serializers.Serializer):
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
     old_leases = serializers.SerializerMethodField()
+    pesinat_amount = serializers.SerializerMethodField()
+    kira_amount = serializers.SerializerMethodField()
+    devir_bedeli_amount = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -112,6 +116,15 @@ class LeaseListSerializer(serializers.Serializer):
         old_leases = old_leases_map.get(obj.main_lease_id, [])
         return [{"id": l.uuid, "code": l.code} for l in old_leases]
     
+    def get_pesinat_amount(self, obj):
+        return obj.lease_installments.filter(type="2").aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
+
+    def get_kira_amount(self, obj):
+        return obj.lease_installments.filter(type="1").aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
+    
+    def get_devir_bedeli_amount(self, obj):
+        return obj.lease_installments.filter(type="5").aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
+    
     # def get_block(self, obj):
     #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
     
@@ -144,6 +157,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     currency = serializers.SerializerMethodField()
     musteri_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
     operasyon_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
+    paid_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     vade = serializers.IntegerField()
     leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
     irr = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -184,6 +198,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     risk_status = serializers.SerializerMethodField()
     signature_date = serializers.DateField()
     old_leases = serializers.SerializerMethodField()
+    
     #project_list = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
@@ -247,7 +262,8 @@ class ActiveLeaseListSerializer(serializers.Serializer):
         old_leases_map = self.context.get('old_leases_map', {})
         old_leases = old_leases_map.get(obj.main_lease_id, [])
         return [{"id": l.uuid, "code": l.code} for l in old_leases]
-
+    
+    
     
     # def get_block(self, obj):
     #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""

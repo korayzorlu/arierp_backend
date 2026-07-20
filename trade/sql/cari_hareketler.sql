@@ -5,6 +5,8 @@ SELECT TOP 20000
     TrnCurrencyCode,
     TrnPostingGroupId,
     JrnStpPstGrpName AS JrnStpPstGrpName,
+    TrnPostingType,
+    JrnStpEnumDescription AS JrnStpEnumDescription,
     TrnReturnDocumentNo,
     TrnDueDate,
     TrnExchangeRateLocal,
@@ -26,6 +28,8 @@ FROM
         ON AccCrmId = CrmCustomerWithTypesLightTradeRisk.CustomerId
     LEFT JOIN JournalSetupPostingTypeGroups (NOLOCK)
         ON TrnPostingGroupId = JournalSetupPostingTypeGroups.JrnStpPstGrpId
+    LEFT JOIN JournalSetupEnumsPostingTypeList (NOLOCK)
+        ON TrnPostingType = JournalSetupEnumsPostingTypeList.JrnStpEnumValue
     LEFT JOIN ContractProject cp (NOLOCK)
         ON TrnOprProjectId = cp.ContractProjectId
     LEFT JOIN QuotationProject qp (NOLOCK)
@@ -69,7 +73,7 @@ WHERE
     AND TrnPostingType <> 461
     -- AND TrnOprContractId = 42601
     -- AND TrnOprProjectId = 61034
-    -- AND TrnOprLeasingOperationPrjId = 97479
+    -- AND TrnOprLeasingOperationPrjId = 93760
     AND (
         lopStatu.LastSubStatuId IN (
             405, 416, 415, 402, 2028, 2057, 2041, 2058, 2059, 408, 2073, 806, 412, 2047, 503, 1026, 1014, 2032, 2072,

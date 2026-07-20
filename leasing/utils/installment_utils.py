@@ -79,9 +79,9 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000, lease_id=None):
                     obj.vat_amount = safe_decimal(data.VATAmount)
                     obj.payment = safe_decimal(data.Payment)
                     obj.amount = safe_decimal(data.TotalPaymentAmount)
-                    # obj.principal = safe_decimal(data.PrincipalDisplay)
+                    obj.principal = safe_decimal(data.PrincipalDisplay)
                     # obj.balance = safe_decimal(data.Balance)
-                    # obj.interest = safe_decimal(data.InterestDisplay)
+                    obj.interest = safe_decimal(data.InterestDisplay)
                     obj.sequency = int(data.SequenceNo)
                     obj.type = str(data.PaymentTypeId) or "1"
                     update_objs.append(obj)
@@ -96,9 +96,9 @@ def fetch_installments_from_leaseflex(company,BATCH_SIZE=1000, lease_id=None):
                         vat_amount = safe_decimal(data.VATAmount),
                         payment = safe_decimal(data.Payment),
                         amount = safe_decimal(data.TotalPaymentAmount),
-                        # principal = safe_decimal(data.PrincipalDisplay),
+                        principal = safe_decimal(data.PrincipalDisplay),
                         # balance = safe_decimal(data.Balance),
-                        # interest = safe_decimal(data.InterestDisplay),
+                        interest = safe_decimal(data.InterestDisplay),
                         sequency = int(data.SequenceNo),
                         type = str(data.PaymentTypeId) or "1"
                     ))

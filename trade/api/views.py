@@ -241,7 +241,8 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
             Q(company=active_company.company if active_company else None) &
             Q(lease__uuid=request.query_params.get('lease_uuid')) &
             ~Q(delete_status__in=['2']) &
-            ~Q(description__icontains='Kira Ödemeleri')
+            ~Q(description__icontains='Kira Ödemeleri') &
+            Q(posting_group_id='1')
         ).exclude(delete_status__in=['2']).order_by('posting_group_id','due_date','record_date','trade_transaction_id')
 
         installments = Installment.objects.select_related("company","lease__currency").filter(

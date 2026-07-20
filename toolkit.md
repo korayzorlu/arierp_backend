@@ -10,7 +10,6 @@
 - Git auth token for sync.export_krs_report 2 --rapor-tarihi 2026-06-22export_krs_report 2 --rapor-tarihi 2026-06-22
 
 ```
-
 ```
 
 ### Configure

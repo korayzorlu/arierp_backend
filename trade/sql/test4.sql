@@ -1,7 +1,84 @@
-SELECT TOP 10000 *
+SELECT TOP 10000
+    TrnDueDate,
+    TrnVoucherTypeGroup,
+    TrnVoucherType,
+    TrnTemplateType,
+    TrnPostingType,
+    TrnPostingGroupId,
+    TrnReturnDocumentNo,
+    TrnDescription,
+    TrnIsDeleted
 FROM
-    TradeTransaction
+    TradeTransaction (NOLOCK)
+    LEFT JOIN LOPRevisionJoinMainList lopStatu (NOLOCK)
+        ON TrnOprLeasingOperationPrjId = lopStatu.SourceLopId
+        AND TrnOprCustomerId = lopStatu.CustomerId
+    LEFT JOIN TradeAccount (NOLOCK)
+        ON TrnAccountId = TradeAccount.AccId
+    LEFT JOIN CrmCustomerWithTypesLightTradeRisk (NOLOCK)
+        ON AccCrmId = CrmCustomerWithTypesLightTradeRisk.CustomerId
+    LEFT JOIN JournalSetupPostingTypeGroups (NOLOCK)
+        ON TrnPostingGroupId = JournalSetupPostingTypeGroups.JrnStpPstGrpId
+    LEFT JOIN ContractProject cp (NOLOCK)
+        ON TrnOprProjectId = cp.ContractProjectId
+    LEFT JOIN QuotationProject qp (NOLOCK)
+        ON cp.QuotationProjectId = qp.ProjectId
 WHERE
+    TrnDummy = 0
+    AND (
+        CASE
+            WHEN TrnIsDeleted = 4
+                AND lopStatu.RiskIncludingTypeId = 7
+                AND (
+                    SELECT lll.RiskIncludingTypeId
+                    FROM LeasingOperationProject lll (NOLOCK)
+                    WHERE lll.OperationProjectId = lopStatu.OperationProjectId
+                ) = 6
+            THEN 3
+            WHEN TrnIsDeleted = 4
+                AND lopStatu.RiskIncludingTypeId = 6
+                AND (
+                    SELECT TOP 1 lll.RiskIncludingTypeId
+                    FROM LOPRevisionJoinListOutPlan lll (NOLOCK)
+                    WHERE (
+                        lll.OperationProjectId = TrnOprRevisionLOPId
+                        AND TrnOprRevisionLOPId <> 0
+                    )
+                    OR (
+                        lll.OperationProjectId = TrnOprLeasingOperationPrjId
+                        AND TrnOprRevisionLOPId = 0
+                    )
+                ) = 7
+            THEN 3
+            ELSE TrnIsDeleted
+        END NOT IN (6, 4, 2, 8, 1)
+        OR (TrnIsDeleted = 6 AND TrnAmount <> 0)
+    )
+    AND (TrnAmount <> 0 OR TrnAmountLocal <> 0 OR TrnAmountCompany <> 0)
+    AND TrnLayer = 1
+    AND TrnLedgerStatu = 50
+    AND NOT (TrnIsDeleted = 2 AND TrnPostingType > 120 AND TrnPostingType < 110)
+    -- AND TrnAccountId = 36077
+    AND TrnPostingType <> 461
+    -- AND TrnOprContractId = 42601
+    -- AND TrnOprProjectId = 61034
+    -- AND TrnOprLeasingOperationPrjId = 97479
+    AND (
+        lopStatu.LastSubStatuId IN (
+            405, 416, 415, 402, 2028, 2057, 2041, 2058, 2059, 408, 2073, 806, 412, 2047, 503, 1026, 1014, 2032, 2072,
+            4507, 2060, 406, 2031, 2061, 1009, 414, 1010, 2065, 2066, 2062, 410, 401, 403, 1007, 1019, 805, 1041,
+            2029, 2063, 2064, 400, 404
+        )
+        OR ISNULL(TrnOprLeasingOperationPrjId, 0) = 0
+    )
+    AND TrnPostingGroupId IN (1, 4, 6, 7, 9, 13, 16, 17, 19, 20, 21, 23, 27, 28, 29)
+    AND TrnAccountType = 11
+    AND TrnPostingTypeDetail <> 80
+
     --TrnDescription LIKE '%SANAL POS%'
-TrnFromLedgerAccountId = '710880'
+    AND TrnOprLeasingOperationPrjId = '93760'
+    AND TrnIsDeleted <> 2
+
+ORDER BY 
+    TrnDueDate
 

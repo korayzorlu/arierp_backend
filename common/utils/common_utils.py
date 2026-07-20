@@ -28,11 +28,16 @@ class LegacyTLSAdapter(HTTPAdapter):
 def normalize(name):
     return unidecode(name or "").strip().lower()
 
-def safe_decimal(val, default="0"):
+def safe_decimal(val, default="0", max_digits=14, decimal_places=2):
     try:
-        return Decimal(str(val).strip())
+        dec = Decimal(str(val).strip())
     except (InvalidOperation, TypeError, ValueError):
         return Decimal(default)
+
+    max_value = Decimal(10) ** (max_digits - decimal_places)
+    if abs(dec) >= max_value:
+        return Decimal(default)
+    return dec
 
 def has_more_than_two_decimal_places(val):
     dec = safe_decimal(val)

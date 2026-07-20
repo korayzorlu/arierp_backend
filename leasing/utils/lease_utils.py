@@ -51,7 +51,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         currencies = Currency.objects.select_related().all()
         warning_notices = WarningNotice.objects.select_related().filter(Q(state__in=['Yeni', 'Geçerli']))
         comprehensive_warning_notices = ComprehensiveWarningNotice.objects.select_related().all()
-        trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name='Kira').only("amount", "lease", "lease__lease_id")
+        trade_transactions = TradeTransaction.objects.select_related("lease").filter(amount_type = '0', posting_group_name='Kira').exclude(posting_type_id='121').only("amount", "lease", "lease__lease_id")
         virman_trade_transactions = TradeTransaction.objects.select_related("lease").filter(
             Q(amount_type = '1')&
             Q(posting_group_name='Kira')&

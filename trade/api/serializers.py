@@ -63,6 +63,8 @@ class TradeTransactionListSerializer(serializers.Serializer):
     lease = serializers.SerializerMethodField()
     posting_group_id = serializers.CharField()
     posting_group_name = serializers.CharField()
+    posting_type_id = serializers.CharField()
+    posting_type_name = serializers.CharField()
     description = serializers.CharField()
     document_no = serializers.CharField()
     amount_type = serializers.CharField()

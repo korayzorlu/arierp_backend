@@ -1,3 +1,3 @@
-SELECT definition AS RPR_QUO_LIST
+SELECT definition AS TradeTransaction
 FROM sys.sql_modules
-WHERE object_id = OBJECT_ID('RPR_QUO_LIST');
+WHERE object_id = OBJECT_ID('TradeTransaction');
