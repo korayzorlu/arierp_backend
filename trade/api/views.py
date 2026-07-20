@@ -239,6 +239,9 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
             "transactions": [],
             "vadesi_gelen_toplam_taksit_tutari": Decimal('0.00'),
             "yapilan_toplam_odeme_tutari": Decimal('0.00'),
+            "virman_borc_tutari": Decimal('0.00'),
+            "virman_alacak_tutari": Decimal('0.00'),
+            "toplam_bakiye": Decimal('0.00'),
         }
         
         trade_transactions = TradeTransaction.objects.select_related("company","lease","currency").filter(
@@ -256,11 +259,39 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
             Q(payment_date__lte=localtime().date())
         ).order_by('sequency','payment_date')
 
+        virman_borc_tutari = trade_transactions.filter(
+            Q(amount_type='1') &
+            (
+                Q(description__icontains='virman')|
+                Q(description__icontains='Virman')
+            )
+        ).aggregate(total_amount=models.Sum('amount'))['total_amount'] or Decimal('0.00')
+        result["virman_borc_tutari"] = virman_borc_tutari
+
+        virman_alacak_tutari = trade_transactions.filter(
+            Q(amount_type='0') &
+            (
+                Q(description__icontains='virman')|
+                Q(description__icontains='Virman')
+            )
+        ).aggregate(total_amount=models.Sum('amount'))['total_amount'] or Decimal('0.00')
+        result["virman_alacak_tutari"] = -virman_alacak_tutari if virman_alacak_tutari >= Decimal('0.00') else virman_alacak_tutari
+
+        trade_transactions = trade_transactions.exclude(
+            (
+                Q(description__icontains='virman')|
+                Q(description__icontains='Virman')
+            )
+        )
+
         vadesi_gelen_toplam_taksit_tutari = installments.aggregate(total_amount=models.Sum('amount'))['total_amount'] or Decimal('0.00')
         result["vadesi_gelen_toplam_taksit_tutari"] = vadesi_gelen_toplam_taksit_tutari
 
         yapilan_toplam_odeme_tutari = trade_transactions.filter(amount_type='0').aggregate(total_amount=models.Sum('amount'))['total_amount'] or Decimal('0.00')
-        result["yapilan_toplam_odeme_tutari"] = yapilan_toplam_odeme_tutari
+        result["yapilan_toplam_odeme_tutari"] = -yapilan_toplam_odeme_tutari if yapilan_toplam_odeme_tutari >= Decimal('0.00') else yapilan_toplam_odeme_tutari
+
+        toplam_bakiye = vadesi_gelen_toplam_taksit_tutari - (yapilan_toplam_odeme_tutari + virman_alacak_tutari - virman_borc_tutari)
+        result["toplam_bakiye"] = toplam_bakiye
 
         transaction_sequency = 1
         for trade_transaction in trade_transactions:
