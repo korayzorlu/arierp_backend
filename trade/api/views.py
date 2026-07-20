@@ -235,13 +235,18 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
         active_company_uuid = request.query_params.get('ac')
         active_company = request.user.user_companies.filter(uuid=active_company_uuid).first()
 
-        result = []
+        result = {
+            "transactions": [],
+            "vadesi_gelen_toplam_taksit_tutari": Decimal('0.00'),
+            "yapilan_toplam_odeme_tutari": Decimal('0.00'),
+        }
         
         trade_transactions = TradeTransaction.objects.select_related("company","lease","currency").filter(
             Q(company=active_company.company if active_company else None) &
             Q(lease__uuid=request.query_params.get('lease_uuid')) &
             ~Q(delete_status__in=['2']) &
             ~Q(description__icontains='Kira Ödemeleri') &
+            ~Q(posting_type_id='121') &
             Q(posting_group_id='1')
         ).exclude(delete_status__in=['2']).order_by('posting_group_id','due_date','record_date','trade_transaction_id')
 
@@ -251,9 +256,15 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
             Q(payment_date__lte=localtime().date())
         ).order_by('sequency','payment_date')
 
+        vadesi_gelen_toplam_taksit_tutari = installments.aggregate(total_amount=models.Sum('amount'))['total_amount'] or Decimal('0.00')
+        result["vadesi_gelen_toplam_taksit_tutari"] = vadesi_gelen_toplam_taksit_tutari
+
+        yapilan_toplam_odeme_tutari = trade_transactions.filter(amount_type='0').aggregate(total_amount=models.Sum('amount'))['total_amount'] or Decimal('0.00')
+        result["yapilan_toplam_odeme_tutari"] = yapilan_toplam_odeme_tutari
+
         transaction_sequency = 1
         for trade_transaction in trade_transactions:
-            result.append({
+            result["transactions"].append({
                 "uuid": trade_transaction.uuid,
                 "transaction_type": "trade_transaction",
                 "amount_type": trade_transaction.amount_type,
@@ -278,7 +289,7 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
             else:
                 description = f"{installment.sequency}. Kira Taksiti Vadesi"
 
-            result.append({
+            result["transactions"].append({
                 "uuid": installment.uuid,
                 "transaction_type": "installment",
                 "amount_type": "1",
@@ -294,16 +305,16 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
                 "sequency": 0
             })
 
-        result.sort(key=lambda x: (x['posting_group_id'], x['date_obj'], -int(x['amount_type'])))
+        result["transactions"].sort(key=lambda x: (x['posting_group_id'], x['date_obj'], -int(x['amount_type'])))
 
-        for item in result:
+        for item in result["transactions"]:
             # if item["date_obj"] > localtime().date():
             #     balance = {
             #         "balance": "",
             #     }
             #     item["balances"] = balance
             #     continue
-            objs = result
+            objs = result["transactions"]
             prev_balance = 0
             group = ""
             for o in objs:
@@ -321,10 +332,10 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
 
         remaining_amount = Decimal('0.00')
         payment_sequency = 1
-        for index, item in enumerate(filter(lambda x: x["transaction_type"] == "installment", result)):
+        for index, item in enumerate(filter(lambda x: x["transaction_type"] == "installment", result["transactions"])):
             skip = False
 
-            payments = list(filter(lambda x: x["transaction_type"] == "trade_transaction" and x["posting_group_id"] == item["posting_group_id"] and x["amount_type"] == '0' and x["sequency"] >= payment_sequency, result))
+            payments = list(filter(lambda x: x["transaction_type"] == "trade_transaction" and x["posting_group_id"] == item["posting_group_id"] and x["amount_type"] == '0' and x["sequency"] >= payment_sequency, result["transactions"]))
             item_remaining = item["amount"]
             
             for payment in payments:
