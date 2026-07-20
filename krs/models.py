@@ -159,6 +159,11 @@ class HesabinOzelDurumu(models.TextChoices):
 class TaksitTarihiGostergesi(models.TextChoices):
     _1 = '1', 'Kredinin son ödeme tarihi olduğu göstergesi. Tüketici Kredileri ve Konut kredisi için geçerlidir'
 
+class TarihceDuzeltmeGostergesi(models.TextChoices):
+    _0 = '0', 'Düzeltme yoktur.'
+    _1 = '1', 'Geçmiş döneme ait düzeltme'
+    _2 = '2', 'Bulunduğumuz ay için düzeltme'
+
 class YenidenYapilandirmaGostergesi(models.TextChoices):
     _ = ' ', 'Hiç yapılandırılmamış hesap'
     _1 = '1', 'Donuk alacaklardan yeniden yapılandırılan hesap'
@@ -469,6 +474,7 @@ class KrsReport(models.Model):
 
     kalan_taksit_bakiyesi = models.CharField(_("Kalan Taksit Bakiyesi"), max_length=9, null=True, blank=True)
     taksit_tarihi_gostergesi = models.CharField(_("Taksit Tarihi Göstergesi"), max_length=25, choices=TaksitTarihiGostergesi.choices, blank=True, null=True)
+    tarihce_duzeltme_gostergesi = models.CharField(_("Tarihçe Düzeltme Göstergesi"), max_length=25, choices=TarihceDuzeltmeGostergesi.choices, blank=True, null=True)
     yeniden_yapilandirma_gostergesi = models.CharField(_("Yeniden Yapılandırma Göstergesi"), max_length=25, choices=YenidenYapilandirmaGostergesi.choices, blank=True, null=True)
     yeniden_yapilandirma_tarihi = models.CharField(_("Yeniden Yapılandırma Tarihi"), max_length=8, null=True, blank=True)
     tedbir_karari_gostergesi = models.CharField(_("Tedbir Kararı Göstergesi"), max_length=25, choices=TedbirKarariGostergesi.choices, blank=True, null=True)

@@ -81,7 +81,21 @@ def make_cs0100(krs_report):
         205: krs_report.gecikmedeki_bakiye,
         214: krs_report.vadesinde_yapilmayan_odeme,
         216: krs_report.son_odeme_tutari,
-        225: krs_report.son_odeme_tarihi
+        225: krs_report.son_odeme_tarihi,
+        233: krs_report.kapanis_tarihi,
+        241: " " * 8,
+        249: krs_report.kanuni_takip_tarihi,
+        257: krs_report.tahsil_edilme_tarihi,
+        265: " " * 2,
+        267: krs_report.kapanma_nedeni,
+        269: krs_report.hesabin_ozel_durumu,
+        270: " " * 1,
+        271: krs_report.yeni_hesap_numarasi,
+        291: " " * 9,
+        300: krs_report.kalan_taksit_bakiyesi,
+        309: krs_report.taksit_tarihi_gostergesi,
+        310: krs_report.tarihce_duzeltme_gostergesi,
+        311: krs_report.yeniden_yapilandirma_gostergesi,
     })
 
 def make_cs0200(krs_report):
@@ -393,6 +407,16 @@ def create_krs_report(company_uuid):
             vadesinde_yapilmayan_odeme = " " * 2, #tekrar bakılacak
             son_odeme_tutari = " " * 9, #tekrar bakılacak
             son_odeme_tarihi = " " * 8, #tekrar bakılacak
+            kapanis_tarihi = " " * 8, #tekrar bakılacak
+            kanuni_takip_tarihi = " " * 8, #tekrar bakılacak
+            tahsil_edilme_tarihi = " " * 8, #tekrar bakılacak
+            kapanma_nedeni = " " * 2, #tekrar bakılacak
+            hesabin_ozel_durumu = " " * 1, #tekrar bakılacak
+            yeni_hesap_numarasi = " " * 20, #tekrar bakılacak
+            kalan_taksit_bakiyesi = str(int(next_installments_total.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            taksit_tarihi_gostergesi = " " * 1, #tekrar bakılacak
+            tarihce_duzeltme_gostergesi = TarihceDuzeltmeGostergesi._0,
+            yeniden_yapilandirma_gostergesi = " " * 1, #tekrar bakılacak
         )
         
     #bitiş kaydı
