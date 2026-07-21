@@ -1,4 +1,4 @@
-from django.db.models import QuerySet, Q, Case, When, Value, IntegerField, Sum
+from django.db.models import QuerySet, Q, Case, When, Value, IntegerField, Sum, OuterRef, Exists
 from django.utils import timezone
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -96,6 +96,13 @@ def make_cs0100(krs_report):
         309: krs_report.taksit_tarihi_gostergesi,
         310: krs_report.tarihce_duzeltme_gostergesi,
         311: krs_report.yeniden_yapilandirma_gostergesi,
+        312: krs_report.yeniden_yapilandirma_tarihi,
+        320: krs_report.tedbir_karari_gostergesi,
+        321: krs_report.kayittan_dusulen_tutar,
+        330: krs_report.nakit_cekim_tutari,
+        339: krs_report.gecikme_gun_sayisi,
+        341: krs_report.ekstre_odeme_orani,
+        344: " " * 156,
     })
 
 def make_cs0200(krs_report):
@@ -196,16 +203,23 @@ def make_krs_report(company, date):
 
     print(trade_transactions)
 
-def create_krs_report(company_uuid):
+def create_krs_report(company_uuid,report_date):
     company = Company.objects.filter(uuid = company_uuid).first()
+
+    trade_transactions  = TradeTransaction.objects.select_related('lease').filter(
+        lease = OuterRef('pk'),
+        due_date = report_date,
+    )
+
     leases = Lease.objects.filter(
         Q(company = company) &
         Q(is_last_project=True) &
         # Q(is_last_project_arinet=True) &
         ~Q(lease_status__in=["iptal_edildi","feshedildi","planlandi"]) &
         (
-            Q(activation_date=date(2026,7,9)) |
-            Q(code='60702/3.1.1')
+            Q(activation_date=report_date) |
+            Exists(trade_transactions)
+            #Q(code='60702/3.1.1')
         )
     )
 
@@ -255,7 +269,7 @@ def create_krs_report(company_uuid):
             satir3 = adres[60:90].ljust(30)
             satir4 = adres[90:120].ljust(30)
 
-        if lease.activation_date == date(2026,7,9) or lease.code == '60702/3.1.1':
+        if lease.activation_date == report_date: #or lease.code == '60702/3.1.1':
             KrsReport.objects.create(
                 company=company,
                 contract=lease.contract,
@@ -417,6 +431,12 @@ def create_krs_report(company_uuid):
             taksit_tarihi_gostergesi = " " * 1, #tekrar bakılacak
             tarihce_duzeltme_gostergesi = TarihceDuzeltmeGostergesi._0,
             yeniden_yapilandirma_gostergesi = " " * 1, #tekrar bakılacak
+            yeniden_yapilandirma_tarihi = " " * 8, #tekrar bakılacak
+            tedbir_karari_gostergesi = TedbirKarariGostergesi._,
+            kayittan_dusulen_tutar = "000000000", #tekrar bakılacak
+            nakit_cekim_tutari = " " * 9, #tekrar bakılacak
+            gecikme_gun_sayisi = str(lease.overdue_days).rjust(2, "0") if lease else "00",
+            ekstre_odeme_orani = " " * 3
         )
         
     #bitiş kaydı

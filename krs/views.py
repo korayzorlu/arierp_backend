@@ -10,6 +10,7 @@ from .models import KrsReportDocument
 
 import os
 import json
+from datetime import datetime, timedelta
 
 class CreateKrsReportView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
@@ -17,7 +18,9 @@ class CreateKrsReportView(LoginRequiredMixin,View):
 
         active_company = request.user.user_companies.filter(uuid = data.get('company_uuid')).first()
 
-        create_krs_report(str(active_company.company.uuid))
+        report_date = datetime.strptime(data.get('date'), '%Y-%m-%d') - timedelta(days=1)
+
+        create_krs_report(str(active_company.company.uuid),report_date)
 
         return JsonResponse({'message': 'Rapor hazırlanıyor...','status':'success'}, status=200)
     
