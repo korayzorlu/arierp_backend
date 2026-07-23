@@ -54,8 +54,9 @@ class Lease(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="leases")
 
-    lease_id = models.CharField(_("Lease ID"), max_length=25, null=True, blank=True)
-    main_lease_id = models.CharField(_("Main Lease ID"), max_length=25, null=True, blank=True)
+    lease_id = models.CharField(_("Lease ID"), max_length=25, null=True, blank=True, db_index=True)
+    main_lease_id = models.CharField(_("Main Lease ID"), max_length=25, null=True, blank=True,db_index=True)
+    source_lease_id = models.CharField(_("Source Lease ID"), max_length=25, null=True, blank=True,db_index=True)
     code = models.CharField(_("Code"), max_length=25)
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name="contract_leases")
     real_estate = models.ForeignKey(RealEstate, on_delete=models.CASCADE, related_name="real_estate_leases", null=True, blank=True)

@@ -1,3 +1,3 @@
-SELECT definition AS TradeTransaction
+SELECT definition AS LeasingOperationProjectPartList
 FROM sys.sql_modules
-WHERE object_id = OBJECT_ID('TradeTransaction');
+WHERE object_id = OBJECT_ID('LeasingOperationProjectPartList');

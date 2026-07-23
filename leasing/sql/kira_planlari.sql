@@ -57,6 +57,7 @@ SELECT
         ELSE ''
     END AS CurrentRequest,
     l.MainLopId,
+    l.SourceLOPId,
     l.NotaryPublicDate,
     pb.BLOCK_NO,
     fp.FREE_PART_NO,

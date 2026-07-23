@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery, F, ExpressionWrapper, DateField,IntegerField,Sum
-from django.db.models.functions import Lower,Upper,Cast
+from django.db.models.functions import Lower,Upper,Cast,Coalesce
 from django.utils.timezone import now
 
 from datetime import date,timedelta,datetime
@@ -9,6 +9,7 @@ from risk.utils.filter_utils import to_warned_filters_for_views
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
 from leasing.models import Lease, Installment
+from .cmn_utils import IDS
 
 def partners_for_project(params):
     if params.get("risk_status") == "risk_partners":
@@ -676,3 +677,40 @@ def template_for_risk_status(risk_status):
     elif risk_status == "untitle_deed_leases":
         return "b84e83786dbcbc132b0b25d293890ba6506ff7d0b474b2aa4e"
     
+def set_overdue_report(company):
+    company = Company.objects.filter(id=int(company)).first()
+
+    leases = Lease.objects.filter(lease_id = OuterRef("source_lease_id")).exclude(
+        Q(lease_status__in=['iptal_edildi', 'planlandi']) |
+        Q(lease_status__in=['revize_edildi', 'baskasina_transfer_edildi', 'durduruldu'], type = 'Sözleşme')
+    ).values("lease_id").annotate(cnt=Count("id")).values("cnt")
+
+    objs = Lease.objects.filter(
+        lease_status__in=[
+            'aktiflestirildi',
+            'iptal_edildi',
+            'devredildi',
+            'planlandi',
+            'durduruldu',
+            'feshedildi',
+            'revize_edildi',
+            'pert',
+            'envantere_alindi',
+            'para_birimi_degisti',
+            'kanuni_takibe_alindi'
+        ],
+        activation_date__lte=date(2026, 7, 22),
+        is_last_project=True
+    ).annotate(
+        xx_count=Coalesce(Subquery(leases), Value(0))
+    ).filter(
+        (Q(type='Kesin Maliyet') & Q(xx_count__gt=0)) |
+        (Q(type='Sözleşme') & Q(xx_count=0))
+    )
+
+    print(objs.count())
+
+    # for obj in objs:
+    #     if obj.lease_id not in IDS:
+    #         print(obj.lease_id)
+

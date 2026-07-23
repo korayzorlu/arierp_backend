@@ -134,6 +134,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 if obj:
                     obj.lease_id = str(data.OperationProjectId) or ""
                     obj.main_lease_id = str(data.MainLopId) or ""
+                    obj.source_lease_id = str(data.SourceLOPId) or ""
                     obj.code = str(data.OperationProjectCode) or ""
                     obj.contract = contracts_dict.get(str(data.ContractHeaderCode))
                     obj.real_estate = real_estates_dict.get(str(data.FREE_PART_ID)) if data.FREE_PART_ID else None
@@ -224,6 +225,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         company = company_obj,
                         lease_id = str(data.OperationProjectId) or "",
                         main_lease_id = str(data.MainLopId) or "",
+                        source_lease_id = str(data.SourceLOPId) or "",
                         code = str(data.OperationProjectCode) or "",
                         contract = contracts_dict.get(str(data.ContractHeaderCode)),
                         real_estate = real_estates_dict.get(str(data.FREE_PART_ID)) if data.FREE_PART_ID else None,
@@ -263,6 +265,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 Lease.objects.bulk_update(update_objs, [
                     "lease_id",
                     "main_lease_id",
+                    "source_lease_id",
                     "code",
                     "contract",
                     "real_estate",

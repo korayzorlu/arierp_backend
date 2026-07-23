@@ -521,3 +521,7 @@ def set_risk_status_task(company):
 @shared_task()
 def set_warning_notice_files_task(company, reset):
     set_warning_notice_files(company, reset)
+
+@shared_task()
+def set_overdue_report_task(company):
+    pass
