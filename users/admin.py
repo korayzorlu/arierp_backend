@@ -26,3 +26,20 @@ class UserAdmin(UserAdmin):
     
     class Meta:
         model = User
+
+@admin.register(AuthEvent)
+class AuthEventAdmin(admin.ModelAdmin):
+    list_display = ["event_type", "user", "username_attempted", "date", "failure_reason"]
+    list_display_links = ["user"]
+    search_fields = ["user__username","user__email","user__first_name","user__last_name"]
+    list_filter = ["event_type", "failure_reason"]
+    inlines = []
+    ordering = ["-date"]
+    autocomplete_fields = ["user"]
+
+    def user(self,obj):
+        return obj.user.username if obj.user else ""
+
+    
+    class Meta:
+        model = AuthEvent

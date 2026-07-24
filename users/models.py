@@ -6,6 +6,17 @@ import uuid
 
 from common.models import Country
 
+class EventType(models.TextChoices):
+    LOGIN_SUCCESS = "login_success", "Login Success"
+    LOGIN_FAILED = "login_failed", "Login Failed"
+    LOGOUT = "logout", "Logout"
+
+class FailReason(models.TextChoices):
+    BAD_CREDENTIALS = "bad_credentials", "Hatalı kullanıcı adı/şifre"
+    INACTIVE = "inactive", "Pasif kullanıcı"
+    LOCKED = "locked", "Hesap kilitli"
+    OTHER = "other", "Diğer"
+
 class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.EmailField(unique=True)
@@ -39,3 +50,23 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user} | {self.user.get_full_name()}"
+
+class AuthEvent(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_auth_events",blank=True, null=True)
+    event_type =  models.CharField(_("Event Type"), max_length=25, choices=EventType.choices, blank=True, null=True)
+
+    username_attempted  = models.CharField(_("Username Attempt"), max_length=140, blank=True, null=True)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.CharField(_("User Agent"), max_length=500, null=True, blank=True)
+
+    failure_reason =  models.CharField(_("Failure Reason"), max_length=25, choices=FailReason.choices, blank=True, null=True)
+    date = models.DateTimeField(_("Date"), auto_now_add=True, null=True)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.event_type) + " | " + str(self.date)
+

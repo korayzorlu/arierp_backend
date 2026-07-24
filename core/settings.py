@@ -645,7 +645,7 @@ AUTH_LDAP_ALWAYS_UPDATE_USER = True
 AUTH_LDAP_CREATE_USERS = True
 
 AUTHENTICATION_BACKENDS = [
-    'django_auth_ldap.backend.LDAPBackend',
+    'users.backends.CustomLDAPBackend',
     'django.contrib.auth.backends.ModelBackend',  # local admin erişimi için
 ]
 
