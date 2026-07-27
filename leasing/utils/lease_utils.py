@@ -482,12 +482,13 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000,lease_id=None):
             trade_transactions_total = trade_transactions.filter(amount_type='0').aggregate(total_amount=Sum('amount'))
 
             exchanged_amount_paid_to_date = Decimal('0.00')
-            for transaction in trade_transactions:
+            for transaction in trade_transactions.filter(amount_type='0'):
                 exchange_rate = exchange_rates_dict.get(transaction.due_date.date())
-                if transaction.amount_type == '0':  # Tahsilat
-                    exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
-                elif transaction.amount_type == '1' and (transaction.document_no == '' or transaction.document_no is None):  # İade veya diğer işlemler
-                    exchanged_amount_paid_to_date -= transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
+                exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
+                # if transaction.amount_type == '0':  # Tahsilat
+                #     exchanged_amount_paid_to_date += transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
+                # elif transaction.amount_type == '1' and (transaction.document_no == '' or transaction.document_no is None):  # İade veya diğer işlemler
+                #     exchanged_amount_paid_to_date -= transaction.amount / exchange_rate.forex_buying if exchange_rate else transaction.amount
 
             kur_kaybi_yuzde = Decimal('0.00')
             if exchanged_amount_due_to_date != Decimal('0.00'):
