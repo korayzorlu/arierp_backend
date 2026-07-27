@@ -384,7 +384,7 @@ def create_krs_report(company_uuid,report_date):
             kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._0
 
         #gecikme
-        if lease.overdue_days > 0 and lease.overdue_days < 100:
+        if lease.overdue_days >= 3 and lease.overdue_days < 100:
             gecikme_gun_sayisi = str(lease.overdue_days).rjust(2, "0")
         elif lease.overdue_days >= 100:
             gecikme_gun_sayisi = "99"

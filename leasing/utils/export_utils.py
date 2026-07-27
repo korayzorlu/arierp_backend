@@ -407,22 +407,14 @@ def export_tomorrow_partners(self):
     self.process.save()
 
 def export_kdv_risk_partners(self):
-    objs = Partner.objects.select_related().filter(
-        vendor_filter_for_views(self.params) &
-        (
-            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-            Q(partner_contracts__contract_leases__lease_status='planlandi') |
-            Q(partner_contracts__contract_leases__lease_status='durduruldu')
-        ) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=True) &
-        Q(partner_contracts__contract_leases__overdue_amount__gt=100)
-    ).annotate(
-        max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
-        total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
-    ).exclude(
-        Q(types__contains=["special"]) |
-        Q(types__contains=["barter"]) |
-        Q(types__contains=["virman"])
+    objs = Lease.objects.select_related("contract__partner","item","contract__vendor").filter(
+        Q(lease_status__in = ["aktiflestirildi","planlandi","durduruldu"]) &
+        Q(is_kdv_diff = True) &
+        Q(is_under_review = False) &
+        # Q(overdue_amount__gt=100) &
+        ~Q(contract__partner__types__contains=["special"]) &
+        ~Q(contract__partner__types__contains=["barter"]) &
+        ~Q(contract__partner__types__contains=["virman"])
     )
 
     self.process.status = "in_progress"
@@ -430,11 +422,28 @@ def export_kdv_risk_partners(self):
     self.process.save()
     
     data = {
+        "Sözleşme": [],
+        "Kira Planı": [],
         "Müşteri İsmi": [],
         "TC/VKN No": [],
         "Crm Kodu": [],
-        "Tel": [],
-        "Email": []
+        "Satıcı": [],
+        "Proje": [],
+        "Blok": [],
+        "Bağımsız Bölüm": [],
+        "Kdv Dahil Kira Toplamı": [],
+        "Tahsilat Tutarı": [],
+        "0-30": [],
+        "31-60": [],
+        "61-90": [],
+        "91-120": [],
+        "121-150": [],
+        "151-180": [],
+        "181 >": [],
+        "Gecikme Tutarı": [],
+        "PB": [],
+        "Gecikme Gün": [],
+        "Tahsilat Oranı (%)": [],
     }
 
     previous_progress = 0
@@ -447,11 +456,28 @@ def export_kdv_risk_partners(self):
             self.process.save()
             previous_progress = current_progress
         
-        data["Müşteri İsmi"].append(obj.name)
-        data["TC/VKN No"].append(obj.tc_vkn_no)
-        data["Crm Kodu"].append(obj.crm_code)
-        data["Tel"].append(obj.phone_number if obj.phone_number else "")
-        data["Email"].append(obj.email if obj.email else "")
+        data["Sözleşme"].append(obj.contract.code)
+        data["Kira Planı"].append(obj.code)
+        data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
+        data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
+        data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
+        data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
+        data["Proje"].append(obj.item.stock_name if obj.item else "")
+        data["Blok"].append(obj.block)
+        data["Bağımsız Bölüm"].append(obj.unit)
+        data["Kdv Dahil Kira Toplamı"].append(obj.total_payment)
+        data["Tahsilat Tutarı"].append(obj.paid)
+        data["0-30"].append(obj.overdue_0_30)
+        data["31-60"].append(obj.overdue_31_60)
+        data["61-90"].append(obj.overdue_61_90)
+        data["91-120"].append(obj.overdue_91_120)
+        data["121-150"].append(obj.overdue_121_150)
+        data["151-180"].append(obj.overdue_151_180)
+        data["181 >"].append(obj.overdue_181_gte)
+        data["Gecikme Tutarı"].append(obj.overdue_amount)
+        data["PB"].append(obj.currency.code)
+        data["Gecikme Gün"].append(obj.overdue_days)
+        data["Tahsilat Oranı (%)"].append(obj.paid_rate)
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
