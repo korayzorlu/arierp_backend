@@ -44,8 +44,8 @@ def fetch_purchase_payments_ifs(company):
     fetch_purchase_payments_from_ifs(company)
 
 @shared_task()
-def fetch_exchanged_amounts(company):
-    fetch_exchanged_amounts_utils(company)
+def fetch_exchanged_amounts(company, lease_id=None):
+    fetch_exchanged_amounts_utils(company, lease_id=lease_id)
     #fetch_tufe_exchanged_amounts_utils(company)
 
 @shared_task()

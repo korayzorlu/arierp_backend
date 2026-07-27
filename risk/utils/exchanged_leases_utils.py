@@ -1,5 +1,6 @@
 from django.db.models.functions import TruncDate
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum
+from django.utils.timezone import localtime, timedelta
 
 from datetime import date, datetime
 from decimal import Decimal
@@ -13,8 +14,9 @@ import traceback
 
 def compute_exchanged_amounts(obj):
     installments = Installment.objects.select_related().filter(
-        lease=obj,
-        payment_date__lte=date.today()
+        Q(lease=obj) &
+        Q(payment_date__lte=localtime().date()) &
+        ~Q(type__in=["5"])
     )
     installments_total = installments.aggregate(total_amount=Sum('amount'))
 

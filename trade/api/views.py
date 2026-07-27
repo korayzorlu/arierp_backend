@@ -256,7 +256,8 @@ class TradeTransactionForCustomerInLeaseList(ModelViewSet, QueryListAPIView):
         installments = Installment.objects.select_related("company","lease__currency").filter(
             Q(company=active_company.company if active_company else None) &
             Q(lease__uuid=request.query_params.get('lease_uuid')) &
-            Q(payment_date__lte=localtime().date())
+            Q(payment_date__lte=localtime().date()) &
+            ~Q(type__in=["5"])
         ).order_by('sequency','payment_date')
 
         virman_borc_tutari = trade_transactions.filter(

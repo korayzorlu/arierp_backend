@@ -3,8 +3,8 @@ from core.celery import app
 from django.http import JsonResponse
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,OuterRef, Subquery,Sum,F,ExpressionWrapper, DecimalField
 from django.db.models.functions import TruncDate
-from django.utils.timezone import make_aware
 from django.utils import timezone
+from django.utils.timezone import localtime, timedelta,make_aware
 
 import pandas as pd
 import io
@@ -438,10 +438,12 @@ def match_lease_bbsn(company,BATCH_SIZE=1000):
 def fetch_interest_rates_from_leaseflex(company,BATCH_SIZE=1000):
     pass
 
-def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
+def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000,lease_id=None):
     try:
         objs = Lease.objects.select_related("company","currency").filter(company__id=int(company),is_last_project=True,currency__code__in=['TRY'])
         #objs = objs.filter(contract__code__in = ['57796','57797','57798'])
+        if lease_id:
+            objs = objs.filter(lease_id=lease_id)
         exchange_rates = ExchangeRate.objects.select_related("target_currency").filter(target_currency__code="USD")
 
         exchange_rates_dict = {e.date: e for e in exchange_rates}
@@ -451,8 +453,9 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
         update_objs = []
         for index,obj in enumerate(objs):
             installments = Installment.objects.select_related("lease").filter(
-                lease=obj,
-                payment_date__lte=date.today()
+                Q(lease=obj) &
+                Q(payment_date__lte=localtime().date()) &
+                ~Q(type__in=["5"])
             )
 
             installments_total = installments.aggregate(total_amount=Sum('amount'))
@@ -469,13 +472,14 @@ def fetch_exchanged_amounts_utils(company,BATCH_SIZE=1000):
             # Örneğin: "1234/2" -> "1234"
             # Eğer '/' yoksa, kodu olduğu gibi kullan
             trade_transactions = TradeTransaction.objects.select_related("lease").filter(
-                lease__contract__code__startswith=ana_kod,
-                posting_group_name='Kira',
-                # amount_type='0',
-                due_date__lte=timezone.now()
+                Q(lease__contract__code__startswith=ana_kod) &
+                ~Q(delete_status__in=['2']) &
+                ~Q(description__icontains='Kira Ödemeleri') &
+                ~Q(posting_type_id='121') &
+                Q(posting_group_id='1')
             ).exclude(delete_status__in=['2'])
             
-            trade_transactions_total = trade_transactions.aggregate(total_amount=Sum('amount'))
+            trade_transactions_total = trade_transactions.filter(amount_type='0').aggregate(total_amount=Sum('amount'))
 
             exchanged_amount_paid_to_date = Decimal('0.00')
             for transaction in trade_transactions:
