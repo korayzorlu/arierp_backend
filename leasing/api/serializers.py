@@ -59,6 +59,13 @@ class LeaseListSerializer(serializers.Serializer):
     pesinat_amount = serializers.SerializerMethodField()
     kira_amount = serializers.SerializerMethodField()
     devir_bedeli_amount = serializers.SerializerMethodField()
+    odenmesi_gereken_yerel = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenmesi_gereken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenen_yerel = serializers.DecimalField(max_digits=14,decimal_places=2)
+    odenen_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    geciken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    geciken_odenmesi_gereken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
+    kur_kaybi = serializers.DecimalField(max_digits=14,decimal_places=2)
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
