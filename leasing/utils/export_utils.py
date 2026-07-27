@@ -943,8 +943,8 @@ def export_active_leases(self):
     objs = Lease.objects.select_related("contract","contract__partner","contract__quotation_obj__quick_quotation").filter(
         # status_filter_for_leases(self.params) &
         # Q(is_last_project=True)
-        Q(is_last_project_arinet=True) &
-        Q(real_estate__isnull=True)
+        Q(is_last_project_arinet=True)
+        # Q(real_estate__isnull=True)
     ).order_by("-signature_date")
 
     self.process.status = "in_progress"
