@@ -383,6 +383,14 @@ def create_krs_report(company_uuid,report_date):
         else:
             kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._0
 
+        #gecikme
+        if lease.overdue_days > 0 and lease.overdue_days < 100:
+            gecikme_gun_sayisi = str(lease.overdue_days).rjust(2, "0")
+        elif lease.overdue_days >= 100:
+            gecikme_gun_sayisi = "99"
+        else:
+            gecikme_gun_sayisi = "00"
+
         KrsReport.objects.create(
             company=company,
             contract=lease.contract,
@@ -435,7 +443,7 @@ def create_krs_report(company_uuid,report_date):
             tedbir_karari_gostergesi = TedbirKarariGostergesi._,
             kayittan_dusulen_tutar = "000000000", #tekrar bakılacak
             nakit_cekim_tutari = " " * 9, #tekrar bakılacak
-            gecikme_gun_sayisi = str(lease.overdue_days).rjust(2, "0") if lease else "00",
+            gecikme_gun_sayisi = gecikme_gun_sayisi,
             ekstre_odeme_orani = " " * 3
         )
         
