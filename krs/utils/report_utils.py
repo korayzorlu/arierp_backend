@@ -425,7 +425,7 @@ def create_krs_report(company_uuid,report_date):
             toplam_borc_bakiyesi=str(int(toplam_borc_bakiyesi.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
             kredi_bakiyesi_gostergesi=kredi_bakiyesi_gostergesi,
             borc_faizi_bakiyesi = " " * 9,
-            gecikmedeki_bakiye = str(int(lease.overdue_amount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+            gecikmedeki_bakiye = str(int(lease.overdue_amount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease and lease.overdue_amount > 0 else "000000000",
             vadesinde_yapilmayan_odeme = " " * 2, #tekrar bakılacak
             son_odeme_tutari = " " * 9, #tekrar bakılacak
             son_odeme_tarihi = " " * 8, #tekrar bakılacak
