@@ -1,0 +1,196 @@
+/* ── Branded split-screen login ─────────────────────────────── */
+
+html:has(body.login) {
+    height: 100%;
+    overflow: hidden;
+}
+
+body.login {
+    background: var(--body-bg);
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body.login #container {
+    min-width: 0;
+    height: 100%;
+    background: var(--body-bg);
+}
+
+body.login #content {
+    padding: 0;
+    max-width: none;
+    height: 100%;
+}
+
+body.login #content-main {
+    width: 100%;
+}
+
+.login-split {
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Brand panel */
+
+.login-brand {
+    flex: 0 0 42%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #980748 0%, #6e0535 55%, #3a021c 100%);
+    padding: 40px;
+}
+
+.login-brand-inner {
+    text-align: center;
+    max-width: 320px;
+}
+
+.login-brand-logo-card {
+    display: inline-block;
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 26px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.login-brand-logo-card img {
+    display: block;
+    height: 36px;
+    width: auto;
+}
+
+.login-brand-tagline {
+    margin: 24px 0 0;
+    color: #f3d8e4;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.login-brand-subtitle {
+    margin: 10px 0 0;
+    color: #f3d8e4;
+    opacity: 0.7;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* Form panel */
+
+.login-form-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.login-form-box {
+    width: 100%;
+    max-width: 340px;
+}
+
+.login-form-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--body-loud-color, var(--body-fg));
+    margin: 0 0 28px;
+}
+
+.login-form-box .form-row {
+    padding: 0 0 18px;
+}
+
+.login-form-box .form-row label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--body-quiet-color);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.login-form-box .form-row #id_username,
+.login-form-box .form-row #id_password {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    color: var(--body-fg);
+    background: var(--body-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.login-form-box .form-row #id_username:focus,
+.login-form-box .form-row #id_password:focus {
+    outline: none;
+    border-color: #980748;
+    box-shadow: 0 0 0 3px rgba(152, 7, 72, 0.15);
+}
+
+.login-form-box .password-reset-link {
+    text-align: right;
+    margin: 0 0 18px;
+}
+
+.login-form-box .password-reset-link a {
+    font-size: 0.8125rem;
+}
+
+.login-form-box .submit-row {
+    padding: 0;
+    margin: 0;
+}
+
+.login-form-box .submit-row input[type="submit"] {
+    width: 100%;
+    padding: 11px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    background: #980748;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.login-form-box .submit-row input[type="submit"]:hover {
+    background: #7a0539;
+}
+
+.login-form-box .errornote {
+    margin-bottom: 18px;
+}
+
+/* Narrow viewports: stack brand strip above the form */
+
+@media (max-width: 900px) {
+    .login-split {
+        flex-direction: column;
+        min-height: 100%;
+    }
+
+    .login-brand {
+        flex: 0 0 auto;
+        padding: 28px 20px;
+    }
+
+    .login-brand-tagline {
+        margin-top: 16px;
+    }
+
+    .login-form-panel {
+        flex: 1 0 auto;
+        padding: 32px 20px;
+    }
+}
