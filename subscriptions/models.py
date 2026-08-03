@@ -37,6 +37,7 @@ class Authorization(models.Model):
         ('kredi_tahsis', 'Kredi Tahsis'),
         ('muhasebe', 'Muhasebe'),
         ('musteri_iliskileri', 'Müşteri İlişkileri'),
+        ('musteri_temsilcisi', 'Müşteri Temsilcisi'),
         ('operasyon', 'Operasyon'),
     ]
 
