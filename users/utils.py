@@ -108,6 +108,8 @@ def fetch_ldap_departments_info():
         logging.error(f"LDAP user info error: {e}")
 
 def get_ldap_user_department(username):
+    data1 = fetch_ldap_user_info("bahar.dogan")
+    print(data1)
     try:
         data = fetch_ldap_user_info(username)
         if data and len(data) > 0:

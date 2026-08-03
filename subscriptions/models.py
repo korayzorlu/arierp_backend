@@ -36,6 +36,7 @@ class Authorization(models.Model):
         ('kredi_risk_izleme', 'Kredi Risk İzleme'),
         ('kredi_tahsis', 'Kredi Tahsis'),
         ('muhasebe', 'Muhasebe'),
+        ('musteri_iliskileri', 'Müşteri İlişkileri'),
         ('operasyon', 'Operasyon'),
     ]
 

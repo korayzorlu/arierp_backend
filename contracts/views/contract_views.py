@@ -231,7 +231,7 @@ class UpdateComprehensiveWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRe
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        if request.user.authorization.department != 'kredi_risk_izleme':
+        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = ComprehensiveWarningNotice.objects.filter(uuid = data.get('uuid')).first()
@@ -281,7 +281,7 @@ class UpdateTerminationWarningNoticeView(LoginRequiredMixin,CompanyOwnershipRequ
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        if request.user.authorization.department != 'kredi_risk_izleme':
+        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = TerminationWarningNotice.objects.filter(uuid = data.get('uuid')).first()
@@ -367,7 +367,7 @@ class UpdateCommitteeFormView(LoginRequiredMixin,CompanyOwnershipRequiredMixin,V
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        if request.user.authorization.department != 'kredi_risk_izleme':
+        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = CommitteeForm.objects.filter(uuid = data.get('uuid')).first()
