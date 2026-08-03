@@ -207,10 +207,15 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Cari Hesap Hareketleri", "icon" : "price_change", "route" : "/trade-transactions"},
             ]},
             #========================
-            #SMS
+            #İLETİŞİM
             #========================
-            {"type" : "sub_menu", "class" : ["admin"], "label" : "SMS", "icon" : "chat", "items" : [
-                {"type" : "item", "class" : ["admin"], "label" : "SMS Gönder", "icon" : "chat", "route" : "/sms-send"},
+            # {"type" : "sub_menu", "class" : ["admin"], "label" : "SMS", "icon" : "chat", "items" : [
+            #     {"type" : "item", "class" : ["admin"], "label" : "SMS Gönder", "icon" : "chat", "route" : "/sms-send"},
+            # ]},
+            {"type" : "sub_menu", "class" : ["admin"], "label" : "İletişim", "icon" : "chat", "items" : [
+                {"type" : "sub_menu", "class" : ["admin"], "label" : "Araçlar", "icon" : "description", "items" : [
+                    {"type" : "item", "class" : ["admin"], "label" : "WhatsApp Mesajları", "icon" : "chat", "route" : "/whatsapp-messages"},
+                ]},
             ]},
             # {"type" : "sub_menu", "class" : ["admin"], "label" : "Excel Dönüşümleri", "icon" : "accounting", "items" : [
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Hareketleri", "icon" : "account", "route" : "/banka-hareketleri"},
