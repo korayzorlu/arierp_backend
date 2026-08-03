@@ -222,6 +222,12 @@ class MenuItemListSerializer(serializers.Serializer):
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Tahsilatları", "icon" : "account", "route" : "/banka-tahsilatlari"},
             #     {"type" : "item", "class" : ["admin"], "label" : "Banka Tahsilatları Odoo", "icon" : "account", "route" : "/banka--tahsilatlari-odoo"},
             # ]},
+            #========================
+            #EMLAK
+            #========================
+            {"type" : "sub_menu", "class" : ["default"], "label" : "Arı Leasing Emlak", "icon" : "emlak", "items" : [
+                {"type" : "item", "class" : ["default"], "label" : "Leasing Hesaplama", "icon" : "emlak", "route" : "https://arileasing.com.tr/leasing-hesaplama/"},
+            ]},
         ]
 
         hierarchy = {
