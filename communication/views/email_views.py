@@ -106,7 +106,7 @@ class SendRiskEmailView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         
-        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri':
+        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri' and request.user.authorization.department != 'musteri_temsilcisi':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
 
         active_company_uuid = data.get('ac')
@@ -224,7 +224,7 @@ class SendRiskEmailSelectedView(LoginRequiredMixin,View):
         data = json.loads(request.body)
         uuids = data.get('uuids')
         
-        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri':
+        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri' and request.user.authorization.department != 'musteri_temsilcisi':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
 
         active_company_uuid = data.get('ac')

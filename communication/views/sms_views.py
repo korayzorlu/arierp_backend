@@ -30,7 +30,7 @@ class SendSMSView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         
-        if request.user.authorization.department != 'kredi_risk_izleme':
+        if request.user.authorization.department != 'kredi_risk_izleme' and request.user.authorization.department != 'musteri_iliskileri' and request.user.authorization.department != 'musteri_temsilcisi':
             return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
         send_sms.delay(data)
 
