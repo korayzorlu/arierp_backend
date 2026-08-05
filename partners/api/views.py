@@ -187,6 +187,7 @@ class PartnerFilter(FilterSet):
     country_name = CharFilter(method = 'filter_country')
     kep = CharFilter(field_name = 'kep', lookup_expr = 'contains')
     is_turkkep = CharFilter(method='filter_is_turkkep')
+    partner_notes = CharFilter(method = 'filter_partner_notes')
 
     class Meta:
         model = Partner
@@ -224,6 +225,14 @@ class PartnerFilter(FilterSet):
         elif value == "all":
             return queryset
         return queryset.filter(is_turkkep = value)
+
+    def filter_partner_notes(self, queryset, partner_notes, value):
+        if value == "true":
+            return queryset.annotate(note_count=Count('partner_partner_notes')).filter(note_count__gt=0)
+        elif value == "false":
+            return queryset.annotate(note_count=Count('partner_partner_notes')).filter(note_count__lte=0)
+        else:
+            return queryset
 
     
 class PartnerList(ModelViewSet, QueryListAPIView):

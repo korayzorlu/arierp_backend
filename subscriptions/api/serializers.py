@@ -227,6 +227,7 @@ class MenuItemListSerializer(serializers.Serializer):
             #========================
             {"type" : "sub_menu", "class" : ["default"], "label" : "Arı Leasing Emlak", "icon" : "emlak", "items" : [
                 {"type" : "item", "class" : ["default"], "label" : "Leasing Hesaplama", "icon" : "emlak", "route" : "https://arileasing.com.tr/leasing-hesaplama/"},
+                {"type" : "item", "class" : ["default"], "label" : "Emlakçılar", "icon" : "emlak", "route" : "/real-estate-agents"},
             ]},
         ]
 

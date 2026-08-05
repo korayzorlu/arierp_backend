@@ -1,7 +1,8 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import Q,Sum
+from django.db.models import Q,Sum,Count
 from django.db.models.functions import Lower,Upper
 from django.contrib.postgres.fields import ArrayField
+
 
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter,DateFromToRangeFilter
@@ -34,6 +35,7 @@ class PartnerFilter(FilterSet):
         model = Partner
         fields = ['uuid','name','crm_code','customer_code','tc_vkn_no','is_commercial']
 
+
 class PartnerNoteFilter(FilterSet):
     uuid = CharFilter(method = 'filter_uuid')
     user = CharFilter(field_name='user__get_full_name', lookup_expr='icontains')
@@ -51,6 +53,7 @@ class PartnerFinancialProfileFilter(FilterSet):
     partner_tc_vkn_no = CharFilter(field_name='partner__tc_vkn_no', lookup_expr='icontains')
     partner_customer_code = CharFilter(field_name='partner__customer_code', lookup_expr='exact')
     partner_crm_code = CharFilter(field_name='partner__crm_code', lookup_expr='exact')
+    
     class Meta:
         model = PartnerFinancialProfile
         fields = '__all__'
@@ -63,3 +66,5 @@ class PartnerFinancialProfileFilter(FilterSet):
 
     def filter_uuid(self, queryset, uuid, value):
         return queryset.filter(uuid = value)
+
+

@@ -84,6 +84,7 @@ class PartnerListSerializer(serializers.Serializer):
     sgk_job = serializers.SerializerMethodField()
     sgk_job_code = serializers.SerializerMethodField()
     nace_code = serializers.CharField()
+    partner_note_count = serializers.SerializerMethodField()
     
     def get_customer(self, obj):
         return True if "customer" in obj.types else False
@@ -129,6 +130,9 @@ class PartnerListSerializer(serializers.Serializer):
 
     def get_sgk_job_code(self, obj):
         return obj.sgk_job.sgk_job_code if obj.sgk_job else ''
+
+    def get_partner_note_count(self, obj):
+            return obj.partner_partner_notes.count() if obj.partner_partner_notes.exists() else 0
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)

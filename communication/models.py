@@ -146,3 +146,4 @@ class Call(models.Model):
 
     def __str__(self):
         return str(f"{self.phone_number} - {self.queue}")
+

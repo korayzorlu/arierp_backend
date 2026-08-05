@@ -96,7 +96,8 @@ INSTALLED_APPS = [
     "inventory",
     "agent",
     "krs",
-    "ai"
+    "ai",
+    "emlak"
 ]
 
 MIDDLEWARE = [
