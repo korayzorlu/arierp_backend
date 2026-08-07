@@ -18,3 +18,9 @@ class RealEstateAgentFilter(FilterSet):
     class Meta:
         model = RealEstateAgent
         fields = '__all__'
+
+class WhatsappMessageFilter(FilterSet):
+
+    class Meta:
+        model = WhatsappMessage
+        fields = '__all__'

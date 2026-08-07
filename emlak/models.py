@@ -44,7 +44,9 @@ class WhatsappMessage(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="whatsapp_messages")
     
     real_estate_agent = models.ForeignKey(RealEstateAgent, on_delete=models.CASCADE, related_name="real_estate_agent_whatsapp_messages", null=True, blank=True)
-
+    ilan_no = models.CharField(_("İlan No"), max_length=50, blank=True, null=True)
+    amount = models.DecimalField(_("Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    text = models.TextField(_("Text"), max_length=2000, blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

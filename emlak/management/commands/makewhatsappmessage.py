@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
-from emlak.utils import fetch_real_estate_agent
+from emlak.utils import make_whatsapp_message
+from companies.models import Company
 
 import pandas as pd
 import json
@@ -24,7 +25,19 @@ class Command(BaseCommand):
         company = options.get('c')
 
         print("processing...")
+
+        company = Company.objects.filter(id=int(company)).first()
+
+        data = {
+            "company" : company,
+            "name" : "Seda Güneş",
+            "phone_number_1" : "0 (216) 807 11 22",
+            "phone_number_2" : "0 (539) 821 10 29",
+            "ilan_no" : "1329471024",
+            "amount" : "5.550.000",
+            "meet_date" : "2026-08-12",
+        }
         
-        fetch_real_estate_agent(company)
+        make_whatsapp_message(data)
         
         print("done!")

@@ -74,4 +74,48 @@ class RealEstateAgentList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
     
+class WhatsappMessageList(ModelViewSet, QueryListAPIView):
+    serializer_class = WhatsappMessageListSerializer
+    filterset_class = WhatsappMessageFilter
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = [
+        'real_estate_agent__name','real_estate_agent__phone_number_1','real_estate_agent__phone_number_2','real_estate_agent__url'
+    ]
+    ordering = ['-created_date']
+    # pagination_class = DatatablesPagination
+    def get_pagination_class(self):
+        paginate = self.request.query_params.get('paginate')
+        if paginate == 'false':
+            return None
+        return DatatablesPagination
 
+    @property
+    def pagination_class(self):
+        return self.get_pagination_class()
+    required_subscription = "free"
+    permission_classes = [SubscriptionPermission]
+    
+    def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
+        active_company_uuid = self.request.query_params.get('ac')
+        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        ordering = self.request.query_params.get('ordering')
+        
+        custom_related_fields = ["company","real_estate_agent"]
+
+        queryset = WhatsappMessage.objects.select_related(*custom_related_fields).filter(
+            Q(company = active_company.company if active_company else None)
+        )
+
+        query = self.request.query_params.get('search[value]', None)
+        if query:
+            search_fields = ["real_estate_agent__name","real_estate_agent__phone_number_1","real_estate_agent__phone_number_2","real_estate_agent__url"]
+            
+            q_objects = Q()
+            for field in search_fields:
+                q_objects |= Q(**{f"{field}__icontains": query})
+            
+            queryset = queryset.filter(q_objects)
+        self._cached_queryset = queryset
+        return queryset

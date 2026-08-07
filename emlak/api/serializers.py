@@ -16,3 +16,24 @@ class RealEstateAgentListSerializer(serializers.Serializer):
     phone_number_1 = serializers.CharField()
     phone_number_2 = serializers.CharField()
     url = serializers.CharField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+class WhatsappMessageListSerializer(serializers.Serializer):
+    uuid = serializers.CharField()
+    companyId = serializers.SerializerMethodField()
+    real_estate_agent = serializers.SerializerMethodField()
+    phone_number_1 = serializers.SerializerMethodField()
+    amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    ilan_no = serializers.CharField()
+    text = serializers.CharField()
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+    def get_real_estate_agent(self, obj):
+        return obj.real_estate_agent.name if obj.real_estate_agent else ''
+
+    def get_phone_number_1(self, obj):
+        return obj.real_estate_agent.phone_number_1 if obj.real_estate_agent and obj.real_estate_agent.phone_number_1 else ''

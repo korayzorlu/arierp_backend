@@ -43,7 +43,13 @@ def has_more_than_two_decimal_places(val):
     dec = safe_decimal(val)
     # dec.as_tuple().exponent negatifse, ondalık basamak sayısı -exponent olur
     return abs(dec.as_tuple().exponent) > 2
-    
+
+def round_thousand(sayi):
+    return round(sayi / 1000) * 1000
+
+def round_hundred(sayi):
+    return round(sayi / 100) * 100
+
 def parse_amount(amount_str):
     """
     Farklı yazım türlerinde verilen para tutarını normalize ederek float'a çevirir.
@@ -53,6 +59,10 @@ def parse_amount(amount_str):
 
     # Remove all non-digit/decimal chars except ',' and '.'
     amount_str = str(amount_str).strip()
+
+    # Eğer 5.550.000 gibi bir format varsa yani kuruş kısmı yoksa diğer işlemlerden önce sonuna ",00" ekleyelim
+    if re.match(r'^\d{1,3}(\.\d{3})+$', amount_str):
+        amount_str += ",00"
 
     # Eğer her iki karakter de varsa:
     if "," in amount_str and "." in amount_str:
@@ -73,6 +83,31 @@ def parse_amount(amount_str):
         return Decimal(amount_str)
     except:
         return Decimal('0.00')  # fallback
+
+def format_amount(value: Decimal) -> str:
+    """
+    Decimal değeri '123.456,50' formatında string'e çevirir.
+    """
+    if value is None:
+        return ""
+    formatted = f"{value:,.2f}"  # -> "123,456.50" (US formatı)
+    return formatted.translate(str.maketrans({",": ".", ".": ","}))
+
+def format_currency_tr(value):
+    try:
+        # Sayıya çevirmeye çalış
+        if isinstance(value, str):
+            value = value.replace('.', '').replace(',', '.')
+        value = Decimal(value).quantize(Decimal("0.01"))
+
+        # Binlik ve ondalık ayracı formatla
+        parts = f"{value:,.2f}".split(".")
+        integer_part = parts[0].replace(",", ".")
+        decimal_part = parts[1]
+        return f"{integer_part},{decimal_part}"
+    except (InvalidOperation, ValueError, TypeError):
+        # Hatalı değer gelirse boş string döndür
+        return ""
     
 def add_business_days(start_date, business_days):
     current_date = start_date
@@ -328,3 +363,30 @@ def duration_to_hhmmss(duration):
     m = (total_seconds % 3600) // 60
     s = total_seconds % 60
     return f"{h:02d}:{m:02d}:{s:02d}"
+
+def transform_phone_number(phone_number):
+    """
+    Telefon numarasını normalize eder. Örn: +90 555 555 55 55 → 905555555555
+    """
+    if not phone_number or phone_number == "":
+        return ""
+    
+    # Sadece rakamları al
+    digits = re.sub(r'\D', '', phone_number)
+    
+    # Eğer başında '0' varsa, onu kaldır
+    if digits.startswith('0'):
+        digits = digits[1:]
+
+    # Eğer boşluk varsa kaldır
+    digits = digits.replace(" ", "")
+
+    # Eğer parantez varsa kaldır
+    digits = digits.replace("(", "").replace(")", "")
+    
+    # Eğer başında '90' yoksa, ekle
+    if not digits.startswith('90'):
+        digits = '+90' + digits
+
+    return digits
+
