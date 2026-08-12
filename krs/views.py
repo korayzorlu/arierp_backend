@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.http import HttpResponse,JsonResponse,FileResponse
+from django.utils import timezone
 
 from leasing.models import Lease
 from common.utils.websocket_utils import send_alert
@@ -18,9 +19,16 @@ class CreateKrsReportView(LoginRequiredMixin,View):
 
         active_company = request.user.user_companies.filter(uuid = data.get('company_uuid')).first()
 
-        report_date = datetime.strptime(data.get('date'), '%Y-%m-%d') - timedelta(days=1)
+        report_base_date = datetime.strptime(data.get('date'), '%Y-%m-%d').date()
+        if report_base_date.weekday() == 0: # Pazartesi
+            days_back = 3
+        elif report_base_date.weekday() == 6: # Pazar
+            days_back = 2
+        else:
+            days_back = 1
+        report_date = report_base_date - timezone.timedelta(days=days_back)
 
-        create_krs_report(str(active_company.company.uuid),report_date)
+        create_krs_report(str(active_company.company.uuid),report_date, report_base_date)
 
         return JsonResponse({'message': 'Rapor hazırlanıyor...','status':'success'}, status=200)
     

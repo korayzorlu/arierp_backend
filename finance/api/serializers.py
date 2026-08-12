@@ -260,6 +260,32 @@ class VPosTransactionListSerializer(serializers.Serializer):
     created_date = serializers.DateTimeField()
     updated_date = serializers.DateTimeField()
 
+    ad = serializers.CharField()
+    ikinci_ad = serializers.CharField()
+    orta_ad = serializers.CharField()
+    soyad = serializers.CharField()
+    cinsiyet = serializers.CharField()
+    tc_kimlik_no = serializers.CharField()
+    pasaport_no = serializers.CharField()
+    uyruk = serializers.CharField()
+    dogum_tarihi = serializers.CharField()
+    vergi_dairesi_birey = serializers.CharField()
+    vergi_no_birey = serializers.CharField()
+    adres_birey = serializers.CharField()
+    ulke_birey = serializers.CharField()
+    sehir_birey = serializers.CharField()
+    ilce_birey = serializers.CharField()
+    posta_birey = serializers.CharField()
+    
+    username = serializers.CharField()
+    password = serializers.CharField()
+    telefon = serializers.CharField()
+    email = serializers.CharField()
+    fax = serializers.CharField()
+    bank_code = serializers.CharField()
+    contract_code = serializers.CharField()
+    ext_transaction_id = serializers.CharField()
+
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
 

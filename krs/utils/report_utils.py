@@ -2,13 +2,15 @@ from django.db.models import QuerySet, Q, Case, When, Value, IntegerField, Sum, 
 from django.utils import timezone
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.utils.timezone import localtime
+from django.utils import timezone
 
 from trade.models import TradeTransaction
 from companies.models import Company
 from leasing.models import Lease
 from krs.models import *
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import io
 import os
 from decimal import Decimal, ROUND_HALF_UP
@@ -183,6 +185,238 @@ def make_cs9999(krs_report):
         
     })
 
+def acilis_kaydi(lease, company):
+    #cinsiyet
+    if lease.contract and lease.contract.partner and lease.contract.partner.sex:
+        if lease.contract.partner.sex == "Bay":
+            cinsiyet = Cinsiyet._1
+        elif lease.contract.partner.sex == "Bayan":
+            cinsiyet = Cinsiyet._2
+        else:
+            cinsiyet = Cinsiyet._9
+    else:
+        cinsiyet = Cinsiyet._9
+
+    #adres
+    if lease.contract and lease.contract.partner and lease.contract.partner.address:
+        adres = lease.contract.partner.address
+        satir1 = adres[0:30].ljust(30)
+        satir2 = adres[30:60].ljust(30)
+        satir3 = adres[60:90].ljust(30)
+        satir4 = adres[90:120].ljust(30)
+
+    KrsReport.objects.create(
+        company=company,
+        contract=lease.contract,
+        lease=lease,
+        kayit_turu=KayitTuru.CS0200,
+        versiyon=Versiyon._02,
+        uye_kodu="00309",
+        portfoy_kodu="309",
+        portfoy_alt_kodu="00",
+        hesap_numarasi=str(lease.contract.contract_id).ljust(20),
+        hesap_sahibinin_numarasi="1",
+        ozel_talimat_gostergesi="  ",
+        hesap_sahibi_turu=BasvuruSahibiTuru._1,
+        birinci_kimlik_turu=KimlikTuru._6,
+        birinci_kimlik_numarasi=lease.contract.partner.tc_vkn_no.ljust(20) if lease.contract and lease.contract.partner and lease.contract.partner.tc_vkn_no else " " * 20,
+        uyruk=Uyruk._99,
+        soyadi=lease.contract.partner.last_name.ljust(20) if lease.contract and lease.contract.partner and lease.contract.partner.last_name else " " * 30,
+        ilk_ad_1=lease.contract.partner.first_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.first_name else " " * 15,
+        anne_adi=lease.contract.partner.mother_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.mother_name else " " * 15,
+        baba_adi=lease.contract.partner.father_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.father_name else " " * 15,
+        cinsiyet=cinsiyet,
+        dogum_tarihi=lease.contract.partner.birthday.strftime("%Y%m%d") if lease.contract and lease.contract.partner and lease.contract.partner.birthday else "99999999",
+        dogum_yeri=lease.contract.partner.birth_place.ljust(30) if lease.contract and lease.contract.partner and lease.contract.partner.birth_place else " " * 30,
+
+    )
+
+    KrsReport.objects.create(
+        company=company,
+        contract=lease.contract,
+        lease=lease,
+        kayit_turu=KayitTuru.CS0301,
+        versiyon=Versiyon._02,
+        uye_kodu="00309",
+        portfoy_kodu="309",
+        portfoy_alt_kodu="00",
+        hesap_numarasi=str(lease.contract.contract_id).ljust(20),
+        hesap_sahibinin_numarasi="1",
+        ozel_talimat_gostergesi="  ",
+        adres_tipi=AdresTuru._1,
+        simdiki_onceki_adres_gostergesi=SimdikiOncekiAdresKodu._0,
+        adrese_tasindigi_tarih="99999999",
+        adresten_ayrildigi_tarih="99999999",
+        satir_1=satir1,
+        satir_2=satir2,
+        satir_3=satir3,
+        satir_4=satir4
+    )
+
+def hesap_kaydi(lease, company):
+    #para birimi
+    if lease.currency.code == "TRY":
+        doviz_kodu = "949"
+    elif lease.currency.code == "USD":
+        doviz_kodu = "840"
+    elif lease.currency.code == "EUR":
+        doviz_kodu = "978"
+    else:
+        doviz_kodu = "000"
+
+    #Hesap Kaydı
+
+    #kredi tutarı
+    if lease.operasyon_baz_maliyet <= Decimal("2.00"):
+        old_lease = Lease.objects.filter(
+            ~Q(lease_id=lease.lease_id) &
+            Q(main_lease_id=lease.main_lease_id) &
+            Q(lease_status__in=["baskasina_transfer_edildi"]) &
+            Q(operasyon_baz_maliyet__gt=Decimal("2.00"))
+        ).order_by("-lease_id").first()
+        kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
+    elif "/" in lease.code:
+        cleaned_code = lease.code.split("/")[0] + ".1.1"
+        old_lease = Lease.objects.filter(
+            code=cleaned_code
+        ).first()
+        if not old_lease:
+            cleaned_code = lease.code.split("/")[0] + ".1.0"
+            old_lease = Lease.objects.filter(
+            code=cleaned_code
+        ).first()
+        kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
+    else:
+        kredi_tutari = lease.operasyon_baz_maliyet
+
+    #peşinat
+    installment = lease.lease_installments.filter(type='2').first()
+    depozito_tutari = installment.payment if installment else Decimal("0.00")
+
+    #taksit
+    last_installment = lease.lease_installments.filter(type='1').order_by("-sequency").first()
+    taksit_tutari = last_installment.payment if last_installment else Decimal("0.00")
+
+    #son taksit
+    last2_installment = lease.lease_installments.filter(type='1', payment_date__lt=datetime.now().date()).order_by("-sequency").first()
+    taksit_tutari = last2_installment.payment if last2_installment else Decimal("0.00")
+
+    #gecikme
+    if lease.overdue_days >= 3:
+        overdue_start_date = timezone.localtime().date() - timezone.timedelta(days=lease.overdue_days)
+        overdue_installments_count = lease.lease_installments.filter(
+            type='1',
+            payment_date__gte=overdue_start_date,
+            payment_date__lt=timezone.localtime().date()
+        ).count()
+        if overdue_installments_count == 1:
+            hesap_odeme_durumu = HesapOdemeDurumu._1
+        elif overdue_installments_count == 2:
+            hesap_odeme_durumu = HesapOdemeDurumu._2
+        elif overdue_installments_count == 3:
+            hesap_odeme_durumu = HesapOdemeDurumu._3
+        elif overdue_installments_count == 4:
+            hesap_odeme_durumu = HesapOdemeDurumu._4
+        elif overdue_installments_count == 5:
+            hesap_odeme_durumu = HesapOdemeDurumu._5
+        elif overdue_installments_count == 6:
+            hesap_odeme_durumu = HesapOdemeDurumu._6
+        elif overdue_installments_count > 6:
+            hesap_odeme_durumu = HesapOdemeDurumu._6
+        else:
+            hesap_odeme_durumu = HesapOdemeDurumu._0 # kontrol sağlanacakj
+    else:
+        hesap_odeme_durumu = HesapOdemeDurumu._0
+
+    #toplam borc
+    next_installments_total = lease.lease_installments.filter(type='1', payment_date__gte=datetime.now().date()).aggregate(total=Sum('principal'))['total'] or Decimal("0.00")
+    toplam_borc_bakiyesi = (lease.overdue_amount) + next_installments_total
+    if toplam_borc_bakiyesi < 0:
+        toplam_borc_bakiyesi = abs(toplam_borc_bakiyesi)
+        kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._1
+    else:
+        kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._0
+
+    #gecikme
+    if lease.overdue_days >= 3 and lease.overdue_days < 100:
+        gecikme_gun_sayisi = str(lease.overdue_days).rjust(2, "0")
+    elif lease.overdue_days >= 100:
+        gecikme_gun_sayisi = "99"
+    else:
+        gecikme_gun_sayisi = "00"
+
+    KrsReport.objects.create(
+        company=company,
+        contract=lease.contract,
+        lease=lease,
+        kayit_turu=KayitTuru.CS0100,
+        versiyon=Versiyon._01,
+        uye_kodu="00309",
+        portfoy_kodu="309",
+        portfoy_alt_kodu="00",
+        hesap_numarasi=str(lease.contract.contract_id).ljust(20),
+        sube_kodu="  ",
+        birim_kodu="  ",
+        hesapla_iliskili_kisi_sayisi="1",
+        doviz_kodu=doviz_kodu,
+        doviz_boleni="0",
+        ozel_talimat_gostergesi="  ",
+        acilis_tarihi=lease.activation_date.strftime("%Y%m%d") if lease and lease.activation_date else "99999999",
+        basvuru_referans_numarasi="                    ",
+        kredi_turu=KrediTuru._03,
+        faiz_orani_gostergesi=FaizOraniGostergesi._1,
+        kredi_kullanim_amaci=KrediKullanimAmaci._12,
+        teminat_gostergesi = TeminatGostergesi._0,
+        kredi_tutari=str(int(kredi_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+        depozito_tutari=str(int(depozito_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+        sozlesme_suresi=str(lease.vade).rjust(3, "0") if lease else "000",
+        odeme_sikligi="01",
+        taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+        son_taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+        taksit_sayisi=str(lease.vade).rjust(3, "0") if lease else "000",
+        odeme_sekli=OdemeSekli._04,
+        hesap_odeme_durumu=hesap_odeme_durumu,
+        toplam_borc_bakiyesi=str(int(toplam_borc_bakiyesi.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+        kredi_bakiyesi_gostergesi=kredi_bakiyesi_gostergesi,
+        borc_faizi_bakiyesi = " " * 9,
+        gecikmedeki_bakiye = str(int(lease.overdue_amount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease and lease.overdue_amount > 0 else "000000000",
+        vadesinde_yapilmayan_odeme = " " * 2, #tekrar bakılacak
+        son_odeme_tutari = " " * 9, #tekrar bakılacak
+        son_odeme_tarihi = " " * 8, #tekrar bakılacak
+        kapanis_tarihi = " " * 8, #tekrar bakılacak
+        kanuni_takip_tarihi = " " * 8, #tekrar bakılacak
+        tahsil_edilme_tarihi = " " * 8, #tekrar bakılacak
+        kapanma_nedeni = " " * 2, #tekrar bakılacak
+        hesabin_ozel_durumu = " " * 1, #tekrar bakılacak
+        yeni_hesap_numarasi = " " * 20, #tekrar bakılacak
+        kalan_taksit_bakiyesi = str(int(next_installments_total.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
+        taksit_tarihi_gostergesi = " " * 1, #tekrar bakılacak
+        tarihce_duzeltme_gostergesi = TarihceDuzeltmeGostergesi._0,
+        yeniden_yapilandirma_gostergesi = " " * 1, #tekrar bakılacak
+        yeniden_yapilandirma_tarihi = " " * 8, #tekrar bakılacak
+        tedbir_karari_gostergesi = TedbirKarariGostergesi._,
+        kayittan_dusulen_tutar = "000000000", #tekrar bakılacak
+        nakit_cekim_tutari = " " * 9, #tekrar bakılacak
+        gecikme_gun_sayisi = gecikme_gun_sayisi,
+        ekstre_odeme_orani = " " * 3
+    )
+
+def bitis_kaydi(company):
+    KrsReport.objects.create(
+        company=company,
+        kayit_turu=KayitTuru.CS9999,
+        versiyon=Versiyon._01,
+        uye_kodu="00309",
+        portfoy_kodu="309",
+        hesap_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0100).count()).rjust(7, "0"),
+        diger_para_birimine_gore_hesap_kayitlarinin_toplam_sayisi="0000000",
+        hesap_gecmisi_kayitlarinin_toplam_sayisi="0000000",
+        isim_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0200).count()).rjust(7, "0"),
+        formatlanmamis_adres_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0301).count()).rjust(7, "0"),
+        detayli_kisisel_bilgiler_kayitlarinin_toplam_sayisi="0000000",
+        detayli_isveren_bilgileri_kayitlarinin_toplam_sayisi="0000000",
+        detayli_banka_bilgileri_kayitlarinin_toplam_sayisi="0000000",
+    )
 
 def make_krs_report(company, date):
     company_obj = Company.objects.filter(id = int(company)).first()
@@ -203,31 +437,42 @@ def make_krs_report(company, date):
 
     print(trade_transactions)
 
-def create_krs_report(company_uuid,report_date):
+def create_krs_report(company_uuid,report_date,report_base_date):
+    #1. Şirketi al
     company = Company.objects.filter(uuid = company_uuid).first()
 
+    #2. Raporun hazırlanacağı tarih aralığını belirle
+    start_date = report_date
+    end_date = report_base_date
+
+    #3. Tarih aralığındaki cari hesap hareketlerini al
     trade_transactions  = TradeTransaction.objects.select_related('lease').filter(
         lease = OuterRef('pk'),
-        due_date = report_date,
+        due_date__gte = start_date,
+        due_date__lt = end_date,
     )
 
+    #4. Tarih aralığında aktifleştirilen ve cari hesap hareketlerine bağlı kira planlarını al
     leases = Lease.objects.filter(
         Q(company = company) &
         Q(is_last_project=True) &
         # Q(is_last_project_arinet=True) &
         ~Q(lease_status__in=["iptal_edildi","feshedildi","planlandi"]) &
         (
-            Q(activation_date=report_date) |
-            Exists(trade_transactions)
+            (
+                Q(activation_date__gte=start_date) &
+                Q(activation_date__lt=end_date)
+            ) |
+            Exists(trade_transactions) |
+            Q(overdue_days__gte=3)
             #Q(code='60702/3.1.1')
         )
     )
 
-    print(leases)
-
+    #5. Önceki raporları sil
     KrsReport.objects.all().delete()
 
-    #başlık kaydı
+    #6. Başlık kaydı oluştur
     KrsReport.objects.create(
         company=company,
         kayit_turu=KayitTuru.CS0000,
@@ -235,237 +480,28 @@ def create_krs_report(company_uuid,report_date):
         uye_kodu="00309",
         portfoy_kodu="309",
         uye_adi="ARI FİNANSAL KİRALAMA A.Ş.",
-        olusturma_tarihi=timezone.now().date().strftime("%Y%m%d"),
-        bildirim_tarihi=timezone.now().date().strftime("%Y%m%d")
+        # olusturma_tarihi=timezone.localtime().date().strftime("%Y%m%d"),
+        # bildirim_tarihi=timezone.localtime().date().strftime("%Y%m%d")
+        olusturma_tarihi=report_base_date.strftime("%Y%m%d"),
+        bildirim_tarihi=report_base_date.strftime("%Y%m%d")
     )
     
-    #satır kaydı
+    #7. Alınan kira planları için döngü oluştur
     for lease in leases:
-        #para birimi
-        if lease.currency.code == "TRY":
-            doviz_kodu = "949"
-        elif lease.currency.code == "USD":
-            doviz_kodu = "840"
-        elif lease.currency.code == "EUR":
-            doviz_kodu = "978"
-        else:
-            doviz_kodu = "000"
+        #8. Açılış kaydı oluştur
+        if lease.activation_date >= start_date and lease.activation_date < end_date: #or lease.code == '60702/3.1.1':
+            acilis_kaydi(lease, company)
 
-        #cinsiyet
-        if lease.contract and lease.contract.partner and lease.contract.partner.sex:
-            if lease.contract.partner.sex == "Bay":
-                cinsiyet = Cinsiyet._1
-            elif lease.contract.partner.sex == "Bayan":
-                cinsiyet = Cinsiyet._2
-            else:
-                cinsiyet = Cinsiyet._9
-        else:
-            cinsiyet = Cinsiyet._9
-
-        if lease.contract and lease.contract.partner and lease.contract.partner.address:
-            adres = lease.contract.partner.address
-            satir1 = adres[0:30].ljust(30)
-            satir2 = adres[30:60].ljust(30)
-            satir3 = adres[60:90].ljust(30)
-            satir4 = adres[90:120].ljust(30)
-
-        if lease.activation_date == report_date: #or lease.code == '60702/3.1.1':
-            KrsReport.objects.create(
-                company=company,
-                contract=lease.contract,
-                lease=lease,
-                kayit_turu=KayitTuru.CS0200,
-                versiyon=Versiyon._02,
-                uye_kodu="00309",
-                portfoy_kodu="309",
-                portfoy_alt_kodu="00",
-                hesap_numarasi=str(lease.contract.contract_id).ljust(20),
-                hesap_sahibinin_numarasi="1",
-                ozel_talimat_gostergesi="  ",
-                hesap_sahibi_turu=BasvuruSahibiTuru._1,
-                birinci_kimlik_turu=KimlikTuru._6,
-                birinci_kimlik_numarasi=lease.contract.partner.tc_vkn_no.ljust(20) if lease.contract and lease.contract.partner and lease.contract.partner.tc_vkn_no else " " * 20,
-                uyruk=Uyruk._99,
-                soyadi=lease.contract.partner.last_name.ljust(20) if lease.contract and lease.contract.partner and lease.contract.partner.last_name else " " * 30,
-                ilk_ad_1=lease.contract.partner.first_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.first_name else " " * 15,
-                anne_adi=lease.contract.partner.mother_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.mother_name else " " * 15,
-                baba_adi=lease.contract.partner.father_name.ljust(15) if lease.contract and lease.contract.partner and lease.contract.partner.father_name else " " * 15,
-                cinsiyet=cinsiyet,
-                dogum_tarihi=lease.contract.partner.birthday.strftime("%Y%m%d") if lease.contract and lease.contract.partner and lease.contract.partner.birthday else "99999999",
-                dogum_yeri=lease.contract.partner.birth_place.ljust(30) if lease.contract and lease.contract.partner and lease.contract.partner.birth_place else " " * 30,
-
-            )
-
-            KrsReport.objects.create(
-                company=company,
-                contract=lease.contract,
-                lease=lease,
-                kayit_turu=KayitTuru.CS0301,
-                versiyon=Versiyon._02,
-                uye_kodu="00309",
-                portfoy_kodu="309",
-                portfoy_alt_kodu="00",
-                hesap_numarasi=str(lease.contract.contract_id).ljust(20),
-                hesap_sahibinin_numarasi="1",
-                ozel_talimat_gostergesi="  ",
-                adres_tipi=AdresTuru._1,
-                simdiki_onceki_adres_gostergesi=SimdikiOncekiAdresKodu._0,
-                adrese_tasindigi_tarih="99999999",
-                adresten_ayrildigi_tarih="99999999",
-                satir_1=satir1,
-                satir_2=satir2,
-                satir_3=satir3,
-                satir_4=satir4
-            )
-
-        #kredi tutarı
-        if lease.operasyon_baz_maliyet <= Decimal("2.00"):
-            old_lease = Lease.objects.filter(
-                ~Q(lease_id=lease.lease_id) &
-                Q(main_lease_id=lease.main_lease_id) &
-                Q(lease_status__in=["baskasina_transfer_edildi"]) &
-                Q(operasyon_baz_maliyet__gt=Decimal("2.00"))
-            ).order_by("-lease_id").first()
-            kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
-        elif "/" in lease.code:
-            cleaned_code = lease.code.split("/")[0] + ".1.1"
-            old_lease = Lease.objects.filter(
-                code=cleaned_code
-            ).first()
-            if not old_lease:
-                cleaned_code = lease.code.split("/")[0] + ".1.0"
-                old_lease = Lease.objects.filter(
-                code=cleaned_code
-            ).first()
-            kredi_tutari = old_lease.operasyon_baz_maliyet if old_lease else lease.operasyon_baz_maliyet
-        else:
-            kredi_tutari = lease.operasyon_baz_maliyet
-
-        #peşinat
-        installment = lease.lease_installments.filter(type='2').first()
-        depozito_tutari = installment.payment if installment else Decimal("0.00")
-
-        #taksit
-        last_installment = lease.lease_installments.filter(type='1').order_by("-sequency").first()
-        taksit_tutari = last_installment.payment if last_installment else Decimal("0.00")
-
-        #son taksit
-        last2_installment = lease.lease_installments.filter(type='1', payment_date__lt=datetime.now().date()).order_by("-sequency").first()
-        taksit_tutari = last2_installment.payment if last2_installment else Decimal("0.00")
-
-        #gecikme
-        if lease.overdue_days > 0:
-            overdue_start_date = datetime.now().date() - timezone.timedelta(days=lease.overdue_days)
-            overdue_installments_count = lease.lease_installments.filter(type='1', payment_date__gte=overdue_start_date, payment_date__lt=datetime.now().date()).count()
-            if overdue_installments_count == 1:
-                hesap_odeme_durumu = HesapOdemeDurumu._1
-            elif overdue_installments_count == 2:
-                hesap_odeme_durumu = HesapOdemeDurumu._2
-            elif overdue_installments_count == 3:
-                hesap_odeme_durumu = HesapOdemeDurumu._3
-            elif overdue_installments_count == 4:
-                hesap_odeme_durumu = HesapOdemeDurumu._4
-            elif overdue_installments_count == 5:
-                hesap_odeme_durumu = HesapOdemeDurumu._5
-            elif overdue_installments_count == 6:
-                hesap_odeme_durumu = HesapOdemeDurumu._6
-            elif overdue_installments_count > 6:
-                hesap_odeme_durumu = HesapOdemeDurumu._6
-        else:
-            hesap_odeme_durumu = HesapOdemeDurumu._0
-
-        #toplam borc
-        next_installments_total = lease.lease_installments.filter(type='1', payment_date__gte=datetime.now().date()).aggregate(total=Sum('principal'))['total'] or Decimal("0.00")
-        toplam_borc_bakiyesi = (lease.overdue_amount) + next_installments_total
-        if toplam_borc_bakiyesi < 0:
-            toplam_borc_bakiyesi = abs(toplam_borc_bakiyesi)
-            kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._1
-        else:
-            kredi_bakiyesi_gostergesi = KrediBakiyesiGostergesi._0
-
-        #gecikme
-        if lease.overdue_days >= 3 and lease.overdue_days < 100:
-            gecikme_gun_sayisi = str(lease.overdue_days).rjust(2, "0")
-        elif lease.overdue_days >= 100:
-            gecikme_gun_sayisi = "99"
-        else:
-            gecikme_gun_sayisi = "00"
-
-        KrsReport.objects.create(
-            company=company,
-            contract=lease.contract,
-            lease=lease,
-            kayit_turu=KayitTuru.CS0100,
-            versiyon=Versiyon._01,
-            uye_kodu="00309",
-            portfoy_kodu="309",
-            portfoy_alt_kodu="00",
-            hesap_numarasi=str(lease.contract.contract_id).ljust(20),
-            sube_kodu="  ",
-            birim_kodu="  ",
-            hesapla_iliskili_kisi_sayisi="1",
-            doviz_kodu=doviz_kodu,
-            doviz_boleni="0",
-            ozel_talimat_gostergesi="  ",
-            acilis_tarihi=lease.activation_date.strftime("%Y%m%d") if lease and lease.activation_date else "99999999",
-            basvuru_referans_numarasi="                    ",
-            kredi_turu=KrediTuru._03,
-            faiz_orani_gostergesi=FaizOraniGostergesi._1,
-            kredi_kullanim_amaci=KrediKullanimAmaci._12,
-            teminat_gostergesi = TeminatGostergesi._0,
-            kredi_tutari=str(int(kredi_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            depozito_tutari=str(int(depozito_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            sozlesme_suresi=str(lease.vade).rjust(3, "0") if lease else "000",
-            odeme_sikligi="01",
-            taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            son_taksit_tutari=str(int(taksit_tutari.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            taksit_sayisi=str(lease.vade).rjust(3, "0") if lease else "000",
-            odeme_sekli=OdemeSekli._04,
-            hesap_odeme_durumu=hesap_odeme_durumu,
-            toplam_borc_bakiyesi=str(int(toplam_borc_bakiyesi.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            kredi_bakiyesi_gostergesi=kredi_bakiyesi_gostergesi,
-            borc_faizi_bakiyesi = " " * 9,
-            gecikmedeki_bakiye = str(int(lease.overdue_amount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease and lease.overdue_amount > 0 else "000000000",
-            vadesinde_yapilmayan_odeme = " " * 2, #tekrar bakılacak
-            son_odeme_tutari = " " * 9, #tekrar bakılacak
-            son_odeme_tarihi = " " * 8, #tekrar bakılacak
-            kapanis_tarihi = " " * 8, #tekrar bakılacak
-            kanuni_takip_tarihi = " " * 8, #tekrar bakılacak
-            tahsil_edilme_tarihi = " " * 8, #tekrar bakılacak
-            kapanma_nedeni = " " * 2, #tekrar bakılacak
-            hesabin_ozel_durumu = " " * 1, #tekrar bakılacak
-            yeni_hesap_numarasi = " " * 20, #tekrar bakılacak
-            kalan_taksit_bakiyesi = str(int(next_installments_total.quantize(Decimal("1"), rounding=ROUND_HALF_UP))).rjust(9, "0") if lease else "000000000",
-            taksit_tarihi_gostergesi = " " * 1, #tekrar bakılacak
-            tarihce_duzeltme_gostergesi = TarihceDuzeltmeGostergesi._0,
-            yeniden_yapilandirma_gostergesi = " " * 1, #tekrar bakılacak
-            yeniden_yapilandirma_tarihi = " " * 8, #tekrar bakılacak
-            tedbir_karari_gostergesi = TedbirKarariGostergesi._,
-            kayittan_dusulen_tutar = "000000000", #tekrar bakılacak
-            nakit_cekim_tutari = " " * 9, #tekrar bakılacak
-            gecikme_gun_sayisi = gecikme_gun_sayisi,
-            ekstre_odeme_orani = " " * 3
-        )
+        #9. Hesap kaydı oluştur
+        hesap_kaydi(lease, company)
         
-    #bitiş kaydı
-    KrsReport.objects.create(
-        company=company,
-        kayit_turu=KayitTuru.CS9999,
-        versiyon=Versiyon._01,
-        uye_kodu="00309",
-        portfoy_kodu="309",
-        hesap_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0100).count()).rjust(7, "0"),
-        diger_para_birimine_gore_hesap_kayitlarinin_toplam_sayisi="0000000",
-        hesap_gecmisi_kayitlarinin_toplam_sayisi="0000000",
-        isim_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0200).count()).rjust(7, "0"),
-        formatlanmamis_adres_kayitlarinin_toplam_sayisi=str(KrsReport.objects.select_related("company").filter(company=company,kayit_turu=KayitTuru.CS0301).count()).rjust(7, "0"),
-        detayli_kisisel_bilgiler_kayitlarinin_toplam_sayisi="0000000",
-        detayli_isveren_bilgileri_kayitlarinin_toplam_sayisi="0000000",
-        detayli_banka_bilgileri_kayitlarinin_toplam_sayisi="0000000",
-    )
+    #10. Bitiş kaydı oluştur
+    bitis_kaydi(company)
 
+    #11. Buffer oluştur
     buf = io.StringIO()
 
+    #12. Raporu sıralı şekilde al
     krs_reports = KrsReport.objects.filter(company=company).annotate(
         cs0000_first=Case(
             When(kayit_turu=KayitTuru.CS0000, then=Value(0)),
@@ -485,6 +521,8 @@ def create_krs_report(company_uuid,report_date):
             output_field=IntegerField(),
         ),
     ).order_by("cs0000_first", "hesap_numarasi", "kayit_turu_sira", "cs9999_last")
+
+    #13. Raporu dosyaya yaz
     for krs_report in krs_reports:
         if krs_report.kayit_turu == KayitTuru.CS0000:
             buf.write(make_cs0000(krs_report) + "\n")
@@ -497,16 +535,17 @@ def create_krs_report(company_uuid,report_date):
         elif krs_report.kayit_turu == KayitTuru.CS9999:
             buf.write(make_cs9999(krs_report) + "\n")
 
+    #14. Dosya yolunu oluştur ve dosyayı kaydet
     base_path = os.path.join(os.getcwd(), "media", "docs", str(company.uuid), "krs", "krs_reports")
     if not os.path.exists(base_path):
             os.makedirs(base_path)
 
-    file_path = os.path.join(base_path, f"KrsBildirimi_{timezone.now().date().strftime('%Y%m%d')}_3.txt")
+    file_path = os.path.join(base_path, f"KrsBildirimi_{timezone.localtime().date().strftime('%Y%m%d')}_3.txt")
     with open(file_path, "wb") as f:
         f.write(("\ufeff" + buf.getvalue()).encode("utf-8"))
 
     KrsReportDocument.objects.create(
         company=company,
-        label=f"KrsBildirimi_{timezone.now().date().strftime('%Y%m%d')}_3.txt",
-        file=ContentFile(open(file_path, "rb").read(), name=f"KrsBildirimi_{timezone.now().date().strftime('%Y%m%d')}_3.txt")
+        label=f"KrsBildirimi_{timezone.localtime().date().strftime('%Y%m%d')}_3.txt",
+        file=ContentFile(open(file_path, "rb").read(), name=f"KrsBildirimi_{timezone.localtime().date().strftime('%Y%m%d')}_3.txt")
     )

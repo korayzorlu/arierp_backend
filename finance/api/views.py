@@ -859,7 +859,8 @@ class VPosTransactionList(ModelViewSet, QueryListAPIView):
         custom_related_fields = ["company"]
 
         queryset = VPosTransaction.objects.select_related(*custom_related_fields).filter(
-            Q(company = active_company.company if active_company else None)
+            Q(company = active_company.company if active_company else None) &
+            Q(lease_posting_group_id = True)
         ).order_by(str(ordering))
 
         query = self.request.query_params.get('search[value]', None)
