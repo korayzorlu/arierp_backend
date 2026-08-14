@@ -14,6 +14,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
 from leasing.models import Lease
+from .partner_score_utils import FinancialProfileScore
 
 def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -466,20 +467,40 @@ def fetch_partner_advances_from_leaseflex(company,BATCH_SIZE=1000):
     except Exception as e:
         traceback.print_exc()
 
+
+
 def set_partner_scores(company, partner=None):
     try:
         if partner:
-            partners = Partner.objects.select_related().filter(company_id=int(company), id=partner)
+            partners = Partner.objects.select_related().filter(company_id=int(company), crm_code=partner)
         else:
             partners = Partner.objects.select_related().filter(company_id=int(company))
-        
+
+        partner_financial_profiles = PartnerFinancialProfile.objects.select_related().filter(partner__in=partners)
+        partner_financial_profiles_dict = {pfp.partner.id: pfp for pfp in partner_financial_profiles if pfp.partner}
         partner_scores = PartnerScore.objects.select_related().filter(company_id=int(company))
         partner_scores_dict = {ps.partner.id: ps for ps in partner_scores if ps.partner}
 
         update_progress = 0
         for index,partner in enumerate(partners):
             ps = partner_scores_dict.get(partner.id)
+            if not ps:
+                ps = PartnerScore.objects.create(
+                    company = partner.company,
+                    partner = partner,
+                )
+
+            financial_profile_score = FinancialProfileScore(partner_financial_profiles_dict.get(partner.id)).calculate_financial_profile_score() if partner_financial_profiles_dict.get(partner.id) else Decimal("0.00")
+
+            ps.score = Decimal("0.00")
+            ps.financial_profile_score = financial_profile_score
+            ps.score += financial_profile_score
+            ps.save()
+
+            print(ps.score)
             update_progress += 1
+
+
 
         print(f"Toplam {update_progress} partner skoru güncellendi.")
     except Exception as e:

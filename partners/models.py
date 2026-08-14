@@ -353,6 +353,8 @@ class PartnerScore(models.Model):
     score = models.DecimalField(_("Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     description = models.TextField(_("Description"), max_length=5000, blank = True, null = True)
 
+    financial_profile_score = models.DecimalField(_("Financial ProfileScore"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+
     #risk yönetim programı >> ekran: Risk Yönetimi
         #3 seviye olacak, düşük/orta/yüksek
             #müşteri riski
