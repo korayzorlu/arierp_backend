@@ -8,26 +8,28 @@ from datetime import date,timedelta,datetime
 from risk.utils.filter_utils import to_warned_filters_for_views
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
-from leasing.models import Lease, Installment
+from leasing.models import Lease, Installment, RiskStatus
 from .cmn_utils import IDS
 
 def partners_for_project(params):
+    print(f"pfp params: {params}")
     if params.get("risk_status") == "risk_partners":
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=0) &
-            Q(partner_contracts__contract_leases__overdue_days__lte=25) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=100)
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.GECIKMEDE)
+            # (
+            #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            # ) &
+            # Q(partner_contracts__contract_leases__is_last_project=True) &
+            # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            # Q(partner_contracts__contract_leases__is_credit=False) &
+            # Q(partner_contracts__contract_leases__is_under_review=False) &
+            # ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli']) &
+            # Q(partner_contracts__contract_leases__overdue_days__gt=0) &
+            # Q(partner_contracts__contract_leases__overdue_days__lte=25) &
+            # Q(partner_contracts__contract_leases__overdue_amount__gt=100)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -41,7 +43,8 @@ def partners_for_project(params):
 
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            to_warned_filters_for_views()
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.IHTAR_CEKILECEK)
+            # to_warned_filters_for_views()
         ).exclude(
             Q(types__contains=["special"]) |
             Q(types__contains=["barter"]) |
@@ -52,25 +55,26 @@ def partners_for_project(params):
 
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            (
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.IHTAR_CEKILECEK)
+            # (
+            #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            # ) &
+            # Q(partner_contracts__contract_leases__is_last_project=True) &
+            # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            # Q(partner_contracts__contract_leases__is_credit=False) &
+            # Q(partner_contracts__contract_leases__is_under_review=False) &
+            # Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+            # (
+            #     Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
+            # ) &
+            # ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -112,25 +116,26 @@ def partners_for_project(params):
 
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            (
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.IHTAR_CEKILECEK)
+            # (
+            #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            # ) &
+            # Q(partner_contracts__contract_leases__is_last_project=True) &
+            # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            # Q(partner_contracts__contract_leases__is_credit=False) &
+            # Q(partner_contracts__contract_leases__is_under_review=False) &
+            # Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+            # (
+            #     Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
+            # ) &
+            # ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -172,25 +177,26 @@ def partners_for_project(params):
 
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            (
-                Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
-                Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
-            ) &
-            ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.IHTAR_CEKILECEK)
+            # (
+            #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            # ) &
+            # Q(partner_contracts__contract_leases__is_last_project=True) &
+            # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            # Q(partner_contracts__contract_leases__is_credit=False) &
+            # Q(partner_contracts__contract_leases__is_under_review=False) &
+            # Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+            # (
+            #     Q(partner_contracts__contract_leases__overdue_31_60__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_61_90__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_91_120__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_121_150__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_151_180__gt=0) |
+            #     Q(partner_contracts__contract_leases__overdue_181_gte__gt=0)
+            # ) &
+            # ~Q(partner_contracts__contract_warning_notices__state__in=['Yeni','Geçerli'])
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount')
@@ -230,17 +236,18 @@ def partners_for_project(params):
     elif params.get("risk_status") == "warned":
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.IHTAR_CEKILDI)
+            # (
+            #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            # ) &
+            # Q(partner_contracts__contract_leases__is_last_project=True) &
+            # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            # Q(partner_contracts__contract_leases__is_credit=False) &
+            # Q(partner_contracts__contract_leases__is_under_review=False) &
+            # Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+            # Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -269,26 +276,27 @@ def partners_for_project(params):
             Q(types__contains=["special"]) |
             Q(types__contains=["barter"]) |
             Q(types__contains=["virman"])
-        ).filter(warning_notice_count__gt=0,overdue_check=True)
+        )
     elif params.get("risk_status") == "to_terminated":
         objs = Partner.objects.select_related().filter(
             vendor_filter_for_views(params) &
-            (
-                Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-                Q(partner_contracts__contract_leases__lease_status='planlandi') |
-                Q(partner_contracts__contract_leases__lease_status='durduruldu')
-            ) &
-            (
-                Q(partner_contracts__contract_warning_notices__state='Yeni') |
-                Q(partner_contracts__contract_warning_notices__state='Geçerli')
-            ) &
-            Q(partner_contracts__contract_leases__is_last_project=True) &
-            Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-            Q(partner_contracts__contract_leases__is_credit=False) &
-            Q(partner_contracts__contract_leases__is_under_review=False) &
-            Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
-            Q(partner_contracts__contract_leases__overdue_days__gt=25) &
-            Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+            Q(partner_contracts__contract_leases__risk_status=RiskStatus.FESIH_EDILECEK)
+            # (
+            #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+            #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+            #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+            # ) &
+            # (
+            #     Q(partner_contracts__contract_warning_notices__state='Yeni') |
+            #     Q(partner_contracts__contract_warning_notices__state='Geçerli')
+            # ) &
+            # Q(partner_contracts__contract_leases__is_last_project=True) &
+            # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+            # Q(partner_contracts__contract_leases__is_credit=False) &
+            # Q(partner_contracts__contract_leases__is_under_review=False) &
+            # Q(partner_contracts__contract_warning_notices__official_cancellation_date__lte=datetime.today()) &
+            # Q(partner_contracts__contract_leases__overdue_days__gt=25) &
+            # Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
         ).annotate(
             max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
             total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -317,7 +325,7 @@ def partners_for_project(params):
                 default=Value(False),
                 output_field=BooleanField()
             )
-        ).filter(warning_notice_count__gt=0,overdue_check=True).exclude(
+        ).exclude(
             Q(types__contains=["special"]) |
             Q(types__contains=["barter"]) |
             Q(types__contains=["virman"])
