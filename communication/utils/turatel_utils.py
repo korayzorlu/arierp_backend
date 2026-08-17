@@ -83,7 +83,7 @@ def get_turatel_status_with_message(data=None):
 def get_turatel_status_with_messageeee(data=None):
     url = "https://api.turatel.com/AllInOneWebService/json-api/api/SmsProxy/getStatus"
     payload = {
-        "receiverList": data.get("receiverList", []),
+        "PacketId": data.get("PacketId", []),
         "username": "otparileasing",
         "password": "3k9kW6hU4",
         "userCode": 2678,

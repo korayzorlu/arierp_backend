@@ -3,8 +3,8 @@ from django.conf import settings
 
 from contracts.models import *
 from leasing.models import *
-from partners.tasks import set_partner_scores_task
-from partners.utils.partner_utils import set_partner_scores
+from communication.tasks import send_sms_on_command_task
+from communication.utils.turatel_utils import get_turatel_status_with_messageeee
 
 import pandas as pd
 import json
@@ -12,7 +12,7 @@ import os
 import pyodbc
 
 class Command(BaseCommand):
-    help = 'Exports parts to JSON file'
+    help = 'Sends SMS messages'
     
     def get_or_none(classmodel, **kwargs):
         try:
@@ -22,15 +22,18 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-c', type=str, help='Company to associate with operation')
-        parser.add_argument('-p', type=str, help='Partner to associate with operation')
 
     def handle(self, *args, **options):
         company = options.get('c')
-        partner = options.get('p')
 
         print("processing...")
+
+        data = {
+            "PacketId": ["2328943535"],
+        }
         
-        #set_partner_scores_task.delay(company, partner)
-        set_partner_scores(company, partner)
+        resposne = get_turatel_status_with_messageeee(data)
+
+        print(resposne)
         
         print("done!")
