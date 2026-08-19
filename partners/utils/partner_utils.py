@@ -14,7 +14,7 @@ from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 from partners.models import *
 from leasing.models import Lease
-from .partner_score_utils import FinancialProfileScore
+from .partner_score_utils import CalcPartnerScore
 
 def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
     try:
@@ -490,11 +490,12 @@ def set_partner_scores(company, partner=None):
                     partner = partner,
                 )
 
-            financial_profile_score = FinancialProfileScore(partner_financial_profiles_dict.get(partner.id)).calculate_financial_profile_score() if partner_financial_profiles_dict.get(partner.id) else Decimal("0.00")
+            calc_partner_score = CalcPartnerScore(
+                financial_profile = partner_financial_profiles_dict.get(partner.id)
+            )
 
-            ps.score = Decimal("0.00")
-            ps.financial_profile_score = financial_profile_score
-            ps.score += financial_profile_score
+            ps.score = calc_partner_score.calc_score()
+            ps.mr_score = calc_partner_score.calc_mr()
             ps.save()
 
             print(ps.score)

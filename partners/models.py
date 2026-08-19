@@ -14,6 +14,7 @@ from common.models import Country,City
 from common.utils.mixins import CompletionRateMixin
 from users.models import User
 
+
 # Create your models here.
 
 class IncomeTypes(models.TextChoices):
@@ -68,12 +69,9 @@ class AmountTRY(models.TextChoices):
     RANGE_10M_ABOVE = '5', '10.000.001 ve üzeri'
 
 class Frequency(models.TextChoices):
-    RANGE_0 = '0', '0'
-    RANGE_1_20   = '1', '1-20'
-    RANGE_21_50  = '2', '21-50'
-    RANGE_51_100 = '3', '51-100'
-    RANGE_101_500 = '4', '101-500'
-    RANGE_500_ABOVE = '5', '500 ve üzeri'
+    _0_2 = '0_2', '0-2'
+    _3_4   = '3_4', '3-4'
+    _5_ABOVE  = '5_above', '5 ve üzeri'
 
 class RiskStatus(models.TextChoices):
     RISKLI = 'riskli', 'Riskli'
@@ -341,6 +339,30 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+
+        super(PartnerFinancialProfile, self).save(*args, **kwargs)
+
+        if not is_new:
+            from .utils.partner_score_utils import CalcPartnerScore
+
+            ps = PartnerScore.objects.filter(partner=self.partner).first()
+            if not ps:
+                ps = PartnerScore.objects.create(
+                    partner=self.partner,
+                    company=self.company
+                )
+            calc_partner_score = CalcPartnerScore(
+                financial_profile = self,
+            )
+
+            print(calc_partner_score.calc_score())
+
+            ps.score = calc_partner_score.calc_score()
+            ps.mr_score = calc_partner_score.calc_mr()
+            ps.save()
+
     def __str__(self):
         return str(f"{self.partner.name}")
 
@@ -354,6 +376,12 @@ class PartnerScore(models.Model):
     description = models.TextField(_("Description"), max_length=5000, blank = True, null = True)
 
     financial_profile_score = models.DecimalField(_("Financial ProfileScore"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+
+    mr_score = models.DecimalField(_("MR Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    uhr_score = models.DecimalField(_("UHR Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    cr_score = models.DecimalField(_("CR Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    ok_score = models.DecimalField(_("OK Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
+    ilh_score = models.DecimalField(_("ILH Score"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     #risk yönetim programı >> ekran: Risk Yönetimi
         #3 seviye olacak, düşük/orta/yüksek
@@ -487,6 +515,8 @@ class PartnerScore(models.Model):
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+    
 
     def __str__(self):
         return str(f"{self.partner.name} - {self.score}")

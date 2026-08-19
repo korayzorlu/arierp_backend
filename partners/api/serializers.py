@@ -276,3 +276,34 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
             return documents_urls
         else:
             return []
+
+    def get_transaction_frequency(self, obj):
+        return obj.get_transaction_frequency_display() if obj.transaction_frequency else ''
+
+class PartnerScoreListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    uuid = serializers.CharField()
+    partner = serializers.SerializerMethodField()
+    score = serializers.DecimalField(max_digits=14, decimal_places=2)
+    mr_score = serializers.DecimalField(max_digits=14, decimal_places=2)
+    uhr_score = serializers.DecimalField(max_digits=14, decimal_places=2)
+    cr_score = serializers.DecimalField(max_digits=14, decimal_places=2)
+    ok_score = serializers.DecimalField(max_digits=14, decimal_places=2)
+    ilh_score = serializers.DecimalField(max_digits=14, decimal_places=2)
+
+    def get_partner(self, obj):
+        if obj.partner.tc_vkn_no and obj.partner.tc_vkn_no != '':
+            tc_vkn_no = obj.partner.tc_vkn_no
+        elif obj.partner.vat_no and obj.partner.vat_no != '':
+            tc_vkn_no = obj.partner.vat_no
+        else:
+            tc_vkn_no = ''
+
+        return {
+            "id": obj.partner.uuid if obj.partner else '',
+            "name": obj.partner.name if obj.partner else '',
+            "tc_vkn_no": tc_vkn_no,
+            "customer_code": obj.partner.customer_code if obj.partner else '',
+            "crm_code": obj.partner.crm_code if obj.partner else '',
+            "customer_type": obj.partner.customer_type if obj.partner else '',
+        }
