@@ -99,7 +99,7 @@ class UserLoginView(View):
         email = data.get('email')
         password = data.get('password')
         remember = data.get('remember')
-        
+        print(request.session.session_key)
         user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
@@ -147,7 +147,8 @@ class UserLoginView(View):
             if position:
                 user.position = position
                 user.save()
-            
+
+            print(request.session.get_expiry_age())
             user_data = {
                 'id': user.id,
                 'email': user.email,
