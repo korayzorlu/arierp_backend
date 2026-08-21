@@ -62,9 +62,11 @@ def import_overdue_leases(self, df_json):
             print(obj)
 
     set_risk_status("2")
-    set_warning_notice_files("2",True)
 
     self.process.progress = 100
     self.process.status = "completed"
     self.process.save()
+    
+    set_warning_notice_files("2",True)
+
     
