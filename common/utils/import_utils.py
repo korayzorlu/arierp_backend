@@ -28,6 +28,7 @@ from finance.models import FinmaksTransaction,FinmaksBankAccount
 from underwriting.utils import check_third_person_status
 from contracts.utils.contract_utils import import_contracts
 from leasing.utils.import_utils import import_leases,import_installments,import_bank_activities
+from risk.utils.import_utils import import_overdue_leases
 from quotations.utils.quotation_utils import import_quotations
 from quotations.utils.quick_quotation_utils import import_quick_quotations
 
@@ -126,13 +127,13 @@ class BaseImporter():
             task_id = self.task_id
         )
         self.process.save()
-        
+
         import_function = getattr(self, f"import_{self.model_name.lower()}", None)
         if not import_function:
             self.process.status = "rejected"
             self.process.save()
             return {"message": "Sorry, something went wrong! [CM0001]"}
-
+        
         import_function(df_json)
 
         self.process.progress = 100
@@ -581,3 +582,6 @@ class BaseImporter():
         self.process.progress = 100
         self.process.status = "completed"
         self.process.save()
+
+    def import_overduelease(self, df_json):
+        import_overdue_leases(self, df_json)
