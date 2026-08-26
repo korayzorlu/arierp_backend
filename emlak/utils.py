@@ -95,15 +95,20 @@ Sitenizde yer alan {data.get("ilan_no")} nolu ilana ilişkin olarak özet aşağ
 {meet_date} tarihinde Sinpaş Holding Binasında (Beşiktaş) düzenleyeceğimiz özel bilgilendirme toplantısında sizleri de aramızda görmekten mutluluk duyarız.
 
     """
-    text = f"""Sayın {data.get("name")},
+    text = f"""🏠 Satamadığınız portföyü satışa dönüştürmeye hazır mısınız?
 
-Müşterilerinizin konutlarını Finansal Kiralama (Leasing) yöntemi ile uzun vadeli ve kârlı bir şekilde satmayı düşünür müsünüz? Bu konuda bilgi almak için {meet_date} tarihinde Sinpaş Plazadaki genel müdürlüğümüzde yapılacak olan toplantıya katılmanızı bekleriz. Katılım durumunuzu bildirmenizi rica ederiz.
+Konut kredisine ulaşamayan müşterinize 120 aya kadar vade, satıcınıza yeni bir satış modeli, size ise mevcut komisyonunuza ek %1,5 + KDV satış primi.
+Arı Leasing Gayrimenkul Satış Modelini gerçek rakamlarla anlatacağımız özel toplantımıza davetlisiniz.
 
-Arı Finansal Kiralama A.Ş.
+📅 1 Eylül 2026 Salı
+⏰ 10:00 – 11:00
+📍 Sinpaş Plaza – Beşiktaş
 
-(İletişim whatsapp; 05386460823, mail: operasyon@arileasing.com.tr)
+Krediler kapalı. Ama satışın yolu açık.
 
-Mernis No: 0147005285500018
+👉 Katılım için KATILIYORUM yazmanız yeterli.
+
+Arı Leasing | Sinpaş Grubu iştiraki
     """
 
     wp_message = WhatsappMessage.objects.create(
