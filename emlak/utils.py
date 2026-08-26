@@ -78,13 +78,13 @@ def make_whatsapp_message(data):
 
     meet_date = format_date_tr(datetime.strptime(data.get("meet_date"), "%Y-%m-%d").date()) if data.get("meet_date") else ""
     
-    text = f"""Sayın {data.get("name")},
+    text1 = f"""Sayın {data.get("name")},
 
-İlanlarınızı ve kaliteli portföyünüzü inceledim. Satışlarınızı Sinpaş İştiraki Arı Finansal Kiralama ile hızlandırabilirsiniz. Müşteriniz gayrimenkulün asgari %30'unu peşin tahsil edip kalanını vadeler halinde alabilir. Böylece gayrimenkulü satarken TÜFE + %7 reel getiri sağlar. Arı Finansal Kiralama bu hizmetiniz için %1,5+KDV hizmet bedeli öder.
+İlanlarınızı ve kaliteli portföyünüzü inceledik. Satışlarınızı Sinpaş İştiraki Arı Finansal Kiralama ile hızlandırabilirsiniz. Müşteriniz gayrimenkulün asgari %30'unu peşin tahsil edip kalanını vadeler halinde alabilir. Böylece gayrimenkulü satarken TÜFE + %7 reel getiri sağlar. Arı Finansal Kiralama bu hizmetiniz için %1,5+KDV hizmet bedeli öder.
 
 Sitenizde yer alan {data.get("ilan_no")} nolu ilana ilişkin olarak özet aşağıda verilmiştir.
 
-1- {(format_currency_tr(round_thousand(amount)))} TL yerine TÜFE + %70 ile reel olarak {format_currency_tr(round_thousand(emlak_data.get("reel_satis_tutari")))} TL satabilirsiniz. TÜFE'nin ortalama %25 olduğu varsayımı ile 120 ay boyunca toplam {format_currency_tr(round_thousand(emlak_data.get("nominal_satis_tutari")))} TL satış geliri elde eder. Gayrimenkulü 5 yıldan fazla elinde bulunduran satıcı bundan gelir vergisi ve stopaj ödemez
+1- {(format_currency_tr(round_thousand(amount)))} TL yerine TÜFE + %7 ile reel olarak {format_currency_tr(round_thousand(emlak_data.get("reel_satis_tutari")))} TL satabilirsiniz. TÜFE'nin ortalama %25 olduğu varsayımı ile 120 ay boyunca toplam {format_currency_tr(round_thousand(emlak_data.get("nominal_satis_tutari")))} TL satış geliri elde eder. Gayrimenkulü 5 yıldan fazla elinde bulunduran satıcı bundan gelir vergisi ve stopaj ödemez.
 
 2- Gayrimenkulün satış bedelinin %30 olan {format_currency_tr(round_thousand(emlak_data.get("pesinat")))} TL peşin alır. Kalan tutarı 120 ay boyunca {format_currency_tr(round_hundred(emlak_data.get("satici_ilk_kira")))} TL olarak alır. Yıllık olarak TÜFE oranında artırılır. Satıcı peşinat oranını artırabilir veya vadeyi kısaltabilir.
     
@@ -95,14 +95,33 @@ Sitenizde yer alan {data.get("ilan_no")} nolu ilana ilişkin olarak özet aşağ
 {meet_date} tarihinde Sinpaş Holding Binasında (Beşiktaş) düzenleyeceğimiz özel bilgilendirme toplantısında sizleri de aramızda görmekten mutluluk duyarız.
 
     """
+    text = f"""Sayın {data.get("name")},
 
-    WhatsappMessage.objects.create(
+Müşterilerinizin konutlarını Finansal Kiralama (Leasing) yöntemi ile uzun vadeli ve kârlı bir şekilde satmayı düşünür müsünüz? Bu konuda bilgi almak için {meet_date} tarihinde Sinpaş Plazadaki genel müdürlüğümüzde yapılacak olan toplantıya katılmanızı bekleriz. Katılım durumunuzu bildirmenizi rica ederiz.
+
+Arı Finansal Kiralama A.Ş.
+
+(İletişim whatsapp; 05386460823, mail: operasyon@arileasing.com.tr)
+
+Mernis No: 0147005285500018
+    """
+
+    wp_message = WhatsappMessage.objects.create(
         company = data.get("company"),
         real_estate_agent = real_estate_agent,
         ilan_no = data.get("ilan_no"),
         amount = amount,
         text = text,
     )
+
+    response = requests.post(
+        "https://emlak.arileasing.com.tr/api/whatsapp/ingest/",
+        headers={"X-Api-Key": settings.EMLAK_WHATSAPP_INGEST_API_KEY},
+        json={"phone_number": wp_message.real_estate_agent.phone_number_1, "message": wp_message.text},
+    )
+
+    
+
 
 def is_valid_whatsapp_message_data(data):
     parameters = [
