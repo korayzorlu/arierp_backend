@@ -158,7 +158,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
             )
         ).filter(
             Q(refund_amount__gt=0)
-        ).distinct()
+        ).exclude(types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
         if query:
