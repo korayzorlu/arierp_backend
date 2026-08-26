@@ -120,6 +120,8 @@ Mernis No: 0147005285500018
         json={"phone_number": wp_message.real_estate_agent.phone_number_1, "message": wp_message.text},
     )
 
+    print(response)
+
     
 
 
