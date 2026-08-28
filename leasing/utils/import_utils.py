@@ -18,7 +18,6 @@ from common.models import Status
 from partners.models import Partner
 from .common_utils import *
 
-
 def import_leases(self, df_json):
         df = pd.read_json(io.StringIO(df_json), orient='records')
         
