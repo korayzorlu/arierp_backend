@@ -151,6 +151,7 @@ def is_valid_whatsapp_message_data(data):
         "ilan_no",
         "amount",
         "meet_date",
+        "online_meet_date",
     ]
 
     unknown_keys = set(data.keys()) - set(parameters)
@@ -173,5 +174,8 @@ def is_valid_whatsapp_message_data(data):
 
     if not data.get('meet_date') or data.get('meet_date').strip() == "":
         return False, JsonResponse({'message': 'Toplantı tarihi eksik!','status':'error'}, status=400)
+
+    if not data.get('online_meet_date') or data.get('online_meet_date').strip() == "":
+        return False, JsonResponse({'message': 'Çevrimiçi toplantı tarihi eksik!','status':'error'}, status=400)
 
     return True, None
