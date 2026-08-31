@@ -116,7 +116,7 @@ Arı Leasing | Sinpaş Grubu iştiraki
 
 Kat mülkiyetli konutları Finansal Kiralama ile satabilirsiniz. Böylece mevcut komisyonunuza ek %2+kdv satış primi alırsınız. Modeli gerçek rakamlarla anlatıyoruz, toplantımıza davetlisiniz.
 
-{meet_date} --> Sinpaş Plaza, Konferans Salonu
+{meet_date} --> Sinpaş Plaza, Konferans Salonu (Dikilitaş mah. Yenidoğan sk. No:36 Beşiktaş/İSTANBUL)
 
 {online_meet_date} --> Microsoft Teams - Çevrimiçi
 
