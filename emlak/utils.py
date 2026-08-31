@@ -120,8 +120,8 @@ Kat mülkiyetli konutları Finansal Kiralama ile satabilirsiniz. Böylece mevcut
 
 {online_meet_date} --> Microsoft Teams - Çevrimiçi
 
-Toplantıya kayıt için lütfen aşağıdaki bağlantıya tıklayın:
-[Kayıt Linki](https://forms.cloud.microsoft/r/R1QS6mMqJF)
+Toplantıya kayıt için lütfen bağlantıya tıklayın:
+https://forms.cloud.microsoft/r/R1QS6mMqJF
 
 Arı Leasing | Sinpaş Grubu iştiraki
     """
