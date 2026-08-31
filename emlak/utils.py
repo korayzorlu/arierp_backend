@@ -77,6 +77,7 @@ def make_whatsapp_message(data):
     emlak_data = transform_emlak_amounts(amount)
 
     meet_date = format_date_tr(datetime.strptime(data.get("meet_date"), "%Y-%m-%d").date()) if data.get("meet_date") else ""
+    online_meet_date = format_date_tr(datetime.strptime(data.get("online_meet_date"), "%Y-%m-%d").date()) if data.get("online_meet_date") else ""
     
     text1 = f"""Sayın {data.get("name")},
 
@@ -95,7 +96,7 @@ Sitenizde yer alan {data.get("ilan_no")} nolu ilana ilişkin olarak özet aşağ
 {meet_date} tarihinde Sinpaş Holding Binasında (Beşiktaş) düzenleyeceğimiz özel bilgilendirme toplantısında sizleri de aramızda görmekten mutluluk duyarız.
 
     """
-    text = f"""🏠 Satamadığınız portföyü satışa dönüştürmeye hazır mısınız?
+    text2 = f"""🏠 Satamadığınız portföyü satışa dönüştürmeye hazır mısınız?
 
 Konut kredisine ulaşamayan müşterinize 120 aya kadar vade, satıcınıza yeni bir satış modeli, size ise mevcut komisyonunuza ek %1,5 + KDV satış primi.
 Arı Leasing Gayrimenkul Satış Modelini gerçek rakamlarla anlatacağımız özel toplantımıza davetlisiniz.
@@ -107,6 +108,17 @@ Arı Leasing Gayrimenkul Satış Modelini gerçek rakamlarla anlatacağımız ö
 Krediler kapalı. Ama satışın yolu açık.
 
 👉 Katılım için KATILIYORUM yazmanız yeterli.
+
+Arı Leasing | Sinpaş Grubu iştiraki
+    """
+
+    text = f"""Sayın {data.get("name")},
+
+Kat mülkiyetli konutları Finansal Kiralama ile satabilirsiniz. Böylece mevcut komisyonunuza ek %2+kdv satış primi alırsınız. Modeli gerçek rakamlarla anlatıyoruz, toplantımıza davetlisiniz.
+
+{meet_date} --> Sinpaş Plaza, Konferans Salonu
+
+{online_meet_date} --> Microsoft Teams - Çevrimiçi
 
 Arı Leasing | Sinpaş Grubu iştiraki
     """
