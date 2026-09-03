@@ -9,6 +9,7 @@ from common.utils.common_utils import transform_phone_number,parse_amount,format
 import requests
 from decimal import Decimal
 from datetime import datetime,date,timedelta
+import os
 
 TURKISH_MONTHS = {
     1: "Ocak", 2: "Şubat", 3: "Mart", 4: "Nisan", 5: "Mayıs", 6: "Haziran",
@@ -141,6 +142,48 @@ Arı Leasing | Sinpaş Grubu iştiraki
     )
 
     print(response)
+
+def send_test_wb_message():
+    url = "https://graph.facebook.com/v25.0/1350996818093512/messages"
+
+    headers = {
+        "Authorization": "Bearer EAAYvKmF1R8YBSfHeFUxmP1sfwCn4pjLZBKgmUkMPPDf4PW5sQcZAS1s5jpIEnZAURU10NswSkfAnyu9mzvfygVsJ52i923dPegiI7VQ67TRUL1OEKqSK1NHJzbRtIErZAsokJnZBRXsbXcoYmMcdvurcqG3bZAph8lZAArwjbiXwxiPJSs5NfMNdEzvrt4UoG9fT5gSabj1E3QT6T0ApnpeUYQVKG1hj8ZBcAgCorDkllNrtnp6ZAhNYQfZBjW8gHZCFt2cSVSPsyKe1lebhzdjrREVRnHYaQZDZD",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": "905542663970",
+        "type": "template",
+        "template": {
+            "name": "emlak",
+            "language": {"code": "tr"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "image",
+                            "image": {"link": os.path.join(settings.STATIC_URL, "images/global/emlak-wb-image.jpg")}
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {"type": "text", "parameter_name": "name", "text": "Koray Zorlu"},
+                        {"type": "text", "parameter_name": "meet_date", "text": "09 Eylül 2026"},
+                        {"type": "text", "parameter_name": "online_meet_date", "text": "10 Eylül 2026"},
+                    ],
+                }
+            ],
+        },
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    print(response.status_code)
+    print(response.json())
 
     
 
