@@ -9,6 +9,7 @@ from .views.under_reviews_views import *
 from .views.today_partners_views import *
 from .views.tomorrow_partners_views import *
 from .views.overdue_leases_views import *
+from .views.terminated_leases_views import *
 
 from .tests import *
 
@@ -22,6 +23,9 @@ urlpatterns = [
     path('export_overdue_leases/', ExportOverdueLeasesView.as_view(), name="export_overdue_leases"),
     path('overdue_leases_excel/', OverdueLeasesExcelView.as_view(), name="overdue_leases_excel"),
     path('import_overdue_leases/', ImportOverdueLeasesView.as_view(), name="import_overdue_leases"),
+
+    path('export_terminated_leases/', ExportTerminatedLeasesView.as_view(), name="export_terminated_leases"),
+    path('terminated_leases_excel/', TerminatedLeasesExcelView.as_view(), name="terminated_leases_excel"),
 
     path('export_to_warned_risk_partners_for_sms/', ExportToWarnedRiskPartnersForSMSView.as_view(), name="export_to_warned_risk_partners_for_sms"),
     path('to_warned_risk_partners_excel_for_sms/', ToWarnedRiskPartnersExcelForSMSView.as_view(), name="to_warned_risk_partners_excel_for_sms"),
