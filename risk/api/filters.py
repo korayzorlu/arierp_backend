@@ -1,6 +1,7 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import Q,Sum
+from django.db.models import Q,Sum,ExpressionWrapper,DateField
 from django.db.models.functions import Lower,Upper
+from django.utils.dateparse import parse_datetime, parse_date
 
 from django_filters.rest_framework import FilterSet
 from django_filters import CharFilter,DateFromToRangeFilter
@@ -13,6 +14,8 @@ from decimal import Decimal
 from risk.api.serializers.risk_partners_serializers import *
 from risk.api.serializers.amount_debit_serializers import *
 from risk.api.serializers.under_review_serializers import *
+from leasing.api.filters import LeaseFilter
+from trade.models import TradeTransaction
 
 class AmountDebitTransactionFilter(FilterSet):
     lease = CharFilter(field_name='lease_code', lookup_expr='icontains')
@@ -431,7 +434,55 @@ class NeedsToTerminatedRiskPartnerFilter(FilterSet):
         else:
             return queryset.filter() 
 
-class TerminatedLeaseFilter(FilterSet):
+class TerminatedLeaseFilter(LeaseFilter):
+    terminated_date = CharFilter(method = 'filter_terminated_date')
+    last_refund_date = CharFilter(method = 'filter_last_refund_date')
+    class Meta:
+        model = Lease
+        fields = '__all__'
+
+    def filter_terminated_date(self, queryset, terminated_date, value):
+        queryset = queryset.annotate(
+            terminated_date_annot=Subquery(
+                TradeTransaction.objects.filter(
+                    lease=OuterRef('pk'),
+                    posting_group_name='Fesih İadesi',
+                    amount_type='0',
+                ).exclude(delete_status__in=['2']).values('due_date')[:1]
+            )
+        )
+
+        parsed = parse_datetime(value)
+        if parsed:
+            return queryset.filter(terminated_date_annot=parsed.date())
+        date_parsed = parse_date(value)
+        if date_parsed:
+            return queryset.filter(terminated_date_annot=date_parsed)
+        return queryset
+
+    def filter_last_refund_date(self, queryset, last_refund_date, value):
+        queryset = queryset.annotate(
+            terminated_date_annot=Subquery(
+                TradeTransaction.objects.filter(
+                    lease=OuterRef('pk'),
+                    posting_group_name='Fesih İadesi',
+                    amount_type='0',
+                ).exclude(delete_status__in=['2']).values('due_date')[:1]
+            )
+        )
+
+        parsed = parse_datetime(value)
+        if parsed:
+            target = parsed.date()
+        else:
+            target = parse_date(value)
+        if not target:
+            return queryset
+        # last_refund_date = terminated_date + 180 gün  =>  terminated_date = value - 180 gün
+        return queryset.filter(terminated_date_annot=target - timedelta(days=180))
+
+
+class TerminatedLeaseFilterr(FilterSet):
     uuid = CharFilter(field_name='uuid', lookup_expr='exact')
     code = CharFilter(field_name='code', lookup_expr='icontains')
     contract = CharFilter(field_name='contract__code', lookup_expr='icontains')

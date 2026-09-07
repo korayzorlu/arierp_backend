@@ -52,6 +52,7 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     terminated_date = serializers.SerializerMethodField()
     last_refund_date = serializers.SerializerMethodField()
     refund = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -100,12 +101,12 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     
     def get_terminated_date(self, obj):
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        return trade_transaction.due_date.strftime('%d.%m.%Y') if obj and trade_transaction.due_date else ''
+        return timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
     
     def get_last_refund_date(self, obj):
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
         if obj and trade_transaction and trade_transaction.due_date:
-            last_refund_date = trade_transaction.due_date + timedelta(days=180)
+            last_refund_date = timezone.localtime(trade_transaction.due_date) + timedelta(days=180)
             return last_refund_date.strftime('%d.%m.%Y')
         return ''
     
@@ -115,6 +116,12 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
         for tt in trade_transactions:
             total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
         return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
+
+    def get_item(self, obj):
+        return {
+            "id" : obj.item.uuid if obj.item else "",
+            "name" : obj.item.stock_name if obj.item else "",
+        }
     
 
 

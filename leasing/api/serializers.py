@@ -12,8 +12,7 @@ from leasing.utils.common_utils import vendor_filter_for_serializers,max_overdue
 from companies.models import Company,UserCompany
 from partners.models import Partner
 from contracts.models import WarningNotice
-from .filters import LeaseFilter
-    
+
 class LeaseListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()

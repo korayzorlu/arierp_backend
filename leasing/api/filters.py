@@ -11,7 +11,8 @@ from django.utils import timezone
 from datetime import datetime,timedelta
 from decimal import Decimal
 
-from .serializers import *
+from leasing.models import *
+from partners.models import Partner
 
 class LeaseFilter(FilterSet):
     code = CharFilter(field_name='code', lookup_expr='icontains')
@@ -101,7 +102,12 @@ class LeaseFilter(FilterSet):
     def filter_item(self, queryset, item, value):
         if value == 'all':
             return queryset
-        return queryset.filter(item__stock_name = value)
+        values = [v.strip() for v in value.split(',') if v.strip() and v.strip() != 'all']
+        if not values:
+            return queryset
+        if len(values) == 1:
+            return queryset.filter(item__stock_name = values[0])
+        return queryset.filter(item__stock_name__in = values)
 
     def filter_is_title_deed_delivered(self, queryset, is_title_deed_delivered, value):
         if value == 'all':

@@ -1,6 +1,7 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists
-from django.db.models.functions import Lower,Upper
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,IntegerField,Sum,OuterRef,Subquery,ExpressionWrapper,DateField
+from trade.models import TradeTransaction
+from django.db.models.functions import Lower,Upper,Cast
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -111,12 +112,29 @@ class DatatablesPagination(LimitOffsetPagination):
             'data': data
         })
     
+class TerminatedLeaseOrderingFilter(OrderingFilter):
+    # 'terminated_date' modelde gerçek bir alan olduğu için annotate ismi çakışıyor;
+    # dışarıdan gelen ordering parametresini annotate alanına yönlendiriyoruz.
+    ordering_field_map = {
+        'terminated_date': 'terminated_date_annot',
+        '-terminated_date': '-terminated_date_annot',
+        'last_refund_date': 'last_refund_date_annot',
+        '-last_refund_date': '-last_refund_date_annot',
+    }
+
+    def get_ordering(self, request, queryset, view):
+        ordering = super().get_ordering(request, queryset, view)
+        if ordering:
+            ordering = [self.ordering_field_map.get(field, field) for field in ordering]
+        return ordering
+
+
 class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = TerminatedLeaseListSerializer
     filterset_class = TerminatedLeaseFilter
-    filter_backends = [OrderingFilter,DjangoFilterBackend]
-    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no','current_request',
-                       'finansman_kurum','bbsn','lease_status_update_date']
+    filter_backends = [TerminatedLeaseOrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no',
+                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','last_refund_date']
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
@@ -142,7 +160,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
 
         queryset = Lease.objects.select_related(*custom_related_fields).filter(
             Q(company = active_company.company if active_company else None) &
-            vendor_filter_for_serializers(self.request.query_params) &
+            #vendor_filter_for_serializers(self.request.query_params) &
             Q(lease_status='feshedildi') &
             Q(is_last_project=True) &
             Q(lease_trade_transactions__posting_group_name='Fesih İadesi')
@@ -155,10 +173,27 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                     ),
                     output_field=models.DecimalField(),
                 )
+            ),
+            terminated_date_annot=Subquery(
+                TradeTransaction.objects.filter(
+                    lease=OuterRef('pk'),
+                    posting_group_name='Fesih İadesi',
+                    amount_type='0',
+                ).exclude(delete_status__in=['2']).values('due_date')[:1]
+            ),
+            last_refund_date_annot=ExpressionWrapper(
+                Subquery(
+                    TradeTransaction.objects.filter(
+                        lease=OuterRef('pk'),
+                        posting_group_name='Fesih İadesi',
+                        amount_type='0',
+                    ).exclude(delete_status__in=['2']).values('due_date')[:1]
+                ) + timedelta(days=180),
+                output_field=DateField(),
             )
         ).filter(
             Q(refund_amount__gt=0)
-        ).exclude(types__contains=["special"]).distinct()
+        ).exclude(contract__partner__types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
         if query:
@@ -172,4 +207,45 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        # Tüm main_lease_id'leri topla, tek sorguda çek
+        main_lease_ids = [obj.main_lease_id for obj in objects if obj.main_lease_id]
+        all_old_leases = Lease.objects.filter(
+            main_lease_id__in=main_lease_ids
+        ).annotate(
+            lease_id_int=Cast('lease_id', IntegerField())
+        ).only('uuid', 'code', 'main_lease_id').order_by('-lease_id_int')
+
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context()}
+        )
+
+        if page is not None:
+            response = self.get_paginated_response(serializer.data)
+            # Filtre seçenekleri her zaman filtrelenmemiş queryset'ten üretilir;
+            # aksi halde bir proje seçilince listede sadece o proje kalır ve
+            # çoklu seçim yapılamaz.
+            options_queryset = self.get_queryset()
+            projects = list(
+                options_queryset.exclude(item__isnull=True)
+                        .order_by('item__stock_name')
+                        .values('item__stock_name', 'item__uuid')
+                        .distinct()
+            )
+            vendors = list(
+                options_queryset.exclude(contract__vendor__isnull=True)
+                        .order_by('contract__vendor__name')
+                        .values('contract__vendor__name', 'contract__vendor__uuid')
+                        .distinct()
+            )
+            response.data['projects'] = projects
+            response.data['vendors'] = vendors
+            return response
+        return Response(serializer.data)
 
