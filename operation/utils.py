@@ -393,22 +393,20 @@ def export_untitle_deed_leases(self):
     if not os.path.exists(base_path):
             os.makedirs(base_path)
 
-
-
     excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-tapu-almayanlar.xlsx"
     with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='Sayfa', index=False)
+        df.to_excel(writer, sheet_name='Sayfa', index=False)
 
-            # Workbook'u al
-            workbook = writer.book
-            worksheet = writer.sheets['Sayfa']
+        # Workbook'u al
+        workbook = writer.book
+        worksheet = writer.sheets['Sayfa']
 
-            # Kolon isimlerine göre format uygula
-            for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
-                if col in numeric_columns:
-                    for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
-                        for c in cell:
-                            c.number_format = '#,##0.00'   # İstediğin format
+        # Kolon isimlerine göre format uygula
+        for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+            if col in numeric_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = '#,##0.00'   # İstediğin format
         
     self.process.progress = 100
     #self.process.status = "completed"
