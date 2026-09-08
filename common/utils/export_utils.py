@@ -39,7 +39,7 @@ from accounting.utils.trial_balance_utils import export_trial_balances
 from accounting.utils.invoice_utils import export_invoices
 from finance.utils import export_finmaks_bank_account_balances
 from compliance.utils.export_utils import export_third_persons
-from operation.utils import export_title_deed_invoice_controls
+from operation.utils import export_title_deed_invoice_controls,export_untitle_deed_leases
 from projects.utils.real_estate_utils import export_real_estates
 from trade.utils.common_utils import export_trade_transactions_for_customer
 
@@ -192,6 +192,9 @@ class BaseExporter():
 
     def export_titledeedinvoicecontrol(self):
         export_title_deed_invoice_controls(self)
+
+    def export_untitledeedlease(self):
+        export_untitle_deed_leases(self)
 
     def export_purchasedocument(self):
         export_purchase_documents(self)
