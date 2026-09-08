@@ -228,4 +228,37 @@ class TitleDeedInvoiceControlsExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
- 
+
+
+class ExportUntitleDeedLeasesView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="operation",
+            model_name="UntitleDeedLease",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-tapu-almayanlar.xlsx",
+            export_url="/operation/untitle_deed_leases_excel",
+            params={"status":data.get('status')}
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class UntitleDeedLeasesExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "operation", "untitle_deed_leases", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-tapu-almayanlar.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))

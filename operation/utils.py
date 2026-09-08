@@ -250,3 +250,167 @@ def export_title_deed_invoice_controls(self):
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
+
+def export_untitle_deed_leases(self):
+    custom_related_fields = [
+        "company", "contract", "currency", "status", "item",
+        "contract__quotation_obj", "contract__quotation_obj__quick_quotation",
+        "contract__partner",  
+        "contract__vendor",    
+    ]
+    
+    objs = Lease.objects.select_related(*custom_related_fields).prefetch_related("lease_invoices","lease_trade_transactions","lease_installments").filter(
+        Q(lease_status__in=['aktiflestirildi']) &
+        Q(is_last_project_arinet=True) &
+        Q(installment_amount__gt=3) &
+        Q(is_title_deed_delivered=False) &
+        Q(is_delivery=True)
+    ).annotate(
+        lease_invoices_count=Count('lease_invoices', distinct=True),
+        remaining_amount=(F('installment_amount') + F('transfer_amount')) - F('paid_amount')
+    ).filter(
+        lease_invoices_count__gt=0,
+        remaining_amount__lte=F('transfer_amount'),
+        remaining_amount__gt=Decimal('0.00')
+    ).exclude(
+        Q(contract__partner__types__contains=['special'])
+    ).order_by("-activation_date")
+
+    old_leases = Lease.objects.filter().only('code','main_lease_id').order_by('-lease_id')
+    old_leases_dict = defaultdict(list)
+    for ol in old_leases:
+        old_leases_dict[ol.main_lease_id].append(ol)
+
+    self.process.status = "in_progress"
+    self.process.items_count = len(objs)
+    self.process.save()
+    
+    data = {
+        "Kira Planı": [],
+        "Versiyon Geçmişi": [],
+        "Sözleşme": [],
+        "Müşteri İsmi": [],
+        "TC/VKN No": [],
+        "Crm Kodu": [],
+        "Satıcı": [],
+        "Proje": [],
+        "Blok": [],
+        "Bağımsız Bölüm": [],
+        "BBSN": [],
+        "Taksit Tutarı": [],
+        "Devir Bedeli": [],
+        "Devir Bedeli Tarihi": [],
+        "Ödenen Tutar": [],
+        "Kalan Tutar": [],
+        "Gecikme Tutarı": [],
+        "PB": [],
+        "Gecikme Süresi(Gün)": [],
+        "Statü": [],
+        "Teslim Durumu" : [],
+        "Tapu Durumu": [],
+        "Fatura Durumu": [],
+        "Satıcı Fatura Durumu": [],
+    }
+
+    previous_progress = 0
+    metin = ""
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
+
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
+
+        old_leases = old_leases_dict.get(obj.main_lease_id, [])
+
+        old_leases_list = []
+        old_lease_serializerss = []
+        for old_lease in old_leases:
+            old_leases_list.append(old_lease.code)
+            old_lease_serializerss.append(old_lease)
+
+        invoices_exist = any(lease.lease_invoices.exists() for lease in old_lease_serializerss)
+        purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_lease_serializerss)
+
+        pd_currency = ""
+        if purchase_documents_exist:
+            for lease in old_lease_serializerss:
+                purchase_documents = lease.lease_purchase_documents.all()
+                if purchase_documents.exists():
+                    pd_currency = purchase_documents.first().currency.code if purchase_documents.first().currency else ""
+
+        transfer_installment = obj.lease_installments.filter(type='5').first()
+        if transfer_installment and transfer_installment.payment_date:
+            transfer_date =  transfer_installment.payment_date.strftime("%d.%m.%Y")
+        else:
+            transfer_date = ""
+
+        data["Sözleşme"].append(obj.contract.code)
+        data["Kira Planı"].append(obj.code)
+        data["Versiyon Geçmişi"].append(str(old_leases_list).replace("[","").replace("]","").replace("'",""))
+        data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
+        data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
+        data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
+        data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
+        data["Proje"].append(obj.contract.project if obj.contract else "")
+        data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
+        data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
+        data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
+
+        data["Taksit Tutarı"].append(obj.installment_amount)
+        data["Devir Bedeli"].append(obj.transfer_amount)
+        data["Devir Bedeli Tarihi"].append(transfer_date)
+        data["Ödenen Tutar"].append(obj.paid_amount)
+        data["Kalan Tutar"].append((obj.installment_amount + obj.transfer_amount) - obj.paid_amount)
+        data["Gecikme Tutarı"].append(obj.overdue_amount)
+        data["PB"].append(obj.currency.code if obj.currency else "")
+        data["Gecikme Süresi(Gün)"].append(obj.overdue_days)
+
+        data["Statü"].append(obj.get_lease_status_display())
+        data["Teslim Durumu"].append("Teslim Edildi" if obj.is_delivery else "Teslim Edilmedi")
+        data["Tapu Durumu"].append("Verildi" if obj.is_title_deed_delivered else "Verilmedi")
+        data["Fatura Durumu"].append("Kesildi" if invoices_exist else "Fatura Yok")
+        data["Satıcı Fatura Durumu"].append("Kesildi" if purchase_documents_exist else "Fatura Yok")
+
+    df = pd.DataFrame(data)
+    df = df.drop_duplicates()
+    if "Statü Değişme Tarihi" in df.columns:
+        df["Statü Değişme Tarihi"] = pd.to_datetime(df["Statü Değişme Tarihi"]).dt.tz_localize(None)
+
+    numeric_columns = [
+        "Taksit Tutarı",
+        "Devir Bedeli",
+        "Ödenen Tutar",
+        "Kalan Tutar",
+        "Gecikme Tutarı"
+    ]
+
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "operation", "untitle_deed_leases", "documents")
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+
+
+    excel_dosyasi_adi = f"{base_path}/{datetime.today().strftime('%d-%m-%Y')}-tapu-almayanlar.xlsx"
+    with pd.ExcelWriter(excel_dosyasi_adi, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sayfa', index=False)
+
+            # Workbook'u al
+            workbook = writer.book
+            worksheet = writer.sheets['Sayfa']
+
+            # Kolon isimlerine göre format uygula
+            for idx, col in enumerate(df.columns, 1):  # enumerate 1'den başlıyor
+                if col in numeric_columns:
+                    for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                        for c in cell:
+                            c.number_format = '#,##0.00'   # İstediğin format
+        
+    self.process.progress = 100
+    #self.process.status = "completed"
+    self.process.save()
+    
