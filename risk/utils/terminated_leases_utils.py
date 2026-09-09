@@ -69,10 +69,10 @@ def export_terminated_leases(self):
             previous_progress = current_progress
 
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        terminated_date = timezone.localtime(trade_transaction.due_date) if obj and trade_transaction and trade_transaction.due_date else ''
+        terminated_date = timezone.localtime(trade_transaction.due_date).replace(tzinfo=None) if obj and trade_transaction and trade_transaction.due_date else ''
 
         if obj and trade_transaction and trade_transaction.due_date:
-            last_refund_date = timezone.localtime(trade_transaction.due_date) + timedelta(days=180)
+            last_refund_date = timezone.localtime(trade_transaction.due_date).replace(tzinfo=None) + timedelta(days=180)
         else:
             last_refund_date = ''
 
