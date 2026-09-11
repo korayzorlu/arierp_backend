@@ -28,6 +28,7 @@ class WhatsappMessageListSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     ilan_no = serializers.CharField()
     text = serializers.CharField()
+    is_sent = serializers.BooleanField()
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

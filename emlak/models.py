@@ -47,6 +47,10 @@ class WhatsappMessage(models.Model):
     ilan_no = models.CharField(_("İlan No"), max_length=50, blank=True, null=True)
     amount = models.DecimalField(_("Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
     text = models.TextField(_("Text"), max_length=2000, blank=True, null=True)
+    meet_date = models.DateField(_("Meet Date"), blank=True, null=True)
+    online_meet_date = models.DateField(_("Online Meet Date"), blank=True, null=True)
+    is_sent = models.BooleanField(_("Is Sent"), default=False)
+    status = models.CharField(_("Status"), max_length=50, blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

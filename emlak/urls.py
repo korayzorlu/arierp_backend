@@ -8,6 +8,7 @@ app_name = "emlak"
 urlpatterns = [
     path('make_whatsapp_message/', MakeWhatsappMessageView.as_view(), name="make_whatsapp_message"),
     path('delete_whatsapp_message/', DeleteWhatsappMessageView.as_view(), name="delete_whatsapp_message"),
+    path('send_whatsapp_message/', SendWhatsappMessageView.as_view(), name="send_whatsapp_message"),
 
     path('', include("emlak.api.urls")),
 ]

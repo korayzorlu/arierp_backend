@@ -14,9 +14,10 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 
 from .models import *
 from .utils import is_valid_whatsapp_message_data
-from emlak.utils import make_whatsapp_message
+from emlak.utils import make_whatsapp_message,send_wb_message,format_date_tr
 
 import json
+import time
 
 class MakeWhatsappMessageView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
@@ -42,3 +43,39 @@ class DeleteWhatsappMessageView(LoginRequiredMixin,View):
             WhatsappMessage.objects.filter(uuid=uuid).delete()
 
         return JsonResponse({'message': 'Başarıyla silindi!','status':'success'}, status=200)
+
+class SendWhatsappMessageView(LoginRequiredMixin,View):
+    model = WhatsappMessage
+
+    def post(self, request, *args, **kwargs):
+        from operation.api.views import UntitleDeedLeaseList
+        from rest_framework.request import Request
+        data = json.loads(request.body)
+        
+        # if request.user.authorization.department != 'operasyonn':
+        #     return JsonResponse({'message': 'Bu işlem için yetkiniz yoktur.','status':'error'}, status=403)
+
+        print(data)
+
+        objs = WhatsappMessage.objects.filter(uuid__in=data.get('uuids', []))
+
+        for obj in objs:
+            print(obj.real_estate_agent.name)
+            print(obj.real_estate_agent.phone_number_1)
+
+            params = {
+                "name": obj.real_estate_agent.name,
+                "phone_number": obj.real_estate_agent.phone_number_1,
+                "meet_date": format_date_tr(obj.meet_date) if obj.meet_date else "",
+                "online_meet_date": format_date_tr(obj.online_meet_date) if obj.online_meet_date else ""
+            }
+
+            response = send_wb_message(params)
+
+            if response.status_code == 200:
+                obj.is_sent = True
+                obj.save()
+
+            time.sleep(1.5)
+
+        return JsonResponse({'message': 'Mesaj gönderimi başlatıldı...','status':'success'}, status=200)

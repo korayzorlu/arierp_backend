@@ -17,7 +17,7 @@ TURKISH_MONTHS = {
 }
 
 def format_date_tr(d):
-    return f"{d.day:02d} {TURKISH_MONTHS[d.month]} {d.year}"
+    return f"{d.day} {TURKISH_MONTHS[d.month]} {d.year}"
 
 def pmt(rate, nper, pv):
     if rate == 0:
@@ -76,6 +76,8 @@ def make_whatsapp_message(data):
     amount = parse_amount(data.get("amount"))
 
     emlak_data = transform_emlak_amounts(amount)
+    print(data.get("meet_date"))
+    print(data.get("online_meet_date"))
 
     meet_date = format_date_tr(datetime.strptime(data.get("meet_date"), "%Y-%m-%d").date()) if data.get("meet_date") else ""
     online_meet_date = format_date_tr(datetime.strptime(data.get("online_meet_date"), "%Y-%m-%d").date()) if data.get("online_meet_date") else ""
@@ -121,8 +123,7 @@ Kat mülkiyetli konutları Finansal Kiralama ile satabilirsiniz. Böylece mevcut
 
 {online_meet_date} --> Microsoft Teams - Çevrimiçi
 
-Toplantıya kayıt için lütfen bağlantıya tıklayın:
-https://forms.cloud.microsoft/r/R1QS6mMqJF
+Toplantıya kayıt için lütfen bağlantıya tıklayın.
 
 Arı Leasing | Sinpaş Grubu iştiraki
     """
@@ -133,6 +134,8 @@ Arı Leasing | Sinpaş Grubu iştiraki
         ilan_no = data.get("ilan_no"),
         amount = amount,
         text = text,
+        meet_date = data.get("meet_date"),
+        online_meet_date = data.get("online_meet_date"),
     )
 
     response = requests.post(
@@ -142,6 +145,50 @@ Arı Leasing | Sinpaş Grubu iştiraki
     )
 
     print(response)
+
+def send_wb_message(data):
+    url = "https://graph.facebook.com/v25.0/1350996818093512/messages"
+
+    headers = {
+        "Authorization": "Bearer EAAYvKmF1R8YBSS3eHndIxFZAorg20CrCY3MgugutDvYZAS689ZBM3iyjRKhDZCaVqR6K3cxetmqnhu7dEGAiCQrOoRkVfZAI0TrePPelVH3FdsQEZCLI2TUnEzA6tZBINCNZB3JQVu0kaRq4hMLuTkb3fw3l4pTLz5RYiDuGEk9Jky55WqKBZC6AjzY3RBEaY64buXhZATtZB1W5peXZASTYH2i4SsOyySzyirke70eZCWoWR8JcF0DZBnB0ANrOfzjtU4QK65vaLfMODNKP7gUQ2lnBgUOxzqvAZDZD",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": data.get("phone_number"),
+        "type": "template",
+        "template": {
+            "name": "emlak",
+            "language": {"code": "tr"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "image",
+                            "image": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-image.jpg"}
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {"type": "text", "parameter_name": "name", "text": data.get("name")},
+                        {"type": "text", "parameter_name": "meet_date", "text": data.get("meet_date")},
+                        {"type": "text", "parameter_name": "online_meet_date", "text": data.get("online_meet_date")},
+                    ],
+                }
+            ],
+        },
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    return response
+
+    print(response.status_code)
+    print(response.json())
 
 def send_test_wb_message():
     url = "https://graph.facebook.com/v25.0/1350996818093512/messages"
@@ -164,7 +211,7 @@ def send_test_wb_message():
                     "parameters": [
                         {
                             "type": "image",
-                            "image": {"link": os.path.join(settings.STATIC_URL, "images/global/emlak-wb-image.jpg")}
+                            "image": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-image.jpg"}
                         }
                     ]
                 },
@@ -184,8 +231,6 @@ def send_test_wb_message():
 
     print(response.status_code)
     print(response.json())
-
-    
 
 
 def is_valid_whatsapp_message_data(data):
