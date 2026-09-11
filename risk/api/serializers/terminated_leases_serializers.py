@@ -49,7 +49,7 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
-    terminated_date = serializers.SerializerMethodField()
+    terminated_date = serializers.DateField()
     last_refund_date = serializers.SerializerMethodField()
     refund = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
@@ -104,6 +104,8 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
         return timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
     
     def get_last_refund_date(self, obj):
+        return (obj.terminated_date + timedelta(days=180)).strftime('%d.%m.%Y') if obj and obj.terminated_date else ''
+
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
         if obj and trade_transaction and trade_transaction.due_date:
             last_refund_date = timezone.localtime(trade_transaction.due_date) + timedelta(days=180)

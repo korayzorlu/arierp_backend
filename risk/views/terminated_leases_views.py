@@ -64,3 +64,16 @@ class TerminatedLeasesExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+
+class UpdateTerminatedDateView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        obj = Lease.objects.filter(uuid = data.get('id')).first()
+        
+        if obj and data.get('terminated_date'):
+            obj.terminated_date = datetime.strptime(data.get('terminated_date'), '%d.%m.%Y').date()
+            obj.save()
+            return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+        else:
+            return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)

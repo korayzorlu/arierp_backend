@@ -60,6 +60,10 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 Q(description__icontains='Virman')
             )
         ).only("amount", "lease", "lease__lease_id")
+        terminated_trade_transactions = TradeTransaction.objects.select_related().filter(
+            posting_group_name='Fesih İadesi',
+            amount_type='0'
+        ).exclude(delete_status__in=['2'])
         purchase_documents = PurchaseDocument.objects.select_related("lease").filter(lease__isnull=False).only("total_amount", "lease", "lease__lease_id")
         installments = Installment.objects.select_related("lease").filter(type__in = ['1','2']).only("amount", "type", "lease", "lease__lease_id")
         transfer_installments = Installment.objects.select_related("lease").filter(type = '5').only("amount", "type", "lease", "lease__lease_id")
@@ -75,6 +79,10 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
         for virman_tt in virman_trade_transactions:
             if virman_tt.lease and virman_tt.lease.lease_id:
                 virman_trade_transactions_dict[virman_tt.lease.lease_id].append(virman_tt)
+        terminated_trade_transactions_dict = defaultdict(list)
+        for terminated_tt in terminated_trade_transactions:
+            if terminated_tt.lease and terminated_tt.lease.lease_id:
+                terminated_trade_transactions_dict[terminated_tt.lease.lease_id].append(terminated_tt)
         purchase_documents_dict = defaultdict(list)
         for pd in purchase_documents:
             if pd.lease and pd.lease.lease_id:
@@ -218,6 +226,11 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     if invoices and obj.purchase_document_amount and (abs(obj.purchase_document_amount - obj.crm_invoice_total_amount) <= 1000) and obj.is_delivery == False:
                         obj.is_delivery = True
 
+                    #fesih tarihi kontrolü
+                    if not obj.is_terminated_date_manual:
+                        trade_transaction = terminated_trade_transactions_dict.get(obj.lease_id, [None])[0]
+                        obj.terminated_date = trade_transaction.due_date if trade_transaction else None
+
                     update_objs.append(obj)
                     update_progress += 1
                 else:
@@ -303,6 +316,7 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "warning_notice_status",
                     "purchase_document_amount",
                     "risk_status",
+                    "terminated_date",
                     # "is_lop_revision",
                 ], batch_size=BATCH_SIZE)
             if create_objs:
