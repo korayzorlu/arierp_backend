@@ -1,3 +1,3 @@
-SELECT definition AS LeasingOperationProjectPartList
+SELECT definition AS FoundationFailedUserList
 FROM sys.sql_modules
-WHERE object_id = OBJECT_ID('LeasingOperationProjectPartList');
+WHERE object_id = OBJECT_ID('FoundationFailedUserList');
