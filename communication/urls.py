@@ -2,6 +2,7 @@ from django.urls import path, include
 
 from .views.sms_views import *
 from .views.email_views import *
+from .views.whatsapp_views import *
 
 app_name = "communication"
 
@@ -13,6 +14,8 @@ urlpatterns = [
     path('send_risk_email/', SendRiskEmailView.as_view(), name="send_risk_email"),
     path('send_risk_email_selected/', SendRiskEmailSelectedView.as_view(), name="send_risk_email_selected"),
     path('check_sms/', CheckSMSView.as_view(), name="check_sms"),
+
+    path('whatsapp_webhook/', WhatsAppWebhookView.as_view(), name="whatsapp_webhook"),
 
     path('', include("communication.api.urls")),
 ]

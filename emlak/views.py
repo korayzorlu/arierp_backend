@@ -76,6 +76,8 @@ class SendWhatsappMessageView(LoginRequiredMixin,View):
                 obj.is_sent = True
                 obj.save()
 
+                
+
             time.sleep(1.5)
 
         return JsonResponse({'message': 'Mesaj gönderimi başlatıldı...','status':'success'}, status=200)

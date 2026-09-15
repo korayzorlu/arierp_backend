@@ -150,7 +150,8 @@ class Call(models.Model):
 class WhatsAppContact(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="whatsapp_contacts")
-    
+
+    wa_id= models.CharField(_("WhatsApp ID"), max_length=50, null=True, blank=True)
     phone_number = models.CharField(_("Phone Number"), max_length=50, null=True, blank=True)
     name = models.CharField(_("Name"), max_length=255, null=True, blank=True)
     last_message_at = models.DateTimeField(_("Last Message At"), blank=True, null=True)
@@ -169,8 +170,10 @@ class WhatsAppMessage(models.Model):
     direction = models.CharField(max_length=10, choices=[("in", "Gelen"), ("out", "Giden")])
     message_type = models.CharField(_("Message Type"), max_length=50, null=True, blank=True)  # text, template, image vb.
     content = models.TextField(_("content"), blank=True, null=True)
+    message_time = models.DateTimeField(_("Message Time"), blank=True, null=True)
     wa_message_id = models.CharField(_("WhatsApp Message ID"), max_length=50, null=True, blank=True)
     status = models.CharField(_("Status"), max_length=50, default='sent', null=True, blank=True)  # sent, delivered, read, failed
+    text = models.TextField(_("Text"), max_length=10000, blank=True, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

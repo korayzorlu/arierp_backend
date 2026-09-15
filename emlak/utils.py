@@ -150,7 +150,7 @@ def send_wb_message(data):
     url = "https://graph.facebook.com/v25.0/1350996818093512/messages"
 
     headers = {
-        "Authorization": "Bearer EAAYvKmF1R8YBSS3eHndIxFZAorg20CrCY3MgugutDvYZAS689ZBM3iyjRKhDZCaVqR6K3cxetmqnhu7dEGAiCQrOoRkVfZAI0TrePPelVH3FdsQEZCLI2TUnEzA6tZBINCNZB3JQVu0kaRq4hMLuTkb3fw3l4pTLz5RYiDuGEk9Jky55WqKBZC6AjzY3RBEaY64buXhZATtZB1W5peXZASTYH2i4SsOyySzyirke70eZCWoWR8JcF0DZBnB0ANrOfzjtU4QK65vaLfMODNKP7gUQ2lnBgUOxzqvAZDZD",
+        "Authorization": "Bearer EAAYvKmF1R8YBSZAywgZCw0oe8n80YyH61EZAHWPfAiQAAuhpPZBmLjKeq7CzkXcmtobmQ0hgBAJ6ar21gkq7xEiCZCb1Y73KJFmr9BExk4ZALvGZArmVj9uR7Io4wlqolddDeCcL56uHeMFu0nuGptfe4ckGoiJZC9ZA8ZB61n5WbDwQrwZAwVRCrhwN7oOiSj4cl6wEJc04liAOAMfg8ZATNZC7fearxI6ZA7bn6fOXYzK2glMn4gQChLQMOVj0LUppnmKlqBZBYu5liZAHW2aVz2DlpSdWk99R",
         "Content-Type": "application/json",
     }
 
@@ -184,11 +184,12 @@ def send_wb_message(data):
     }
 
     response = requests.post(url, headers=headers, json=payload)
+    print(response.status_code)
+    print(response.json())
 
     return response
 
-    print(response.status_code)
-    print(response.json())
+    
 
 def send_test_wb_message():
     url = "https://graph.facebook.com/v25.0/1350996818093512/messages"

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import SMS,Email,EmailReceiver,SetrowEmail,Call
+from .models import SMS,Email,EmailReceiver,SetrowEmail,Call,WhatsAppContact,WhatsAppMessage
 from common.utils.common_utils import duration_to_hhmmss
 
 # Register your models here.
@@ -108,3 +108,38 @@ class CallAdmin(admin.ModelAdmin):
     
     class Meta:
         model = Call
+
+@admin.register(WhatsAppContact)
+class WhatsAppContactAdmin(admin.ModelAdmin):
+    list_display = ["company","name","phone_number","created_date"]
+    list_display_links = ["name"]
+    search_fields = ["company__name","name","phone_number","created_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["company"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    class Meta:
+        model = WhatsAppContact
+
+@admin.register(WhatsAppMessage)
+class WhatsAppMessageAdmin(admin.ModelAdmin):
+    list_display = ["company","contact","direction","message_type","created_date"]
+    list_display_links = ["contact"]
+    search_fields = ["company__name","contact__name","direction","message_type","created_date"]
+    list_filter = []
+    inlines = []
+    ordering = ["-created_date"]
+    autocomplete_fields = ["company","contact"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def contact(self,obj):
+        return obj.contact.name if obj.contact else ""
+    
+    class Meta:
+        model = WhatsAppMessage
