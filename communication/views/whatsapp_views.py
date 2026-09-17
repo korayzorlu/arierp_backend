@@ -9,6 +9,8 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from utils.mixins import CompanyOwnershipRequiredMixin
 
@@ -20,6 +22,7 @@ import pandas as pd
 from decimal import Decimal
 from datetime import datetime
 
+@method_decorator(csrf_exempt, name="dispatch")
 class WhatsAppWebhookView(View):
     def get(self, request, *args, **kwargs):
         mode = request.GET.get("hub.mode")
