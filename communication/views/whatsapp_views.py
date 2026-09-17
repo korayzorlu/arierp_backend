@@ -20,7 +20,7 @@ import pandas as pd
 from decimal import Decimal
 from datetime import datetime
 
-class WhatsAppWebhookView(LoginRequiredMixin,View):
+class WhatsAppWebhookView(View):
     def get(self, request, *args, **kwargs):
         mode = request.GET.get("hub.mode")
         token = request.GET.get("hub.verify_token")
