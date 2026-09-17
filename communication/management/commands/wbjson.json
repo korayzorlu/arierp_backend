@@ -1,0 +1,246 @@
+{
+  "data": [
+    {
+      "name": "emlak",
+      "language": "tr",
+      "category": "MARKETING",
+      "status": "APPROVED",
+      "components": [
+        {
+          "type": "HEADER",
+          "format": "IMAGE",
+          "example": {
+            "header_handle": [
+              "https://scontent.whatsapp.net/v/t61.29466-34/675365305_1071066105409542_1018991424565602256_n.jpg?ccb=1-7&_nc_sid=8b1bef&_nc_ohc=B4vGUrNDm5EQ7kNvwFdccuF&_nc_oc=Adom2QSnbWS6JMlNbwckictXsTdd7EH-dLzw3ey-CvvbNJh-BMGC8SIz-QIH-BDu0VE&_nc_zt=3&_nc_ht=scontent.whatsapp.net&edm=AH51TzQEAAAA&_nc_gid=rNTYWnYxgkAEdPy1OJZGUg&_nc_tpa=Q5bMBQLM-xrjfvaztI1CUm4iFSn5tqfnLdJGrYL6lhDmf8B7mrUdNwtDZwqwrn0HxnP3yNkweLrEoLIryw&oh=01_Q5Aa5gFHP7ZB3ZVr6rIZNt47zRAaWEo6dDiwgL1BOIoG-5ckjw&oe=6AD20A78"
+            ]
+          }
+        },
+        {
+          "type": "BODY",
+          "text": "Sayın {{name}},
+
+Kat mülkiyetli konutları Finansal Kiralama ile satabilirsiniz. Böylece mevcut komisyonunuza ek %2+kdv satış primi alırsınız. Modeli gerçek rakamlarla anlatıyoruz, toplantımıza davetlisiniz.
+
+{{meet_date}} --> Sinpaş Plaza, Konferans Salonu (Dikilitaş mah. Yenidoğan sk. No:36 Beşiktaş/İSTANBUL)
+
+{{online_meet_date}} --> Microsoft Teams - Çevrimiçi
+
+Toplantıya kayıt için lütfen bağlantıya tıklayın.
+
+Arı Leasing | Sinpaş Grubu iştiraki",
+          "example": {
+            "body_text_named_params": [
+              {
+                "param_name": "name",
+                "example": "Koray Zorlu"
+              },
+              {
+                "param_name": "meet_date",
+                "example": "09 Eylül 2026"
+              },
+              {
+                "param_name": "online_meet_date",
+                "example": "10 Eylül 2026"
+              }
+            ]
+          }
+        },
+        {
+          "type": "BUTTONS",
+          "buttons": [
+            {
+              "type": "URL",
+              "text": "Kayıt Ol",
+              "url": "https://forms.cloud.microsoft/r/R1QS6mMqJF"
+            }
+          ]
+        }
+      ],
+      "id": "1069601955555957"
+    },
+    {
+      "name": "hello_world",
+      "language": "en_US",
+      "category": "UTILITY",
+      "status": "APPROVED",
+      "components": [
+        {
+          "type": "HEADER",
+          "format": "TEXT",
+          "text": "Hello World"
+        },
+        {
+          "type": "BODY",
+          "text": "Welcome and congratulations!! This message demonstrates your ability to send a WhatsApp message notification from the Cloud API, hosted by Meta. Thank you for taking the time to test with us."
+        },
+        {
+          "type": "FOOTER",
+          "text": "WhatsApp Business Platform sample message"
+        }
+      ],
+      "id": "4671200499866993"
+    },
+    {
+      "name": "jaspers_market_image_cta_v1",
+      "language": "en_US",
+      "category": "MARKETING",
+      "status": "APPROVED",
+      "components": [
+        {
+          "type": "HEADER",
+          "format": "IMAGE"
+        },
+        {
+          "type": "BODY",
+          "text": "Free delivery for all online orders with Jasper's Market"
+        },
+        {
+          "type": "FOOTER",
+          "text": "developers.facebook.com"
+        },
+        {
+          "type": "BUTTONS",
+          "buttons": [
+            {
+              "type": "URL",
+              "text": "Get free delivery",
+              "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/utility-templates"
+            }
+          ]
+        }
+      ],
+      "id": "1744408936867065"
+    },
+    {
+      "name": "jaspers_market_order_confirmation_v1",
+      "language": "en_US",
+      "category": "UTILITY",
+      "status": "APPROVED",
+      "components": [
+        {
+          "type": "HEADER",
+          "format": "TEXT",
+          "text": "Order confirmed"
+        },
+        {
+          "type": "BODY",
+          "text": "Hi {{1}},
+
+Thank you for your purchase! Your order number is {{2}}.
+
+We'll start getting your farm fresh groceries ready to ship.
+
+Estimated delivery:  {{3}}.
+
+We will let you know when your order ships."
+        },
+        {
+          "type": "FOOTER",
+          "text": "developers.facebook.com"
+        },
+        {
+          "type": "BUTTONS",
+          "buttons": [
+            {
+              "type": "URL",
+              "text": "Visit order details",
+              "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/utility-templates"
+            }
+          ]
+        }
+      ],
+      "id": "1464514639073095"
+    },
+    {
+      "name": "jaspers_market_media_carousel_v1",
+      "language": "en_US",
+      "category": "MARKETING",
+      "status": "APPROVED",
+      "components": [
+        {
+          "type": "BODY",
+          "text": "Our in-house chefs have prepared some delicious and fresh summer recipes."
+        },
+        {
+          "type": "BUTTONS",
+          "buttons": [
+            {
+              "type": "URL",
+              "text": "Get free delivery",
+              "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/utility-templates"
+            }
+          ]
+        },
+        {
+          "type": "CAROUSEL",
+          "cards": [
+            {
+              "components": [
+                {
+                  "type": "HEADER",
+                  "format": "IMAGE"
+                },
+                {
+                  "type": "BODY",
+                  "text": "Simple and Healthy Sheet Pan Dinner to Feed the Whole Family"
+                },
+                {
+                  "type": "BUTTONS",
+                  "buttons": [
+                    {
+                      "type": "URL",
+                      "text": "Get this recipe",
+                      "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/media-card-carousel-templates"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "components": [
+                {
+                  "type": "HEADER",
+                  "format": "IMAGE"
+                },
+                {
+                  "type": "BODY",
+                  "text": "3 Plant-Powered Salad Bowls to Fuel Your Week"
+                },
+                {
+                  "type": "BUTTONS",
+                  "buttons": [
+                    {
+                      "type": "URL",
+                      "text": "Get this recipe",
+                      "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/media-card-carousel-templates"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "id": "1085856607333724"
+    },
+    {
+      "name": "jaspers_market_plain_text_v1",
+      "language": "en_US",
+      "category": "MARKETING",
+      "status": "APPROVED",
+      "components": [
+        {
+          "type": "BODY",
+          "text": "Welcome to Jasper’s Market, your local grocery store providing farm-fresh produce and high-quality goods!"
+        }
+      ],
+      "id": "944354678004728"
+    }
+  ],
+  "paging": {
+    "cursors": {
+      "before": "QVFIVEdlSDJlRThWRGl1dUhVOUhJY1RQR1VBQ1RHV3pMRnlFYVJ4TWJkclktUXpkcWh0VXVraXQ2SkltX2NiNVhYZA2c3amVOTmI3bzBNenlXX3RFRXg1N0F3",
+      "after": "QVFIVGtVYXV5MUZAKN3U0ZAHlkQlBNaUFEY0FLUElfcTNkTVBuWkp3N0s1V1h5S3EwZATBkZAlJObjNaUXd0bjNHME9ES0cxRlpDNlNKaUZANRFBZARGhqTy10d1J3"
+    }
+  }
+}
