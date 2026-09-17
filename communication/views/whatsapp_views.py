@@ -46,6 +46,7 @@ class WhatsAppWebhookView(View):
                     messages = value.get("messages", [])
                     for contact in contacts:
                         WhatsAppContact.objects.update_or_create(
+                            company_id=2,
                             phone_number=contact.get("wa_id"),
                             name=contact.get("profile", {}).get("name"),
                             wa_id=contact.get("wa_id")
@@ -56,6 +57,7 @@ class WhatsAppWebhookView(View):
 
                         if contact:
                             WhatsAppMessage.objects.create(
+                                company_id=2,
                                 contact=contact,
                                 wa_message_id=message.get("id"),
                                 message_type=message.get("type"),
