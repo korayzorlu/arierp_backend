@@ -11,6 +11,7 @@ import json
 import os
 import pyodbc
 import requests
+import time
 
 class Command(BaseCommand):
     help = 'Exports parts to JSON file'
@@ -33,6 +34,114 @@ class Command(BaseCommand):
         WABA_ID = "1629363698545041"
         PHONE_NUMBER_ID = "1354229851098045"
         APP_SECRET='6779344db10d72ebd8973e13d93f0598'
+
+        # now = int(time.time())
+        # start = now - 7200  # son 2 saat
+
+        # r = requests.get(f"https://graph.facebook.com/v26.0/{WABA_ID}",
+        #     params={
+        #         "fields": f"conversation_analytics.start({start}).end({now}).granularity(HALF_HOUR).phone_numbers(['+905386460823']).dimensions(['CONVERSATION_DIRECTION'])",
+        #     },
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}
+        # )
+        # print(r.json())
+
+
+
+
+        # print(requests.get(
+        #     "https://graph.facebook.com/v26.0/1629363698545041",
+        #     params={"fields": "id,name,subscribed_apps,webhook_configuration"},
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}
+        # ).json())
+
+        # print(requests.get(
+        #     "https://graph.facebook.com/v26.0/1354229851098045",
+        #     params={"fields": "webhook_configuration"},
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}
+        # ).json())
+
+
+        # r = requests.post(
+        #     f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/settings",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"},
+        #     params={
+        #         "override_callback_uri": "https://emlak.arileasing.com.tr/api/communication/whatsapp_webhook/",
+        #         "verify_token": settings.WB_VERIFY_TOKEN,
+        #     },
+        # )
+        # print(r.status_code, r.json())
+
+
+
+
+
+        # # override'ı kaldır (DELETE)
+        # r = requests.delete(f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/settings",
+        #     params={"include_webhooks": "true"},
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"})
+        # print("DELETE:", r.status_code, r.json())
+
+        # # tüm ayarları ham haliyle gör
+        # r2 = requests.get(f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/settings",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"})
+        # print("SETTINGS:", r2.status_code, r2.json())
+
+
+
+
+
+        # r = requests.post(f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/deregister",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"})
+        # print(r.status_code, r.json())
+
+
+        # r = requests.post(f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/register",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"},
+        #     json={"messaging_product": "whatsapp", "pin": "681215"})
+        # print(r.status_code, r.json())
+
+        r = requests.post(f"https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps",
+            headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"},
+        )
+        print(r.status_code, r.json())
+
+
+
+        # print("SUB:", requests.get(f"https://graph.facebook.com/v26.0/{WABA_ID}/subscribed_apps", headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}).json())
+
+        # # 2) Aboneliği (yeniden) kur
+        # print("SUBPOST:", requests.post(f"https://graph.facebook.com/v26.0/{WABA_ID}/subscribed_apps", headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}).json())
+
+        # # 3) Register tazele
+        # print("REG:", requests.post(f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/register",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}, json={"messaging_product": "whatsapp", "pin": "681215"}).json()
+        # )
+
+
+        # WABA seviyesinde override webhook'u temizle -> App-level config'e düşsün
+        # print(requests.post("https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"},
+        #     json={
+        #         "override_callback_uri": "https://emlak.arileasing.com.tr/api/communication/whatsapp_webhook/",
+        #         "verify_token": settings.WB_VERIFY_TOKEN
+        #     }
+        # ).json())
+
+
+        # # Önce çıkar
+        # print("DEL:", requests.delete("https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}).json())
+        # # Tekrar ekle
+        # print("ADD:", requests.post("https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}).json())
+
+
+
+        # print(requests.get("https://graph.facebook.com/v26.0/1354229851098045",
+        #     params={"fields": "webhook_configuration,status,platform_type,throughput,last_onboarded_time"},
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}).json()
+        # )
 
 
 
@@ -57,17 +166,17 @@ class Command(BaseCommand):
 
 
 
-        r = requests.get(
-            f"https://graph.facebook.com/v26.0/1740708930471878/subscriptions",
-            params={"access_token": f"1740708930471878|{APP_SECRET}"},
-            data={
-                "object": "whatsapp_business_account",
-                "callback_url": "https://emlak.arileasing.com.tr/api/communication/whatsapp_webhook/",
-                "verify_token": settings.WB_VERIFY_TOKEN,
-                "fields": "messages",
-            }
-        )
-        print(r.status_code, r.json())
+        # r = requests.get(
+        #     f"https://graph.facebook.com/v26.0/1740708930471878/subscriptions",
+        #     params={"access_token": f"1740708930471878|{APP_SECRET}"},
+        #     data={
+        #         "object": "whatsapp_business_account",
+        #         "callback_url": "https://emlak.arileasing.com.tr/api/communication/whatsapp_webhook/",
+        #         "verify_token": settings.WB_VERIFY_TOKEN,
+        #         "fields": "messages",
+        #     }
+        # )
+        # print(r.status_code, r.json())
 
 
 

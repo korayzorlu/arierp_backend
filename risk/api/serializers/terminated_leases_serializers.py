@@ -126,4 +126,117 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
         }
     
 
+class TerminatedLeaseReturnedListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    companyId = serializers.SerializerMethodField()
+    code = serializers.CharField()
+    contract = serializers.SerializerMethodField()
+    contract_id = serializers.SerializerMethodField()
+    type = serializers.CharField()
+    vat = serializers.DecimalField(max_digits=5,decimal_places=2)
+    activation_date = serializers.DateField()
+    lease_status = serializers.SerializerMethodField()
+    currency = serializers.SerializerMethodField()
+    musteri_baz_maliyet = serializers.DecimalField(max_digits=14,decimal_places=2)
+    vade = serializers.IntegerField()
+    leasing_rate = serializers.DecimalField(max_digits=14,decimal_places=2)
+    irr = serializers.DecimalField(max_digits=14,decimal_places=2)
+    project_no = serializers.CharField()
+    project_name = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    leasing_type = serializers.CharField()
+    application_no = serializers.CharField()
+    is_last_project = serializers.BooleanField()
+    current_request = serializers.CharField()
+    finansman_kurum = serializers.CharField()
+    is_tufe = serializers.BooleanField()
+    is_musterek = serializers.BooleanField()
+    bbsn = serializers.CharField()
+    partner = serializers.SerializerMethodField()
+    partner_tc = serializers.SerializerMethodField()
+    partner_crm_code = serializers.SerializerMethodField()
+    partner_special = serializers.SerializerMethodField()
+    quotation = serializers.SerializerMethodField()
+    kof = serializers.SerializerMethodField()
+    block = serializers.SerializerMethodField()
+    unit = serializers.SerializerMethodField()
+    overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    overdue_days = serializers.IntegerField()
+    processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    lease_status_update_date = serializers.DateTimeField()
+    terminated_date = serializers.DateField()
+    last_refund_date = serializers.SerializerMethodField()
+    refund = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
+    
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+    
+    def get_contract(self, obj):
+        return obj.contract.code if obj.contract else ""
+    
+    def get_contract_id(self, obj):
+        return obj.contract.contract_id if obj.contract else ""
 
+    def get_currency(self, obj):
+        return obj.currency.code if obj.currency else ""
+    
+    def get_lease_status(self, obj):
+        return obj.get_lease_status_display() if obj.lease_status else ""
+    
+    def get_status(self, obj):
+        return obj.status.name if obj.status else ""
+    
+    def get_partner(self, obj):
+        return obj.contract.partner.name if obj.contract.partner else ""
+    
+    def get_partner_tc(self, obj):
+        return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
+    
+    def get_partner_crm_code(self, obj):
+        return obj.contract.partner.crm_code if obj.contract.partner else ""
+    
+    def get_partner_special(self, obj):
+        return True if "special" in obj.contract.partner.types else False
+    
+    def get_quotation(self, obj):
+        return obj.contract.quotation_obj.code if obj.contract.quotation_obj else ""
+    
+    def get_kof(self, obj):
+        return obj.contract.kof if obj.contract else ""
+    
+    def get_project_name(self, obj):
+        return obj.contract.project if obj.contract else ""
+    
+    def get_block(self, obj):
+        return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    
+    def get_unit(self, obj):
+        return obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
+    
+    def get_terminated_date(self, obj):
+        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
+        return timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
+    
+    def get_last_refund_date(self, obj):
+        return (obj.terminated_date + timedelta(days=180)).strftime('%d.%m.%Y') if obj and obj.terminated_date else ''
+
+        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
+        if obj and trade_transaction and trade_transaction.due_date:
+            last_refund_date = timezone.localtime(trade_transaction.due_date) + timedelta(days=180)
+            return last_refund_date.strftime('%d.%m.%Y')
+        return ''
+    
+    def get_refund(self, obj):
+        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi').exclude(delete_status__in=['2'])
+        total_refund_amount = Decimal('0.00')
+        for tt in trade_transactions:
+            total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
+        return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
+
+    def get_item(self, obj):
+        return {
+            "id" : obj.item.uuid if obj.item else "",
+            "name" : obj.item.stock_name if obj.item else "",
+        }
+    
