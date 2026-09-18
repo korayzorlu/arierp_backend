@@ -160,7 +160,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "sub_menu", "class" : ["default"], "label" : "Fesih", "icon" : "description", "items" : [
                     # {"type" : "item", "class" : ["default"], "label" : "Fesih Edilmesi Gerekenler", "icon" : "policy", "route" : "/needs-to-terminated-risk-partners"},
                     {"type" : "item", "class" : ["default"], "label" : "Fesih İadeleri", "icon" : "policy", "route" : "/terminated-leases"},
-                    {"type" : "item", "class" : ["admin"], "label" : "İade Edilenler", "icon" : "policy", "route" : "/terminated-leases-returned"},
+                    {"type" : "item", "class" : ["admin"], "label" : "İade Edilenler", "icon" : "policy", "route" : "/returned-terminated-leases"},
                 ]},
                 {"type" : "sub_menu", "class" : ["default"], "label" : "SMS", "icon" : "description", "items" : [
                     {"type" : "item", "class" : ["default"], "label" : "Gönderilen SMS'ler", "icon" : "policy", "route" : "/sent-sms"},
