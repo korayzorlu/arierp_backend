@@ -113,7 +113,7 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
         return ''
     
     def get_refund(self, obj):
-        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi').exclude(delete_status__in=['2'])
+        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2'])
         total_refund_amount = Decimal('0.00')
         for tt in trade_transactions:
             total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
@@ -165,7 +165,7 @@ class TerminatedLeaseReturnedListSerializer(serializers.Serializer):
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
     terminated_date = serializers.DateField()
-    last_refund_date = serializers.SerializerMethodField()
+    refund_date = serializers.SerializerMethodField()
     refund = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     
@@ -218,17 +218,12 @@ class TerminatedLeaseReturnedListSerializer(serializers.Serializer):
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
         return timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
     
-    def get_last_refund_date(self, obj):
-        return (obj.terminated_date + timedelta(days=180)).strftime('%d.%m.%Y') if obj and obj.terminated_date else ''
-
-        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        if obj and trade_transaction and trade_transaction.due_date:
-            last_refund_date = timezone.localtime(trade_transaction.due_date) + timedelta(days=180)
-            return last_refund_date.strftime('%d.%m.%Y')
-        return ''
+    def get_refund_date(self, obj):
+        trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2']).first()
+        return timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
     
     def get_refund(self, obj):
-        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi').exclude(delete_status__in=['2'])
+        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2'])
         total_refund_amount = Decimal('0.00')
         for tt in trade_transactions:
             total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')

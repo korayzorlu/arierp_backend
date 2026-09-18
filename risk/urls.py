@@ -27,6 +27,8 @@ urlpatterns = [
     path('export_terminated_leases/', ExportTerminatedLeasesView.as_view(), name="export_terminated_leases"),
     path('terminated_leases_excel/', TerminatedLeasesExcelView.as_view(), name="terminated_leases_excel"),
     path('update_terminated_date/', UpdateTerminatedDateView.as_view(), name="update_terminated_date"),
+    path('export_terminated_leases_returned/', ExportTerminatedLeasesReturnedView.as_view(), name="export_terminated_leases_returned"),
+    path('terminated_leases_returned_excel/', TerminatedLeasesReturnedExcelView.as_view(), name="terminated_leases_returned_excel"),
 
     path('export_to_warned_risk_partners_for_sms/', ExportToWarnedRiskPartnersForSMSView.as_view(), name="export_to_warned_risk_partners_for_sms"),
     path('to_warned_risk_partners_excel_for_sms/', ToWarnedRiskPartnersExcelForSMSView.as_view(), name="to_warned_risk_partners_excel_for_sms"),

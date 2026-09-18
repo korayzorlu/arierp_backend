@@ -437,6 +437,7 @@ class NeedsToTerminatedRiskPartnerFilter(FilterSet):
 class TerminatedLeaseFilter(LeaseFilter):
     terminated_date = CharFilter(method = 'filter_terminated_date')
     last_refund_date = CharFilter(method = 'filter_last_refund_date')
+    refund_date = CharFilter(method = 'filter_refund_date')
     class Meta:
         model = Lease
         fields = '__all__'
@@ -480,6 +481,25 @@ class TerminatedLeaseFilter(LeaseFilter):
             return queryset
         # last_refund_date = terminated_date + 180 gün  =>  terminated_date = value - 180 gün
         return queryset.filter(terminated_date_annot=target - timedelta(days=180))
+
+    def filter_refund_date(self, queryset, refund_date, value):
+        queryset = queryset.annotate(
+            refund_date_annot=Subquery(
+                TradeTransaction.objects.filter(
+                    lease=OuterRef('pk'),
+                    posting_group_name='Fesih İadesi',
+                    amount_type='1',
+                ).exclude(delete_status__in=['2']).values('due_date')[:1]
+            )
+        )
+
+        parsed = parse_datetime(value)
+        if parsed:
+            return queryset.filter(refund_date_annot=parsed.date())
+        date_parsed = parse_date(value)
+        if date_parsed:
+            return queryset.filter(refund_date_annot=date_parsed)
+        return queryset
 
 
 class TerminatedLeaseFilterr(FilterSet):

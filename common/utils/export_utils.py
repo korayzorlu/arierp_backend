@@ -29,7 +29,7 @@ from risk.utils.today_partners_utils import *
 from risk.utils.tomorrow_partners_utils import *
 from risk.utils.risk_utils import export_amount_debit_transactions
 from risk.utils.under_reviews_utils import export_under_reviews
-from risk.utils.terminated_leases_utils import export_terminated_leases
+from risk.utils.terminated_leases_utils import export_terminated_leases,export_terminated_leases_returned
 
 from contracts.utils.contract_utils import export_contract_payments
 from contracts.utils.export_utils import export_warning_notices
@@ -210,3 +210,6 @@ class BaseExporter():
 
     def export_terminatedlease(self):
         export_terminated_leases(self)
+
+    def export_terminatedleasereturned(self):
+        export_terminated_leases_returned(self)

@@ -77,3 +77,35 @@ class UpdateTerminatedDateView(LoginRequiredMixin,View):
             return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
         else:
             return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+
+class ExportTerminatedLeasesReturnedView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        exporter = BaseExporter(
+            user_id=request.user.id,
+            app="risk",
+            model_name="TerminatedLeaseReturned",
+            file_name=f"{datetime.today().strftime('%d-%m-%Y')}-iade-edilenler.xlsx",
+            export_url="/risk/terminated_leases_returned_excel"
+        )
+
+        send_alert({"message":"Excel dosyası hazırlanıyor...",'status':'success'},room=f"private_{request.user.id}")
+            
+        exporter.start_export()
+
+        return HttpResponse(status=200)
+
+class TerminatedLeasesReturnedExcelView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "risk", "terminated_leases_returned", "documents",f"{datetime.today().strftime('%d-%m-%Y')}-iade-edilenler.xlsx")
+      
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        objs = ExportProcess.objects.filter(status = "in_progress")
+        for obj in objs:
+            obj.status = "completed"
+            obj.save()
+
+        return FileResponse(open(file_path, 'rb'))

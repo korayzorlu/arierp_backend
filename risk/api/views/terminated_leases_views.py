@@ -120,6 +120,8 @@ class TerminatedLeaseOrderingFilter(OrderingFilter):
         '-terminated_date': '-terminated_date_annot',
         'last_refund_date': 'last_refund_date_annot',
         '-last_refund_date': '-last_refund_date_annot',
+        'refund_date': 'refund_date_annot',
+        '-refund_date': '-refund_date_annot',
     }
 
     def get_ordering(self, request, queryset, view):
@@ -169,6 +171,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                 Case(
                     When(
                         lease_trade_transactions__posting_group_name='Fesih İadesi',
+                        lease_trade_transactions__amount_type='0',
                         then='lease_trade_transactions__amount'
                     ),
                     output_field=models.DecimalField(),
@@ -254,7 +257,7 @@ class TerminatedLeaseReturnedList(ModelViewSet, QueryListAPIView):
     filterset_class = TerminatedLeaseFilter
     filter_backends = [TerminatedLeaseOrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no',
-                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','last_refund_date']
+                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','refund_date']
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
@@ -289,6 +292,7 @@ class TerminatedLeaseReturnedList(ModelViewSet, QueryListAPIView):
                 Case(
                     When(
                         lease_trade_transactions__posting_group_name='Fesih İadesi',
+                        lease_trade_transactions__amount_type='1',
                         then='lease_trade_transactions__amount'
                     ),
                     output_field=models.DecimalField(),
@@ -301,18 +305,15 @@ class TerminatedLeaseReturnedList(ModelViewSet, QueryListAPIView):
                     amount_type='0',
                 ).exclude(delete_status__in=['2']).values('due_date')[:1]
             ),
-            last_refund_date_annot=ExpressionWrapper(
-                Subquery(
-                    TradeTransaction.objects.filter(
-                        lease=OuterRef('pk'),
-                        posting_group_name='Fesih İadesi',
-                        amount_type='0',
-                    ).exclude(delete_status__in=['2']).values('due_date')[:1]
-                ) + timedelta(days=180),
-                output_field=DateField(),
+            refund_date_annot=Subquery(
+                TradeTransaction.objects.filter(
+                    lease=OuterRef('pk'),
+                    posting_group_name='Fesih İadesi',
+                    amount_type='1',
+                ).exclude(delete_status__in=['2']).values('due_date')[:1]
             )
         ).filter(
-            Q(refund_amount=0)
+            Q(refund_amount__gt=0)
         ).exclude(contract__partner__types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
