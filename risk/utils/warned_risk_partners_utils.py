@@ -228,7 +228,9 @@ def export_warned_risk_partners(self):
                 distinct=True,
                 filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
             ),
-    ).filter(warning_notice_count__gt=0)
+    ).filter(warning_notice_count__gt=0).exclude(
+        Q(contract__partner__types__contains=["special"])
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)

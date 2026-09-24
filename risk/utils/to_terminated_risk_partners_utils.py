@@ -236,7 +236,11 @@ def export_to_terminated_risk_partners(self):
             default=Value(False),
             output_field=BooleanField()
         )
-    ).filter(warning_notice_count__gt=0,overdue_check=True).order_by('-overdue_days')
+    ).filter(warning_notice_count__gt=0,overdue_check=True).order_by('-overdue_days').exclude(
+            Q(contract__partner__types__contains=["special"]) |
+            Q(contract__partner__types__contains=["barter"]) |
+            Q(contract__partner__types__contains=["virman"])
+    )
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
