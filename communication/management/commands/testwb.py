@@ -6,6 +6,8 @@ from contracts.models import *
 from leasing.models import *
 from accounting.tasks import fetch_trial_balances
 
+from emlak.utils import send_test_wb_message
+
 import pandas as pd
 import json
 import os
@@ -101,10 +103,10 @@ class Command(BaseCommand):
         #     json={"messaging_product": "whatsapp", "pin": "681215"})
         # print(r.status_code, r.json())
 
-        r = requests.post(f"https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps",
-            headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"},
-        )
-        print(r.status_code, r.json())
+        # r = requests.post(f"https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps",
+        #     headers={"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"},
+        # )
+        # print(r.status_code, r.json())
 
 
 
@@ -198,10 +200,10 @@ class Command(BaseCommand):
 
 
 
-        # MY_NUMBER = "905542663970"
-        # PIN = "681215"  # kendin belirle, not al
-        # BASE = "https://graph.facebook.com/v26.0"
-        # H = {"Authorization": f"Bearer {TOKEN}"}
+        MY_NUMBER = "905542663970"
+        PIN = "681215"  # kendin belirle, not al
+        BASE = "https://graph.facebook.com/v26.0"
+        H = {"Authorization": f"Bearer {settings.WHATSAPP_TOKEN}"}
 
         # # phone number id
         # r = requests.get(f"{BASE}/{WABA_ID}/phone_numbers", headers=H).json()
@@ -217,7 +219,7 @@ class Command(BaseCommand):
         # # app'i webhook'a abone et
         # print("subscribe:", requests.post(f"{BASE}/{WABA_ID}/subscribed_apps", headers=H).json())
 
-        # # test mesajı
+        # test mesajı
         # print("send:", requests.post(f"{BASE}/{PHONE_NUMBER_ID}/messages", headers=H, json={
         #     "messaging_product": "whatsapp",
         #     "to": MY_NUMBER,
@@ -225,6 +227,19 @@ class Command(BaseCommand):
         #     "text": {"body": "API test mesajı - Arı Leasing"},
         # }).json())
         # print("PHONE_NUMBER_ID =", PHONE_NUMBER_ID)
+
+
+        send_test_wb_message()
+
+
+        # r = requests.get(f"{BASE}/1629363698545041/message_templates",
+        #     params={"name": "emlak", "fields": "name,language,status,components"},
+        #     headers=H
+        # )
+        # print(r.json())
+
+        # print(requests.get("https://graph.facebook.com/v26.0/1629363698545041/subscribed_apps", headers=H).json())
+        # print(requests.get("https://graph.facebook.com/v26.0/1354229851098045", params={"fields": "webhook_configuration"}, headers=H).json())
   
         
         print("done!")

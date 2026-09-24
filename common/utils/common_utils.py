@@ -93,16 +93,18 @@ def format_amount(value: Decimal) -> str:
     formatted = f"{value:,.2f}"  # -> "123,456.50" (US formatı)
     return formatted.translate(str.maketrans({",": ".", ".": ","}))
 
-def format_currency_tr(value):
+def format_currency_tr(value,decimals=2):
     try:
         # Sayıya çevirmeye çalış
         if isinstance(value, str):
             value = value.replace('.', '').replace(',', '.')
-        value = Decimal(value).quantize(Decimal("0.01"))
+        value = Decimal(value).quantize(Decimal("0.01").scaleb(-decimals))
 
         # Binlik ve ondalık ayracı formatla
-        parts = f"{value:,.2f}".split(".")
+        parts = f"{value:,.{decimals}f}".split(".")
         integer_part = parts[0].replace(",", ".")
+        if decimals == 0:
+            return integer_part
         decimal_part = parts[1]
         return f"{integer_part},{decimal_part}"
     except (InvalidOperation, ValueError, TypeError):

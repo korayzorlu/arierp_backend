@@ -15,6 +15,7 @@ from utils.mixins import CompanyOwnershipRequiredMixin
 from .models import *
 from .utils import is_valid_whatsapp_message_data
 from emlak.utils import make_whatsapp_message,send_wb_message,format_date_tr
+from common.utils.common_utils import transform_phone_number,parse_amount,format_currency_tr,round_thousand,round_hundred
 
 import json
 import time
@@ -60,14 +61,14 @@ class SendWhatsappMessageView(LoginRequiredMixin,View):
         objs = WhatsappMessage.objects.filter(uuid__in=data.get('uuids', []))
 
         for obj in objs:
-            print(obj.real_estate_agent.name)
-            print(obj.real_estate_agent.phone_number_1)
 
             params = {
                 "name": obj.real_estate_agent.name,
                 "phone_number": obj.real_estate_agent.phone_number_1,
-                "meet_date": format_date_tr(obj.meet_date) if obj.meet_date else "",
-                "online_meet_date": format_date_tr(obj.online_meet_date) if obj.online_meet_date else ""
+                #"meet_date": format_date_tr(obj.meet_date) if obj.meet_date else ""
+                "ilan_tutari": obj.amount_char,
+                "pesinat": obj.pesinat_amount_char,
+                "taksit": obj.taksit_amount_char,
             }
 
             response = send_wb_message(params)

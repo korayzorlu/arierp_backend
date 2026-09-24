@@ -10,6 +10,7 @@ import requests
 from decimal import Decimal
 from datetime import datetime,date,timedelta
 import os
+import time
 
 TURKISH_MONTHS = {
     1: "Ocak", 2: "Şubat", 3: "Mart", 4: "Nisan", 5: "Mayıs", 6: "Haziran",
@@ -33,7 +34,7 @@ def sum_stepped_series(first, annual_growth_percent, months):
     return first * (12 * years_sum + remainder_contribution)
 
 def transform_emlak_amounts(amount):
-    vat_rate = Decimal("16.50")
+    vat_rate = Decimal("17.00")
     tufe = Decimal("7")
     enflasyon = Decimal("25.00")
     price = amount
@@ -76,11 +77,8 @@ def make_whatsapp_message(data):
     amount = parse_amount(data.get("amount"))
 
     emlak_data = transform_emlak_amounts(amount)
-    print(data.get("meet_date"))
-    print(data.get("online_meet_date"))
 
     meet_date = format_date_tr(datetime.strptime(data.get("meet_date"), "%Y-%m-%d").date()) if data.get("meet_date") else ""
-    online_meet_date = format_date_tr(datetime.strptime(data.get("online_meet_date"), "%Y-%m-%d").date()) if data.get("online_meet_date") else ""
     
     text1 = f"""Sayın {data.get("name")},
 
@@ -115,27 +113,51 @@ Krediler kapalı. Ama satışın yolu açık.
 Arı Leasing | Sinpaş Grubu iştiraki
     """
 
-    text = f"""Sayın {data.get("name")},
+    text3 = f"""Sayın {data.get("name")},
 
 Kat mülkiyetli konutları Finansal Kiralama ile satabilirsiniz. Böylece mevcut komisyonunuza ek %2+kdv satış primi alırsınız. Modeli gerçek rakamlarla anlatıyoruz, toplantımıza davetlisiniz.
 
 {meet_date} --> Sinpaş Plaza, Konferans Salonu (Dikilitaş mah. Yenidoğan sk. No:36 Beşiktaş/İSTANBUL)
-
-{online_meet_date} --> Microsoft Teams - Çevrimiçi
 
 Toplantıya kayıt için lütfen bağlantıya tıklayın.
 
 Arı Leasing | Sinpaş Grubu iştiraki
     """
 
+    text = f"""Sayın {data.get("name")},
+
+İlanınızdaki *{format_currency_tr(round_thousand(amount),decimals=0)} TL*'lik konutu vadeli olarak daha hızlı satmak ister misiniz?
+
+Bugün birçok alıcı, peşin ödeme gücü olmadığı için bu fiyat seviyesindeki konutlara ulaşamıyor. *Sinpaş Grubu* iştiraki *Arı Finansal Kiralama* ile bu alıcılara da satış yapabilirsiniz.
+
+🏡 Alıcı için örnek ödeme planı
+▪️ Peşinat: *{format_currency_tr(round_thousand(emlak_data.get("alici_pesinat_kdv_dahil")),decimals=0)} TL*
+▪️ Taksit: *120 ay x {format_currency_tr(round_hundred(emlak_data.get("alici_ilk_kira_kdv_dahil")),decimals=0)} TL*
+▪️ Taksitler TÜFE ile güncellenir
+
+💰 Size özel satış primi
+Arı Finansal Kiralama tarafından, satış gerçekleştiğinde mevcut komisyonunuza ek olarak *240.000 TL* (KDV dahil) satış primi tarafınıza ödenir.
+
+Bilgilendirme videosu ve tanıtım broşürü ektedir.
+
+📞 *0 (212) 310 27 21*'i arayın, detaylı bilgi ile portföyünüzdeki diğer konutlar için de size özel satış planı hazırlayalım.
+
+Arı Finansal Kiralama A.Ş.
+Sinpaş Grubu İştirakidir
+    
+
+    """
+    
+
     wp_message = WhatsappMessage.objects.create(
         company = data.get("company"),
         real_estate_agent = real_estate_agent,
         ilan_no = data.get("ilan_no"),
-        amount = amount,
+        amount_char = format_currency_tr(round_thousand(amount),decimals=0),
+        pesinat_amount_char=format_currency_tr(round_thousand(emlak_data.get("alici_pesinat_kdv_dahil")),decimals=0),
+        taksit_amount_char=format_currency_tr(round_hundred(emlak_data.get("alici_ilk_kira_kdv_dahil")),decimals=0),
         text = text,
         meet_date = data.get("meet_date"),
-        online_meet_date = data.get("online_meet_date"),
     )
 
     response = requests.post(
@@ -147,10 +169,10 @@ Arı Leasing | Sinpaş Grubu iştiraki
     print(response)
 
 def send_wb_message(data):
-    url = "https://graph.facebook.com/v25.0/1350996818093512/messages"
+    url = "https://graph.facebook.com/v26.0/1354229851098045/messages"
 
     headers = {
-        "Authorization": "Bearer EAAYvKmF1R8YBSZAywgZCw0oe8n80YyH61EZAHWPfAiQAAuhpPZBmLjKeq7CzkXcmtobmQ0hgBAJ6ar21gkq7xEiCZCb1Y73KJFmr9BExk4ZALvGZArmVj9uR7Io4wlqolddDeCcL56uHeMFu0nuGptfe4ckGoiJZC9ZA8ZB61n5WbDwQrwZAwVRCrhwN7oOiSj4cl6wEJc04liAOAMfg8ZATNZC7fearxI6ZA7bn6fOXYzK2glMn4gQChLQMOVj0LUppnmKlqBZBYu5liZAHW2aVz2DlpSdWk99R",
+        "Authorization": f"Bearer {settings.WHATSAPP_TOKEN}",
         "Content-Type": "application/json",
     }
 
@@ -159,7 +181,7 @@ def send_wb_message(data):
         "to": data.get("phone_number"),
         "type": "template",
         "template": {
-            "name": "emlak",
+            "name": "emlak_tanitim_2",
             "language": {"code": "tr"},
             "components": [
                 {
@@ -175,8 +197,9 @@ def send_wb_message(data):
                     "type": "body",
                     "parameters": [
                         {"type": "text", "parameter_name": "name", "text": data.get("name")},
-                        {"type": "text", "parameter_name": "meet_date", "text": data.get("meet_date")},
-                        {"type": "text", "parameter_name": "online_meet_date", "text": data.get("online_meet_date")},
+                        {"type": "text", "parameter_name": "ilan_tutari", "text": data.get("ilan_tutari")},
+                        {"type": "text", "parameter_name": "pesinat", "text": data.get("pesinat")},
+                        {"type": "text", "parameter_name": "taksit", "text": data.get("taksit")},
                     ],
                 }
             ],
@@ -187,15 +210,81 @@ def send_wb_message(data):
     print(response.status_code)
     print(response.json())
 
+    time.sleep(1.5) 
+    
+    payload_video = {
+        "messaging_product": "whatsapp",
+        "to": data.get("phone_number"),
+        "type": "template",
+        "template": {
+            "name": "emlak_tanitim_filmi",
+            "language": {"code": "tr"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "video",
+                            "video": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-video-2.mp4"}
+                        }
+                    ]
+                },
+                # {
+                #     "type": "button",
+                #     "sub_type": "flow",
+                #     "index": "0",
+                #     "parameters": [
+                #         {"type": "action", "action": {"flow_token": "unused"}}
+                #     ]
+                # }
+            ],
+        },
+    }
+
+    response_video = requests.post(url, headers=headers, json=payload_video)
+
+    time.sleep(1.5) 
+    
+    payload_pdf = {
+        "messaging_product": "whatsapp",
+        "to": data.get("phone_number"),
+        "type": "template",
+        "template": {
+            "name": "emlak_brosur",
+            "language": {"code": "tr"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "document",
+                            "document": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-document.pdf","filename": "ari-leasing-emlak-brosur.pdf"}
+                        }
+                    ]
+                },
+                # {
+                #     "type": "button",
+                #     "sub_type": "flow",
+                #     "index": "0",
+                #     "parameters": [
+                #         {"type": "action", "action": {"flow_token": "unused"}}
+                #     ]
+                # }
+            ],
+        },
+    }
+
+    response_pdf = requests.post(url, headers=headers, json=payload_pdf)
+
     return response
 
     
 
 def send_test_wb_message():
-    url = "https://graph.facebook.com/v25.0/1350996818093512/messages"
+    url = "https://graph.facebook.com/v26.0/1354229851098045/messages"
 
     headers = {
-        "Authorization": "Bearer EAAYvKmF1R8YBSfHeFUxmP1sfwCn4pjLZBKgmUkMPPDf4PW5sQcZAS1s5jpIEnZAURU10NswSkfAnyu9mzvfygVsJ52i923dPegiI7VQ67TRUL1OEKqSK1NHJzbRtIErZAsokJnZBRXsbXcoYmMcdvurcqG3bZAph8lZAArwjbiXwxiPJSs5NfMNdEzvrt4UoG9fT5gSabj1E3QT6T0ApnpeUYQVKG1hj8ZBcAgCorDkllNrtnp6ZAhNYQfZBjW8gHZCFt2cSVSPsyKe1lebhzdjrREVRnHYaQZDZD",
+        "Authorization": f"Bearer {settings.WHATSAPP_TOKEN}",
         "Content-Type": "application/json",
     }
 
@@ -204,7 +293,7 @@ def send_test_wb_message():
         "to": "905542663970",
         "type": "template",
         "template": {
-            "name": "emlak",
+            "name": "emlak_tanitim_2",
             "language": {"code": "tr"},
             "components": [
                 {
@@ -220,19 +309,99 @@ def send_test_wb_message():
                     "type": "body",
                     "parameters": [
                         {"type": "text", "parameter_name": "name", "text": "Koray Zorlu"},
-                        {"type": "text", "parameter_name": "meet_date", "text": "09 Eylül 2026"},
-                        {"type": "text", "parameter_name": "online_meet_date", "text": "10 Eylül 2026"},
+                        {"type": "text", "parameter_name": "ilan_tutari", "text": "10.000.000"},
+                        {"type": "text", "parameter_name": "pesinat", "text": "3.510.000"},
+                        {"type": "text", "parameter_name": "taksit", "text": "94.000"},
                     ],
-                }
+                },
+                # {
+                #     "type": "button",
+                #     "sub_type": "flow",
+                #     "index": "0",
+                #     "parameters": [
+                #         {"type": "action", "action": {"flow_token": "unused"}}
+                #     ]
+                # }
             ],
         },
     }
 
     response = requests.post(url, headers=headers, json=payload)
 
-    print(response.status_code)
-    print(response.json())
+    print(f"response 1: {response.status_code}")
+    print(f"response 1 JSON: {response.json()}")
 
+    time.sleep(1.5) 
+
+    payload_video = {
+        "messaging_product": "whatsapp",
+        "to": "905542663970",
+        "type": "template",
+        "template": {
+            "name": "emlak_tanitim_filmi",
+            "language": {"code": "tr"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "video",
+                            "video": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-video-wa.mp4"}
+                        }
+                    ]
+                },
+                # {
+                #     "type": "button",
+                #     "sub_type": "flow",
+                #     "index": "0",
+                #     "parameters": [
+                #         {"type": "action", "action": {"flow_token": "unused"}}
+                #     ]
+                # }
+            ],
+        },
+    }
+
+    response_video = requests.post(url, headers=headers, json=payload_video)
+    
+    print(f"response 2: {response_video.status_code}")
+    print(f"response 2 JSON: {response_video.json()}")
+
+    time.sleep(1.5) 
+
+    payload_pdf = {
+        "messaging_product": "whatsapp",
+        "to": "905542663970",
+        "type": "template",
+        "template": {
+            "name": "emlak_brosur",
+            "language": {"code": "tr"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "document",
+                            "document": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-document.pdf","filename": "ari-leasing-emlak-brosur.pdf"}
+                        }
+                    ]
+                },
+                # {
+                #     "type": "button",
+                #     "sub_type": "flow",
+                #     "index": "0",
+                #     "parameters": [
+                #         {"type": "action", "action": {"flow_token": "unused"}}
+                #     ]
+                # }
+            ],
+        },
+    }
+
+    response_pdf = requests.post(url, headers=headers, json=payload_pdf)
+    
+    print(f"response 3: {response_pdf.status_code}")
+    print(f"response 3 JSON: {response_pdf.json()}")
 
 def is_valid_whatsapp_message_data(data):
     parameters = [
@@ -243,7 +412,6 @@ def is_valid_whatsapp_message_data(data):
         "ilan_no",
         "amount",
         "meet_date",
-        "online_meet_date",
     ]
 
     unknown_keys = set(data.keys()) - set(parameters)
@@ -266,8 +434,5 @@ def is_valid_whatsapp_message_data(data):
 
     if not data.get('meet_date') or data.get('meet_date').strip() == "":
         return False, JsonResponse({'message': 'Toplantı tarihi eksik!','status':'error'}, status=400)
-
-    if not data.get('online_meet_date') or data.get('online_meet_date').strip() == "":
-        return False, JsonResponse({'message': 'Çevrimiçi toplantı tarihi eksik!','status':'error'}, status=400)
 
     return True, None
