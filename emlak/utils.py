@@ -210,7 +210,7 @@ def send_wb_message(data):
     print(response.status_code)
     print(response.json())
 
-    time.sleep(1.5) 
+    time.sleep(2) 
     
     payload_video = {
         "messaging_product": "whatsapp",
@@ -243,7 +243,10 @@ def send_wb_message(data):
 
     response_video = requests.post(url, headers=headers, json=payload_video)
 
-    time.sleep(1.5) 
+    print(f"response 2: {response_video.status_code}")
+    print(f"response 2 JSON: {response_video.json()}")
+
+    time.sleep(2) 
     
     payload_pdf = {
         "messaging_product": "whatsapp",
@@ -275,6 +278,9 @@ def send_wb_message(data):
     }
 
     response_pdf = requests.post(url, headers=headers, json=payload_pdf)
+
+    print(f"response 3: {response_pdf.status_code}")
+    print(f"response 3 JSON: {response_pdf.json()}")
 
     return response
 
