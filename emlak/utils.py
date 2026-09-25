@@ -126,21 +126,21 @@ Arı Leasing | Sinpaş Grubu iştiraki
 
     text = f"""Sayın {data.get("name")},
 
-İlanınızdaki *{format_currency_tr(round_thousand(amount),decimals=0)} TL*'lik konutu vadeli olarak daha hızlı satmak ister misiniz?
+İlanınızdaki {format_currency_tr(round_thousand(amount),decimals=0)} TL'lik konutu vadeli olarak daha hızlı satmak ister misiniz?
 
-Bugün birçok alıcı, peşin ödeme gücü olmadığı için bu fiyat seviyesindeki konutlara ulaşamıyor. *Sinpaş Grubu* iştiraki *Arı Finansal Kiralama* ile bu alıcılara da satış yapabilirsiniz.
+Bugün birçok alıcı, peşin ödeme gücü olmadığı için bu fiyat seviyesindeki konutlara ulaşamıyor. Sinpaş Grubu iştiraki Arı Finansal Kiralama ile bu alıcılara da satış yapabilirsiniz.
 
 🏡 Alıcı için örnek ödeme planı
-▪️ Peşinat: *{format_currency_tr(round_thousand(emlak_data.get("alici_pesinat_kdv_dahil")),decimals=0)} TL*
-▪️ Taksit: *120 ay x {format_currency_tr(round_hundred(emlak_data.get("alici_ilk_kira_kdv_dahil")),decimals=0)} TL*
+▪️ Peşinat: {format_currency_tr(round_thousand(emlak_data.get("alici_pesinat_kdv_dahil")),decimals=0)} TL
+▪️ Taksit: 120 ay x {format_currency_tr(round_hundred(emlak_data.get("alici_ilk_kira_kdv_dahil")),decimals=0)} TL
 ▪️ Taksitler TÜFE ile güncellenir
 
 💰 Size özel satış primi
-Arı Finansal Kiralama tarafından, satış gerçekleştiğinde mevcut komisyonunuza ek olarak *240.000 TL* (KDV dahil) satış primi tarafınıza ödenir.
+Arı Finansal Kiralama tarafından, satış gerçekleştiğinde mevcut komisyonunuza ek olarak {format_currency_tr(round_thousand((amount*Decimal('0.02'))*Decimal('1.20')),decimals=0)} TL (KDV dahil) satış primi tarafınıza ödenir.
 
 Bilgilendirme videosu ve tanıtım broşürü ektedir.
 
-📞 *0 (212) 310 27 21*'i arayın, detaylı bilgi ile portföyünüzdeki diğer konutlar için de size özel satış planı hazırlayalım.
+📞 0 (212) 310 27 21'i arayın, detaylı bilgi ile portföyünüzdeki diğer konutlar için de size özel satış planı hazırlayalım.
 
 Arı Finansal Kiralama A.Ş.
 Sinpaş Grubu İştirakidir
@@ -156,6 +156,7 @@ Sinpaş Grubu İştirakidir
         amount_char = format_currency_tr(round_thousand(amount),decimals=0),
         pesinat_amount_char=format_currency_tr(round_thousand(emlak_data.get("alici_pesinat_kdv_dahil")),decimals=0),
         taksit_amount_char=format_currency_tr(round_hundred(emlak_data.get("alici_ilk_kira_kdv_dahil")),decimals=0),
+        emlak_amount_char=format_currency_tr(round_thousand((amount*Decimal('0.02'))*Decimal('1.20')),decimals=0),
         text = text,
         meet_date = data.get("meet_date"),
     )
@@ -181,7 +182,7 @@ def send_wb_message(data):
         "to": data.get("phone_number"),
         "type": "template",
         "template": {
-            "name": "emlak_tanitim_2",
+            "name": "emlak_tanitim_3",
             "language": {"code": "tr"},
             "components": [
                 {
@@ -200,6 +201,7 @@ def send_wb_message(data):
                         {"type": "text", "parameter_name": "ilan_tutari", "text": data.get("ilan_tutari")},
                         {"type": "text", "parameter_name": "pesinat", "text": data.get("pesinat")},
                         {"type": "text", "parameter_name": "taksit", "text": data.get("taksit")},
+                        {"type": "text", "parameter_name": "emlak", "text": data.get("emlak")},
                     ],
                 }
             ],
@@ -299,7 +301,7 @@ def send_test_wb_message():
         "to": "905542663970",
         "type": "template",
         "template": {
-            "name": "emlak_tanitim_2",
+            "name": "emlak_tanitim_3",
             "language": {"code": "tr"},
             "components": [
                 {
@@ -318,6 +320,7 @@ def send_test_wb_message():
                         {"type": "text", "parameter_name": "ilan_tutari", "text": "10.000.000"},
                         {"type": "text", "parameter_name": "pesinat", "text": "3.510.000"},
                         {"type": "text", "parameter_name": "taksit", "text": "94.000"},
+                        {"type": "text", "parameter_name": "emlak", "text": "240.000"},
                     ],
                 },
                 # {

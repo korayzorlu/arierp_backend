@@ -69,6 +69,7 @@ class SendWhatsappMessageView(LoginRequiredMixin,View):
                 "ilan_tutari": obj.amount_char,
                 "pesinat": obj.pesinat_amount_char,
                 "taksit": obj.taksit_amount_char,
+                "emlak": obj.emlak_amount_char,
             }
 
             response = send_wb_message(params)

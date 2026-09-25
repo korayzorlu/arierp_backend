@@ -51,6 +51,7 @@ class WhatsappMessage(models.Model):
     amount_char = models.CharField(_("Amount Char"), max_length=50, blank=True, null=True)
     pesinat_amount_char = models.CharField(_("Peşinat Amount Char"), max_length=50, blank=True, null=True)
     taksit_amount_char = models.CharField(_("Taksit Amount Char"), max_length=50, blank=True, null=True)
+    emlak_amount_char = models.CharField(_("Emlak Amount Char"), max_length=50, blank=True, null=True)
     text = models.TextField(_("Text"), max_length=2000, blank=True, null=True)
     meet_date = models.DateField(_("Meet Date"), blank=True, null=True)
     online_meet_date = models.DateField(_("Online Meet Date"), blank=True, null=True)
