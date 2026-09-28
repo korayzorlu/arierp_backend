@@ -236,7 +236,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
         return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
 
     def get_departure_date(self, obj):
-        return obj.contract.departure_date if obj.contract and obj.contract.departure_date else None
+        return localtime(obj.contract.departure_date).strftime("%d.%m.%Y") if obj.contract and obj.contract.departure_date else None
 
     def get_partner_crm_code(self, obj):
         return obj.contract.partner.crm_code if obj.contract.partner else ""
