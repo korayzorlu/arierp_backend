@@ -191,6 +191,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     lease_status_update_date = serializers.DateTimeField()
+    departure_date = serializers.SerializerMethodField()
     crm_contract_code = serializers.CharField()
     crm_project_id = serializers.CharField()
     crm_bbsn = serializers.CharField()
@@ -233,7 +234,10 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     
     def get_partner_tc(self, obj):
         return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
-    
+
+    def get_departure_date(self, obj):
+        return obj.contract.departure_date if obj.contract and obj.contract.departure_date else None
+
     def get_partner_crm_code(self, obj):
         return obj.contract.partner.crm_code if obj.contract.partner else ""
     

@@ -1,3 +1,3 @@
 SELECT TOP 1000 *
 FROM ContractHeaderLightList
-  WHERE ContractHeaderCode = '51181'
+  WHERE ContractHeaderCode = '71972'

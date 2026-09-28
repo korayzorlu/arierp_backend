@@ -11,7 +11,8 @@ SELECT c.ContractHeaderId,
     c.SubStatuteName,
     c.LopOpenDate,
     CreatedDate,
-    c.CurrencyCode
+    c.CurrencyCode,
+    c.DepartureDate
 FROM ContractHeaderLightList c
 LEFT JOIN QuotationLine q ON c.QuotationHeaderId = q.QuotationHeaderId
 WHERE  

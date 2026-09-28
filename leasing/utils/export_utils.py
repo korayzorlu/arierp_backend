@@ -965,9 +965,10 @@ def export_active_leases(self):
         "RBlok": [],
         "RBağımsız Bölüm": [],
         "BBSN": [],
+        "Satış Ofisinden Geliş Tarihi": [],
         "Alt Statü": [],
         "Statü": [],
-        "Statü Değişme Tarihi": []
+        "Statü Değişme Tarihi": [],
     }
 
     previous_progress = 0
@@ -994,10 +995,10 @@ def export_active_leases(self):
         data["RBlok"].append(obj.real_estate.block if obj.real_estate else "" )
         data["RBağımsız Bölüm"].append(obj.real_estate.unit if obj.real_estate else "")
         data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
+        data["Satış Ofisinden Geliş Tarihi"].append(obj.contract.departure_date.strftime("%d.%m.%Y") if obj.contract.departure_date else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.lease_status if obj.lease_status else "")
-        data["Statü Değişme Tarihi"].append(obj.lease_status_update_date)
-
+        data["Statü Değişme Tarihi"].append(obj.lease_status_update_date.strftime("%d.%m.%Y") if obj.lease_status_update_date else "")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()
