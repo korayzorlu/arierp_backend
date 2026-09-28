@@ -950,6 +950,13 @@ def export_active_leases(self):
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
     self.process.save()
+
+    main_lease_ids = {obj.main_lease_id for obj in objs if obj.main_lease_id}
+    old_leases_map = {}
+    for lease in Lease.objects.select_related("contract").filter(
+        main_lease_id__in=main_lease_ids
+    ).only("code", "main_lease_id", "contract__departure_date").order_by("-lease_id"):
+        old_leases_map.setdefault(lease.main_lease_id, []).append(lease)
     
     data = {
         "Teklif": [],
@@ -982,11 +989,10 @@ def export_active_leases(self):
             self.process.save()
             previous_progress = current_progress
 
-        old_leases_map = self.context.get('old_leases_map', {})
         old_leases = old_leases_map.get(obj.main_lease_id, [])
         lease_history = ", ".join(l.code for l in old_leases if l.code)
 
-        if obj.contract and obj.contract.departure_date is None or obj.contract.departure_date == "":
+        if obj.contract and obj.contract.departure_date is None and obj.contract.departure_date == "":
             for old_lease in old_leases:
                 if old_lease.contract.departure_date is not None and old_lease.contract.departure_date != "":
                     departure_date = localtime(old_lease.contract.departure_date).strftime("%d.%m.%Y")

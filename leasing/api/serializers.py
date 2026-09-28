@@ -133,7 +133,7 @@ class LeaseListSerializer(serializers.Serializer):
         return obj.lease_installments.filter(type="5").aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
 
     def get_departure_date(self, obj):
-        if obj.contract and obj.contract.departure_date is None or obj.contract.departure_date == "":
+        if obj.contract and obj.contract.departure_date is None and obj.contract.departure_date == "":
             old_leases_map = self.context.get('old_leases_map', {})
             old_leases = old_leases_map.get(obj.main_lease_id, [])
             for old_lease in old_leases:
