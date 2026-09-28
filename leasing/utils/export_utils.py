@@ -996,7 +996,8 @@ def export_active_leases(self):
             for old_lease in old_leases:
                 if old_lease.contract.departure_date is not None and old_lease.contract.departure_date != "":
                     departure_date = localtime(old_lease.contract.departure_date).strftime("%d.%m.%Y")
-        departure_date = localtime(obj.contract.departure_date).strftime("%d.%m.%Y")
+        else:
+            departure_date = localtime(obj.contract.departure_date).strftime("%d.%m.%Y")
 
         data["Teklif"].append(obj.contract.quotation_obj.code if obj.contract.quotation_obj else "")
         data["Sözleşme"].append(obj.contract.code)
