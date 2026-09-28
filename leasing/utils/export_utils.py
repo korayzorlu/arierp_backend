@@ -955,6 +955,7 @@ def export_active_leases(self):
         "Teklif": [],
         "Sözleşme": [],
         "Kira Planı": [],
+        "Kira Planı Geçmişi": [],
         "Müşteri İsmi": [],
         "TC/VKN No": [],
         "Crm Kodu": [],
@@ -981,10 +982,20 @@ def export_active_leases(self):
             self.process.save()
             previous_progress = current_progress
 
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = old_leases_map.get(obj.main_lease_id, [])
+        lease_history = ", ".join(l.code for l in old_leases if l.code)
+
+        if obj.contract and obj.contract.departure_date is None or obj.contract.departure_date == "":
+            for old_lease in old_leases:
+                if old_lease.contract.departure_date is not None and old_lease.contract.departure_date != "":
+                    departure_date = localtime(old_lease.contract.departure_date).strftime("%d.%m.%Y")
+        departure_date = localtime(obj.contract.departure_date).strftime("%d.%m.%Y")
 
         data["Teklif"].append(obj.contract.quotation_obj.code if obj.contract.quotation_obj else "")
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
+        data["Kira Planı Geçmişi"].append(lease_history)
         data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
         data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
         data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
@@ -995,7 +1006,7 @@ def export_active_leases(self):
         data["RBlok"].append(obj.real_estate.block if obj.real_estate else "" )
         data["RBağımsız Bölüm"].append(obj.real_estate.unit if obj.real_estate else "")
         data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
-        data["Satış Ofisinden Geliş Tarihi"].append(localtime(obj.contract.departure_date).strftime("%d.%m.%Y") if obj.contract.departure_date else "")
+        data["Satış Ofisinden Geliş Tarihi"].append(departure_date)
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.lease_status if obj.lease_status else "")
         data["Statü Değişme Tarihi"].append(obj.lease_status_update_date.strftime("%d.%m.%Y") if obj.lease_status_update_date else "")
