@@ -227,7 +227,7 @@ def send_wb_message(data):
                     "parameters": [
                         {
                             "type": "video",
-                            "video": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-video-2.mp4"}
+                            "video": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-video-2-android.mp4"}
                         }
                     ]
                 },
@@ -296,55 +296,55 @@ def send_test_wb_message():
         "Content-Type": "application/json",
     }
 
-    payload = {
-        "messaging_product": "whatsapp",
-        "to": "905542663970",
-        "type": "template",
-        "template": {
-            "name": "emlak_tanitim_3",
-            "language": {"code": "tr"},
-            "components": [
-                {
-                    "type": "header",
-                    "parameters": [
-                        {
-                            "type": "image",
-                            "image": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-image.jpg"}
-                        }
-                    ]
-                },
-                {
-                    "type": "body",
-                    "parameters": [
-                        {"type": "text", "parameter_name": "name", "text": "Koray Zorlu"},
-                        {"type": "text", "parameter_name": "ilan_tutari", "text": "10.000.000"},
-                        {"type": "text", "parameter_name": "pesinat", "text": "3.510.000"},
-                        {"type": "text", "parameter_name": "taksit", "text": "94.000"},
-                        {"type": "text", "parameter_name": "emlak", "text": "240.000"},
-                    ],
-                },
-                # {
-                #     "type": "button",
-                #     "sub_type": "flow",
-                #     "index": "0",
-                #     "parameters": [
-                #         {"type": "action", "action": {"flow_token": "unused"}}
-                #     ]
-                # }
-            ],
-        },
-    }
+    # payload = {
+    #     "messaging_product": "whatsapp",
+    #     "to": "905542663970",
+    #     "type": "template",
+    #     "template": {
+    #         "name": "emlak_tanitim_3",
+    #         "language": {"code": "tr"},
+    #         "components": [
+    #             {
+    #                 "type": "header",
+    #                 "parameters": [
+    #                     {
+    #                         "type": "image",
+    #                         "image": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-image.jpg"}
+    #                     }
+    #                 ]
+    #             },
+    #             {
+    #                 "type": "body",
+    #                 "parameters": [
+    #                     {"type": "text", "parameter_name": "name", "text": "Koray Zorlu"},
+    #                     {"type": "text", "parameter_name": "ilan_tutari", "text": "10.000.000"},
+    #                     {"type": "text", "parameter_name": "pesinat", "text": "3.510.000"},
+    #                     {"type": "text", "parameter_name": "taksit", "text": "94.000"},
+    #                     {"type": "text", "parameter_name": "emlak", "text": "240.000"},
+    #                 ],
+    #             },
+    #             # {
+    #             #     "type": "button",
+    #             #     "sub_type": "flow",
+    #             #     "index": "0",
+    #             #     "parameters": [
+    #             #         {"type": "action", "action": {"flow_token": "unused"}}
+    #             #     ]
+    #             # }
+    #         ],
+    #     },
+    # }
 
-    response = requests.post(url, headers=headers, json=payload)
+    # response = requests.post(url, headers=headers, json=payload)
 
-    print(f"response 1: {response.status_code}")
-    print(f"response 1 JSON: {response.json()}")
+    # print(f"response 1: {response.status_code}")
+    # print(f"response 1 JSON: {response.json()}")
 
     time.sleep(1.5) 
 
     payload_video = {
         "messaging_product": "whatsapp",
-        "to": "905542663970",
+        "to": "905530289085",
         "type": "template",
         "template": {
             "name": "emlak_tanitim_filmi",
@@ -355,7 +355,7 @@ def send_test_wb_message():
                     "parameters": [
                         {
                             "type": "video",
-                            "video": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-video-wa.mp4"}
+                            "video": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-video-2-android.mp4"}
                         }
                     ]
                 },
@@ -376,41 +376,41 @@ def send_test_wb_message():
     print(f"response 2: {response_video.status_code}")
     print(f"response 2 JSON: {response_video.json()}")
 
-    time.sleep(1.5) 
+    # time.sleep(1.5) 
 
-    payload_pdf = {
-        "messaging_product": "whatsapp",
-        "to": "905542663970",
-        "type": "template",
-        "template": {
-            "name": "emlak_brosur",
-            "language": {"code": "tr"},
-            "components": [
-                {
-                    "type": "header",
-                    "parameters": [
-                        {
-                            "type": "document",
-                            "document": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-document.pdf","filename": "ari-leasing-emlak-brosur.pdf"}
-                        }
-                    ]
-                },
-                # {
-                #     "type": "button",
-                #     "sub_type": "flow",
-                #     "index": "0",
-                #     "parameters": [
-                #         {"type": "action", "action": {"flow_token": "unused"}}
-                #     ]
-                # }
-            ],
-        },
-    }
+    # payload_pdf = {
+    #     "messaging_product": "whatsapp",
+    #     "to": "905542663970",
+    #     "type": "template",
+    #     "template": {
+    #         "name": "emlak_brosur",
+    #         "language": {"code": "tr"},
+    #         "components": [
+    #             {
+    #                 "type": "header",
+    #                 "parameters": [
+    #                     {
+    #                         "type": "document",
+    #                         "document": {"link": "https://emlak.arileasing.com.tr/staticfiles/images/global/emlak-wb-document.pdf","filename": "ari-leasing-emlak-brosur.pdf"}
+    #                     }
+    #                 ]
+    #             },
+    #             # {
+    #             #     "type": "button",
+    #             #     "sub_type": "flow",
+    #             #     "index": "0",
+    #             #     "parameters": [
+    #             #         {"type": "action", "action": {"flow_token": "unused"}}
+    #             #     ]
+    #             # }
+    #         ],
+    #     },
+    # }
 
-    response_pdf = requests.post(url, headers=headers, json=payload_pdf)
+    # response_pdf = requests.post(url, headers=headers, json=payload_pdf)
     
-    print(f"response 3: {response_pdf.status_code}")
-    print(f"response 3 JSON: {response_pdf.json()}")
+    # print(f"response 3: {response_pdf.status_code}")
+    # print(f"response 3 JSON: {response_pdf.json()}")
 
 def is_valid_whatsapp_message_data(data):
     parameters = [
