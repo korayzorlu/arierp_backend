@@ -1003,7 +1003,7 @@ def export_active_leases(self):
         else:
             qq_block = None
 
-        if obj.real_estate.block and obj.real_estate.block != "":
+        if obj.real_estate and obj.real_estate.block != "":
             re_block = obj.real_estate.block
         else:
             re_block = None
@@ -1020,7 +1020,7 @@ def export_active_leases(self):
         else:
             qq_unit = None
 
-        if obj.real_estate.unit and obj.real_estate.unit != "":
+        if obj.real_estate and obj.real_estate.unit != "":
             re_unit = obj.real_estate.unit
         else:
             re_unit = None
