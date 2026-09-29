@@ -242,6 +242,9 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     
     def get_partner(self, obj):
         return obj.contract.partner.name if obj.contract.partner else ""
+
+    def get_partner_crm_code(self, obj):
+        return obj.contract.partner.crm_code if obj.contract.partner else ""
     
     def get_partner_tc(self, obj):
         return obj.contract.partner.tc_vkn_no if obj.contract.partner else ""
