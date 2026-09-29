@@ -998,40 +998,6 @@ def export_active_leases(self):
         else:
             departure_date = localtime(obj.contract.departure_date).strftime("%d.%m.%Y") if obj.contract.departure_date else ""
 
-        if obj.contract.quotation_obj.quick_quotation and obj.contract.quotation_obj.quick_quotation.block != "":
-            qq_block = obj.contract.quotation_obj.quick_quotation
-        else:
-            qq_block = None
-
-        if obj.real_estate and obj.real_estate.block != "":
-            re_block = obj.real_estate.block
-        else:
-            re_block = None
-
-        if qq_block:
-            block = qq_block
-        elif re_block:
-            block = re_block
-        else:
-            block = ""
-
-        if obj.contract.quotation_obj.quick_quotation and obj.contract.quotation_obj.quick_quotation.unit != "":
-            qq_unit = obj.contract.quotation_obj.quick_quotation
-        else:
-            qq_unit = None
-
-        if obj.real_estate and obj.real_estate.unit != "":
-            re_unit = obj.real_estate.unit
-        else:
-            re_unit = None
-
-        if qq_unit:
-            unit = qq_unit
-        elif re_unit:
-            unit = re_unit
-        else:
-            unit = ""
-
         data["Teklif"].append(obj.contract.quotation_obj.code if obj.contract.quotation_obj else "")
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
@@ -1041,9 +1007,9 @@ def export_active_leases(self):
         data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
         data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
         data["Proje"].append(obj.item.stock_name if obj.item else "")
-        data["Blok"].append(block)
-        data["Bağımsız Bölüm"].append(unit)
-        data["Dönem"].append(obj.period if obj.period else "")
+        data["Blok"].append(obj.block if obj.block and obj.block != "None" else "")
+        data["Bağımsız Bölüm"].append(obj.unit if obj.unit and obj.unit != "None" else "")
+        data["Dönem"].append(obj.period if obj.period and obj.period != "None" else "")
         data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
         data["Satış Ofisinden Geliş Tarihi"].append(departure_date)
         data["Alt Statü"].append(obj.status.name if obj.status else "")
