@@ -435,6 +435,9 @@ def is_valid_whatsapp_message_data(data):
     if not data.get('phone_number_1') or data.get('phone_number_1').strip() == "":
          return False, JsonResponse({'message': 'Emlakçı telefonu eksik!','status':'error'}, status=400)
 
+    if WhatsappMessage.objects.filter(real_estate_agent__phone_number_1 = data.get('phone_number_1'), ilan_no = data.get('ilan_no')).exists():
+        return False, JsonResponse({'message': 'Bu telefon numarasıyla ve ilan no ile zaten bir mesaj oluşturulmuş!','status':'error'}, status=400)
+
     if not data.get('ilan_no') or data.get('ilan_no').strip() == "":
         return False, JsonResponse({'message': 'İlan no eksik!','status':'error'}, status=400)
 
