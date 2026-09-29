@@ -195,8 +195,9 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     partner_special = serializers.SerializerMethodField()
     quotation = serializers.SerializerMethodField()
     kof = serializers.SerializerMethodField()
-    block = serializers.CharField()
-    unit = serializers.CharField()
+    block = serializers.SerializerMethodField()
+    unit = serializers.SerializerMethodField()
+    period = serializers.SerializerMethodField()
     overdue_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     overdue_days = serializers.IntegerField()
     processed_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
@@ -248,17 +249,26 @@ class ActiveLeaseListSerializer(serializers.Serializer):
     def get_departure_date(self, obj):
         return localtime(obj.contract.departure_date).strftime("%d.%m.%Y") if obj.contract and obj.contract.departure_date else None
 
-    def get_partner_crm_code(self, obj):
-        return obj.contract.partner.crm_code if obj.contract.partner else ""
+    def get_block(self, obj):
+        return obj.block if obj.block else ""
     
-    def get_partner_special(self, obj):
-        return True if obj.contract and obj.contract.partner and "special" in obj.contract.partner.types else False
+    def get_unit(self, obj):
+        return obj.unit if obj.unit else ""
     
-    def get_quotation(self, obj):
-        return obj.contract.quotation_obj.code if obj.contract.quotation_obj else ""
+    def get_period(self, obj):
+        return obj.period if obj.period else ""
     
     def get_kof(self, obj):
         return obj.contract.kof if obj.contract else ""
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
+
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
     
     def get_bbsn(self, obj):
         return obj.bbsn if obj.bbsn and obj.bbsn != "None" else ''
