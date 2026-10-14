@@ -24,6 +24,8 @@ urlpatterns = [
     path('overdue_information/', OverdueInformationView.as_view(), name="overdue_information"),
     path('lease_information/', LeaseInformationView.as_view(), name="lease_information"),
     path('change_partner/', ChangePartnerView.as_view(), name="change_partner"),
+    path('create_contract_history_file/', CreateContractHistoryFileView.as_view(), name="create_contract_history_file"),
+    path('get_contract_history_file/', GetContractHistoryFileView.as_view(), name="get_contract_history_file"),
 
     path('add_lease_note/', AddLeaseNoteView.as_view(), name="add_lease_note"),
     path('update_lease_note/', UpdateLeaseNoteView.as_view(), name="update_lease_note"),

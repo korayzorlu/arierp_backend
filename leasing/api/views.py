@@ -197,6 +197,47 @@ class LeaseList(ModelViewSet, QueryListAPIView):
         self._cached_queryset = queryset
         return queryset
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        objects = page if page is not None else queryset
+
+        # Tüm main_lease_id'leri topla, tek sorguda çek
+        main_lease_ids = [obj.main_lease_id for obj in objects if obj.main_lease_id]
+        all_old_leases = Lease.objects.filter(
+            main_lease_id__in=main_lease_ids
+        ).annotate(
+            lease_id_int=Cast('lease_id', IntegerField())
+        ).only('uuid', 'code', 'main_lease_id').order_by('-lease_id_int')
+        
+        old_leases_map = {}
+        for lease in all_old_leases:
+            old_leases_map.setdefault(lease.main_lease_id, []).append(lease)
+
+        serializer = self.get_serializer(
+            objects, many=True,
+            context={**self.get_serializer_context(), 'old_leases_map': old_leases_map}
+        )
+
+        if page is not None:
+            response = self.get_paginated_response(serializer.data)
+            projects = list(
+                queryset.exclude(item__isnull=True)
+                        .order_by('item__stock_name')
+                        .values('item__stock_name', 'item__uuid')
+                        .distinct()
+            )
+            vendors = list(
+                queryset.exclude(contract__vendor__isnull=True)
+                        .order_by('contract__vendor__name')
+                        .values('contract__vendor__name', 'contract__vendor__uuid')
+                        .distinct()
+            )
+            response.data['projects'] = projects
+            response.data['vendors'] = vendors
+            return response
+        return Response(serializer.data)
+
 class ActiveLeaseList(ModelViewSet, QueryListAPIView):
     serializer_class = ActiveLeaseListSerializer
     filterset_class = ActiveLeaseFilter

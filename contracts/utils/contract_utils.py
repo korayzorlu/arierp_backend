@@ -17,9 +17,9 @@ from decimal import Decimal
 from docxtpl import DocxTemplate
 
 from contracts.models import *
-from leasing.models import Lease
+from leasing.models import Lease,RiskStatus
 from common.models import Status
-from partners.models import Partner
+from partners.models import Partner,PartnerFinancialProfile
 from common.utils.common_utils import normalize,safe_decimal
 from leasing.utils.lease_utils import get_future_payments
 
@@ -488,6 +488,8 @@ def fetch_warning_notices_from_leaseflex(company,BATCH_SIZE=1000):
                             approval_state = str(data.ApprovalState) or "",
                         ))
                         create_progress += 1
+
+                
             if update_objs:
                 WarningNotice.objects.bulk_update(update_objs, [
                     "contract",

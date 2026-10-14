@@ -439,6 +439,7 @@ class UpdatePartnerFinancialProfileView(LoginRequiredMixin,CompanyOwnershipRequi
         obj.income_amount = data.get('income_amount') if data.get('income_amount') != "" else Decimal("0.00")
         obj.fund_sources = data.get('fund_sources')
         obj.other_fund_source = data.get('other_fund_source')
+        obj.fund_amount = data.get('fund_amount') if data.get('fund_amount') != "" else Decimal("0.00")
         obj.sgk_job = SgkJob.objects.filter(sgk_job_code = data.get('sgk_job')).first() if data.get('sgk_job') else None
         obj.institution = data.get('institution')
         obj.position = data.get('position')

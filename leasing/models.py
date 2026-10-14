@@ -129,6 +129,8 @@ class Lease(models.Model):
     block = models.CharField(_("Block"), max_length=50, null=True, blank=True)
     unit = models.CharField(_("Unit"), max_length=50, null=True, blank=True)
     period = models.CharField(_("Period"), max_length=50, null=True, blank=True)
+    period_start_date = models.CharField(_("Period Start Date"), max_length=50, null=True, blank=True)
+    period_finish_date = models.CharField(_("Period Finish Date"), max_length=50, null=True, blank=True)
     island = models.CharField(_("Island"), max_length=50, null=True, blank=True)
     parcel = models.CharField(_("Parcel"), max_length=50, null=True, blank=True)
     city = models.CharField(_("City"), max_length=50, null=True, blank=True)

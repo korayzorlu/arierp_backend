@@ -1,0 +1,2 @@
+SELECT *
+FROM UTOPIA_RESOURCE.dbo.FoundationResourcesMenuTR_TR

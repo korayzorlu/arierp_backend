@@ -30,7 +30,7 @@ class BlackListPerson(models.Model):
 
     def __str__(self):
         return str(self.uuid)
-    
+
 class ThirdPerson(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="third_persons")

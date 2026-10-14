@@ -6,9 +6,11 @@ from django.http import JsonResponse, FileResponse, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.crypto import get_random_string
+from django.utils import timezone
 from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+
 
 from utils.mixins import CompanyOwnershipRequiredMixin
 
@@ -353,7 +355,115 @@ class UpdateLeaseProcessedAmountView(LoginRequiredMixin,CompanyOwnershipRequired
         obj.save()
 
         return JsonResponse({'message': 'Tutar değiştirildi!','status':'success'}, status=200)
-    
+
+class CreateContractHistoryFileView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        
+        lease = Lease.objects.select_related().filter(uuid = data.get('uuid')).first()
+
+        old_leases = Lease.objects.select_related("contract").filter(
+            main_lease_id=lease.main_lease_id
+        ).order_by("-lease_id")
+
+        old_lease = None
+        for ol in old_leases:
+            if lease.contract != ol.contract and int(lease.lease_id) > int(ol.lease_id):
+                old_lease = ol
+                break
+
+        if lease and old_lease:
+            ####----Kiracı Değişikliği----####
+            if old_lease.lease_status == "baskasina_transfer_edildi":
+                # word işlemleri
+                file_name = f"{lease.contract.code.replace("/","-")}-kiraci-degisikligi-sozlesmesi"
+                doc = DocxTemplate(f"files/template/kiraci-degisikligi-formu.docx")
+
+                context = {
+                    "devir_alan_isim": lease.contract.partner.name,
+                    "devir_alan_tc_vkn": lease.contract.partner.tc_vkn_no,
+                }
+
+                doc.render(context)
+
+                files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "leases", "documents",f"{file_name}.docx")
+                doc.save(files_path)
+
+                # tabloya satır ekleme
+                from docx import Document
+                document = Document(files_path)
+
+                document.save(files_path)
+
+                if files_path:
+                    return FileResponse(open(files_path, 'rb'), as_attachment=True)
+            ####----Tadil----####
+            elif old_lease.lease_status == "revize_edildi" or old_lease.lease_status == "iptal_edildi":
+                # word işlemleri
+                file_name = f"{lease.contract.code.replace("/","-")}-tadil-sozlesmesi"
+                doc = DocxTemplate(f"files/template/tadil-formu.docx")
+
+                context = {
+                    "sozlesme": old_lease.contract.code,
+                    "musteri_ismi": old_lease.contract.partner.name,
+                    "onay_tarihi": timezone.localdate().strftime("%d.%m.%Y"),
+                    "il": lease.city if lease.city and lease.city != "None" else "",
+                    "ilce": lease.district if lease.district and lease.district != "None" else "",
+                    "pafta": "",
+                    "parsel": lease.parcel if lease.parcel and lease.parcel != "None" else "",
+                    "blok": lease.block if lease.block and lease.block != "None" else "",
+                    "bagimsiz_bolum": lease.unit if lease.unit and lease.unit != "None" else "",
+                    "donem": lease.period,
+                    "donem_baslangic": lease.period_start_date,
+                    "donem_bitis": lease.period_finish_date
+                }
+
+                doc.render(context)
+
+                files_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "leases", "documents",f"{file_name}.docx")
+                doc.save(files_path)
+
+                # tabloya satır ekleme
+                from docx import Document
+                document = Document(files_path)
+
+                document.save(files_path)
+
+                if files_path:
+                    return FileResponse(open(files_path, 'rb'), as_attachment=True)
+        
+        return JsonResponse({'message': 'Dosya bulunamadı!','status':'error'}, status=400)
+class GetContractHistoryFileView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        uuid = data.get('uuid')
+
+        lease = Lease.objects.select_related().filter(uuid = uuid).first()
+
+        old_leases = Lease.objects.select_related("contract").filter(
+            main_lease_id=lease.main_lease_id
+        ).order_by("-lease_id")
+
+        old_lease = None
+        for ol in old_leases:
+            if lease.contract != ol.contract and int(lease.lease_id) > int(ol.lease_id):
+                old_lease = ol
+                break
+
+        ####----Kiracı Değişikliği----####
+        if old_lease.lease_status == "baskasina_transfer_edildi":
+            file_name = f"{lease.contract.code.replace("/","-")}-kiraci-degisikligi-sozlesmesi"
+        ####----Tadil----####
+        elif old_lease.lease_status == "revize_edildi" or old_lease.lease_status == "iptal_edildi":
+            file_name = f"{lease.contract.code.replace("/","-")}-tadil-sozlesmesi"
+        file_path = os.path.join(settings.BASE_DIR, "media", "docs", str(self.request.user.user_companies.filter(is_active = True).first().company.uuid), "leasing", "leases", "documents",f"{file_name}.docx")
+        
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+        
+        return FileResponse(open(file_path, 'rb'))
+
+
 class OverdueInformationView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)

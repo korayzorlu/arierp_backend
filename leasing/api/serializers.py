@@ -66,6 +66,7 @@ class LeaseListSerializer(serializers.Serializer):
     geciken_odenmesi_gereken_usd = serializers.DecimalField(max_digits=14,decimal_places=2)
     kur_kaybi = serializers.DecimalField(max_digits=14,decimal_places=2)
     departure_date = serializers.SerializerMethodField()
+    contract_history = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -122,6 +123,26 @@ class LeaseListSerializer(serializers.Serializer):
         old_leases_map = self.context.get('old_leases_map', {})
         old_leases = old_leases_map.get(obj.main_lease_id, [])
         return [{"id": l.uuid, "code": l.code} for l in old_leases]
+
+    def get_contract_history(self, obj):
+        old_leases_map = self.context.get('old_leases_map', {})
+        old_leases = sorted(
+            old_leases_map.get(obj.main_lease_id, []),
+            key=lambda l: l.main_lease_id,
+            reverse=True
+        )
+
+        old_lease = None
+
+        for ol in old_leases:
+            if obj.contract != ol.contract and int(obj.lease_id) > int(ol.lease_id):
+                old_lease = ol
+                break
+
+        if old_lease:
+            return {"id": old_lease.uuid, "code": old_lease.code, "lease_status": old_lease.lease_status}
+        else:
+            return None
     
     def get_pesinat_amount(self, obj):
         return obj.lease_installments.filter(type="2").aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
@@ -140,6 +161,8 @@ class LeaseListSerializer(serializers.Serializer):
                 if old_lease.contract.departure_date is not None and old_lease.contract.departure_date != "":
                     return localtime(old_lease.contract.departure_date).strftime("%d.%m.%Y")
         return localtime(obj.contract.departure_date).strftime("%d.%m.%Y")
+
+    
     
     # def get_block(self, obj):
     #     return obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj and obj.contract.quotation_obj.quick_quotation else ""
@@ -292,6 +315,7 @@ class ActiveLeaseListSerializer(serializers.Serializer):
         old_leases_map = self.context.get('old_leases_map', {})
         old_leases = old_leases_map.get(obj.main_lease_id, [])
         return [{"id": l.uuid, "code": l.code} for l in old_leases]
+
     
     
     

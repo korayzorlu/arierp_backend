@@ -107,6 +107,12 @@ def fetch_partners_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.salaried_title = data.JOB_CODE_DESCRIPTION or ""
                     update_objs.append(obj)
                     update_progress += 1
+
+                    #ülke kontrol
+                    if obj.country and obj.country.iso2 in offshore_countries():
+                        PartnerFinancialProfile.objects.filter(partner=obj).update(is_offshore=True)
+                    if obj.country and (obj.country.iso2 in mid_risk_countries() or obj.country.iso2 in high_risk_countries()):
+                        PartnerFinancialProfile.objects.filter(partner=obj).update(is_high_risk_country=True)
                 else:
                     #print(f"{str(data.IndividualCustomerId)} - {data.FullName}: ")
                     create_objs.append(Partner(

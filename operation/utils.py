@@ -119,9 +119,10 @@ def export_title_deed_invoice_controls(self):
     objs = Lease.objects.select_related(
         "contract","contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation"
     ).prefetch_related("lease_invoices","lease_purchase_documents").filter(
-        Q(is_last_project_arinet=True)
-    ).exclude(
-        Q(contract__partner__types__contains=['special'])
+        ~Q(contract__partner__types__contains=['special']) &
+        Q(is_last_project_arinet=True) &
+        Q(item__bddk_code__icontains="GAYRIMENKUL") &
+        ~Q(item__item_group_id="142")
     ).order_by("-activation_date")
 
     old_leases = Lease.objects.filter().only('code','main_lease_id').order_by('-lease_id')

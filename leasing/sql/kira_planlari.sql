@@ -68,6 +68,8 @@ SELECT
     pl.DistrictName,
     lw.BBSN_NO,
     fpp.FREE_PART_ID,
+    fpp.START_DATE,
+    fpp.FINISH_DATE,
     lop.QuotationHeaderId
 FROM
     dbo.LeasingOperationProject lop (NOLOCK)

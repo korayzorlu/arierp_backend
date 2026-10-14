@@ -392,3 +392,30 @@ def transform_phone_number(phone_number):
 
     return digits
 
+def get_month_name(month):
+    if month == "01":
+        return "Ocak"
+    elif month == "02":
+            return "Şubat"
+    elif month == "03":
+                return "Mart"
+    elif month == "04":
+                return "Nisan"
+    elif month == "05":
+                return "Mayıs"
+    elif month == "06":
+                return "Haziran"
+    elif month == "07":
+                return "Temmuz"
+    elif month == "08":
+                return "Ağustos"
+    elif month == "09":
+                return "Eylül"
+    elif month == "10":
+                return "Ekim"
+    elif month == "11":
+                return "Kasım"
+    elif month == "12":
+                return "Aralık"
+
+    return None

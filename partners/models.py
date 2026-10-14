@@ -13,6 +13,7 @@ from companies.models import Company
 from common.models import Country,City
 from common.utils.mixins import CompletionRateMixin
 from users.models import User
+from compliance.utils.risk_utils import mid_risk_countries, high_risk_countries, offshore_countries
 
 
 # Create your models here.
@@ -33,6 +34,7 @@ class FundSource(models.TextChoices):
     MAAS = 'maas', 'Maaş'
     MAAS_BIRIKIMI = 'maas_birikimi', 'Maaş Birikimi'
     KIRA = 'kira', 'Kira Geliri'
+    HANE = 'hane', 'Hane Halkı Geliri'
     MIRAS = 'miras', 'Miras'
     SIRKET = 'sirket', 'Şirket Kazancı'
     YURTDISI = 'yurtdisi', 'Yurt Dışı Transfer'
@@ -67,11 +69,16 @@ class AmountTRY(models.TextChoices):
     RANGE_500K_2M = '3', '500.001-2.000.000'
     RANGE_2M_10M = '4', '2.000.001-10.000.000'
     RANGE_10M_ABOVE = '5', '10.000.001 ve üzeri'
+    _10M_LESS = '10m_less', "10.000.000'den az"
+    _10M_15M = '10m_15m', '10.000.001-15.000.000'
+    _15M_ABOVE = '15m_above', "15.000.000'den fazla"
 
 class Frequency(models.TextChoices):
     _0_2 = '0_2', '0-2'
-    _3_4   = '3_4', '3-4'
-    _5_ABOVE  = '5_above', '5 ve üzeri'
+    _3_4 = '3_4', '3-4'
+    _3_LESS = '3_less', "3'ten az"
+    _3_5 = '3_5', '3-5'
+    _5_ABOVE  = '5_above', "5'ten fazla"
 
 class RiskStatus(models.TextChoices):
     RISKLI = 'riskli', 'Riskli'
@@ -237,8 +244,13 @@ class Partner(models.Model):
         if is_new:
             PartnerFinancialProfile.objects.create(
                 partner=self,
-                company=self.company
+                company=self.company,
+                is_end_beneficiary=True
             )
+        if self.country and self.country.iso2 in offshore_countries():
+            PartnerFinancialProfile.objects.filter(partner=self).update(is_offshore=True)
+        if self.country and (self.country.iso2 in mid_risk_countries() or self.country.iso2 in high_risk_countries()):
+            PartnerFinancialProfile.objects.filter(partner=self).update(is_high_risk_country=True)
 
     def __str__(self):
         return str(self.name)
@@ -276,6 +288,7 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
 
     fund_sources = ArrayField(models.CharField(_("Fund Sources"), max_length=25, choices=FundSource.choices), default=list, blank=True, null=True)
     other_fund_source = models.CharField(_("Other Fund Source"), max_length=140, blank=True, null=True)
+    fund_amount = models.DecimalField(_("Fund Amount"), default = Decimal("0.00"), max_digits=14, decimal_places=2)
 
     sgk_job = models.ForeignKey(SgkJob, on_delete=models.SET_NULL, blank=True, null=True, related_name="sgk_job_partner_financial_profiles")
     institution = models.CharField(_("Institution"), max_length=25, choices=Institution.choices, blank=True, null=True)
@@ -357,7 +370,6 @@ class PartnerFinancialProfile(models.Model,CompletionRateMixin):
                 financial_profile = self,
             )
 
-            print(calc_partner_score.calc_score())
 
             ps.score = calc_partner_score.calc_score()
             ps.mr_score = calc_partner_score.calc_mr()

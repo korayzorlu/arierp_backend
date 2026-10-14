@@ -8,10 +8,11 @@ from docxtpl import DocxTemplate
 from django.conf import settings
 
 from risk.models import AmountDebitTransaction
-from leasing.models import Lease
+from leasing.models import Lease,RiskStatus
 from leasing.utils.lease_utils import check_risk_status,get_future_payments
 from contracts.models import WarningNotice
 from companies.models import Company
+from partners.models import PartnerFinancialProfile,Partner
 
 def update_risk_summary():
     pass
@@ -117,12 +118,27 @@ def export_amount_debit_transactions(self):
 
 
 def set_risk_status(company, batch_size=1000):
-    objs = Lease.objects.select_related().filter(company=int(company), is_last_project = True)
+    objs = Lease.objects.select_related("contract__partner").filter(company=int(company), is_last_project = True)
+    partners = Partner.objects.filter()
+    partner_financial_profiles = PartnerFinancialProfile.objects.filter()
+
+    partners_dict = {p.uuid: p for p in partners if p.uuid}
+    partner_financial_profiles_dict = {p.partner.uuid: p for p in partner_financial_profiles if p.partner.uuid}
 
     update_progress = 0
     updated_objects = []
     for obj in objs:
         obj.risk_status = check_risk_status(obj)
+        partner = partners_dict.get(obj.contract.partner.uuid) if obj.contract.partner else None
+        if partner:
+            partner_financial_profile = partner_financial_profiles_dict.get(partner.uuid)
+            if partner_financial_profile:
+                if obj.risk_status != RiskStatus.RISK_YOK:
+                    partner_financial_profile.is_delayed = True
+                    partner_financial_profile.save()
+                else:
+                    partner_financial_profile.is_delayed = False
+                    partner_financial_profile.save()
 
         update_progress += 1
         updated_objects.append(obj)
@@ -140,14 +156,32 @@ def set_risk_status(company, batch_size=1000):
 def set_warning_notice_files(company,reset):
     objs = WarningNotice.objects.select_related().filter(state__in=['Yeni', 'Geçerli'], company=int(company))
     leases = Lease.objects.select_related().filter(company=int(company), is_last_project = True)
+    partners = Partner.objects.filter()
+    partner_financial_profiles = PartnerFinancialProfile.objects.filter()
+    
     leases_dict = {lease.contract.uuid: lease for lease in leases if lease.contract}
+    partners_dict = {p.uuid: p for p in partners if p.uuid}
+    partner_financial_profiles_dict = {p.partner.uuid: p for p in partner_financial_profiles if p.partner.uuid}
 
     company_obj = Company.objects.select_related().filter(id=int(company)).first()
 
     update_progress = 0
     for obj in objs:
         lease = leases_dict.get(obj.contract.uuid)
+        
         if lease:
+            #mali profil kontrol
+            partner = partners_dict.get(obj.contract.partner.uuid) if obj.contract.partner else None
+            if partner:
+                partner_financial_profile = partner_financial_profiles_dict.get(partner.uuid)
+                if partner_financial_profile:
+                    if lease.risk_status == RiskStatus.IHTAR_CEKILDI or lease.risk_status == RiskStatus.FESIH_EDILECEK:
+                        partner_financial_profile.is_warning_notice = True
+                        partner_financial_profile.save()
+                    else:
+                        partner_financial_profile.is_warning_notice = False
+                        partner_financial_profile.save()
+
             file_name = lease.contract.code.replace("/","-")
             doc = DocxTemplate(f"files/gecikme-ihtari-{'kep' if lease.contract.partner.kep else 'noter'}.docx")
 

@@ -4,6 +4,7 @@ from django.db.models import Q,Max,Sum,Count,Case,When,BooleanField,Value,OuterR
 
 from leasing.models import Lease
 from risk.utils.risk_utils import set_risk_status,set_warning_notice_files
+from contracts.utils.contract_utils import fetch_warning_notices_from_leaseflex
 
 from datetime import datetime,date,timedelta
 import pandas as pd
@@ -58,15 +59,16 @@ def import_overdue_leases(self, df_json):
             obj.overdue_181_gte = Decimal(str(row['181 >'])) if not pd.isna(row['181 >']) else Decimal("0.00")
             obj.save()
 
-        if index == 43753:
-            print(obj)
+        # if index == 43753:
+        #     print(obj)
 
     set_risk_status("2")
 
     self.process.progress = 100
     self.process.status = "completed"
     self.process.save()
-    
+
+    fetch_warning_notices_from_leaseflex("2")
     set_warning_notice_files("2",True)
 
     

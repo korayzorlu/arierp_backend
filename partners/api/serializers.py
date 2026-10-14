@@ -83,6 +83,7 @@ class PartnerListSerializer(serializers.Serializer):
     kep_expiry_date = serializers.DateField()
     sgk_job = serializers.SerializerMethodField()
     sgk_job_code = serializers.SerializerMethodField()
+    salaried_title = serializers.CharField()
     nace_code = serializers.CharField()
     partner_note_count = serializers.SerializerMethodField()
     
@@ -182,6 +183,7 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     income_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     fund_sources = serializers.ListField()
     other_fund_source = serializers.CharField()
+    fund_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     completion_rate = serializers.SerializerMethodField()
     sgk_job = serializers.SerializerMethodField()
     institution = serializers.CharField()
@@ -208,11 +210,12 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     is_complex_partner = serializers.BooleanField()
     company_type = serializers.CharField()
     balance_sheet_and_capital_structure = serializers.CharField()
-    is_pep = serializers.BooleanField()
+    is_pep = serializers.SerializerMethodField()
     is_negative_news = serializers.BooleanField()
     is_cash_payment = serializers.BooleanField()
     is_balloon_payment = serializers.BooleanField()
     is_institutional_payment = serializers.BooleanField()
+    last_signature_date = serializers.DateField(read_only=True)
     is_correspondent_bank = serializers.BooleanField()
     is_payment_institution = serializers.BooleanField()
     is_cek_senet_payment = serializers.BooleanField()
@@ -231,6 +234,7 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
     is_administrative_follow_up = serializers.BooleanField()
     is_cheque_risk = serializers.BooleanField()
     partner_information_documents = serializers.SerializerMethodField()
+    is_reliable_person = serializers.SerializerMethodField()
     
     def get_partner(self, obj):
         if obj.partner.tc_vkn_no and obj.partner.tc_vkn_no != '':
@@ -250,7 +254,7 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
         }
     
     def get_sgk_job(self, obj):
-        return obj.sgk_job.sgk_job_code if obj.sgk_job else ''
+        return obj.partner.sgk_job.description if obj.partner.sgk_job else ''
     
     def get_completion_rate(self, obj):
         return obj.get_completion_rate()
@@ -279,6 +283,12 @@ class PartnerFinancialProfileListSerializer(serializers.Serializer):
 
     def get_transaction_frequency(self, obj):
         return obj.get_transaction_frequency_display() if obj.transaction_frequency else ''
+
+    def get_is_pep(self, obj):
+        return obj.partner.is_pep if obj.partner else False
+
+    def get_is_reliable_person(self, obj):
+        return obj.partner.is_reliable_person if obj.partner else False
 
 class PartnerScoreListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")

@@ -12,8 +12,6 @@ from projects.models import Project
 
 # Create your models here.
 
-
-
 class Contract(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="contracts")

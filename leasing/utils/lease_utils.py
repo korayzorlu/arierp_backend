@@ -29,7 +29,7 @@ from users.models import User
 from leasing.models import *
 from leasing.sqls import OVERDUE_INSTALLMENTS
 from common.models import Currency,ExchangeRate,TufeRate
-from common.utils.common_utils import normalize,safe_decimal
+from common.utils.common_utils import normalize,safe_decimal,get_month_name
 from partners.models import Partner
 from trade.models import TradeTransaction
 from contracts.models import WarningNotice,ComprehensiveWarningNotice
@@ -139,6 +139,15 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                 #     count=Count('id')
                 # )['count']
 
+                if data.START_DATE and str(data.START_DATE) != "":
+                    period_start_date_day, period_start_date_month = str(data.START_DATE).split(".")
+                    period_finish_date_day, period_finish_date_month = str(data.FINISH_DATE).split(".")
+                    period_start_date = f"{period_start_date_day} {get_month_name(period_start_date_month)}"
+                    period_finish_date = f"{period_finish_date_day} {get_month_name(period_finish_date_month)}"
+                else:
+                    period_start_date = None
+                    period_finish_date = None
+
                 if obj:
                     obj.lease_id = str(data.OperationProjectId) or ""
                     obj.main_lease_id = str(data.MainLopId) or ""
@@ -151,6 +160,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     obj.block = str(data.BLOCK_NO) or ""
                     obj.unit = str(data.FREE_PART_NO) or ""
                     obj.period = str(data.TIMESHARE_PERIOD) or ""
+                    obj.period_start_date = period_start_date
+                    obj.period_finish_date = period_finish_date
                     obj.island = str(data.ISLAND_NO) or ""
                     obj.parcel = str(data.PARCEL_NO) or ""
                     obj.city = str(data.CityName) or ""
@@ -247,6 +258,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                         block = str(data.BLOCK_NO) or "",
                         unit = str(data.FREE_PART_NO) or "",
                         period = str(data.TIMESHARE_PERIOD) or "",
+                        period_start_date = period_start_date,
+                        period_finish_date = period_finish_date,
                         island = str(data.ISLAND_NO) or "",
                         parcel = str(data.PARCEL_NO) or "",
                         city = str(data.CityName) or "",
@@ -287,6 +300,8 @@ def fetch_leases_from_leaseflex(company,BATCH_SIZE=1000):
                     "block",
                     "unit",
                     "period",
+                    "period_start_date",
+                    "period_finish_date",
                     "island",
                     "parcel",
                     "city",
