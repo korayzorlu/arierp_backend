@@ -18,7 +18,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission,RequireCustomHeaderPermission
 
 from .serializers import *
-from django.db.models import IntegerField, Max
+from django.db.models import IntegerField, DateField, Max
 from django.db.models.functions import Cast
 
 from .filters import *
@@ -333,10 +333,15 @@ class PartnerFinancialProfileList(ModelViewSet, QueryListAPIView):
             Q(company = active_company.company if active_company else None)
         ).annotate(
             crm_code_int=Cast('partner__crm_code', IntegerField()),
-            last_signature_date=Max('partner__partner_contracts__contract_leases__signature_date'),
+            last_signature_date=Max(
+                'partner__partner_contracts__contract_leases__signature_date',
+                output_field=DateField(),
+            ),
+        ).filter(
+            last_signature_date__isnull=False
         ).exclude(
             Q(partner__types__contains=['special'])
-        ).order_by('crm_code_int')
+        ).order_by('-last_signature_date')
 
         query = self.request.query_params.get('search[value]', None)
         if query:
