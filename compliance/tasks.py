@@ -54,6 +54,7 @@ def fetch_black_list_partners(company):
 @shared_task()
 def update_ignored_partners(company):
     partner_objs = Partner.objects.select_related().all()
+    partner_objs.update(is_reliable_person=True)
 
     previous_progress = 0
     old_obj_count = 0
@@ -64,9 +65,15 @@ def update_ignored_partners(company):
             previous_progress = current_progress
             print(f"{int(current_progress)} %")
 
-        if obj.tc_vkn_no is not None:
-            if BlackListPerson.objects.select_related().filter(tc_vkn_passport_no__icontains = obj.tc_vkn_no).exists():
-                print(f"Yasaklı müşteri algılandı: {obj.tc_vkn_no} - {obj.name}")
+        if (obj.tc_vkn_no is not None and obj.tc_vkn_no != "") or (obj.tc_no is not None and obj.tc_no != ""):
+            bp = BlackListPerson.objects.select_related().filter(
+                    Q(tc_vkn_passport_no__icontains = obj.tc_vkn_no) |
+                    Q(tc_vkn_passport_no__icontains = obj.tc_no),
+                )
+            if bp.exists():
+                obj.is_reliable_person = False
+                obj.save()
+                print(f"Yasaklı müşteri algılandı: {obj.tc_vkn_no} - {obj.tc_no} - {obj.name}")
         
     print(f"{old_obj_count} objects updated for partners.")
 
