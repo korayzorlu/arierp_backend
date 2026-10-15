@@ -252,6 +252,13 @@ class Partner(models.Model):
         if self.country and (self.country.iso2 in mid_risk_countries() or self.country.iso2 in high_risk_countries()):
             PartnerFinancialProfile.objects.filter(partner=self).update(is_high_risk_country=True)
 
+        if not PartnerFinancialProfile.objects.filter(partner=self).exists():
+            PartnerFinancialProfile.objects.create(
+                partner=self,
+                company=self.company,
+                is_end_beneficiary=True
+            )
+
     def __str__(self):
         return str(self.name)
 
