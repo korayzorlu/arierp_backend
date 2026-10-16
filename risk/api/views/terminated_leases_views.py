@@ -1,5 +1,5 @@
 from django.core.validators import EMPTY_VALUES
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,IntegerField,Sum,OuterRef,Subquery,ExpressionWrapper,DateField,F
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,IntegerField,Sum,OuterRef,Subquery,ExpressionWrapper,DateField
 from trade.models import TradeTransaction
 from django.db.models.functions import Lower,Upper,Cast
 from rest_framework import generics
@@ -171,17 +171,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                 Case(
                     When(
                         lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        lease_trade_transactions__amount_type='0',
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
-            ),
-            refund_amount_2=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        lease_trade_transactions__amount_type='1',
+                        #lease_trade_transactions__amount_type='0',
                         then='lease_trade_transactions__amount'
                     ),
                     output_field=models.DecimalField(),
@@ -205,7 +195,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                 output_field=DateField(),
             )
         ).filter(
-            ~Q(refund_amount=F('refund_amount_2'))
+            Q(refund_amount__gt=0)
         ).exclude(contract__partner__types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
