@@ -171,7 +171,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                 Case(
                     When(
                         lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        lease_trade_transactions__amount_type='0',
+                        #lease_trade_transactions__amount_type='0',
                         then='lease_trade_transactions__amount'
                     ),
                     output_field=models.DecimalField(),
