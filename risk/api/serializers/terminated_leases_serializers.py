@@ -51,8 +51,14 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
     lease_status_update_date = serializers.DateTimeField()
     terminated_date = serializers.DateField()
     last_refund_date = serializers.SerializerMethodField()
-    refund = serializers.SerializerMethodField()
+    #refund = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
+    partner_id = serializers.SerializerMethodField()
+    partner_crm_code = serializers.SerializerMethodField()
+    refund_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    refunded_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    remaining_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    partner_note_count = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -112,18 +118,27 @@ class TerminatedLeaseListSerializer(serializers.Serializer):
             return last_refund_date.strftime('%d.%m.%Y')
         return ''
     
-    def get_refund(self, obj):
-        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2'])
-        total_refund_amount = Decimal('0.00')
-        for tt in trade_transactions:
-            total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
-        return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
+    # def get_refund(self, obj):
+    #     trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2'])
+    #     total_refund_amount = Decimal('0.00')
+    #     for tt in trade_transactions:
+    #         total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
+    #     return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
 
     def get_item(self, obj):
         return {
             "id" : obj.item.uuid if obj.item else "",
             "name" : obj.item.stock_name if obj.item else "",
         }
+
+    def get_partner_id(self, obj):
+            return obj.contract.partner.uuid if obj.contract and obj.contract.partner else ""
+    
+    def get_partner_crm_code(self, obj):
+        return obj.contract.partner.crm_code if obj.contract and obj.contract.partner else ""
+
+    def get_partner_note_count(self, obj):
+        return obj.contract.partner.partner_partner_notes.count() if obj.contract.partner.partner_partner_notes.exists() else 0
     
 
 class TerminatedLeaseReturnedListSerializer(serializers.Serializer):
@@ -166,11 +181,14 @@ class TerminatedLeaseReturnedListSerializer(serializers.Serializer):
     lease_status_update_date = serializers.DateTimeField()
     terminated_date = serializers.DateField()
     refund_date = serializers.SerializerMethodField()
-    refund = serializers.SerializerMethodField()
+    # refund = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     partner_note_count = serializers.SerializerMethodField()
     partner_id = serializers.SerializerMethodField()
     partner_crm_code = serializers.SerializerMethodField()
+    refund_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    refunded_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
+    remaining_amount = serializers.DecimalField(max_digits=14,decimal_places=2)
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -225,12 +243,12 @@ class TerminatedLeaseReturnedListSerializer(serializers.Serializer):
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2']).first()
         return timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
     
-    def get_refund(self, obj):
-        trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2'])
-        total_refund_amount = Decimal('0.00')
-        for tt in trade_transactions:
-            total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
-        return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
+    # def get_refund(self, obj):
+    #     trade_transactions = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2'])
+    #     total_refund_amount = Decimal('0.00')
+    #     for tt in trade_transactions:
+    #         total_refund_amount += tt.amount if tt and tt.amount else Decimal('0.00')
+    #     return {'amount': total_refund_amount, 'currency': obj.currency.code if obj.currency else ''}
 
     def get_item(self, obj):
         return {

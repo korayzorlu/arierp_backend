@@ -1,7 +1,7 @@
 from django.core.validators import EMPTY_VALUES
 from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,IntegerField,Sum,OuterRef,Subquery,ExpressionWrapper,DateField,F
 from trade.models import TradeTransaction
-from django.db.models.functions import Lower,Upper,Cast
+from django.db.models.functions import Lower,Upper,Cast,Coalesce
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework_datatables.filters import DatatablesFilterBackend
@@ -167,25 +167,42 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
             Q(is_last_project=True) &
             Q(lease_trade_transactions__posting_group_name='Fesih İadesi')
         ).annotate(
-            refund_amount=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        lease_trade_transactions__amount_type='0',
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
+            refund_amount=Coalesce(
+                Sum(
+                    Case(
+                        When(
+                            Q(
+                                lease_trade_transactions__posting_group_name='Fesih İadesi',
+                                lease_trade_transactions__amount_type='0'
+                            ) &
+                            ~Q(lease_trade_transactions__delete_status__in=['2']),
+                            then='lease_trade_transactions__amount'
+                        ),
+                    )
+                ),
+                Value(0),
+                output_field=models.DecimalField(),
             ),
-            refunded_amount=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        lease_trade_transactions__amount_type='1',
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
+            refunded_amount=Coalesce(
+                Sum(
+                    Case(
+                        When(
+                            Q(
+                                lease_trade_transactions__posting_group_name='Fesih İadesi',
+                                lease_trade_transactions__amount_type='1'
+                            ) &
+                            ~Q(lease_trade_transactions__delete_status__in=['2']),
+                            then='lease_trade_transactions__amount'
+                        ),
+                        output_field=models.DecimalField(),
+                    )
+                ),
+                Value(0),
+                output_field=models.DecimalField(),
+            ),
+            remaining_amount=ExpressionWrapper(
+                F('refund_amount') - F('refunded_amount'),
+                output_field=models.DecimalField(),
             ),
             terminated_date_annot=Subquery(
                 TradeTransaction.objects.filter(
@@ -205,7 +222,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                 output_field=DateField(),
             )
         ).filter(
-            Q(refund_amount__gt=0)
+            Q(refund_amount__gt=F('refunded_amount'))
         ).exclude(contract__partner__types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
@@ -298,15 +315,42 @@ class TerminatedLeaseReturnedList(ModelViewSet, QueryListAPIView):
             Q(is_last_project=True) &
             Q(lease_trade_transactions__posting_group_name='Fesih İadesi')
         ).annotate(
-            refund_amount=Sum(
-                Case(
-                    When(
-                        lease_trade_transactions__posting_group_name='Fesih İadesi',
-                        lease_trade_transactions__amount_type='1',
-                        then='lease_trade_transactions__amount'
-                    ),
-                    output_field=models.DecimalField(),
-                )
+            refund_amount=Coalesce(
+                Sum(
+                    Case(
+                        When(
+                            Q(
+                                lease_trade_transactions__posting_group_name='Fesih İadesi',
+                                lease_trade_transactions__amount_type='0'
+                            ) &
+                            ~Q(lease_trade_transactions__delete_status__in=['2']),
+                            then='lease_trade_transactions__amount'
+                        ),
+                    )
+                ),
+                Value(0),
+                output_field=models.DecimalField(),
+            ),
+            refunded_amount=Coalesce(
+                Sum(
+                    Case(
+                        When(
+                            Q(
+                                lease_trade_transactions__posting_group_name='Fesih İadesi',
+                                lease_trade_transactions__amount_type='1'
+                            ) &
+                            ~Q(lease_trade_transactions__delete_status__in=['2']),
+                            then='lease_trade_transactions__amount'
+                        ),
+                        output_field=models.DecimalField(),
+                    )
+                ),
+                Value(0),
+                output_field=models.DecimalField(),
+            ),
+            remaining_amount=ExpressionWrapper(
+                F('refund_amount') - F('refunded_amount'),
+                output_field=models.DecimalField(),
             ),
             terminated_date_annot=Subquery(
                 TradeTransaction.objects.filter(
@@ -323,7 +367,7 @@ class TerminatedLeaseReturnedList(ModelViewSet, QueryListAPIView):
                 ).exclude(delete_status__in=['2']).values('due_date')[:1]
             )
         ).filter(
-            Q(refund_amount__gt=0)
+            Q(remaining_amount__lte=0)
         ).exclude(contract__partner__types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
