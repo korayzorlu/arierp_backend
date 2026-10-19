@@ -205,7 +205,7 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
                 output_field=DateField(),
             )
         ).filter(
-            Q(refund_amount__gt=F('refunded_amount'))
+            Q(refund_amount__gt=0)
         ).exclude(contract__partner__types__contains=["special"]).distinct()
 
         query = self.request.query_params.get('search[value]', None)
