@@ -136,7 +136,8 @@ class TerminatedLeaseList(ModelViewSet, QueryListAPIView):
     filterset_class = TerminatedLeaseFilter
     filter_backends = [TerminatedLeaseOrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no',
-                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','last_refund_date']
+                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','last_refund_date','refund_amount',
+                       'refunded_amount','remaining_amount']
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
@@ -284,7 +285,8 @@ class TerminatedLeaseReturnedList(ModelViewSet, QueryListAPIView):
     filterset_class = TerminatedLeaseFilter
     filter_backends = [TerminatedLeaseOrderingFilter,DjangoFilterBackend]
     ordering_fields = ['code','activation_date','lease_status','currency__code','project_no','status__name','leasing_type','application_no',
-                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','refund_date']
+                       'current_request','finansman_kurum','bbsn','lease_status_update_date','terminated_date','refund_date','refund_amount',
+                       'refunded_amount','remaining_amount']
     ordering = ['-activation_date']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
