@@ -53,6 +53,7 @@ class Command(BaseCommand):
                 { "IletisimTuru": "Email", "IletisimDegeri": "info@ornekfirma.com" }
             ],
 
+            "KartSahibiAdSoyad": "Ahmet Yılmaz",
             "Ad": "Ahmet",
             "IkinciAd": "",
             "OrtaAd": "",

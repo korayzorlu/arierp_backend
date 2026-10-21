@@ -27,7 +27,7 @@ def is_valid_vpos_transaction_data(data):
         'Uyruk', 'DogumTarih', 'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
         'Ulke_Birey', 'Sehir_Birey', 'Ilce_Birey', 'Posta_Birey', 'IletisimList_Birey',
         'UserName', 'Password', 'Telefon', 'EMail', 'Fax', 'BankCode', 'ContractCode',
-        'CurrencyCode', 'ExtTransactionId',
+        'CurrencyCode', 'ExtTransactionId','KartSahibiAdSoyad'
     ]
 
     unknown_keys = set(data.keys()) - set(parameters)
