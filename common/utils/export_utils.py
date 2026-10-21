@@ -37,7 +37,7 @@ from operation.utils import export_partner_advance_activities,export_partner_adv
 from partners.utils.common_utils import export_partners
 from accounting.utils.trial_balance_utils import export_trial_balances
 from accounting.utils.invoice_utils import export_invoices
-from finance.utils import export_finmaks_bank_account_balances
+from finance.utils.finmaks_utils import export_finmaks_bank_account_balances
 from compliance.utils.export_utils import export_third_persons
 from operation.utils import export_title_deed_invoice_controls,export_untitle_deed_leases
 from projects.utils.real_estate_utils import export_real_estates

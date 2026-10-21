@@ -19,6 +19,14 @@ from common.models import Currency
 
 # Create your models here.
 
+class Statuses(models.TextChoices):
+    PENDING = "pending", "Gönderilecek"
+    SENDING = "sending", "Gönderiliyor"
+    SENT = "sent", "Leaseflex'e işlendi"
+    REJECTED = "rejected", "Leaseflex reddetti"
+    INVALID = "invalid", "Veri hatası (gönderilmedi)"
+    UNKNOWN = "unknown", "Belirsiz - mutabakat gerekli"
+
 class FinmaksBankAccount(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="finmaks_bank_accounts")
@@ -124,10 +132,23 @@ class FinmaksTransaction(models.Model):
 
     def __str__(self):
         return str(self.transaction_id)
-    
+
+
+
 class VPosTransaction(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_transactions")
+
+    status = ArrayField(models.CharField(_("Status"), max_length=25, choices=Statuses.choices), default=list, blank=True, null=True)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    last_error = models.TextField(_("Last Error"), blank = True, null = True)
+    response_message = models.TextField(_("Response Message"), blank = True, null = True)
+    request_xml = models.TextField(_("Request XML"), blank = True, null = True)
+    response_xml = models.TextField(_("Response XML"), blank = True, null = True)
+    sending_started_date = models.DateTimeField(_("Sending Started At"), blank=True, null=True)
+    sent_date = models.DateTimeField(_("Sent Date"), null=True, blank=True)
+
+    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, null=True, blank=True, unique=True)
 
     process_date = models.DateTimeField(_("Process Date"), blank=True, null=True)
     musteri_tipi = models.PositiveIntegerField(_("Customer Type"), default=0)
@@ -148,6 +169,7 @@ class VPosTransaction(models.Model):
     ilce = models.CharField(_("İlçe"), max_length=50, null=True, blank=True)
     posta = models.CharField(_("Posta"), max_length=50, null=True, blank=True)
 
+    kart_sahibi_ad_soyad = models.CharField(_("Kart Sahibi Ad Soyad"), max_length=140, null=True, blank=True)
     ad = models.CharField(_("Ad"), max_length=140, null=True, blank=True)
     ikinci_ad = models.CharField(_("İkinci Ad"), max_length=140, null=True, blank=True)
     orta_ad = models.CharField(_("Orta Ad"), max_length=140, null=True, blank=True)
@@ -172,13 +194,17 @@ class VPosTransaction(models.Model):
     fax = models.CharField(_("Fax"), max_length=50, null=True, blank=True)
     bank_code = models.CharField(_("Bank Code"), max_length=25, null=True, blank=True)
     contract_code = models.CharField(_("Contract Code"), max_length=25, null=True, blank=True)
-    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, null=True, blank=True)
+    
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        indexes = [models.Index(fields=["status", "updated_date"])]
+        verbose_name = "VPOS Transactions"
+
     def __str__(self):
-        return f"{self.company.name} - {self.paid_amount} {self.currency}"
+        return f"{self.ext_transaction_id} {self.contract_code} {self.paid_amount} [{self.status}]"
 
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
@@ -198,3 +224,6 @@ class VPosIletisim(models.Model):
         ('kurumsal', ('Kurumsal')),
     )
     type = models.CharField(_("Type"), max_length=25, default='bireysel', choices=TYPE_CHOICES, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "VPOS İletişim"

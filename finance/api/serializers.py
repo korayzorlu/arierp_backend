@@ -260,6 +260,7 @@ class VPosTransactionListSerializer(serializers.Serializer):
     created_date = serializers.DateTimeField()
     updated_date = serializers.DateTimeField()
 
+    kart_sahibi_ad_soyad = serializers.CharField()
     ad = serializers.CharField()
     ikinci_ad = serializers.CharField()
     orta_ad = serializers.CharField()

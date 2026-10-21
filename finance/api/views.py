@@ -30,7 +30,7 @@ from core.permissions import SubscriptionPermission,BlockBrowserAccessPermission
 
 from .serializers import *
 from .filters import *
-from finance.utils import get_finmaks_bank_accounts,get_finmaks_transactions
+from finance.utils.finmaks_utils import get_finmaks_bank_accounts,get_finmaks_transactions
 from common.utils.common_utils import normalize,safe_decimal
 from common.models import ExchangeRate
 

@@ -19,7 +19,7 @@ from users.models import User
 from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
-from .utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts,get_finmaks_transactions
+from .utils.finmaks_utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts,get_finmaks_transactions
 from django.db.models import Q
 from leasing.models import BankActivity
 

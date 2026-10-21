@@ -14,7 +14,7 @@ from django.utils.timezone import make_aware
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from finance.models import *
-from finance.utils import vendor_filter_for_serializers, is_valid_finmaks_transaction_data
+from finance.utils.finmaks_utils import vendor_filter_for_serializers, is_valid_finmaks_transaction_data
 from common.models import ImportProcess,ExportProcess,ExchangeRate
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter

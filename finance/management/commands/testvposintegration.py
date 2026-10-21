@@ -80,7 +80,7 @@ class Command(BaseCommand):
             "EMail": "info@ornekfirma.com",
             "Fax": "",
             "BankCode": "0001",
-            "ContractCode": "KONTR-001",
+            "ContractCode": "68907",
             "CurrencyCode": "TRY",
             "ExtTransactionId": "EXT-TX-001"
         }

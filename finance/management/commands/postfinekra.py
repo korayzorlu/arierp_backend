@@ -3,7 +3,7 @@ from django.conf import settings
 
 from contracts.models import *
 from finance.models import *
-from finance.utils import fetch_finekra_token,fetch_finekra_banks,fetch_finekra_currencies,fetch_finekra_bank_accounts
+from finance.utils.finmaks_utils import fetch_finekra_token,fetch_finekra_banks,fetch_finekra_currencies,fetch_finekra_bank_accounts
 
 import pandas as pd
 import json
