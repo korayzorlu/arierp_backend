@@ -27,7 +27,7 @@ def is_valid_vpos_transaction_data(data):
         'Uyruk', 'DogumTarih', 'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
         'Ulke_Birey', 'Sehir_Birey', 'Ilce_Birey', 'Posta_Birey', 'IletisimList_Birey',
         'UserName', 'Password', 'Telefon', 'EMail', 'Fax', 'BankCode', 'ContractCode',
-        'CurrencyCode', 'ExtTransactionId','KartSahibiAdSoyad'
+        'CurrencyCode', 'ExtTransactionId','KartAdSoyad'
     ]
 
     unknown_keys = set(data.keys()) - set(parameters)
@@ -39,6 +39,9 @@ def is_valid_vpos_transaction_data(data):
     
     if not data.get('ValidationKey') or data.get('ValidationKey') != settings.VPOS_VALIDATION_KEY:
         return False, JsonResponse({'message': 'Doğrulama anahtarı geçersiz! (ValidationKey)','status':'error'}, status=400)
+
+    if not data.get('ExtTransactionId') or VPosTransaction.objects.filter(ext_transaction_id=data.get('ExtTransactionId')).exists():
+        return False, JsonResponse({'message': 'ExtTransactionId eksik veya zaten gönderilmiş! (ExtTransactionId)','status':'error'}, status=400)
     
     # if not data.get('UserName') or not data.get('Password'):
     #     return False, JsonResponse({'message': 'Kullanıcı adı veya şifre eksik! (UserName, Password)','status':'error'}, status=400)
@@ -66,7 +69,7 @@ def is_valid_vpos_transaction_data(data):
         'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
         'Ulke_Birey', 'Sehir_Birey', 'Ilce_Birey', 'Posta_Birey',
         'UserName', 'Password', 'Telefon', 'EMail', 'Fax',
-        'BankCode', 'ContractCode', 'ExtTransactionId',
+        'BankCode', 'ContractCode', 'ExtTransactionId','KartAdSoyad'
     ]
     for field in str_fields:
         value = data.get(field)
@@ -107,7 +110,7 @@ def add_vpos_transation(data):
         ilce = data.get('Ilce'),
         posta = data.get('Posta'),
 
-        kart_sahibi_ad_soyad = data.get('KartSahibiAdSoyad'),
+        kart_sahibi_ad_soyad = data.get('KartAdSoyad'),
         ad = data.get('Ad'),
         ikinci_ad = data.get('IkinciAd'),
         orta_ad = data.get('OrtaAd'),

@@ -34,7 +34,7 @@ class Command(BaseCommand):
             "UserName": "pflex",
             "Password": "pflex123",
             "ProcessDate": "2026-03-24T12:35:58Z",
-            "MusteriTipi": 1,
+            "MusteriTipi": 2,
             "PaidAmount": 150000.00,
             "CurrencyCode": "TL",
             "LeasePostingGroupId": True,
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 { "IletisimTuru": "Email", "IletisimDegeri": "info@ornekfirma.com" }
             ],
 
-            "KartSahibiAdSoyad": "Ahmet Yılmaz",
+            "KartAdSoyad": "Ahmet Yılmaz",
             "Ad": "Ahmet",
             "IkinciAd": "",
             "OrtaAd": "",
@@ -83,7 +83,7 @@ class Command(BaseCommand):
             "BankCode": "0001",
             "ContractCode": "68907",
             "CurrencyCode": "TRY",
-            "ExtTransactionId": "EXT-TX-001"
+            "ExtTransactionId": "849846515647841"
         }
 
         response = requests.post(url, json=payload)
