@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.utils.timezone import make_aware, localtime
-from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,IntegerField,Sum,OuterRef,Subquery,ExpressionWrapper,DateField
+from django.db.models import QuerySet, Q,Max,Count,When,Case,BooleanField,Value,Exists,IntegerField,Sum,OuterRef,Subquery,ExpressionWrapper,DateField,F
+from django.db.models.functions import Lower,Upper,Cast,Coalesce
 from django.db import models
 from django.utils import timezone
 
@@ -27,18 +28,45 @@ def export_terminated_leases(self):
         Q(is_last_project=True) &
         Q(lease_trade_transactions__posting_group_name='Fesih İadesi')
     ).annotate(
-        refund_amount=Sum(
-            Case(
-                When(
-                    lease_trade_transactions__posting_group_name='Fesih İadesi',
-                    lease_trade_transactions__amount_type='0',
-                    then='lease_trade_transactions__amount'
-                ),
-                output_field=models.DecimalField(),
-            )
-        )
+        refund_amount=Coalesce(
+            Sum(
+                Case(
+                    When(
+                        Q(
+                            lease_trade_transactions__posting_group_name='Fesih İadesi',
+                            lease_trade_transactions__amount_type='0'
+                        ) &
+                        ~Q(lease_trade_transactions__delete_status__in=['2']),
+                        then='lease_trade_transactions__amount'
+                    ),
+                )
+            ),
+            Value(0),
+            output_field=models.DecimalField(),
+        ),
+        refunded_amount=Coalesce(
+            Sum(
+                Case(
+                    When(
+                        Q(
+                            lease_trade_transactions__posting_group_name='Fesih İadesi',
+                            lease_trade_transactions__amount_type='1'
+                        ) &
+                        ~Q(lease_trade_transactions__delete_status__in=['2']),
+                        then='lease_trade_transactions__amount'
+                    ),
+                    output_field=models.DecimalField(),
+                )
+            ),
+            Value(0),
+            output_field=models.DecimalField(),
+        ),
+        remaining_amount=ExpressionWrapper(
+            F('refund_amount') - F('refunded_amount'),
+            output_field=models.DecimalField(),
+        ),
     ).filter(
-        Q(refund_amount__gt=0)
+        Q(refund_amount__gt=F('refunded_amount'))
     ).exclude(contract__partner__types__contains=["special"]).distinct()
 
     self.process.status = "in_progress"
@@ -56,6 +84,8 @@ def export_terminated_leases(self):
         "Fesih Tarihi": [],
         "Son İade Tarihi": [],
         "İade Edilecek Tutar": [],
+        "İade Edilen Tutar": [],
+        "Kalan İade Tutarı": [],
         "PB": [],
     }
 
@@ -70,18 +100,10 @@ def export_terminated_leases(self):
             previous_progress = current_progress
 
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        terminated_date = timezone.localtime(trade_transaction.due_date).replace(tzinfo=None) if obj and trade_transaction and trade_transaction.due_date else ''
+        terminated_date = timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
 
-        if obj and trade_transaction and trade_transaction.due_date:
-            last_refund_date = timezone.localtime(trade_transaction.due_date).replace(tzinfo=None) + timedelta(days=180)
-        else:
-            last_refund_date = ''
+        last_refund_date = (obj.terminated_date + timedelta(days=180)).strftime('%d.%m.%Y') if obj and obj.terminated_date else ''
 
-        trade_transactions_for_refund = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi',amount_type='0').exclude(delete_status__in=['2'])
-        total_refund_amount = Decimal('0.00')
-        for ttfr in trade_transactions_for_refund:
-            total_refund_amount += ttfr.amount if ttfr and ttfr.amount else Decimal('0.00')
-        refund_amount = total_refund_amount
     
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
@@ -92,7 +114,9 @@ def export_terminated_leases(self):
         data["Statü"].append(obj.lease_status if hasattr(obj, 'lease_status') else "")
         data["Fesih Tarihi"].append(terminated_date)
         data["Son İade Tarihi"].append(last_refund_date)
-        data["İade Edilecek Tutar"].append(refund_amount)
+        data["İade Edilecek Tutar"].append(obj.refund_amount)
+        data["İade Edilen Tutar"].append(obj.refunded_amount)
+        data["Kalan İade Tutarı"].append(obj.remaining_amount)
         data["PB"].append(obj.currency.code if hasattr(obj, 'currency') else "")
 
     df = pd.DataFrame(data)
@@ -100,6 +124,8 @@ def export_terminated_leases(self):
 
     numeric_columns = [
         "İade Edilecek Tutar",
+        "İade Edilen Tutar",
+        "Kalan İade Tutarı"
     ]
 
     for col in numeric_columns:
@@ -138,18 +164,45 @@ def export_terminated_leases_returned(self):
         Q(is_last_project=True) &
         Q(lease_trade_transactions__posting_group_name='Fesih İadesi')
     ).annotate(
-        refund_amount=Sum(
-            Case(
-                When(
-                    lease_trade_transactions__posting_group_name='Fesih İadesi',
-                    lease_trade_transactions__amount_type='1',
-                    then='lease_trade_transactions__amount'
-                ),
-                output_field=models.DecimalField(),
-            )
-        )
+        refund_amount=Coalesce(
+            Sum(
+                Case(
+                    When(
+                        Q(
+                            lease_trade_transactions__posting_group_name='Fesih İadesi',
+                            lease_trade_transactions__amount_type='0'
+                        ) &
+                        ~Q(lease_trade_transactions__delete_status__in=['2']),
+                        then='lease_trade_transactions__amount'
+                    ),
+                )
+            ),
+            Value(0),
+            output_field=models.DecimalField(),
+        ),
+        refunded_amount=Coalesce(
+            Sum(
+                Case(
+                    When(
+                        Q(
+                            lease_trade_transactions__posting_group_name='Fesih İadesi',
+                            lease_trade_transactions__amount_type='1'
+                        ) &
+                        ~Q(lease_trade_transactions__delete_status__in=['2']),
+                        then='lease_trade_transactions__amount'
+                    ),
+                    output_field=models.DecimalField(),
+                )
+            ),
+            Value(0),
+            output_field=models.DecimalField(),
+        ),
+        remaining_amount=ExpressionWrapper(
+            F('refund_amount') - F('refunded_amount'),
+            output_field=models.DecimalField(),
+        ),
     ).filter(
-        Q(refund_amount__gt=0)
+        Q(remaining_amount__lte=0)
     ).exclude(contract__partner__types__contains=["special"]).distinct()
 
     self.process.status = "in_progress"
@@ -166,7 +219,9 @@ def export_terminated_leases_returned(self):
         "Statü": [],
         "Fesih Tarihi": [],
         "İade Tarihi": [],
+        "İade Edilecek Tutar": [],
         "İade Edilen Tutar": [],
+        "Kalan İade Tutarı": [],
         "PB": [],
     }
 
@@ -181,16 +236,11 @@ def export_terminated_leases_returned(self):
             previous_progress = current_progress
 
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        terminated_date = timezone.localtime(trade_transaction.due_date).replace(tzinfo=None) if obj and trade_transaction and trade_transaction.due_date else ''
+        terminated_date = timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
 
         trade_transaction_returned = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2']).first()
-        refund_date = timezone.localtime(trade_transaction_returned.due_date).replace(tzinfo=None) if obj and trade_transaction_returned and trade_transaction_returned.due_date else ''
+        refund_date = timezone.localtime(trade_transaction_returned.due_date).strftime('%d.%m.%Y') if obj and trade_transaction_returned and trade_transaction_returned.due_date else ''
 
-        trade_transactions_for_refund = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi',amount_type='1').exclude(delete_status__in=['2'])
-        total_refund_amount = Decimal('0.00')
-        for ttfr in trade_transactions_for_refund:
-            total_refund_amount += ttfr.amount if ttfr and ttfr.amount else Decimal('0.00')
-        refund_amount = total_refund_amount
     
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
@@ -201,7 +251,9 @@ def export_terminated_leases_returned(self):
         data["Statü"].append(obj.lease_status if hasattr(obj, 'lease_status') else "")
         data["Fesih Tarihi"].append(terminated_date)
         data["İade Tarihi"].append(refund_date)
-        data["İade Edilen Tutar"].append(refund_amount)
+        data["İade Edilecek Tutar"].append(obj.refund_amount)
+        data["İade Edilen Tutar"].append(obj.refunded_amount)
+        data["Kalan İade Tutarı"].append(obj.remaining_amount)
         data["PB"].append(obj.currency.code if hasattr(obj, 'currency') else "")
 
     df = pd.DataFrame(data)
@@ -209,6 +261,8 @@ def export_terminated_leases_returned(self):
 
     numeric_columns = [
         "İade Edilen Tutar",
+        "İade Edilecek Tutar",
+        "Kalan İade Tutarı"
     ]
 
     for col in numeric_columns:
