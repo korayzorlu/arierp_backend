@@ -24,14 +24,15 @@ from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for
 def export_warned_risk_partners_for_sms(self):
     objs = Partner.objects.select_related().filter(
         vendor_filter_for_views(self.params) &
-        (
-            Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
-            Q(partner_contracts__contract_leases__lease_status='planlandi') |
-            Q(partner_contracts__contract_leases__lease_status='durduruldu')
-        ) &
-        Q(partner_contracts__contract_leases__is_kdv_diff=False) &
-        Q(partner_contracts__contract_leases__overdue_days__gt=30) &
-        Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+        # (
+        #     Q(partner_contracts__contract_leases__lease_status='aktiflestirildi') |
+        #     Q(partner_contracts__contract_leases__lease_status='planlandi') |
+        #     Q(partner_contracts__contract_leases__lease_status='durduruldu')
+        # ) &
+        # Q(partner_contracts__contract_leases__is_kdv_diff=False) &
+        # Q(partner_contracts__contract_leases__overdue_days__gt=30) &
+        # Q(partner_contracts__contract_leases__overdue_amount__gt=1000)
+        Q(partner_contracts__contract_leases__risk_status='ihtar_cekildi')
     ).annotate(
         max_overdue_days=Max('partner_contracts__contract_leases__overdue_days'),
         total_overdue_amount=Sum('partner_contracts__contract_leases__overdue_amount'),
@@ -60,7 +61,8 @@ def export_warned_risk_partners_for_sms(self):
         Q(types__contains=["special"]) |
         Q(types__contains=["barter"]) |
         Q(types__contains=["virman"])
-    ).filter(warning_notice_count__gt=0,overdue_check=True)
+    )
+    # ).filter(warning_notice_count__gt=0,overdue_check=True)
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
