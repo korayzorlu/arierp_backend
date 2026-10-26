@@ -232,11 +232,10 @@ def export_warned_risk_partners(self):
                 distinct=True,
                 filter=Q(contract__contract_warning_notices__state__in=['Yeni', 'Geçerli'])
             ),
-    ).filter(warning_notice_count__gt=0).exclude(
+    # ).filter(warning_notice_count__gt=0).exclude(
+    ).exclude(
         Q(contract__partner__types__contains=["special"])
     )
-
-    print(f"Toplam {len(objs)} adet ihtar çekilen müşteri var.")
 
     self.process.status = "in_progress"
     self.process.items_count = len(objs)
@@ -269,39 +268,36 @@ def export_warned_risk_partners(self):
 
     previous_progress = 0
     metin = ""
-    try:
-        for index,obj in enumerate(objs):
-            current_progress = ((index + 1)/len(objs))*100
+    for index,obj in enumerate(objs):
+        current_progress = ((index + 1)/len(objs))*100
 
-            if current_progress - previous_progress >= 5:
-                self.process.progress = int(current_progress)
-                self.process.save()
-                previous_progress = current_progress
+        if current_progress - previous_progress >= 5:
+            self.process.progress = int(current_progress)
+            self.process.save()
+            previous_progress = current_progress
 
-            data["Sözleşme"].append(obj.contract.code)
-            data["Kira Planı"].append(obj.code)
-            data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
-            data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
-            data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
-            data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
-            data["Proje"].append(obj.contract.project if obj.contract else "")
-            data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
-            data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
-            data["Kdv Dahil Kira Toplamı"].append(obj.total_payment)
-            data["Tahsilat Tutarı"].append(obj.paid)
-            data["0-30"].append(obj.overdue_0_30)
-            data["31-60"].append(obj.overdue_31_60)
-            data["61-90"].append(obj.overdue_61_90)
-            data["91-120"].append(obj.overdue_91_120)
-            data["121-150"].append(obj.overdue_121_150)
-            data["151-180"].append(obj.overdue_151_180)
-            data["181 >"].append(obj.overdue_181_gte)
-            data["Gecikme Tutarı"].append(obj.overdue_amount)
-            data["PB"].append(obj.currency.code)
-            data["Gecikme Gün"].append(obj.overdue_days)
-            data["Tahsilat Oranı (%)"].append(obj.paid_rate)
-    except Exception as e:
-        print(f"Error processing lease {obj.id}: {e}")
+        data["Sözleşme"].append(obj.contract.code)
+        data["Kira Planı"].append(obj.code)
+        data["Müşteri İsmi"].append(obj.contract.partner.name if obj.contract.partner else "")
+        data["TC/VKN No"].append(obj.contract.partner.tc_vkn_no if obj.contract.partner else "")
+        data["Crm Kodu"].append(obj.contract.partner.crm_code if obj.contract.partner else "")
+        data["Satıcı"].append(obj.contract.vendor.name if obj.contract.vendor else "")
+        data["Proje"].append(obj.contract.project if obj.contract else "")
+        data["Blok"].append(obj.contract.quotation_obj.quick_quotation.block if obj.contract.quotation_obj.quick_quotation else "" )
+        data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
+        data["Kdv Dahil Kira Toplamı"].append(obj.total_payment)
+        data["Tahsilat Tutarı"].append(obj.paid)
+        data["0-30"].append(obj.overdue_0_30)
+        data["31-60"].append(obj.overdue_31_60)
+        data["61-90"].append(obj.overdue_61_90)
+        data["91-120"].append(obj.overdue_91_120)
+        data["121-150"].append(obj.overdue_121_150)
+        data["151-180"].append(obj.overdue_151_180)
+        data["181 >"].append(obj.overdue_181_gte)
+        data["Gecikme Tutarı"].append(obj.overdue_amount)
+        data["PB"].append(obj.currency.code)
+        data["Gecikme Gün"].append(obj.overdue_days)
+        data["Tahsilat Oranı (%)"].append(obj.paid_rate)
 
 
     df = pd.DataFrame(data)
