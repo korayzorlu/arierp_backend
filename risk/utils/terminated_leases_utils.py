@@ -21,6 +21,8 @@ from trade.models import TradeTransaction
 
 from leasing.utils.common_utils import vendor_filter_for_views,vendor_filter_for_serializers,project_text,format_currency_tr
 
+
+    
 def export_terminated_leases(self):
     objs = Lease.objects.select_related().filter(
         #vendor_filter_for_serializers(self.request.query_params) &
@@ -100,10 +102,9 @@ def export_terminated_leases(self):
             previous_progress = current_progress
 
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        terminated_date = timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
+        terminated_date = timezone.localtime(trade_transaction.due_date).date() if obj and trade_transaction and trade_transaction.due_date else None
 
-        last_refund_date = (obj.terminated_date + timedelta(days=180)).strftime('%d.%m.%Y') if obj and obj.terminated_date else ''
-
+        last_refund_date = (obj.terminated_date + timedelta(days=180)) if obj and obj.terminated_date else None
     
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
@@ -128,9 +129,14 @@ def export_terminated_leases(self):
         "Kalan İade Tutarı"
     ]
 
+    date_columns = [
+        "Fesih Tarihi",
+        "Son İade Tarihi"
+    ]
+
     for col in numeric_columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
-    
+
     base_path = os.path.join(os.getcwd(), "media", "docs", str(self.user.user_companies.filter(is_active=True).first().company.uuid), "risk", "terminated_leases", "documents")
     if not os.path.exists(base_path):
         os.makedirs(base_path)
@@ -152,7 +158,11 @@ def export_terminated_leases(self):
                 for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
                     for c in cell:
                         c.number_format = '#,##0.00'   # İstediğin format
-    
+            elif col in date_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = 'DD.MM.YYYY'
+
     self.process.progress = 100
     #self.process.status = "completed"
     self.process.save()
@@ -236,10 +246,10 @@ def export_terminated_leases_returned(self):
             previous_progress = current_progress
 
         trade_transaction = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='0').exclude(delete_status__in=['2']).first()
-        terminated_date = timezone.localtime(trade_transaction.due_date).strftime('%d.%m.%Y') if obj and trade_transaction and trade_transaction.due_date else ''
+        terminated_date = timezone.localtime(trade_transaction.due_date).date() if obj and trade_transaction and trade_transaction.due_date else None
 
         trade_transaction_returned = TradeTransaction.objects.select_related().filter(lease = obj, posting_group_name='Fesih İadesi', amount_type='1').exclude(delete_status__in=['2']).first()
-        refund_date = timezone.localtime(trade_transaction_returned.due_date).strftime('%d.%m.%Y') if obj and trade_transaction_returned and trade_transaction_returned.due_date else ''
+        refund_date = timezone.localtime(trade_transaction_returned.due_date).date() if obj and trade_transaction_returned and trade_transaction_returned.due_date else None
 
     
         data["Sözleşme"].append(obj.contract.code)
@@ -263,6 +273,11 @@ def export_terminated_leases_returned(self):
         "İade Edilen Tutar",
         "İade Edilecek Tutar",
         "Kalan İade Tutarı"
+    ]
+
+    date_columns = [
+        "Fesih Tarihi",
+        "Son İade Tarihi"
     ]
 
     for col in numeric_columns:
@@ -289,6 +304,10 @@ def export_terminated_leases_returned(self):
                 for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
                     for c in cell:
                         c.number_format = '#,##0.00'   # İstediğin format
+            elif col in date_columns:
+                for cell in worksheet.iter_cols(min_col=idx, max_col=idx, min_row=2):
+                    for c in cell:
+                        c.number_format = 'DD.MM.YYYY'
     
     self.process.progress = 100
     #self.process.status = "completed"
