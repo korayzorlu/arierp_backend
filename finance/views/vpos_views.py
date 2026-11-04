@@ -53,9 +53,10 @@ class AddVPosTransactionView(View):
                 obj.status = Statuses.REJECTED
                 obj.last_error = response_message
                 obj.save()
+                return JsonResponse({'message': f"Leaseflex'ten gelen hata: {response_message}",'status':'error'}, status=400)
 
             obj.status = Statuses.SENT
             obj.response_message = response_message
             obj.save()
 
-        return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
+        return JsonResponse({'message': f'Başarıyla kaydedildi! Leaseflex mesajı: {response_message}','status':'success'}, status=200)
