@@ -31,19 +31,23 @@ class Command(BaseCommand):
 
         print("processing...")
 
-        WSDL = "https://leaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
+        # WSDL = "https://leaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
 
-        session = requests.Session()
-        transport = Transport(session=session, timeout=30)
+        # session = requests.Session()
+        # transport = Transport(session=session, timeout=30)
 
-        client = Client(wsdl=WSDL, transport=transport)
-        for service in client.wsdl.services.values():
-            for port in service.ports.values():
-                operations = port.binding._operations
-                for op_name in operations:
-                    print(op_name)
+        # client = Client(wsdl=WSDL, transport=transport)
+        # for service in client.wsdl.services.values():
+        #     for port in service.ports.values():
+        #         operations = port.binding._operations
+        #         for op_name in operations:
+        #             print(op_name)
 
-        result = client.service.Test()
-        print("TestResult:", result)
+        # result = client.service.Test()
+        # print("TestResult:", result)
+
+
+        objs = VPosTransaction.objects.filter(company__id=int(company),status=Statuses.PENDING).order_by('process_date')
+        print(objs)
 
         print("done!")

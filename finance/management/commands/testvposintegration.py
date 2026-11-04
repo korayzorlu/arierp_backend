@@ -31,8 +31,8 @@ class Command(BaseCommand):
         payload = {
             "CompanyId": "8ca8cc74-02d6-417e-bd4c-6568286187a3",
             "ValidationKey": "789ABC_xY2pQ9kL5mN8oR3sT6uV1wX4zE7fG",
-            "UserName": "pflex",
-            "Password": "pflex123",
+            "UserName": "username",
+            "Password": "password",
             "ProcessDate": "2026-03-24T12:35:58Z",
             "MusteriTipi": 2,
             "PaidAmount": 150000.00,
@@ -53,13 +53,13 @@ class Command(BaseCommand):
                 { "IletisimTuru": "Email", "IletisimDegeri": "info@ornekfirma.com" }
             ],
 
-            "KartAdSoyad": "Ahmet Yılmaz",
-            "Ad": "Ahmet",
+            "KartAdSoyad": "Cemil Yılmaz",
+            "Ad": "Cemil",
             "IkinciAd": "",
             "OrtaAd": "",
             "SoyAd": "Yılmaz",
             "Cinsiyet": "E",
-            "TCKimlikNo": "12345678901",
+            "TCKimlikNo": "43190097924",
             "PasaportNo": "",
             "Uyruk": "TC",
             "DogumTarih": "1990-05-15",
@@ -72,18 +72,15 @@ class Command(BaseCommand):
             "Posta_Birey": "34710",
             "IletisimList_Birey": [
                 { "IletisimTuru": "Telefon", "IletisimDegeri": "+905001234567" },
-                { "IletisimTuru": "Email", "IletisimDegeri": "ahmet@email.com" }
+                { "IletisimTuru": "Email", "IletisimDegeri": "cemil@email.com" }
             ],
-
-            "UserName": "kullanici_adi",
-            "Password": "sifre",
             "Telefon": "+905001234567",
             "EMail": "info@ornekfirma.com",
             "Fax": "",
-            "BankCode": "0001",
+            "BankCode": "B000471",
             "ContractCode": "68907",
-            "CurrencyCode": "TRY",
-            "ExtTransactionId": "849846515647841"
+            "CurrencyCode": "TL",
+            "ExtTransactionId": "5465498749684984"
         }
 
         response = requests.post(url, json=payload)

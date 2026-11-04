@@ -15,7 +15,7 @@ from dateutil import parser as dateutil_parser
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from finance.models import *
-from finance.utils.vpos_utils import is_valid_vpos_transaction_data, add_vpos_transation
+from finance.utils.vpos_utils import is_valid_vpos_transaction_data, add_vpos_transation,send_vpos_transation_to_leaseflex_test
 from common.models import ImportProcess,ExportProcess,ExchangeRate
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
@@ -41,6 +41,21 @@ class AddVPosTransactionView(View):
         if not valid:
             return response
         
-        add_vpos_transation(data)
+        obj =add_vpos_transation(data)
+
+        if not obj:
+            return JsonResponse({'message': 'VPOS işlemi kaydedilemedi!','status':'error'}, status=400)
+
+        if obj:
+            sent, response_message = send_vpos_transation_to_leaseflex_test(obj.uuid)
+
+            if not sent:
+                obj.status = Statuses.REJECTED
+                obj.last_error = response_message
+                obj.save()
+
+            obj.status = Statuses.SENT
+            obj.response_message = response_message
+            obj.save()
 
         return JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)

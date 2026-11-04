@@ -13,6 +13,10 @@ import os
 import random
 import string
 import logging
+from zeep import Client
+from zeep.transports import Transport
+from zeep.plugins import HistoryPlugin
+from lxml import etree
 
 from finance.models import *
 from common.models import Currency, ExchangeRate
@@ -91,8 +95,12 @@ def add_vpos_transation(data):
         
     currency = Currency.objects.filter(code='TRY' if data.get('CurrencyCode') == 'TL' else data.get('CurrencyCode')).first()
 
+    cleared_data = {k: v for k, v in data.items() if v != ""}
+
     obj = VPosTransaction.objects.create(
         company = company,
+        payload = cleared_data,
+        status = Statuses.PENDING,    
         process_date = process_date,
         musteri_tipi = data.get('MusteriTipi'),
         paid_amount = safe_decimal(data.get('PaidAmount')),
@@ -146,3 +154,75 @@ def add_vpos_transation(data):
                 iletisim_turu = iletisim.get('IletisimTuru'),
                 iletisim_degeri = iletisim.get('IletisimDegeri'),
             )
+
+    return obj
+
+def send_vpos_transation_to_leaseflex(obj):
+    WSDL = "https://leaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
+    
+    session = requests.Session()
+    transport = Transport(session=session, timeout=30)
+
+    client = Client(wsdl=WSDL, transport=transport)
+    for service in client.wsdl.services.values():
+        for port in service.ports.values():
+            operations = port.binding._operations
+            for op_name in operations:
+                print(op_name)
+
+    result = client.service.Test()
+
+def send_vpos_transation_to_leaseflex_test(uuid):
+    WSDL = "https://testleaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
+    
+    session = requests.Session()
+    transport = Transport(session=session, timeout=30)
+    history = HistoryPlugin()
+    client = Client(wsdl=WSDL, transport=transport, plugins=[history])
+
+    add_collection = client.get_element("{http://tempuri.org/}AddCollection")
+    request_type = dict(add_collection.type.elements)["request"].type
+    allowed = {name for name, _ in request_type.elements}
+
+    with transaction.atomic():
+        obj = (
+            VPosTransaction.objects.select_for_update(skip_locked=True, of=("self",))
+            .select_related("currency")
+            .filter(uuid=uuid)
+            .first()
+        )
+
+        if obj is None or obj.status != Statuses.PENDING:
+            return False, f'VPosTransaction with UUID {uuid} not found or not in PENDING status'
+
+        request = {k: v for k, v in obj.payload.items() if k in allowed and v not in (None, "")}
+
+        for key in ("IletisimList", "IletisimList_Birey"):
+            if isinstance(request.get(key), list):
+                request[key] = {"Iletisim": request[key]}
+
+        # Tutarı float yerine 2 haneli Decimal olarak gönder
+        request["PaidAmount"] = Decimal(str(request["PaidAmount"])).quantize(Decimal("0.01"))
+
+        # Kimlik bilgisi payload'dan değil, settings'ten
+        request["UserName"] = settings.ARI_VPOS_USERNAME
+        request["Password"] = settings.ARI_VPOS_PASSWORD
+
+        print(request)
+        print(f"Sending VPosTransaction {obj.ext_transaction_id} to Leaseflex...")
+        print(client.service._binding_options["address"])
+        response = client.service.AddCollection(request=request)
+        print(f"Response from Leaseflex: {response.Result}, Message: {response.Message}")
+        sent = etree.tostring(history.last_sent["envelope"], encoding="unicode")
+        print(sent[sent.index("<ns0:UserName>"):sent.index("</ns0:Password>") + 15])
+        print(repr(settings.ARI_VPOS_USERNAME), repr(settings.ARI_VPOS_PASSWORD))
+
+    return response.Result, response.Message
+
+    # for service in client.wsdl.services.values():
+    #     for port in service.ports.values():
+    #         operations = port.binding._operations
+    #         for op_name in operations:
+    #             print(op_name)
+
+    # result = client.service.Test()

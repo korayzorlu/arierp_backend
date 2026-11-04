@@ -64,9 +64,9 @@ class FinmaksTransactionAdmin(admin.ModelAdmin):
 
 @admin.register(VPosTransaction)
 class VPosTransactionAdmin(admin.ModelAdmin):
-    list_display = ["company","paid_amount","currency","created_date"]
-    list_display_links = ["paid_amount"]
-    search_fields = ["company__name","currency__code","created_date"]
+    list_display = ["company","ext_transaction_id","status","paid_amount","currency","created_date"]
+    list_display_links = ["ext_transaction_id"]
+    search_fields = ["company__name","ext_transaction_id","status","currency__code","created_date"]
     list_filter = []
     inlines = []
     ordering = ["-created_date"]

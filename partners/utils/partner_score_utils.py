@@ -2,6 +2,57 @@ from partners.models import IncomeTypes,FundSource,RiskStatus,ComplianceStatus,A
 
 from decimal import Decimal
 
+GELIR_SKORLARI = {
+    IncomeTypes.MAAS     : (Decimal("0.00"),   Decimal("1.00")),
+    IncomeTypes.TICARI   : (Decimal("50.00"),  Decimal("1.00")),
+    IncomeTypes.KIRA     : (Decimal("0.00"),   Decimal("1.00")),
+    IncomeTypes.YATIRIM  : (Decimal("50.00"),  Decimal("1.00")),
+    IncomeTypes.KRIPTO   : (Decimal("100.00"), Decimal("1.00")),
+    IncomeTypes.BELIRSIZ : (Decimal("100.00"), Decimal("1.00")),
+    IncomeTypes.YOK      : (Decimal("100.00"), Decimal("1.00")),
+    IncomeTypes.DIGER    : (Decimal("100.00"), Decimal("1.50")),
+}
+
+FON_SKORLARI = {
+    FundSource.SATIS        : (Decimal("0.00"),   Decimal("1.00")),
+    FundSource.TICARI       : (Decimal("0.00"),   Decimal("1.00")),
+    FundSource.MAAS         : (Decimal("0.00"),   Decimal("1.00")),
+    FundSource.MAAS_BIRIKIMI: (Decimal("0.00"),   Decimal("1.00")),
+    FundSource.KIRA         : (Decimal("0.00"),   Decimal("1.00")),
+    FundSource.MIRAS        : (Decimal("50.00"),  Decimal("1.00")),
+    FundSource.SIRKET       : (Decimal("50.00"),  Decimal("1.00")),
+    FundSource.YURTDISI     : (Decimal("100.00"), Decimal("1.50")),
+    FundSource.BELIRSIZ     : (Decimal("100.00"), Decimal("2.00")),
+    FundSource.KRIPTO       : (Decimal("100.00"), Decimal("1.00")),
+    FundSource.YOK          : (Decimal("100.00"), Decimal("1.00")),
+    FundSource.DIGER        : (Decimal("100.00"), Decimal("2.00")),
+}
+
+ISLEM_TUTARI_SKORLARI = {
+    AmountTRY.RANGE_0         : (Decimal("0.00"),   Decimal("1.00")),
+    AmountTRY.RANGE_0_100K    : (Decimal("0.00"),   Decimal("1.00")),
+    AmountTRY.RANGE_100K_500K : (Decimal("0.00"),   Decimal("1.00")),
+    AmountTRY.RANGE_500K_2M   : (Decimal("0.00"),   Decimal("1.00")),
+    AmountTRY.RANGE_2M_10M    : (Decimal("50.00"),  Decimal("1.00")),
+    AmountTRY.RANGE_10M_ABOVE : (Decimal("100.00"), Decimal("1.00")),
+}
+
+ISLEM_SIKLIGI_SKORLARI = {
+    Frequency._0_2     : (Decimal("0.00"),   Decimal("1.00")),
+    Frequency._3_4     : (Decimal("50.00"),  Decimal("1.00")),
+    Frequency._5_ABOVE : (Decimal("100.00"), Decimal("1.00")),
+}
+
+ISLEM_RISKI_SKORLARI = {
+    RiskStatus.RISKLI_DEGIL : (Decimal("0.00"),   Decimal("1.00")),
+    RiskStatus.RISKLI       : (Decimal("100.00"), Decimal("2.00")),
+}
+
+IS_UYUMU_SKORLARI = {
+    ComplianceStatus.UYUMLU       : (Decimal("0.00"),   Decimal("1.00")),
+    ComplianceStatus.UYUMLU_DEGIL : (Decimal("100.00"), Decimal("1.50")),
+}
+
 class CalcPartnerScore():
     def __init__(self, financial_profile=None, partner_score=None):
         self.financial_profile = financial_profile
@@ -9,113 +60,29 @@ class CalcPartnerScore():
         self.mr_score = Decimal("0.00")
         self.mr_weight = Decimal("0.00")
 
+    def _sum(self, selected, table):
+        for key, (score, weight) in table.items():
+            if key in selected:
+                self.mr_score += score * weight
+                self.mr_weight += weight
+
+    def _add(self, value, table):
+        if value in table:
+            score, weight = table[value]
+            self.mr_score += score * weight
+            self.mr_weight += weight
+
     def calc_gelir(self):
-        if IncomeTypes.MAAS in self.financial_profile.income_types:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.TICARI in self.financial_profile.income_types:
-            self.mr_score += Decimal("50.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.KIRA in self.financial_profile.income_types:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.YATIRIM in self.financial_profile.income_types:
-            self.mr_score += Decimal("50.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.KRIPTO in self.financial_profile.income_types:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.BELIRSIZ in self.financial_profile.income_types:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.YOK in self.financial_profile.income_types:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if IncomeTypes.DIGER in self.financial_profile.income_types:
-            self.mr_score += Decimal("100.00") * Decimal("1.50")
-            self.mr_weight += Decimal("1.50")
+        self._sum(self.financial_profile.income_types, GELIR_SKORLARI)
 
     def calc_fon(self):
-        if FundSource.SATIS in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.TICARI in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.MAAS in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.MAAS_BIRIKIMI in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.KIRA in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.MIRAS in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("50.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.SIRKET in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("50.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.YURTDISI in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("100.00") * Decimal("1.50")
-            self.mr_weight += Decimal("1.50")
-        if FundSource.BELIRSIZ in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("100.00") * Decimal("2.00")
-            self.mr_weight += Decimal("2.00")
-        if FundSource.KRIPTO in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.YOK in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        if FundSource.DIGER in self.financial_profile.fund_sources:
-            self.mr_score += Decimal("100.00") * Decimal("2.00")
-            self.mr_weight += Decimal("2.00")
+        self._sum(self.financial_profile.fund_sources, FON_SKORLARI)
 
     def calc_islem_davranisi(self):
-        if self.financial_profile.transaction_amount == AmountTRY.RANGE_0:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_amount == AmountTRY.RANGE_0_100K:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_amount == AmountTRY.RANGE_100K_500K:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_amount == AmountTRY.RANGE_500K_2M:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_amount == AmountTRY.RANGE_2M_10M:
-            self.mr_score += Decimal("50.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_amount == AmountTRY.RANGE_10M_ABOVE:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-
-        if self.financial_profile.transaction_frequency == Frequency._0_2:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_frequency == Frequency._3_4:
-            self.mr_score += Decimal("50.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_frequency == Frequency._5_ABOVE:
-            self.mr_score += Decimal("100.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-
-        if self.financial_profile.transaction_risk == RiskStatus.RISKLI_DEGIL:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.transaction_risk == RiskStatus.RISKLI:
-            self.mr_score += Decimal("100.00") * Decimal("2.00")
-            self.mr_weight += Decimal("2.00")
-
-        if self.financial_profile.job_compliance == ComplianceStatus.UYUMLU:
-            self.mr_score += Decimal("0.00") * Decimal("1.00")
-            self.mr_weight += Decimal("1.00")
-        elif self.financial_profile.job_compliance == ComplianceStatus.UYUMLU_DEGIL:
-            self.mr_score += Decimal("100.00") * Decimal("1.50")
-            self.mr_weight += Decimal("1.50")
+        self._add(self.financial_profile.transaction_amount, ISLEM_TUTARI_SKORLARI)
+        self._add(self.financial_profile.transaction_frequency, ISLEM_SIKLIGI_SKORLARI)
+        self._add(self.financial_profile.transaction_risk, ISLEM_RISKI_SKORLARI)
+        self._add(self.financial_profile.job_compliance, IS_UYUMU_SKORLARI)
 
     def calc_mr(self):
         # ort = top(w*x)/top(w)

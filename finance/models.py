@@ -4,6 +4,7 @@ from django.db.models.functions import Cast
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.serializers.json import DjangoJSONEncoder
 
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -22,7 +23,7 @@ from common.models import Currency
 class Statuses(models.TextChoices):
     PENDING = "pending", "Gönderilecek"
     SENDING = "sending", "Gönderiliyor"
-    SENT = "sent", "Leaseflex'e işlendi"
+    SENT = "sent", "Leaseflex'e gönderildi"
     REJECTED = "rejected", "Leaseflex reddetti"
     INVALID = "invalid", "Veri hatası (gönderilmedi)"
     UNKNOWN = "unknown", "Belirsiz - mutabakat gerekli"
@@ -139,7 +140,9 @@ class VPosTransaction(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_transactions")
 
-    status = ArrayField(models.CharField(_("Status"), max_length=25, choices=Statuses.choices), default=list, blank=True, null=True)
+    payload = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
+
+    status = models.CharField(_("Status"), max_length=25, choices=Statuses.choices, blank=True, null=True)
     attempts = models.PositiveSmallIntegerField(default=0)
     last_error = models.TextField(_("Last Error"), blank = True, null = True)
     response_message = models.TextField(_("Response Message"), blank = True, null = True)
@@ -148,7 +151,7 @@ class VPosTransaction(models.Model):
     sending_started_date = models.DateTimeField(_("Sending Started At"), blank=True, null=True)
     sent_date = models.DateTimeField(_("Sent Date"), null=True, blank=True)
 
-    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, null=True, blank=True, unique=True)
+    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, unique=True)
 
     process_date = models.DateTimeField(_("Process Date"), blank=True, null=True)
     musteri_tipi = models.PositiveIntegerField(_("Customer Type"), default=0)
@@ -194,7 +197,6 @@ class VPosTransaction(models.Model):
     fax = models.CharField(_("Fax"), max_length=50, null=True, blank=True)
     bank_code = models.CharField(_("Bank Code"), max_length=25, null=True, blank=True)
     contract_code = models.CharField(_("Contract Code"), max_length=25, null=True, blank=True)
-    
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

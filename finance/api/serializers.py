@@ -242,6 +242,15 @@ class PartnerAdvanceListSerializer(serializers.Serializer):
 class VPosTransactionListSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     companyId = serializers.SerializerMethodField()
+    status = serializers.CharField()
+    attempts = serializers.IntegerField()
+    last_error = serializers.CharField()
+    response_message = serializers.CharField()
+    request_xml = serializers.CharField()
+    response_xml = serializers.CharField()
+    sending_started_date = serializers.DateTimeField()
+    sent_date = serializers.DateTimeField()
+
     currency = serializers.SerializerMethodField()
     paid_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     process_date = serializers.DateTimeField()
@@ -286,6 +295,8 @@ class VPosTransactionListSerializer(serializers.Serializer):
     bank_code = serializers.CharField()
     contract_code = serializers.CharField()
     ext_transaction_id = serializers.CharField()
+
+
 
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''

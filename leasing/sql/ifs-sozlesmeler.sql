@@ -29,3 +29,5 @@ FROM ifsapp.sincrm_sozlesme a
 --WHERE a.stok_no ='DTSN.A01336'
 --a.objstate = 'Sozlesmeli'
      --AND a.araci_kurum_tc_vergi_no = '30964162810'
+
+
