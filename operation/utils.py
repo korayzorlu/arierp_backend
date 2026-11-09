@@ -119,7 +119,7 @@ def export_title_deed_invoice_controls(self):
     objs = Lease.objects.select_related(
         "contract","contract__partner","contract__quotation_obj","contract__quotation_obj__quick_quotation"
     ).prefetch_related("lease_invoices","lease_purchase_documents").filter(
-        ~Q(contract__partner__types__contains=['special']) &
+        #~Q(contract__partner__types__contains=['special']) &
         Q(is_last_project_arinet=True) &
         Q(item__bddk_code__icontains="GAYRIMENKUL") &
         ~Q(item__item_group_id="142")
@@ -145,9 +145,13 @@ def export_title_deed_invoice_controls(self):
         "CRM Satıcı": [],
         "Proje": [],
         "Blok": [],
+        "Bağımsız Bölüm": [],
         "BBSN": [],
         "CRM BBSN": [],
-        "Bağımsız Bölüm": [],
+        "Bakiye": [],
+        "PB": [],
+        "Risk Durumu": [],
+        "Gecikme Süresi(Gün)": [],
         "Alt Statü": [],
         "Statü": [],
         "Teslim Durumu" : [],
@@ -157,7 +161,9 @@ def export_title_deed_invoice_controls(self):
         "Satıcı Fatura Tutarı": [],
         "Satıcı Fatura PB": [],
         "CRM Fatura Tutarı": [],
-        "CRM Fatura PB": []
+        "CRM Fatura PB": [],
+        "Mutabakat TRY": [],
+        "Mutabakat Durumu": [],
     }
 
     previous_progress = 0
@@ -181,12 +187,20 @@ def export_title_deed_invoice_controls(self):
         invoices_exist = any(lease.lease_invoices.exists() for lease in old_lease_serializerss)
         purchase_documents_exist = any(lease.lease_purchase_documents.exists() for lease in old_lease_serializerss)
 
+        total_amount = Decimal('0.00')
         pd_currency = ""
         if purchase_documents_exist:
             for lease in old_lease_serializerss:
                 purchase_documents = lease.lease_purchase_documents.all()
                 if purchase_documents.exists():
+                    for purchase_document in purchase_documents:
+                        total_amount += purchase_document.total_amount
                     pd_currency = purchase_documents.first().currency.code if purchase_documents.first().currency else ""
+        agreement_amount = total_amount - obj.crm_invoice_total_amount
+        if -1000 < agreement_amount < 1000:
+            agreement_status = "Mutabakat Var"
+        else:
+            agreement_status = "Mutabakat Yok"
 
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
@@ -201,6 +215,10 @@ def export_title_deed_invoice_controls(self):
         data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
         data["CRM BBSN"].append(obj.crm_bbsn if obj.crm_bbsn else "")
         data["Bağımsız Bölüm"].append(obj.contract.quotation_obj.quick_quotation.unit if obj.contract.quotation_obj.quick_quotation else "")
+        data["Bakiye"].append(obj.overdue_amount if obj.overdue_amount else "")
+        data["PB"].append(obj.currency.code if obj.currency else "")
+        data["Risk Durumu"].append(obj.risk_status if obj.risk_status else "")
+        data["Gecikme Süresi(Gün)"].append(obj.overdue_days if obj.overdue_days else "")
         data["Alt Statü"].append(obj.status.name if obj.status else "")
         data["Statü"].append(obj.get_lease_status_display())
         data["Teslim Durumu"].append("Teslim Edildi" if obj.is_delivery else "Teslim Edilmedi")
@@ -211,6 +229,8 @@ def export_title_deed_invoice_controls(self):
         data["Satıcı Fatura PB"].append(pd_currency)
         data["CRM Fatura Tutarı"].append(obj.crm_invoice_total_amount if obj.crm_invoice_total_amount > 0 else "")
         data["CRM Fatura PB"].append("TRY" if obj.crm_invoice_total_amount > 0 else "")
+        data["Mutabakat TRY"].append(agreement_amount)
+        data["Mutabakat Durumu"].append(agreement_status)
 
 
 
@@ -222,6 +242,8 @@ def export_title_deed_invoice_controls(self):
     numeric_columns = [
         "Satıcı Fatura Tutarı",
         "CRM Fatura Tutarı"
+        "Bakiye",
+        "Mutabakat TRY"
     ]
 
     for col in numeric_columns:
