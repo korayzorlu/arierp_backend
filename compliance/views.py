@@ -24,7 +24,7 @@ from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
 from common.utils.export_utils import BaseExporter
-from finance.utils.vpos_utils import send_vpos_transation_to_leaseflex_test, Statuses
+from finance.utils.vpos_utils import send_vpos_transation_to_leaseflex_test, Statuses,send_vpos_transation_to_leaseflex
 
 # Create your views here.
 
@@ -235,7 +235,7 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
                 obj.status = 'cleared'
                 send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="vpos")
 
-                sent, response_message = send_vpos_transation_to_leaseflex_test(vpos_transaction.uuid)
+                sent, response_message = send_vpos_transation_to_leaseflex(vpos_transaction.uuid)
                 
                 if not sent:
                     vpos_transaction.status = Statuses.REJECTED
@@ -331,7 +331,7 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
         obj.status = 'cleared'
         obj.save()
 
-        sent, response_message = send_vpos_transation_to_leaseflex_test(vpos_transaction.uuid)
+        sent, response_message = send_vpos_transation_to_leaseflex(vpos_transaction.uuid)
                         
         if not sent:
             vpos_transaction.status = Statuses.REJECTED

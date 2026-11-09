@@ -25,7 +25,7 @@ from purchasing.models import PurchasePayment
 from leasing.models import BankActivity
 from underwriting.utils import check_third_person_status_vpos
 from compliance.utils.third_person_utils import create_third_person_vpos
-from finance.tasks import send_vpos_transation_to_leaseflex_test_task
+from finance.tasks import send_vpos_transation_to_leaseflex_test_task,send_vpos_transation_to_leaseflex_task
 
 import json
 import os
@@ -56,14 +56,18 @@ class AddVPosTransactionView(View):
                 #İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.
                 scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
                 create_third_person_vpos(obj,scan_result)
+                obj.response_message = "Müşteri ismi ile kart sahibi ismi tam olarak eşleşmediği için 3. kişi kontrolü sonrası Leaseflex sistemine otomatik olarak aktarılacak."
+                obj.save()
                 return JsonResponse({'message': f'Başarıyla kaydedildi! Kart sahibi ile müşteri ismi uyuşmadığı için 3. kişi kontrolü sonrası Leaseflex sistemine otomatik olarak aktarılacak.','status':'success'}, status=200)
             elif third_person_result == NameMatch.NO_MATCH:
                 #Farklı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşmiyor.
                 scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
                 create_third_person_vpos(obj,scan_result)
+                obj.response_message = "Müşteri ismi ile kart sahibi ismi uyuşmadığı için 3. kişi kontrolü sonrası Leaseflex sistemine otomatik olarak aktarılacak."
+                obj.save()
                 return JsonResponse({'message': f'Başarıyla kaydedildi! Kart sahibi ile müşteri ismi uyuşmadığı için 3. kişi kontrolü sonrası Leaseflex sistemine otomatik olarak aktarılacak.','status':'success'}, status=200)
 
-            sent, response_message = send_vpos_transation_to_leaseflex_test_task.delay(obj.uuid)
+            sent, response_message = send_vpos_transation_to_leaseflex_task.delay(obj.uuid)
 
             if not sent:
                 obj.status = Statuses.REJECTED

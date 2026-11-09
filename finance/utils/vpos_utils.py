@@ -233,15 +233,40 @@ def send_vpos_transation_to_leaseflex(obj):
     
     session = requests.Session()
     transport = Transport(session=session, timeout=30)
+    history = HistoryPlugin()
+    client = Client(wsdl=WSDL, transport=transport, plugins=[history])
 
-    client = Client(wsdl=WSDL, transport=transport)
-    for service in client.wsdl.services.values():
-        for port in service.ports.values():
-            operations = port.binding._operations
-            for op_name in operations:
-                print(op_name)
+    add_collection = client.get_element("{http://tempuri.org/}AddCollection")
+    request_type = dict(add_collection.type.elements)["request"].type
+    allowed = {name for name, _ in request_type.elements}
 
-    result = client.service.Test()
+    with transaction.atomic():
+        obj = (
+            VPosTransaction.objects.select_for_update(skip_locked=True, of=("self",))
+            .select_related("currency")
+            .filter(uuid=uuid)
+            .first()
+        )
+
+        if obj is None or obj.status != Statuses.PENDING:
+            return False, f'VPosTransaction with UUID {uuid} not found or not in PENDING status'
+
+        request = {k: v for k, v in obj.payload.items() if k in allowed and v not in (None, "")}
+
+        for key in ("IletisimList", "IletisimList_Birey"):
+            if isinstance(request.get(key), list):
+                request[key] = {"Iletisim": request[key]}
+
+        # Tutarı float yerine 2 haneli Decimal olarak gönder
+        request["PaidAmount"] = Decimal(str(request["PaidAmount"])).quantize(Decimal("0.01"))
+
+        # Kimlik bilgisi payload'dan değil, settings'ten
+        request["UserName"] = settings.ARI_VPOS_USERNAME
+        request["Password"] = settings.ARI_VPOS_PASSWORD
+
+        response = client.service.AddCollection(request=request)
+
+    return response.Result, response.Message
 
 def send_vpos_transation_to_leaseflex_test(uuid):
     WSDL = "https://testleaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
