@@ -211,18 +211,18 @@ def add_vpos_transation(data):
                 iletisim_degeri = iletisim.get('IletisimDegeri'),
             )
 
-    third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
+    # third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
 
-    if third_person_result == NameMatch.MATCH:
-        print("Aynı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşiyor.")
-    elif third_person_result == NameMatch.REVIEW:
-        print("İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.")
-        scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
-        create_third_person_vpos(obj,scan_result)
-    else:
-        print("Farklı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşmiyor.")
-        scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
-        create_third_person_vpos(obj,scan_result)
+    # if third_person_result == NameMatch.MATCH:
+    #     print("Aynı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşiyor.")
+    # elif third_person_result == NameMatch.REVIEW:
+    #     print("İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.")
+    #     scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
+    #     create_third_person_vpos(obj,scan_result)
+    # else:
+    #     print("Farklı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşmiyor.")
+    #     scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
+    #     create_third_person_vpos(obj,scan_result)
 
     
 
