@@ -241,7 +241,7 @@ def export_title_deed_invoice_controls(self):
 
     numeric_columns = [
         "Satıcı Fatura Tutarı",
-        "CRM Fatura Tutarı"
+        "CRM Fatura Tutarı",
         "Bakiye",
         "Mutabakat TRY"
     ]
