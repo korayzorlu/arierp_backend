@@ -27,10 +27,10 @@ def create_third_person(self,scan_result):
         status = 'pending'
         
     if name and name != "" and status == 'pending':
-        send_email_for_third_person(name,self.tc_vkn_no or "")
+        send_email_for_third_person(name,self.tc_vkn_no or "",type="finmaks")
 
     if name and name != "" and status == 'need_document':
-        send_email_for_third_person_document(name,self.tc_vkn_no or "")
+        send_email_for_third_person_document(name,self.tc_vkn_no or "",type="finmaks")
     
     #old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name, is_vpos=self.is_vpos).first()
     if self.tc_vkn_no and self.tc_vkn_no != "":
@@ -61,28 +61,30 @@ def create_third_person(self,scan_result):
 
         return {"is_new": True, "status": new_obj.status}
     
-def create_third_person_vpos(name,company,tc_vkn_no,scan_result):
+def create_third_person_vpos(self,scan_result):
     if scan_result["status"] == 'cleared':
         status = 'need_document'
     else:
         status = 'pending'
+
+    if self.kart_sahibi_ad_soyad and self.kart_sahibi_ad_soyad != "" and status == 'pending':
+        send_email_for_third_person(self.kart_sahibi_ad_soyad,"",type="vpos")
+
+    if self.kart_sahibi_ad_soyad and self.kart_sahibi_ad_soyad != "" and status == 'need_document':
+        send_email_for_third_person_document(self.kart_sahibi_ad_soyad,"",type="vpos")
     
-    old_obj = ThirdPerson.objects.filter(company = company, tc_vkn_no = tc_vkn_no, name = name).first()
-    if not old_obj:
-        new_obj = ThirdPerson.objects.create(
-            company=company,
-            name=name,
-            tc_vkn_no=tc_vkn_no,
-            status=status,
-            results=scan_result["details"] if scan_result["details"] else None
-        )
+    new_obj = ThirdPerson.objects.create(
+        company=self.company,
+        name=self.kart_sahibi_ad_soyad,
+        status=status,
+        results=scan_result["details"] if scan_result["details"] else None,
+        vpos_transaction = self,
+        is_vpos = True
+    )
 
-        return {"is_new": True, "status": new_obj.status}
-    else:
+    return {"is_new": True, "status": new_obj.status}
 
-        return {"is_new": False, "status": old_obj.status}
-
-def send_email_for_third_person(name,tc_vkn_no):       
+def send_email_for_third_person(name,tc_vkn_no,type):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
         email = EmailMessage(
             subject,
@@ -96,13 +98,13 @@ def send_email_for_third_person(name,tc_vkn_no):
         email.send(fail_silently=False)
         #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
             
-    subject = '3. ŞAHIS ÖDEMESİ - KONTROL GEREKİYOR'
+    subject = f'3. ŞAHIS ÖDEMESİ - KONTROL GEREKİYOR{" (SANAL POS)" if type=="vpos" else ""}'
     message = f'''
         Aşağıdaki kişi/kurum için yasaklı liste kontrolü gerekmektedir. Lütfen kontrol ediniz.
 
         {name} - {tc_vkn_no}
 
-        Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/third-persons
+        Arınet 3. Şahıs Kontrol Ekranı: {"https://arinet.arileasing.com.tr/vpos-third-persons" if type=="vpos" else "https://arinet.arileasing.com.tr/third-persons"}
 
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
@@ -110,7 +112,7 @@ def send_email_for_third_person(name,tc_vkn_no):
 
     send_outlook_email(subject, message, from_email, recipient_list)
 
-def send_email_for_third_person_document(name,tc_vkn_no):       
+def send_email_for_third_person_document(name,tc_vkn_no,type):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
         email = EmailMessage(
             subject,
@@ -124,13 +126,13 @@ def send_email_for_third_person_document(name,tc_vkn_no):
         email.send(fail_silently=False)
         #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
             
-    subject = '3. ŞAHIS ÖDEMESİ - BELGE/KİMLİK GEREKİYOR'
+    subject = f'3. ŞAHIS ÖDEMESİ - BELGE/KİMLİK GEREKİYOR{" (SANAL POS)" if type=="vpos" else ""}'
     message = f'''
         Aşağıdaki kişi/kurum için belge/kimlik yüklenmesi gerekmektedir. Lütfen kontrol ediniz.
 
         {name} - {tc_vkn_no}
 
-        Arınet 3. Şahıs Kontrol Ekranı: https://arinet.arileasing.com.tr/third-persons
+        Arınet 3. Şahıs Kontrol Ekranı: {"https://arinet.arileasing.com.tr/vpos-third-persons" if type=="vpos" else "https://arinet.arileasing.com.tr/third-persons"}
 
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
@@ -138,7 +140,7 @@ def send_email_for_third_person_document(name,tc_vkn_no):
 
     send_outlook_email(subject, message, from_email, recipient_list)
 
-def send_email_for_third_person_cleared(name,tc_vkn_no):       
+def send_email_for_third_person_cleared(name,tc_vkn_no,type):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
         email = EmailMessage(
             subject,
@@ -158,7 +160,7 @@ def send_email_for_third_person_cleared(name,tc_vkn_no):
 
         {name} - {tc_vkn_no}
 
-        Arınet Tahsilat İşleme Ekranı: https://arinet.arileasing.com.tr/collections
+        Arınet Tahsilat İşleme Ekranı: {"https://arinet.arileasing.com.tr/vpos-transactions" if type=="vpos" else "https://arinet.arileasing.com.tr/collections"}
 
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
@@ -166,7 +168,7 @@ def send_email_for_third_person_cleared(name,tc_vkn_no):
 
     send_outlook_email(subject, message, from_email, recipient_list)
 
-def send_email_for_third_person_to_cleared(name,tc_vkn_no):       
+def send_email_for_third_person_to_cleared(name,tc_vkn_no,type):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
         email = EmailMessage(
             subject,
@@ -186,7 +188,7 @@ def send_email_for_third_person_to_cleared(name,tc_vkn_no):
 
         {name} - {tc_vkn_no}
 
-        Arınet Tahsilat İşleme Ekranı: https://arinet.arileasing.com.tr/collections
+        Arınet Tahsilat İşleme Ekranı: {"https://arinet.arileasing.com.tr/vpos-transactions" if type=="vpos" else "https://arinet.arileasing.com.tr/collections"}
 
     '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
@@ -222,7 +224,7 @@ def check_third_person_in_partners(company):
             #     is_reliable_person = True,
             #     third_person_status = 'cleared'
             # )
-            send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
+            send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="finmaks")
 
         time.sleep(3)   
 

@@ -17,10 +17,66 @@ from zeep import Client
 from zeep.transports import Transport
 from zeep.plugins import HistoryPlugin
 from lxml import etree
+import unicodedata
+from difflib import SequenceMatcher
+from enum import Enum
+
 
 from finance.models import *
 from common.models import Currency, ExchangeRate
 from common.utils.common_utils import parse_datetime,safe_decimal
+from underwriting.utils import check_third_person_status_vpos
+from compliance.utils.third_person_utils import create_third_person_vpos
+
+class NameMatch(str, Enum):
+    MATCH = "match"          # Normalize edilince aynı isim
+    REVIEW = "review"        # Benziyor ama aynı kişi olduğu kesin değil
+    NO_MATCH = "no_match"    # Farklı isim
+
+TR_MAP = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+FUZZY_THRESHOLD = 0.85
+
+def normalize_name(value) -> str:
+    text = str(value or "").translate(TR_MAP)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    text = re.sub(r"[^a-z]+", " ", text.casefold())
+    return text.strip()
+
+def compare_names(isim, soyisim, kart_sahibi) -> NameMatch:
+    first = normalize_name(isim)
+    last = normalize_name(soyisim)
+    card = normalize_name(kart_sahibi)
+
+    if not first or not last or not card:
+        return NameMatch.NO_MATCH
+
+    compact_card = card.replace(" ", "")
+    candidates = (
+        f"{first}{last}".replace(" ", ""),
+        f"{last}{first}".replace(" ", ""),
+    )
+
+    # Büyük/küçük harf, Türkçe karakter, boşluk ve ad-soyad sırası farkları
+    if compact_card in candidates:
+        return NameMatch.MATCH
+
+    # Eksik ikinci isim veya ad sırası farkı: Mehmet Ali Yılmaz / Mehmet Yılmaz
+    expected_tokens = set(f"{first} {last}".split())
+    card_tokens = set(card.split())
+    shorter, longer = sorted((expected_tokens, card_tokens), key=len)
+    if len(shorter) >= 2 and shorter <= longer:
+        return NameMatch.REVIEW
+
+    # Yazım hatası: Mehmet / Mehmat
+    best_ratio = max(
+        SequenceMatcher(None, candidate, compact_card).ratio()
+        for candidate in candidates
+    )
+    if best_ratio >= FUZZY_THRESHOLD:
+        return NameMatch.REVIEW
+
+    return NameMatch.NO_MATCH
 
 def is_valid_vpos_transaction_data(data):
     parameters = [
@@ -155,6 +211,21 @@ def add_vpos_transation(data):
                 iletisim_degeri = iletisim.get('IletisimDegeri'),
             )
 
+    third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
+
+    if third_person_result == NameMatch.MATCH:
+        print("Aynı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşiyor.")
+    elif third_person_result == NameMatch.REVIEW:
+        print("İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.")
+        scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
+        create_third_person_vpos(obj,scan_result)
+    else:
+        print("Farklı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşmiyor.")
+        scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
+        create_third_person_vpos(obj,scan_result)
+
+    
+
     return obj
 
 def send_vpos_transation_to_leaseflex(obj):
@@ -208,14 +279,7 @@ def send_vpos_transation_to_leaseflex_test(uuid):
         request["UserName"] = settings.ARI_VPOS_USERNAME
         request["Password"] = settings.ARI_VPOS_PASSWORD
 
-        print(request)
-        print(f"Sending VPosTransaction {obj.ext_transaction_id} to Leaseflex...")
-        print(client.service._binding_options["address"])
         response = client.service.AddCollection(request=request)
-        print(f"Response from Leaseflex: {response.Result}, Message: {response.Message}")
-        sent = etree.tostring(history.last_sent["envelope"], encoding="unicode")
-        print(sent[sent.index("<ns0:UserName>"):sent.index("</ns0:Password>") + 15])
-        print(repr(settings.ARI_VPOS_USERNAME), repr(settings.ARI_VPOS_PASSWORD))
 
     return response.Result, response.Message
 

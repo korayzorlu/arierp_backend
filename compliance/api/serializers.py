@@ -69,6 +69,8 @@ class ThirdPersonListSerializer(serializers.Serializer):
     is_email_sent = serializers.BooleanField()
     is_customer_sent = serializers.BooleanField()
     customer_sender = serializers.SerializerMethodField()
+    is_vpos = serializers.BooleanField()
+    vpos_transaction = serializers.SerializerMethodField()
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
@@ -106,7 +108,17 @@ class ThirdPersonListSerializer(serializers.Serializer):
                 }
                 finmaks_transactions.append(finmaks_transaction)
         return finmaks_transactions
-    
+
+    def get_vpos_transaction(self, obj):
+        return {
+            "id": obj.vpos_transaction.uuid if obj.vpos_transaction else "",
+            "name": obj.vpos_transaction.kart_sahibi_ad_soyad if obj.vpos_transaction else "",
+            "contract_code": obj.vpos_transaction.contract_code if obj.vpos_transaction else "",
+            "customer_name": f"{obj.vpos_transaction.ad} {obj.vpos_transaction.soyad}" if obj.vpos_transaction else "",
+            "amount": obj.vpos_transaction.paid_amount if obj.vpos_transaction else "",
+            "currency": obj.vpos_transaction.currency.code if obj.vpos_transaction and obj.vpos_transaction.currency else "",
+            "transaction_date": obj.vpos_transaction.process_date.strftime("%d.%m.%Y %H:%M") if obj.vpos_transaction and obj.vpos_transaction.process_date else "",
+            }
 class ThirdPersonDocumentListSerializer(serializers.Serializer):
     id = serializers.CharField(source = "uuid")
     companyId = serializers.SerializerMethodField()

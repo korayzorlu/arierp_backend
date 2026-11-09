@@ -121,13 +121,17 @@ class BlackListPersonList(ModelViewSet, QueryListAPIView):
     def pagination_class(self):
         return self.get_pagination_class()
     required_subscription = "free"
-    permission_classes = [SubscriptionPermission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         if hasattr(self, '_cached_queryset'):
             return self._cached_queryset
+        user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
         ordering = self.request.query_params.get('ordering')
         
         custom_related_fields = ["company"]
@@ -281,7 +285,8 @@ class ThirdPersonList(ModelViewSet, QueryListAPIView):
         prefetch_related_fields = []
 
         queryset = ThirdPerson.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
-            Q(company=active_company.company if active_company else None)
+            Q(company=active_company.company if active_company else None) &
+            Q(is_vpos=False)
         )
 
         query = self.request.query_params.get('search[value]', None)

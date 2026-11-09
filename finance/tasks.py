@@ -20,6 +20,7 @@ from contracts.models import *
 from common.models import Currency
 from common.utils.common_utils import normalize,safe_decimal
 from .utils.finmaks_utils import fetch_finekra_currencies,fetch_finekra_banks,post_finekra_bank_accounts,fetch_finekra_bank_accounts,delete_finekra_bank_account,put_finekra_bank_accounts,get_finmaks_bank_accounts,get_finmaks_transactions
+from .utils.vpos_utils import send_vpos_transation_to_leaseflex_test
 from django.db.models import Q
 from leasing.models import BankActivity
 
@@ -547,3 +548,8 @@ def set_bank_activities_date(company):
             obj.save()
     except Exception as e:
         traceback.print_exc()
+
+#VPOS
+@shared_task()
+def send_vpos_transation_to_leaseflex_test_task(uuid):
+    send_vpos_transation_to_leaseflex_test(uuid)

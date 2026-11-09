@@ -53,11 +53,11 @@ class Command(BaseCommand):
                 { "IletisimTuru": "Email", "IletisimDegeri": "info@ornekfirma.com" }
             ],
 
-            "KartAdSoyad": "Cemil Yılmaz",
-            "Ad": "Cemil",
+            "KartAdSoyad": "LÜTFÜ ÇAKMAK",
+            "Ad": "AHMET",
             "IkinciAd": "",
             "OrtaAd": "",
-            "SoyAd": "Yılmaz",
+            "SoyAd": "ÖZCAN",
             "Cinsiyet": "E",
             "TCKimlikNo": "43190097924",
             "PasaportNo": "",
@@ -80,7 +80,7 @@ class Command(BaseCommand):
             "BankCode": "B000471",
             "ContractCode": "68907",
             "CurrencyCode": "TL",
-            "ExtTransactionId": "5465498749684984"
+            "ExtTransactionId": "15618974841"
         }
 
         response = requests.post(url, json=payload)

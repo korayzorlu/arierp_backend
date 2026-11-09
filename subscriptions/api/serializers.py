@@ -73,7 +73,7 @@ class MenuItemListSerializer(serializers.Serializer):
                 {"type" : "item", "class" : ["default"], "label" : "Kam. Nüfuz Sahibi Kişiler", "icon" : "paid", "route" : "/pep-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "Kişi Sorgulama ve İzleme", "icon" : "paid", "route" : "/scan-partners"},
                 {"type" : "item", "class" : ["default"], "label" : "3. Kişiler", "icon" : "paid", "route" : "/third-persons"},
-                {"type" : "item", "class" : ["admin"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
+                {"type" : "item", "class" : ["default"], "label" : "3. Kişiler (Sanal Pos)", "icon" : "paid", "route" : "/vpos-third-persons"},
             ]},
             #========================
             #KREDİ TAHSİS

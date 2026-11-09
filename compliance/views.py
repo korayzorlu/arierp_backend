@@ -24,6 +24,7 @@ from common.utils.import_utils import BaseImporter
 from common.utils.websocket_utils import send_alert
 from common.models import ExportProcess
 from common.utils.export_utils import BaseExporter
+from finance.utils.vpos_utils import send_vpos_transation_to_leaseflex_test, Statuses
 
 # Create your views here.
 
@@ -39,7 +40,7 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
         if data.get('status') == 'cleared':
             if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
                 obj.status = 'cleared'
-                send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no)
+                send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="finmaks")
             else:
                 obj.status = 'need_document'
         elif data.get('status') == 'need_document':
@@ -95,7 +96,8 @@ class UpdateThirdPersonIsCustomerSentView(LoginRequiredMixin,View):
         obj.save()
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
-    
+
+
 class AddBlackListPersonView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
@@ -172,39 +174,11 @@ class ImportThirdPersonDocumentsView(LoginRequiredMixin,View):
             created_date = datetime.now()
         )
 
-        send_email_for_third_person_cleared(obj.name,obj.tc_vkn_no)
+        send_email_for_third_person_cleared(obj.name,obj.tc_vkn_no,type="finmaks")
         
         return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
 
-class VPosThirdPersonsTemplateView(LoginRequiredMixin,View):
-    def get(self, request, *args, **kwargs):
-        file_path = os.path.join(settings.BASE_DIR, "static", "files", "sanal-pos-template.xlsx")
-        
-        if not os.path.exists(file_path):
-            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
-
-        return FileResponse(open(file_path, 'rb'))
-    
-class ImportVPosThirdPersonsView(LoginRequiredMixin,View):
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.POST.get('data', '{}'))
-        file = request.FILES.get('file')
-        
-        importer = BaseImporter(user_id=request.user.id, app="compliance", model_name="ThirdPerson", file=file)
-
-        if importer.validate_file() != 200:
-            return JsonResponse(importer.validate_file(), status=400)
-
-        send_alert({"message":"Veriler yükleniyor...",'status':'success'},room=f"private_{request.user.id}")
-
-        df_json = importer.read_file()
-        if isinstance(importer.read_file(), dict):
-            return JsonResponse(df_json, status=400)
-            
-        importer.start_import(df_json)
-
-        return HttpResponse(status=200)
-    
+ 
 class ExportThirdPersonsView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
@@ -237,4 +211,139 @@ class ThirdPersonsExcelView(LoginRequiredMixin,View):
             obj.save()
 
         return FileResponse(open(file_path, 'rb'))
+
+
+
+#VPOS
+
+class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        if request.user.authorization.department != 'kredi_tahsis':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
+        if not obj:
+            return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+        vpos_transaction = obj.vpos_transaction
+        if not vpos_transaction:
+            return JsonResponse({'message': 'Bu sorguya ilişkin sanal pos ödeme kaydı bulunamadı!','status':'error'}, status=400)
+
+        if data.get('status') == 'cleared':
+            if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
+                obj.status = 'cleared'
+                send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="vpos")
+
+                sent, response_message = send_vpos_transation_to_leaseflex_test(vpos_transaction.uuid)
+                
+                if not sent:
+                    vpos_transaction.status = Statuses.REJECTED
+                    vpos_transaction.last_error = response_message
+                    vpos_transaction.save()
+    
+                vpos_transaction.status = Statuses.SENT
+                vpos_transaction.response_message = response_message
+                vpos_transaction.save()
+            else:
+                obj.status = 'need_document'
+        elif data.get('status') == 'need_document':
+            obj.status = data.get('status')
+        elif data.get('status') == 'collection_denied':
+            obj.status = data.get('status')
+            obj.is_customer_sent = False
+            vpos_transaction.status = Statuses.UNKNOWN
+            vpos_transaction.save()
+        else:
+            obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
+
+        obj.save()
+
+
+
+        return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
+
+class VPosThirdPersonsTemplateView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        file_path = os.path.join(settings.BASE_DIR, "static", "files", "sanal-pos-template.xlsx")
+        
+        if not os.path.exists(file_path):
+            return JsonResponse({'message': 'File not found!','status':'error'}, status=404)
+
+        return FileResponse(open(file_path, 'rb'))
+    
+class ImportVPosThirdPersonsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get('data', '{}'))
+        file = request.FILES.get('file')
+        
+        importer = BaseImporter(user_id=request.user.id, app="compliance", model_name="ThirdPerson", file=file)
+
+        if importer.validate_file() != 200:
+            return JsonResponse(importer.validate_file(), status=400)
+
+        send_alert({"message":"Veriler yükleniyor...",'status':'success'},room=f"private_{request.user.id}")
+
+        df_json = importer.read_file()
+        if isinstance(importer.read_file(), dict):
+            return JsonResponse(df_json, status=400)
+            
+        importer.start_import(df_json)
+
+        return HttpResponse(status=200)
+
+class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get('data', '{}'))
+        file = request.FILES.get('file')
+        
+        if not file:
+            return JsonResponse({'message': 'Yüklenecek dosya bulunamadı!','status':'error'}, status=400)
+        
+        if file.size > settings.MAX_UPLOAD_SIZE:
+            return JsonResponse({'message': 'Dosya boyutu fazla! Max 1MB yükleyebilirsiniz.','status':'error'}, status=400)
+
+        if not request.user.is_authenticated:
+            return JsonResponse({'message': 'Yetki hatası!.','status':'error'}, status=401)
+        
+        if request.user.authorization.department != 'operasyon':
+            return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
+
+        company = Company.objects.filter(id = data.get('companyId')).first()
+        active_company = request.user.user_companies.filter(is_active = True, company = company).first()
+
+        obj = ThirdPerson.objects.filter(uuid = data.get('uuid'), company = active_company.company).first()
+        
+        if not obj:
+            return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+
+        vpos_transaction = obj.vpos_transaction
+        if not vpos_transaction:
+            return JsonResponse({'message': 'Bu sorguya ilişkin sanal pos ödeme kaydı bulunamadı!','status':'error'}, status=400)
+        
+        ThirdPersonDocument.objects.create(
+            company = active_company.company,
+            third_person = obj,
+            label = file.name,
+            file = file,
+        )
+
+        obj.status = 'cleared'
+        obj.save()
+
+        sent, response_message = send_vpos_transation_to_leaseflex_test(vpos_transaction.uuid)
+                        
+        if not sent:
+            vpos_transaction.status = Statuses.REJECTED
+            vpos_transaction.last_error = response_message
+            vpos_transaction.save()
+
+        vpos_transaction.status = Statuses.SENT
+        vpos_transaction.response_message = response_message
+        vpos_transaction.save()
+
+        send_email_for_third_person_cleared(obj.name,obj.tc_vkn_no,type="vpos")
+        
+        return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
+
  

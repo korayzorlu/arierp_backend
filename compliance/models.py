@@ -8,6 +8,7 @@ import uuid
 
 from common.models import Status,Currency
 from companies.models import Company
+from finance.models import VPosTransaction
 
 # Create your models here.
 
@@ -51,11 +52,13 @@ class ThirdPerson(models.Model):
     bank_activities = models.ManyToManyField('leasing.BankActivity',related_name='bank_activities_third_persons', blank = True)
     results = models.JSONField(_("Results"), null=True, blank=True)
     is_vpos = models.BooleanField(default=False)
+    vpos_transaction = models.ForeignKey(VPosTransaction, on_delete=models.CASCADE, related_name="vpos_transaction_third_persons", null=True, blank=True)
 
     is_email_sent = models.BooleanField(default=False)
     is_customer_sent = models.BooleanField(default=False)
     customer_sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customer_sender_third_persons", null=True, blank=True)
 
+    
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
