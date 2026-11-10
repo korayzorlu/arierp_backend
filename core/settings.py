@@ -400,6 +400,11 @@ if not DEBUG:
             "schedule": crontab(minute="*/5"),
             "args": [2],
         },
+        "send-vpos-transation-to-leaseflex-bulk-task": {
+            "task": "finance.tasks.send_vpos_transation_to_leaseflex_bulk_task",
+            "schedule": crontab(minute="*/5"),
+            "args": [2],
+        },
         "fetch-data-from-leaseflex-task": {
             "task": "common.tasks.fetch_data_from_leaseflex",
             "schedule": crontab(minute=0),

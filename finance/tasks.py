@@ -557,3 +557,25 @@ def send_vpos_transation_to_leaseflex_test_task(uuid):
 @shared_task()
 def send_vpos_transation_to_leaseflex_task(uuid):
     send_vpos_transation_to_leaseflex(uuid)
+
+@shared_task()
+def send_vpos_transation_to_leaseflex_bulk_task(company):
+    objs = VPosTransaction.objects.filter(company__id=int(company),status=Statuses.PENDING).order_by('process_date')
+    
+    if not objs.exists():
+        print(f"No pending VPosTransaction found.")
+
+    for obj in objs:
+        print(f"Sending VPosTransaction {obj.id} to Leaseflex...")
+        sent, response_message = send_vpos_transation_to_leaseflex(obj.uuid)
+        if not sent:
+            obj.status = Statuses.REJECTED
+            obj.last_error = response_message
+            obj.save()
+            print(f"Failed to send VPosTransaction {obj.ext_transaction_id}: {response_message}")
+            continue
+
+        obj.status = Statuses.SENT
+        obj.response_message = response_message
+        obj.save()
+        print(f"VPosTransaction {obj.ext_transaction_id} sent successfully.")
