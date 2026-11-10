@@ -202,6 +202,12 @@ def export_title_deed_invoice_controls(self):
         else:
             agreement_status = "Mutabakat Yok"
 
+
+        if obj.ari_bbsn and obj.ari_bbsn != "" and obj.ari_bbsn != "None":
+            bbsn = obj.ari_bbsn
+        else:
+            bbsn = obj.bbsn if obj.bbsn and obj.bbsn != "" and obj.bbsn != "None" else ""
+
         data["Sözleşme"].append(obj.contract.code)
         data["Kira Planı"].append(obj.code)
         data["Versiyon Geçmişi"].append(str(old_leases_list).replace("[","").replace("]","").replace("'",""))
@@ -212,7 +218,7 @@ def export_title_deed_invoice_controls(self):
         data["CRM Satıcı"].append(obj.crm_satici if obj.crm_satici else "")
         data["Proje"].append(obj.contract.project if obj.contract else "")
         data["Blok"].append(obj.block if obj.block or obj.block != "None" else "" )
-        data["BBSN"].append(obj.ari_bbsn if obj.ari_bbsn else "")
+        data["BBSN"].append(bbsn)
         data["CRM BBSN"].append(obj.crm_bbsn if obj.crm_bbsn else "")
         data["Bağımsız Bölüm"].append(obj.unit if obj.unit or obj.unit != "None" else "")
         data["Bakiye"].append(obj.overdue_amount if obj.overdue_amount else "")
