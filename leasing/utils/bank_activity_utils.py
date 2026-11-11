@@ -5,7 +5,7 @@ from decimal import Decimal
 
 def matched_partner_with_tc_vkn_no(params):
     from partners.models import Partner
-    if not params["tc_vkn_no"] is None and params["tc_vkn_no"] != "None":
+    if not params["tc_vkn_no"] is None and params["tc_vkn_no"] != "None" and params["tc_vkn_no"] != "":
         obj = Partner.objects.filter(tc_vkn_no=params["tc_vkn_no"], tc_vkn_no__isnull = False).first()
         if not obj:
             obj = Partner.objects.filter(vat_no=params["tc_vkn_no"], vat_no__isnull = False).first()

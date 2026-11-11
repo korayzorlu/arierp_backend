@@ -10,7 +10,7 @@ from common.utils.common_utils import catch_name_from_description
 
 def check_third_person_status(self):
     if self.name is not None and self.name != "" and self.name != "None":
-            name = self.name
+        name = self.name
     else:
         name = catch_name_from_description(self)
 
