@@ -33,7 +33,7 @@ def create_third_person(self,scan_result):
         send_email_for_third_person_document(name,self.tc_vkn_no or "",type="finmaks")
     
     #old_obj = ThirdPerson.objects.filter(company = self.company, tc_vkn_no = self.tc_vkn_no, name = name, is_vpos=self.is_vpos).first()
-    if self.tc_vkn_no and self.tc_vkn_no != "":
+    if self.tc_vkn_no is not None and self.tc_vkn_no != "" and self.tc_vkn_no != "None":
         old_obj = ThirdPerson.objects.filter(tc_vkn_no = self.tc_vkn_no).first()
     else:
         old_obj = None
