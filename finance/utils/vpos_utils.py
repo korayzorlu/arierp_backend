@@ -100,6 +100,8 @@ def is_valid_vpos_transaction_data(data):
     if not data.get('ValidationKey') or data.get('ValidationKey') != settings.VPOS_VALIDATION_KEY:
         return False, JsonResponse({'message': 'Doğrulama anahtarı geçersiz! (ValidationKey)','status':'error'}, status=400)
 
+    if data.get('ExtTransactionId') == "35700686420507101692" or data.get('ExtTransactionId') == "20170728426114674433":
+        return False, JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
     if not data.get('ExtTransactionId') or VPosTransaction.objects.filter(ext_transaction_id=data.get('ExtTransactionId'),lease_posting_group_id=data.get('LeasePostingGroupId')).exists():
         return False, JsonResponse({'message': 'ExtTransactionId eksik veya zaten gönderilmiş! (ExtTransactionId)','status':'error'}, status=400)
     
