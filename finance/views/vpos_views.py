@@ -15,7 +15,7 @@ from dateutil import parser as dateutil_parser
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from finance.models import *
-from finance.utils.vpos_utils import is_valid_vpos_transaction_data, add_vpos_transation,send_vpos_transation_to_leaseflex_test,compare_names,NameMatch
+from finance.utils.vpos_utils import is_valid_vpos_transaction_data, add_vpos_transation,send_vpos_transation_to_leaseflex_test,compare_names,NameMatch,send_vpos_transation_to_leaseflex
 from common.models import ImportProcess,ExportProcess,ExchangeRate
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
@@ -67,7 +67,7 @@ class AddVPosTransactionView(View):
                 obj.save()
                 return JsonResponse({'message': f'Başarıyla kaydedildi! Kart sahibi ile müşteri ismi uyuşmadığı için 3. kişi kontrolü sonrası Leaseflex sistemine otomatik olarak aktarılacak.','status':'success'}, status=200)
 
-            sent, response_message = send_vpos_transation_to_leaseflex_task.delay(obj.uuid)
+            sent, response_message = send_vpos_transation_to_leaseflex(obj.uuid)
 
             if not sent:
                 obj.status = Statuses.REJECTED
