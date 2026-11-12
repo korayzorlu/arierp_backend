@@ -570,8 +570,7 @@ def send_vpos_transation_to_leaseflex_bulk_task(company):
         third_person = ThirdPerson.objects.filter(
             Q(is_vpos=True) &
             Q(vpos_transaction=obj) &
-            ~Q(status="cleared") &
-            ~Q(name="")
+            ~Q(status="cleared")
         ).first()
 
         if third_person:
