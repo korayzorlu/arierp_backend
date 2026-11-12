@@ -228,7 +228,7 @@ def add_vpos_transation(data):
 
     return obj
 
-def send_vpos_transation_to_leaseflex(obj):
+def send_vpos_transation_to_leaseflex(uuid):
     WSDL = "https://leaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
     
     session = requests.Session()

@@ -23,6 +23,7 @@ from .utils.finmaks_utils import fetch_finekra_currencies,fetch_finekra_banks,po
 from .utils.vpos_utils import send_vpos_transation_to_leaseflex_test,send_vpos_transation_to_leaseflex
 from django.db.models import Q
 from leasing.models import BankActivity
+from compliance.models import ThirdPerson
 
 @shared_task()
 def fetch_partner_advances(company):
@@ -566,6 +567,15 @@ def send_vpos_transation_to_leaseflex_bulk_task(company):
         print(f"No pending VPosTransaction found.")
 
     for obj in objs:
+        third_person = ThirdPerson.objects.filter(
+            Q(vpos_transaction=obj) &
+            ~Q(status="cleared")
+        ).first()
+
+        if third_person:
+            print(f"VPosTransaction {obj.ext_transaction_id} Leaseflex'e gönderilemedi , 3. kişi kontrolü mevcut {third_person.status}.")
+            continue
+
         print(f"Sending VPosTransaction {obj.id} to Leaseflex...")
         sent, response_message = send_vpos_transation_to_leaseflex(obj.uuid)
         if not sent:
