@@ -123,6 +123,9 @@ def is_valid_vpos_transaction_data(data):
     if not isinstance(data.get('LeasePostingGroupId'), bool):
         return False, JsonResponse({'message': 'İşlem grubu eksik veya geçersiz! (LeasePostingGroupId)','status':'error'}, status=400)
 
+    if not data.get('DogumTarih'):
+        return False, JsonResponse({'message': 'Doğum tarihi eksik! (DogumTarih)','status':'error'}, status=400)
+
     str_fields = [
         'FirmaAdi', 'KurumTipi', 'VergiDairesi', 'VergiNo', 'WebSitesi',
         'Adres', 'Ulke', 'Sehir', 'Ilce', 'Posta',
