@@ -65,7 +65,7 @@ class GetAgentTaskView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         #return JsonResponse({"task": None}, status=400)
-
+        print(data)
         agent_token = request.headers.get("X-Agent-Token")
         if agent_token != settings.AGENT_SECRET_TOKEN:
             return HttpResponse(status=403)
@@ -79,6 +79,8 @@ class GetAgentTaskView(View):
             return JsonResponse({"task": None}, status=400)
 
         agent_path = os.path.join(settings.BASE_DIR, "agent", "utils", "agents", f"{task.agent_name}.py")
+        print(f"Agent Name: {task.agent_name}")
+        print(f"Agent path: {agent_path}")
         try:
             with open(agent_path, "r", encoding="utf-8") as f:
                 agent_code = f.read()

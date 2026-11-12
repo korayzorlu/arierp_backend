@@ -835,7 +835,7 @@ class VPosTransactionList(ModelViewSet, QueryListAPIView):
     filterset_class = VPosTransactionFilter
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['id']
-    ordering = ['-created_date']
+    ordering = ['-created_date','ext_transaction_id']
     # pagination_class = DatatablesPagination
     def get_pagination_class(self):
         paginate = self.request.query_params.get('paginate')

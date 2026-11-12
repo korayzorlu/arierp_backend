@@ -571,11 +571,7 @@ def send_vpos_transation_to_leaseflex_bulk_task(company):
             Q(is_vpos=True) &
             Q(vpos_transaction=obj) &
             ~Q(status="cleared") &
-            (
-                Q(name="") |
-                Q(name=None) |
-                Q(name="None")
-            )
+            ~Q(name="")
         ).first()
 
         if third_person:
