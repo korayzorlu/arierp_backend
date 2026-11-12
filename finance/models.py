@@ -151,7 +151,7 @@ class VPosTransaction(models.Model):
     sending_started_date = models.DateTimeField(_("Sending Started At"), blank=True, null=True)
     sent_date = models.DateTimeField(_("Sent Date"), null=True, blank=True)
 
-    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, unique=True)
+    ext_transaction_id = models.CharField(_("External Transaction ID"), max_length=140, null=True, blank=True)
 
     process_date = models.DateTimeField(_("Process Date"), blank=True, null=True)
     musteri_tipi = models.PositiveIntegerField(_("Customer Type"), default=0)
