@@ -233,6 +233,7 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
         if data.get('status') == 'cleared':
             if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
                 obj.status = 'cleared'
+
                 send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="vpos")
 
                 sent, response_message = send_vpos_transation_to_leaseflex(vpos_transaction.uuid)
@@ -259,7 +260,10 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
 
         obj.save()
 
-
+        commission_obj = VPosTransaction.objects.filter(ext_transaction_id=obj.vpos_transaction.ext_transaction_id).first()
+        if commission_obj:
+            commission_obj.status = obj.status
+            commission_obj.save()
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
 
@@ -330,6 +334,11 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
 
         obj.status = 'cleared'
         obj.save()
+
+        commission_obj = VPosTransaction.objects.filter(ext_transaction_id=obj.vpos_transaction.ext_transaction_id).first()
+        if commission_obj:
+            commission_obj.status = obj.status
+            commission_obj.save()
 
         sent, response_message = send_vpos_transation_to_leaseflex(vpos_transaction.uuid)
                         

@@ -333,7 +333,8 @@ class VPosThirdPersonList(ModelViewSet, QueryListAPIView):
 
         queryset = ThirdPerson.objects.select_related(*custom_related_fields).prefetch_related(*prefetch_related_fields).filter(
             Q(company=active_company.company if active_company else None) &
-            Q(is_vpos=True)
+            Q(is_vpos=True) &
+            Q(vpos_transaction__lease_posting_group_id=True)
         )
 
         query = self.request.query_params.get('search[value]', None)
