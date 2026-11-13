@@ -260,7 +260,7 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
 
         obj.save()
 
-        commission_obj = VPosTransaction.objects.filter(ext_transaction_id=obj.vpos_transaction.ext_transaction_id).first()
+        commission_obj = VPosTransaction.objects.filter(ext_transaction_id=obj.vpos_transaction.ext_transaction_id,lease_posting_group_id=False).first()
         if commission_obj:
             commission_obj.status = obj.status
             commission_obj.save()
@@ -335,7 +335,7 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
         obj.status = 'cleared'
         obj.save()
 
-        commission_obj = VPosTransaction.objects.filter(ext_transaction_id=obj.vpos_transaction.ext_transaction_id).first()
+        commission_obj = VPosTransaction.objects.filter(ext_transaction_id=obj.vpos_transaction.ext_transaction_id,lease_posting_group_id=False).first()
         if commission_obj:
             commission_obj.status = obj.status
             commission_obj.save()
