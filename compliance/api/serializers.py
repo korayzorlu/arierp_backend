@@ -65,6 +65,7 @@ class ThirdPersonListSerializer(serializers.Serializer):
     updated_date = serializers.DateTimeField()
     results = serializers.JSONField()
     third_person_documents = serializers.SerializerMethodField()
+    third_person_form_documents = serializers.SerializerMethodField()
     finmaks_transactions = serializers.SerializerMethodField()
     is_email_sent = serializers.BooleanField()
     is_customer_sent = serializers.BooleanField()
@@ -80,6 +81,19 @@ class ThirdPersonListSerializer(serializers.Serializer):
     
     def get_third_person_documents(self, obj):
         documents = obj.third_person_third_person_documents.all()
+        documents_urls = []
+        if documents:
+            for document in documents:
+                documents_urls.append({
+                        "label" : document.label,
+                        "url" : document.file.url
+                    })
+            return documents_urls
+        else:
+            return []
+
+    def get_third_person_form_documents(self, obj):
+        documents = obj.third_person_third_person_form_documents.all()
         documents_urls = []
         if documents:
             for document in documents:
@@ -126,7 +140,14 @@ class ThirdPersonDocumentListSerializer(serializers.Serializer):
     
     def get_companyId(self, obj):
         return obj.company.id if obj.company else ''
+
+class ThirdPersonFormDocumentListSerializer(serializers.Serializer):
+    id = serializers.CharField(source = "uuid")
+    companyId = serializers.SerializerMethodField()
+    label = serializers.CharField()
     
+    def get_companyId(self, obj):
+        return obj.company.id if obj.company else ''
     
 # from rest_framework import serializers
 # from rest_framework.utils import html, model_meta, representation

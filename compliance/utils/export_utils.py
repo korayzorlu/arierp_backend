@@ -34,6 +34,7 @@ def export_third_persons(self):
         "Durum": [],
         "Email Gönderildi mi?": [],
         "Belge": [],
+        "Form": [],
     }
 
     previous_progress = 0
@@ -66,6 +67,7 @@ def export_third_persons(self):
                     data["Durum"].append(status_map.get(obj.status, obj.status))
                     data["Email Gönderildi mi?"].append("Evet" if obj.is_email_sent else "Hayır")
                     data["Belge"].append("Evet" if obj.third_person_third_person_documents.all().exists() else "Hayır")
+                    data["Form"].append("Evet" if obj.third_person_third_person_form_documents.all().exists() else "Hayır")
                 else:
                     data["Sorgu Tarihi"].append("")
                     data["İsim"].append("")
@@ -74,6 +76,7 @@ def export_third_persons(self):
                     data["Durum"].append("")
                     data["Email Gönderildi mi?"].append("")
                     data["Belge"].append("")
+                    data["Form"].append("")
 
     df = pd.DataFrame(data)
     df = df.drop_duplicates()

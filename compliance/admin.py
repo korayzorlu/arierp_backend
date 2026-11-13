@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import BlackListPerson,ThirdPerson,ThirdPersonDocument
+from .models import BlackListPerson,ThirdPerson,ThirdPersonDocument,ThirdPersonFormDocument
 
 # Register your models here.
 
@@ -52,3 +52,21 @@ class ThirdPersonDocumentAdmin(admin.ModelAdmin):
     
     class Meta:
         model = ThirdPersonDocument
+
+@admin.register(ThirdPersonFormDocument)
+class ThirdPersonFormDocumentAdmin(admin.ModelAdmin):
+    list_display = ["company","third_person","label"]
+    list_display_links = ["label"]
+    search_fields = ["company__name","third_person__name","label"]
+    list_filter = []
+    inlines = []
+    ordering = ["label"]
+    
+    def company(self,obj):
+        return obj.company.name if obj.company else ""
+    
+    def third_person(self,obj):
+        return obj.third_person.name if obj.third_person else ""
+    
+    class Meta:
+        model = ThirdPersonFormDocument
