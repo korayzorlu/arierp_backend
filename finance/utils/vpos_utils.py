@@ -234,6 +234,92 @@ def add_vpos_transation(data):
 
     return obj
 
+def add_vpos_transation_test(data):
+    company = Company.objects.filter(uuid = data.get('CompanyId')).first()
+    
+    process_date = parse_datetime(data.get('ProcessDate'))
+        
+    currency = Currency.objects.filter(code='TRY' if data.get('CurrencyCode') == 'TL' else data.get('CurrencyCode')).first()
+
+    cleared_data = {k: v for k, v in data.items() if v != ""}
+
+    obj = VPosTransaction.objects.create(
+        company = company,
+        source = data.get('ValidationKey') == settings.VPOS_VALIDATION_KEY_APP if Sources.APP else Sources.WEB,
+        payload = cleared_data,
+        status = Statuses.UNKNOWN,    
+        process_date = process_date,
+        musteri_tipi = data.get('MusteriTipi'),
+        paid_amount = safe_decimal(data.get('PaidAmount')),
+        currency = currency,
+        lease_posting_group_id = data.get('LeasePostingGroupId'),
+
+        firma_adi = data.get('FirmaAdi'),
+        kurum_tipi = data.get('KurumTipi'),
+        vergi_dairesi = data.get('VergiDairesi'),
+        vergi_no = data.get('VergiNo'),
+        web_sitesi = data.get('WebSitesi'),
+        adres = data.get('Adres'),
+        ulke = data.get('Ulke'),
+        sehir = data.get('Sehir'),
+        ilce = data.get('Ilce'),
+        posta = data.get('Posta'),
+
+        kart_sahibi_ad_soyad = data.get('KartAdSoyad'),
+        ad = data.get('Ad'),
+        ikinci_ad = data.get('IkinciAd'),
+        orta_ad = data.get('OrtaAd'),
+        soyad = data.get('SoyAd'),
+        cinsiyet = data.get('Cinsiyet'),
+        tc_kimlik_no = data.get('TCKimlikNo'),
+        pasaport_no = data.get('PasaportNo'),
+        uyruk = data.get('Uyruk'),
+        dogum_tarihi = data.get('DogumTarih'),
+        vergi_dairesi_birey = data.get('VergiDairesi_Birey'),
+        vergi_no_birey = data.get('VergiNo_Birey'),
+        adres_birey = data.get('Adres_Birey'),
+        ulke_birey = data.get('Ulke_Birey'),
+        sehir_birey = data.get('Sehir_Birey'),
+        ilce_birey = data.get('Ilce_Birey'),
+        posta_birey = data.get('Posta_Birey'),
+
+        username = data.get('UserName'),
+        telefon = data.get('Telefon'),
+        email = data.get('EMail'),
+        fax = data.get('Fax'),
+        bank_code = data.get('BankCode'),
+        contract_code = data.get('ContractCode'),
+        ext_transaction_id = data.get('ExtTransactionId'),
+    )
+
+    if len(data.get('IletisimList') or []) > 0 or len(data.get('IletisimList_Birey') or []) > 0:
+        iletisim_list = data.get('IletisimList') or data.get('IletisimList_Birey')
+        for iletisim in iletisim_list:
+            VPosIletisim.objects.create(
+                vpos_transaction = obj,
+                company = obj.company,
+                iletisim_turu = iletisim.get('IletisimTuru'),
+                iletisim_degeri = iletisim.get('IletisimDegeri'),
+            )
+
+    # third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
+
+    # if third_person_result == NameMatch.MATCH:
+    #     print("Aynı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşiyor.")
+    # elif third_person_result == NameMatch.REVIEW:
+    #     print("İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.")
+    #     scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
+    #     create_third_person_vpos(obj,scan_result)
+    # else:
+    #     print("Farklı kişi: Ad ve Soyad ile Kart Ad Soyad eşleşmiyor.")
+    #     scan_result = check_third_person_status_vpos(data.get('KartAdSoyad'))
+    #     create_third_person_vpos(obj,scan_result)
+
+    
+
+    return obj
+
+
 def send_vpos_transation_to_leaseflex(uuid):
     WSDL = "https://leaseflex.arileasing.com.tr/ARI_LEASING/Integration/Collection/VirtualPosIntegrationService.asmx?WSDL"
     

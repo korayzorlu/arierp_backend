@@ -15,7 +15,7 @@ from dateutil import parser as dateutil_parser
 from utils.mixins import CompanyOwnershipRequiredMixin
 
 from finance.models import *
-from finance.utils.vpos_utils import is_valid_vpos_transaction_data, add_vpos_transation,send_vpos_transation_to_leaseflex_test,compare_names,NameMatch,send_vpos_transation_to_leaseflex
+from finance.utils.vpos_utils import is_valid_vpos_transaction_data, add_vpos_transation,add_vpos_transation_test,send_vpos_transation_to_leaseflex_test,compare_names,NameMatch,send_vpos_transation_to_leaseflex
 from common.models import ImportProcess,ExportProcess,ExchangeRate
 from common.utils.import_utils import BaseImporter
 from common.utils.export_utils import BaseExporter
@@ -80,3 +80,22 @@ class AddVPosTransactionView(View):
             obj.save()
 
         return JsonResponse({'message': f'Başarıyla kaydedildi! Leaseflex mesajı: {response_message}','status':'success'}, status=200)
+
+class AddVPosTransactionTestView(View):
+    def post(self, request, *args, **kwargs):
+        if request.body:
+            data = json.loads(request.body)
+        else:
+            data = request.POST.dict() or request.GET.dict()
+        
+        valid, response = is_valid_vpos_transaction_data(data)
+        if not valid:
+            return response
+        
+        obj = add_vpos_transation_test(data)
+
+        if not obj:
+            return JsonResponse({'message': 'VPOS işlemi kaydedilemedi!','status':'error'}, status=400)
+
+
+        return JsonResponse({'message': f'Başarıyla kaydedildi!','status':'success'}, status=200)

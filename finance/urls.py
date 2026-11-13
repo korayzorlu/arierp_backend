@@ -15,6 +15,7 @@ urlpatterns = [
     path('export_finmaks_bank_account_balances/', ExportFinmaksBankAccountBalancesView.as_view(), name="export_finmaks_bank_account_balances"),
     path('finmaks_bank_account_balances_excel/', FinmaksBankAccountBalancesExcelView.as_view(), name="finmaks_bank_account_balances_excel"),
     path('add_vpos_transaction/', csrf_exempt(AddVPosTransactionView.as_view()), name="add_vpos_transaction"),
+    path('add_vpos_transaction_test/', csrf_exempt(AddVPosTransactionTestView.as_view()), name="add_vpos_transaction_test"),
 
     path('', include("finance.api.urls")),
 ]

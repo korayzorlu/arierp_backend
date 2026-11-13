@@ -235,3 +235,4 @@ class VPosIletisim(models.Model):
 
     class Meta:
         verbose_name = "VPOS İletişim"
+
