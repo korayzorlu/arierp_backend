@@ -402,7 +402,7 @@ if not DEBUG:
         },
         "send-vpos-transation-to-leaseflex-bulk-task": {
             "task": "finance.tasks.send_vpos_transation_to_leaseflex_bulk_task",
-            "schedule": crontab(minute="*/5"),
+            "schedule": crontab(minute="*/15"),
             "args": [2],
         },
         "fetch-data-from-leaseflex-task": {
