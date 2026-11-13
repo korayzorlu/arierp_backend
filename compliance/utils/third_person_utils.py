@@ -68,11 +68,17 @@ def create_third_person_vpos(self,scan_result):
         status = 'pending'
 
     if self.kart_sahibi_ad_soyad and self.kart_sahibi_ad_soyad != "" and status == 'pending':
-        send_email_for_third_person(self.kart_sahibi_ad_soyad,"",type="vpos")
+        try:
+            send_email_for_third_person(self.kart_sahibi_ad_soyad,"",type="vpos")
+        except Exception as e:
+            print(f"Error sending email for third person: {e}")
 
     if self.kart_sahibi_ad_soyad and self.kart_sahibi_ad_soyad != "" and status == 'need_document':
-        send_email_for_third_person_document(self.kart_sahibi_ad_soyad,"",type="vpos")
-    
+        try:
+            send_email_for_third_person_document(self.kart_sahibi_ad_soyad,"",type="vpos")
+        except Exception as e:
+            print(f"Error sending email for third person document: {e}")
+
     new_obj = ThirdPerson.objects.create(
         company=self.company,
         name=self.kart_sahibi_ad_soyad,

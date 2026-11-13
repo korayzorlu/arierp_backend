@@ -48,7 +48,7 @@ class AddVPosTransactionView(View):
 
         if not obj:
             return JsonResponse({'message': 'VPOS işlemi kaydedilemedi!','status':'error'}, status=400)
-
+        
         if obj:
             third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
             
