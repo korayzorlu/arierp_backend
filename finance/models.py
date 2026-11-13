@@ -28,6 +28,10 @@ class Statuses(models.TextChoices):
     INVALID = "invalid", "Veri hatası (gönderilmedi)"
     UNKNOWN = "unknown", "Belirsiz - mutabakat gerekli"
 
+class Sources(models.TextChoices):
+    WEB = "web", "Web"
+    APP = "app", "App"
+
 class FinmaksBankAccount(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="finmaks_bank_accounts")
@@ -139,6 +143,8 @@ class FinmaksTransaction(models.Model):
 class VPosTransaction(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vpos_transactions")
+
+    source = models.CharField(_("Source"), max_length=25, choices=Sources.choices, default=Sources.WEB, blank=True, null=True)
 
     payload = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
 

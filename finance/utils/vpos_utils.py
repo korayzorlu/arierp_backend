@@ -160,6 +160,7 @@ def add_vpos_transation(data):
 
     obj = VPosTransaction.objects.create(
         company = company,
+        source = data.get('ValidationKey') == settings.VPOS_VALIDATION_KEY_APP and Sources.APP or Sources.WEB,
         payload = cleared_data,
         status = Statuses.PENDING,    
         process_date = process_date,
