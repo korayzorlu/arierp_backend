@@ -170,6 +170,10 @@
     font-weight: 700;
 }
 
+.select2-container {
+    width: 75% !important;
+}
+
 /* Light mode */
 @media (prefers-color-scheme: light) {
     #accordion-nav { background: #fff; }

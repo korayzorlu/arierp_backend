@@ -28,6 +28,7 @@ class ThirdPersonAdmin(admin.ModelAdmin):
     list_filter = []
     inlines = []
     ordering = ["name"]
+    autocomplete_fields = ["bank_activities","vpos_transaction"]
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
