@@ -22,7 +22,7 @@ class BlackListPersonAdmin(admin.ModelAdmin):
 
 @admin.register(ThirdPerson)
 class ThirdPersonAdmin(admin.ModelAdmin):
-    list_display = ["company","name","tc_vkn_no","status","is_vpos"]
+    list_display = ["company","name","tc_vkn_no","status","vpos_transaction","is_vpos"]
     list_display_links = ["name"]
     search_fields = ["company__name","name","tc_vkn_no","status"]
     list_filter = []
@@ -31,6 +31,9 @@ class ThirdPersonAdmin(admin.ModelAdmin):
     
     def company(self,obj):
         return obj.company.name if obj.company else ""
+
+    def vpos_transaction(self,obj):
+        return obj.vpos_transaction.ext_transaction_id if obj.vpos_transaction else ""
     
     class Meta:
         model = ThirdPerson
