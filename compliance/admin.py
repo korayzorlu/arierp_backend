@@ -24,7 +24,7 @@ class BlackListPersonAdmin(admin.ModelAdmin):
 class ThirdPersonAdmin(admin.ModelAdmin):
     list_display = ["company","name","tc_vkn_no","status","vpos_transaction","is_vpos"]
     list_display_links = ["name"]
-    search_fields = ["company__name","name","tc_vkn_no","status"]
+    search_fields = ["company__name","name","tc_vkn_no","status","vpos_transaction__ext_transaction_id"]
     list_filter = []
     inlines = []
     ordering = ["name"]
