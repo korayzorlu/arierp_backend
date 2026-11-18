@@ -254,11 +254,17 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
             return JsonResponse({'message': 'Bu işlem için yetkiniz yok!','status':'error'}, status=403)
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
+        
         if not obj:
             return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
+        
         vpos_transaction = obj.vpos_transaction
+
         if not vpos_transaction:
             return JsonResponse({'message': 'Bu sorguya ilişkin sanal pos ödeme kaydı bulunamadı!','status':'error'}, status=400)
+
+        commission_obj = ThirdPerson.objects.filter(vpos_transaction__ext_transaction_id=obj.vpos_transaction.ext_transaction_id,vpos_transaction__lease_posting_group_id=False).first()
+        vpos_transaction_commission = commission_obj.vpos_transaction if commission_obj else None
 
         if data.get('status') == 'cleared':
             if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
@@ -276,23 +282,53 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
                 vpos_transaction.status = Statuses.SENT
                 vpos_transaction.response_message = response_message
                 vpos_transaction.save()
+
+                #komisyon
+                if commission_obj:
+                    commission_obj.status = 'cleared'
+                if vpos_transaction_commission:
+                    sent_commission, response_message_commission = send_vpos_transation_to_leaseflex(vpos_transaction_commission.uuid)
+                    
+                    if not sent_commission:
+                        vpos_transaction_commission.status = Statuses.REJECTED
+                        vpos_transaction_commission.last_error = response_message_commission
+                        vpos_transaction_commission.save()
+        
+                    vpos_transaction_commission.status = Statuses.SENT
+                    vpos_transaction_commission.response_message = response_message_commission
+                    vpos_transaction_commission.save()
             else:
                 obj.status = 'need_document'
+                #komisyon
+                if commission_obj:
+                    commission_obj.status = 'need_document'
         elif data.get('status') == 'need_document':
             obj.status = data.get('status')
+            #komisyon
+            if commission_obj:
+                commission_obj.status = data.get('status')
         elif data.get('status') == 'collection_denied':
             obj.status = data.get('status')
             obj.is_customer_sent = False
             vpos_transaction.status = Statuses.UNKNOWN
             vpos_transaction.save()
+            #komisyon
+            if commission_obj:
+                commission_obj.status = data.get('status')
+                commission_obj.is_customer_sent = False
+            if vpos_transaction_commission:
+                vpos_transaction_commission.status = Statuses.UNKNOWN
+                vpos_transaction_commission.save()
+            
         else:
             obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
-
+            #komisyon
+            if commission_obj:
+                commission_obj.status = data.get('status') if data.get('status') == 'flagged' else 'need_document'
         obj.save()
 
-        commission_obj = ThirdPerson.objects.filter(vpos_transaction__ext_transaction_id=obj.vpos_transaction.ext_transaction_id,vpos_transaction__lease_posting_group_id=False).first()
+        #komisyon
         if commission_obj:
-            commission_obj.status = obj.status
             commission_obj.save()
 
         return JsonResponse({'message': 'Durum değiştirildi!','status':'success'}, status=200)
@@ -354,6 +390,9 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
         vpos_transaction = obj.vpos_transaction
         if not vpos_transaction:
             return JsonResponse({'message': 'Bu sorguya ilişkin sanal pos ödeme kaydı bulunamadı!','status':'error'}, status=400)
+
+        commission_obj = ThirdPerson.objects.filter(vpos_transaction__ext_transaction_id=obj.vpos_transaction.ext_transaction_id,vpos_transaction__lease_posting_group_id=False).first()
+        vpos_transaction_commission = commission_obj.vpos_transaction if commission_obj else None
         
         ThirdPersonDocument.objects.create(
             company = active_company.company,
@@ -365,7 +404,7 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
         obj.status = 'cleared'
         obj.save()
 
-        commission_obj = ThirdPerson.objects.filter(vpos_transaction__ext_transaction_id=obj.vpos_transaction.ext_transaction_id,vpos_transaction__lease_posting_group_id=False).first()
+        #komisyon
         if commission_obj:
             ThirdPersonDocument.objects.create(
                 company = active_company.company,
@@ -373,7 +412,7 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
                 label = file.name,
                 file = file,
             )
-            commission_obj.status = obj.status
+            commission_obj.status = 'cleared'
             commission_obj.save()
 
         sent, response_message = send_vpos_transation_to_leaseflex(vpos_transaction.uuid)
@@ -388,6 +427,19 @@ class ImportVPosThirdPersonDocumentsView(LoginRequiredMixin,View):
         vpos_transaction.save()
 
         send_email_for_third_person_cleared(obj.name,obj.tc_vkn_no,type="vpos")
+
+        #komisyon
+        if commission_obj:
+            sent_commission, response_message_commission = send_vpos_transation_to_leaseflex(vpos_transaction_commission.uuid)
+                                    
+            if not sent:
+                vpos_transaction_commission.status = Statuses.REJECTED
+                vpos_transaction_commission.last_error = response_message
+                vpos_transaction_commission.save()
+
+            vpos_transaction_commission.status = Statuses.SENT
+            vpos_transaction_commission.response_message = response_message
+            vpos_transaction_commission.save()
         
         return JsonResponse({'message': 'Dosya başarıyla yüklendi!','status':'success'}, status=200)
 
