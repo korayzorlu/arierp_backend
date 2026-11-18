@@ -1,0 +1,67 @@
+{
+  "info": {
+    "name": "3. Kişi Listesi API",
+    "description": "Arınet'te 3. kişi kişi listesini dış sistemlere sunan endpoint.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "3. Kişi Listesi",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/compliance/third_persons/?ac={{ac}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "compliance", "third_persons", ""],
+          "query": [
+            {
+              "key": "ac",
+              "value": "{{ac}}",
+              "description": "Zorunlu. Arı Leasing şirket UUID'si"
+            }
+          ]
+        },
+        "description": "Şirkete ait 3. kişi kayıtlarının tamamını tek seferde liste olarak döner.\n\n**ZORUNLU PARAMETRE:**\n- ac (UUID) — Arı Leasing şirket UUID'si\n\n**PARAMETRELER:**\n- uuid (string) — Kaydın benzersiz kimliği\n- name (string) — İsim\n- tc_vkn_no (string) — TC / VKN\n- status (string) — Durum(Sorgu sonucu)\n- created_date (string) — Sorgu tarihi\n- updated_date (string) — Son güncellenme tarihi\n- is_email_sent (bool) — E-mail gönderilme durumu\n- finmaks_transactions (list) — Bağlı ödemeler(Finmaks kaynaklı, eft/havale)\n- vpos_transactions (dict) — Bağlı ödeme(Sanal pos kaynaklı, web/app)[tek ödeme bağlanır]\n- is_vpos (bool) — Ödeme sanal pos mu?\n- is_customer_sent (bool) — Müşteri olarak bildirildi mi?\n- customer_sender (string) — Müşteri olarak bildiren?"
+      },
+      "response": [
+        {
+          "name": "Başarılı",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "[\n  {\n    \"uuid\": \"11111111-1111-1111-1111-111111111111\",\n    \"name\": \"Örnek Kişi\",\n    \"tc_vkn_no\": \"00000000000\",\n    \"status\": \"Temiz\",\n    \"created_date\": \"28.10.2026\",\n    \"updated_date\": \"07.11.2026\",\n    \"is_email_sent\": \"True\",\n    \"finmaks_transactions\": \"[{'id': '7b76f227-3339-4b08-ae5a-d75b4467d665','transaction_date': '10.11.2026 21:00','transaction_id': 'T212416','explanation_field': 'TEST TEST','amount': 150000.0,'currency': 'TRY','bank_name': 'Garanti','bank_account_no': 'garanti-6296407'}]\"\n   \"vpos_transactions\": \"{}\"\n    \"is_vpos\": \"False\",\n    \"is_customer_sent\": \"False\",\n    \"customer_sender\": \"\",\n  }\n]"
+        },
+        {
+          "name": "Hata - İstek Limiti (429)",
+          "status": "Too Many Requests",
+          "code": 429,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"detail\": \"Request was throttled. Expected available in 1 second.\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://arinet.arileasing.com.tr",
+      "description": "API'nin çalıştığı sunucunun base URL'i"
+    },
+    {
+      "key": "ac",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "description": "Arı Leasing şirket UUID'si"
+    }
+  ]
+}

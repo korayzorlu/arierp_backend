@@ -276,9 +276,15 @@ class ThirdPersonList(ModelViewSet, QueryListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        if hasattr(self, '_cached_queryset'):
+            return self._cached_queryset
         user = self.request.user
         active_company_uuid = self.request.query_params.get('ac')
-        active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        if user.is_authenticated:
+            active_company = self.request.user.user_companies.filter(uuid = active_company_uuid).first()
+        else:
+            active_company = UserCompany.objects.select_related().filter(uuid = '899bc2f0-17d9-4067-a2a2-231b92bb9e59').first()
+        ordering = self.request.query_params.get('ordering')
 
         # Use prefetch_related for partner_contracts to reduce DB hits
         custom_related_fields = []
