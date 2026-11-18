@@ -107,9 +107,15 @@ class BankAccountTransactionFilter(FilterSet):
 
 class VPosTransactionFilter(FilterSet):
     uuid = CharFilter(field_name='uuid', lookup_expr='exact')
+    ext_transaction_id = CharFilter(field_name='ext_transaction_id', lookup_expr='icontains')
+    status = CharFilter(field_name='status', lookup_expr='icontains')
+    kart_sahibi_ad_soyad = CharFilter(field_name='kart_sahibi_ad_soyad', lookup_expr='icontains')
+    ad = CharFilter(field_name='ad', lookup_expr='icontains')
+    soyad = CharFilter(field_name='soyad', lookup_expr='icontains')
+    contract_code = CharFilter(field_name='contract_code', lookup_expr='icontains')
 
     class Meta:
         model = VPosTransaction
-        fields = ['uuid']
+        fields = ['uuid','ext_transaction_id','status','kart_sahibi_ad_soyad','ad','soyad','contract_code']
 
 
