@@ -219,7 +219,10 @@ def run_bot(username, password, file_name, task_id):
                 vergi_grubu_input.click()
                 vergi_grubu_input.clear()
                 vergi_grubu_input.send_keys(str(row["KDV Oran-1"]))
-                vergi_grubu_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                if str(row["KDV Oran-1"]) == "KDV %8":
+                    vergi_grubu_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr1")))
+                else:
+                    vergi_grubu_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
                 vergi_grubu_option.click()
 
                 birim_fiyat_input = wait.until(EC.presence_of_element_located((By.ID, "igtxttxtUnitPrice")))
@@ -265,7 +268,10 @@ def run_bot(username, password, file_name, task_id):
                 vergi_grubu_2_input.click()
                 vergi_grubu_2_input.clear()
                 vergi_grubu_2_input.send_keys(str(row["KDV Oran-2"]))
-                vergi_grubu_2_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                if str(row["KDV Oran-2"]) == "KDV %8":
+                    vergi_grubu_2_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr1")))
+                else:
+                    vergi_grubu_2_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
                 vergi_grubu_2_option.click()
 
                 birim_fiyat_2_input = wait.until(EC.presence_of_element_located((By.ID, "igtxttxtUnitPrice")))
