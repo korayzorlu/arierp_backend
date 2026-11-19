@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.keys import Keys
 
 
 import time
@@ -166,7 +167,16 @@ def run_bot(username, password, file_name, task_id):
 
                 belge_tarihi_input = wait.until(EC.presence_of_element_located((By.ID, "dtDocumentDate_input")))
                 belge_tarihi_input.click()
-                belge_tarihi_input.send_keys(str(row["Tarih"]))
+                ham_tarih = row["Tarih"]
+                if hasattr(ham_tarih, "strftime"):
+                    tarih = ham_tarih.strftime("%d.%m.%Y")
+                elif isinstance(ham_tarih, (int, float)) or str(ham_tarih).strip().isdigit():
+                    # Django tarafında to_json, tarihi epoch milisaniye olarak saklıyor (ör. 1793836800000)
+                    tarih = pd.to_datetime(int(float(ham_tarih)), unit="ms").strftime("%d.%m.%Y")
+                else:
+                    tarih = pd.to_datetime(str(ham_tarih).strip(), dayfirst=True).strftime("%d.%m.%Y")
+                # Alanda hazır bir tarih varsa üzerine karışmasın diye önce temizle
+                belge_tarihi_input.send_keys(tarih)
 
                 satici_input = wait.until(EC.presence_of_element_located((By.ID, "cmbVendorIdTextBoxMain")))
                 satici_input.click()
