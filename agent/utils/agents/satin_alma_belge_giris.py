@@ -148,6 +148,8 @@ def run_bot(username, password, file_name, task_id):
 
         for index,row in df.iterrows():
             try:
+                driver.switch_to.default_content()
+                driver.switch_to.frame("main")
                 yeni_kayit_button = wait.until(EC.presence_of_element_located((By.ID, "ListGrid_btnMenuAddNew")))
                 yeni_kayit_button.click()
 
@@ -277,16 +279,27 @@ def run_bot(username, password, file_name, task_id):
                     try:
                         driver.switch_to.default_content()
                         driver.switch_to.frame("main")
-                        guncelle_button = wait.until(EC.presence_of_element_located((By.ID, "BaseDetailBtn")))
+                        guncelle_button = wait.until(EC.element_to_be_clickable((By.ID, "BaseDetailBtn")))
                         guncelle_button.click()
                         break
                     except StaleElementReferenceException:
                         time.sleep(0.5)
 
-                liste_button = wait.until(EC.presence_of_element_located((By.ID, "BaseGoToList")))
-                liste_button.click()
+                # liste_button = wait.until(EC.presence_of_element_located((By.ID, "BaseGoToList")))
+                # liste_button.click()
 
-                time.sleep(1)
+                driver.switch_to.default_content()
+                driver.switch_to.frame("contents")
+                tumu = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@id='ApplicationMenuWebTree_{get_menu_index(username)['tumu']}']//span[contains(@class, 'igtr_Leaf')]")))
+                tumu.click()
+
+                # try:
+                #     close_alert_2_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "messageDialogOKButton")))
+                #     close_alert_2_button.click()
+                # except:
+                #     pass
+
+                # time.sleep(1)
 
                 
             except Exception as e:
