@@ -1,12 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException,NoAlertPresentException,NoSuchWindowException,WebDriverException
+from selenium.common.exceptions import NoSuchElementException,NoAlertPresentException,NoSuchWindowException,WebDriverException,StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.alert import Alert
+
 
 import time
 import pandas as pd
@@ -144,24 +145,131 @@ def run_bot(username, password, file_name, task_id):
                 yeni_kayit_button = wait.until(EC.presence_of_element_located((By.ID, "ListGrid_btnMenuAddNew")))
                 yeni_kayit_button.click()
 
-                sozlesme_input = wait.until(EC.element_to_be_clickable((By.ID, "cmbQuotationProjectIdTextBoxMain")))
+                sozlesme_input = wait.until(EC.presence_of_element_located((By.ID, "cmbQuotationProjectIdTextBoxMain")))
                 sozlesme_input.click()
                 sozlesme_input.send_keys(str(row["Sözleşme"]))
                 sozlesme_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
                 sozlesme_option.click()
 
-                belge_seri_no_input = wait.until(EC.element_to_be_clickable((By.ID, "txtDocumentSerial")))
+                belge_seri_no_input = wait.until(EC.presence_of_element_located((By.ID, "txtDocumentSerial")))
                 belge_seri_no_input.click()
                 belge_seri_no_input.send_keys(str(row["Fatura-1"]))
 
-                belge_sira_no_input = wait.until(EC.element_to_be_clickable((By.ID, "txtDocumentSequence")))
+                belge_sira_no_input = wait.until(EC.presence_of_element_located((By.ID, "txtDocumentSequence")))
                 belge_sira_no_input.click()
-                belge_sira_no_input.send_keys(str(row["Fatura-2"]))
+                belge_sira_no_input.send_keys(str(str(row["Fatura-2"]).strip().lstrip("0").zfill(9)))
 
-                belge_tarihi_input = wait.until(EC.element_to_be_clickable((By.ID, "dtDocumentDate_input")))
+                belge_tarihi_input = wait.until(EC.presence_of_element_located((By.ID, "dtDocumentDate_input")))
                 belge_tarihi_input.click()
                 belge_tarihi_input.send_keys(str(row["Tarih"]))
 
+                satici_input = wait.until(EC.presence_of_element_located((By.ID, "cmbVendorIdTextBoxMain")))
+                satici_input.click()
+                satici_input.send_keys(str(row["Satıcı Firma"]))
+                satici_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                satici_option.click()
+
+                asli_alindi_checkbox = wait.until(EC.presence_of_element_located((By.ID, "chkIsReceivedOriginal")))
+                asli_alindi_checkbox.click()
+
+                tesvik_select = Select(wait.until(EC.presence_of_element_located((By.ID, "ddlEncouragementStatusId"))))
+                tesvik_select.select_by_visible_text("Teşviksiz")
+
+                teslimat_checkbox = wait.until(EC.presence_of_element_located((By.ID, "chkIsDelivered")))
+                teslimat_checkbox.click()
+
+                kaydi_olustur_0_button = wait.until(EC.presence_of_element_located((By.ID, "BaseAddNewBtn")))
+                kaydi_olustur_0_button.click()
+
+                close_alert_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "messageDialogOKButton")))
+                close_alert_button.click()
+
+                satir_ekle_button = wait.until(EC.presence_of_element_located((By.ID, "btnAppendLine")))
+                satir_ekle_button.click()
+
+                #driver.switch_to.frame("fancybox-frame1795075153650")
+                wait.until(EC.frame_to_be_available_and_switch_to_it(
+                    (By.CSS_SELECTOR, "iframe[id^='fancybox-frame']")
+                ))
+
+                urun_tanimi_input = wait.until(EC.presence_of_element_located((By.ID, "cmbStockCodeIdTextBoxMain")))
+                urun_tanimi_input.click()
+                urun_tanimi_input.send_keys(str(row["Ürüm Tanımı"]))
+                urun_tanimi_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                urun_tanimi_option.click()
+
+                vergi_grubu_input = wait.until(EC.presence_of_element_located((By.ID, "cmbTaxGroupIdTextBoxMain")))
+                vergi_grubu_input.click()
+                vergi_grubu_input.clear()
+                vergi_grubu_input.send_keys(str(row["KDV Oran-1"]))
+                vergi_grubu_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                vergi_grubu_option.click()
+
+                birim_fiyat_input = wait.until(EC.presence_of_element_located((By.ID, "igtxttxtUnitPrice")))
+                birim_fiyat_input.click()
+                birim_fiyat_input.send_keys(str(row["Ana Para"]).replace(".",","))
+                tablo_tikla = wait.until(EC.presence_of_element_located((By.ID, "tblPurchasePriceDetail")))
+                tablo_tikla.click()
+
+                kaydi_olustur_button = wait.until(EC.presence_of_element_located((By.ID, "BaseAddNewBtn")))
+                kaydi_olustur_button.click()
+
+                for _ in range(5):
+                    try:
+                        driver.switch_to.default_content()
+                        driver.switch_to.frame("main")
+                        satir_ekle_2_button = wait.until(EC.element_to_be_clickable((By.ID, "btnAppendLine")))
+                        satir_ekle_2_button.click()
+                        break
+                    except StaleElementReferenceException:
+                        time.sleep(0.5)
+
+                wait.until(EC.frame_to_be_available_and_switch_to_it(
+                    (By.CSS_SELECTOR, "iframe[id^='fancybox-frame']")
+                ))
+
+                e_m_input = wait.until(EC.presence_of_element_located((By.ID, "cmbExpenseTypeIdTextBoxMain")))
+                e_m_input.click()
+                e_m_input.clear()
+                e_m_input.send_keys("m")
+                e_m_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                e_m_option.click()
+
+                tahsilat_tipi_select = Select(wait.until(EC.presence_of_element_located((By.ID, "ddlCollectingTypeId"))))
+                tahsilat_tipi_select.select_by_visible_text("Sirket Maliyeti")
+
+                urun_tanimi_2_input = wait.until(EC.presence_of_element_located((By.ID, "cmbStockCodeIdTextBoxMain")))
+                urun_tanimi_2_input.click()
+                urun_tanimi_2_input.send_keys(str(row["Ürüm Tanımı Masraf"]))
+                urun_tanimi_2_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                urun_tanimi_2_option.click()
+
+                vergi_grubu_2_input = wait.until(EC.presence_of_element_located((By.ID, "cmbTaxGroupIdTextBoxMain")))
+                vergi_grubu_2_input.click()
+                vergi_grubu_2_input.clear()
+                vergi_grubu_2_input.send_keys(str(row["KDV Oran-2"]))
+                vergi_grubu_2_option = wait.until(EC.element_to_be_clickable((By.ID, "Tr0")))
+                vergi_grubu_2_option.click()
+
+                birim_fiyat_2_input = wait.until(EC.presence_of_element_located((By.ID, "igtxttxtUnitPrice")))
+                birim_fiyat_2_input.click()
+                birim_fiyat_2_input.send_keys(str(row["Vade Farkı"]).replace(".",","))
+
+                kaydi_olustur_2_button = wait.until(EC.presence_of_element_located((By.ID, "BaseAddNewBtn")))
+                kaydi_olustur_2_button.click()
+
+                for _ in range(5):
+                    try:
+                        driver.switch_to.default_content()
+                        driver.switch_to.frame("main")
+                        guncelle_button = wait.until(EC.presence_of_element_located((By.ID, "BaseDetailBtn")))
+                        guncelle_button.click()
+                        break
+                    except StaleElementReferenceException:
+                        time.sleep(0.5)
+
+                liste_button = wait.until(EC.presence_of_element_located((By.ID, "BaseGoToList")))
+                liste_button.click()
 
                 time.sleep(1)
 
