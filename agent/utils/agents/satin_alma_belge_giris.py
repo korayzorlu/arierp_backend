@@ -50,17 +50,21 @@ def is_browser_closed_error(exception):
 def get_menu_index(username):
     if username == "koray.zorlu":
         return {
-                "satin_alma": "13",
-                "musteriler_ve_satislar": "13_1",
-                "e_arsiv": "13_1_9",
-                "e_fatura": "13_1_10"
+                "satin_alma_yonetimi": "9",
+                "satin_alma_belgeleri": "9_3",
+                "tumu": "9_3_1",
             }
-    elif username == "burcu.akgul":
+    elif username == "gokmen.duman":
         return {
-                "cari_islemler": "12",
-                "musteriler_ve_satislar": "12_1",
-                "e_arsiv": "12_1_2",
-                "e_fatura": "12_1_3"
+                "satin_alma_yonetimi": "8",
+                "satin_alma_belgeleri": "8_3",
+                "tumu": "8_3_1",
+            }
+    elif username == "mucahit.cakir":
+        return {
+                "satin_alma_yonetimi": "9",
+                "satin_alma_belgeleri": "9_3",
+                "tumu": "9_3_1",
             }
     else:
         return "300"
@@ -109,18 +113,19 @@ def run_bot(username, password, file_name, task_id):
         WebDriverWait(driver, 5).until(EC.frame_to_be_available_and_switch_to_it((By.NAME, "contents")))
 
         #go to satın alma
-        satin_alma = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='M_ApplicationMenuWebTree']//div[@igtag='4000']//span[contains(@class, 'igtr_Root')]")))
-        # cari_islemler = wait.until(EC.element_to_be_clickable((By.XPATH, f"//*[@id='ApplicationMenuWebTree_{get_menu_index(username)['cari_islemler']}']//span[contains(@class, 'igtr_Root')]")))
+        #satin_alma = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='M_ApplicationMenuWebTree']//div[@igtag='4000']//span[contains(@class, 'igtr_Root')]")))
+        satin_alma = wait.until(EC.element_to_be_clickable((By.XPATH, f"//*[@id='ApplicationMenuWebTree_{get_menu_index(username)['satin_alma_yonetimi']}']//span[contains(@class, 'igtr_Root')]")))
 
         satin_alma.click()
 
         #go to satın alma belgeleri
-        satin_alma_belgeleri = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='M_ApplicationMenuWebTree']//div[@igtag='4040']//span[contains(@class, 'igtr_Parent')]")))
-        # musteriler_ve_satislar = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@id='ApplicationMenuWebTree_{get_menu_index(username)['musteriler_ve_satislar']}']//span[contains(@class, 'igtr_Parent')]")))
+        #satin_alma_belgeleri = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='M_ApplicationMenuWebTree']//div[@igtag='4040']//span[contains(@class, 'igtr_Parent')]")))
+        satin_alma_belgeleri = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@id='ApplicationMenuWebTree_{get_menu_index(username)['satin_alma_belgeleri']}']//span[contains(@class, 'igtr_Parent')]")))
         satin_alma_belgeleri.click()
 
         #go to tümü
-        tumu = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='M_ApplicationMenuWebTree']//div[@igtag='4041']//span[contains(@class, 'igtr_Leaf')]")))
+        #tumu = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='M_ApplicationMenuWebTree']//div[@igtag='4041']//span[contains(@class, 'igtr_Leaf')]")))
+        tumu = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@id='ApplicationMenuWebTree_{get_menu_index(username)['tumu']}']//span[contains(@class, 'igtr_Leaf')]")))
         tumu.click()
 
         #import file
