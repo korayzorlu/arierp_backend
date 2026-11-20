@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException,NoAlertPresentException,NoSuchWindowException,WebDriverException,StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException,NoAlertPresentException,NoSuchWindowException,WebDriverException,StaleElementReferenceException,TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
@@ -47,6 +47,34 @@ def is_browser_closed_error(exception):
         ]
         return any(isaret in mesaj for isaret in kapatma_isaretleri)
     return False
+
+def sayfa_hazir_mi(driver):
+    """Aktif frame'deki sayfa tamamen yüklendi ve bekleyen ASP.NET AJAX / jQuery isteği yok mu?"""
+    return driver.execute_script("""
+        if (document.readyState !== 'complete') return false;
+        try {
+            if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                var prm = Sys.WebForms.PageRequestManager.getInstance();
+                if (prm && prm.get_isInAsyncPostBack()) return false;
+            }
+        } catch (e) {}
+        if (window.jQuery && jQuery.active > 0) return false;
+        return true;
+    """)
+
+def postback_bitmesini_bekle(driver, eski_element, timeout=30):
+    """
+    Bir butona tıkladıktan sonra çağrılır.
+    1) Tıklanan element stale olana kadar bekler (sayfa yeniden yüklendi = postback gerçekleşti)
+    2) Yeni sayfa tamamen hazır olana kadar bekler.
+    Async (UpdatePanel) postback'te element stale olmayabilir; bu durumda 1. adım
+    zaman aşımına düşer ve yalnızca 2. adımla devam edilir.
+    """
+    try:
+        WebDriverWait(driver, timeout).until(EC.staleness_of(eski_element))
+    except TimeoutException:
+        pass
+    WebDriverWait(driver, timeout).until(sayfa_hazir_mi)
 
 def get_menu_index(username):
     if username == "koray.zorlu":
@@ -291,6 +319,9 @@ def run_bot(username, password, file_name, task_id):
                     except StaleElementReferenceException:
                         time.sleep(0.5)
 
+                # Güncelleme (postback) tamamlanmadan menüye geçme
+                postback_bitmesini_bekle(driver, guncelle_button, timeout=30)
+
                 # liste_button = wait.until(EC.presence_of_element_located((By.ID, "BaseGoToList")))
                 # liste_button.click()
 
@@ -298,6 +329,7 @@ def run_bot(username, password, file_name, task_id):
                 driver.switch_to.frame("contents")
                 tumu = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@id='ApplicationMenuWebTree_{get_menu_index(username)['tumu']}']//span[contains(@class, 'igtr_Leaf')]")))
                 tumu.click()
+
 
                 # try:
                 #     close_alert_2_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "messageDialogOKButton")))
