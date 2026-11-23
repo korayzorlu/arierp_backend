@@ -78,6 +78,42 @@ def compare_names(isim, soyisim, kart_sahibi) -> NameMatch:
 
     return NameMatch.NO_MATCH
 
+#smartis
+def fetch_smartis_token():
+    url = "https://odeme.arileasing.com.tr/api/token"
+    payload = {
+        "username": str(os.getenv("SMARTIS_USERNAME")),
+        "password": str(os.getenv("SMARTIS_PASSWORD")),
+        "grant_type": "password"
+    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    response = requests.post(url, data=payload, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()['access_token']
+    else:
+        return response.text
+
+def fetch_vpos_smartis():
+    token = fetch_smartis_token()
+
+    url = "https://odeme.arileasing.com.tr/api/odemeRapor/Liste"
+    # params={
+    #     "take": 100,
+    #     "page": 1,
+    #     # "approved": 1,
+    #     # "status": 0,
+    # }
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(url, headers=headers)
+    
+    if response.status_code == 200:
+        return response.json()['data']
+    else:
+        return []
+#smartis-end
+
+
 def is_valid_vpos_transaction_data(data):
     parameters = [
         'CompanyId', 'ValidationKey', 'ProcessDate', 'MusteriTipi', 'PaidAmount',
@@ -87,7 +123,7 @@ def is_valid_vpos_transaction_data(data):
         'Uyruk', 'DogumTarih', 'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
         'Ulke_Birey', 'Sehir_Birey', 'Ilce_Birey', 'Posta_Birey', 'IletisimList_Birey',
         'UserName', 'Password', 'Telefon', 'EMail', 'Fax', 'BankCode', 'ContractCode',
-        'CurrencyCode', 'ExtTransactionId','KartAdSoyad'
+        'CurrencyCode', 'ExtTransactionId','KartAdSoyad','TaksitNo'
     ]
 
     unknown_keys = set(data.keys()) - set(parameters)
@@ -100,10 +136,11 @@ def is_valid_vpos_transaction_data(data):
     if not data.get('ValidationKey') or data.get('ValidationKey') != settings.VPOS_VALIDATION_KEY:
         return False, JsonResponse({'message': 'Doğrulama anahtarı geçersiz! (ValidationKey)','status':'error'}, status=400)
 
-    if data.get('ExtTransactionId') == "35700686420507101692" or data.get('ExtTransactionId') == "20170728426114674433":
+    if data.get('ExtTransactionId') == "35700686420507101692" or data.get('ExtTransactionId') == "20170728426114674433" or data.get('ExtTransactionId') == "04781711875062100792":
         return False, JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
-    if not data.get('ExtTransactionId') or VPosTransaction.objects.filter(ext_transaction_id=data.get('ExtTransactionId'),lease_posting_group_id=data.get('LeasePostingGroupId')).exists():
-        return False, JsonResponse({'message': 'ExtTransactionId eksik veya zaten gönderilmiş! (ExtTransactionId)','status':'error'}, status=400)
+    
+    if not data.get('ExtTransactionId') or VPosTransaction.objects.filter(ext_transaction_id=data.get('ExtTransactionId'),lease_posting_group_id=data.get('LeasePostingGroupId'),taksit_no=data.get('TaksitNo')).exists():
+        return False, JsonResponse({'message': 'ExtTransactionId eksik veya ilgili ödeme zaten gönderilmiş! (ExtTransactionId)','status':'error'}, status=400)
     
     # if not data.get('UserName') or not data.get('Password'):
     #     return False, JsonResponse({'message': 'Kullanıcı adı veya şifre eksik! (UserName, Password)','status':'error'}, status=400)
@@ -134,7 +171,7 @@ def is_valid_vpos_transaction_data(data):
         'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
         'Ulke_Birey', 'Sehir_Birey', 'Ilce_Birey', 'Posta_Birey',
         'UserName', 'Password', 'Telefon', 'EMail', 'Fax',
-        'BankCode', 'ContractCode', 'ExtTransactionId','KartAdSoyad'
+        'BankCode', 'ContractCode', 'ExtTransactionId','KartAdSoyad','TaksitNo'
     ]
     for field in str_fields:
         value = data.get(field)
@@ -247,7 +284,7 @@ def add_vpos_transation_test(data):
         company = company,
         source = data.get('ValidationKey') == settings.VPOS_VALIDATION_KEY_APP if Sources.APP else Sources.WEB,
         payload = cleared_data,
-        status = Statuses.UNKNOWN,    
+        status = Statuses.PENDING,    
         process_date = process_date,
         musteri_tipi = data.get('MusteriTipi'),
         paid_amount = safe_decimal(data.get('PaidAmount')),

@@ -178,6 +178,7 @@ class VPosTransaction(models.Model):
     ilce = models.CharField(_("İlçe"), max_length=50, null=True, blank=True)
     posta = models.CharField(_("Posta"), max_length=50, null=True, blank=True)
 
+    taksit_no = models.CharField(_("Taksit No"), max_length=25, null=True, blank=True)
     kart_sahibi_ad_soyad = models.CharField(_("Kart Sahibi Ad Soyad"), max_length=140, null=True, blank=True)
     ad = models.CharField(_("Ad"), max_length=140, null=True, blank=True)
     ikinci_ad = models.CharField(_("İkinci Ad"), max_length=140, null=True, blank=True)
