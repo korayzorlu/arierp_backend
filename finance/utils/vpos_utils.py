@@ -133,8 +133,8 @@ def is_valid_vpos_transaction_data(data):
     if not data.get('CompanyId') or not Company.objects.filter(uuid=data.get('CompanyId')).exists():
         return False, JsonResponse({'message': 'Şirket bilgisi eksik veya geçersiz! (CompanyId)','status':'error'}, status=400)
     
-    if not data.get('ValidationKey') or data.get('ValidationKey') != settings.VPOS_VALIDATION_KEY:
-        return False, JsonResponse({'message': 'Doğrulama anahtarı geçersiz! (ValidationKey)','status':'error'}, status=400)
+    # if not data.get('ValidationKey') or data.get('ValidationKey') != settings.VPOS_VALIDATION_KEY:
+    #     return False, JsonResponse({'message': 'Doğrulama anahtarı geçersiz! (ValidationKey)','status':'error'}, status=400)
 
     if data.get('ExtTransactionId') == "35700686420507101692" or data.get('ExtTransactionId') == "20170728426114674433" or data.get('ExtTransactionId') == "04781711875062100792":
         return False, JsonResponse({'message': 'Başarıyla kaydedildi!','status':'success'}, status=200)
