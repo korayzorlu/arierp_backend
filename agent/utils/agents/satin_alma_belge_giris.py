@@ -89,6 +89,12 @@ def get_menu_index(username):
                 "satin_alma_belgeleri": "8_3",
                 "tumu": "8_3_1",
             }
+    elif username == "kubra.ozcan":
+        return {
+                "satin_alma_yonetimi": "1",
+                "satin_alma_belgeleri": "1_1",
+                "tumu": "1_1_1",
+            }
     elif username == "mucahit.cakir":
         return {
                 "satin_alma_yonetimi": "9",
