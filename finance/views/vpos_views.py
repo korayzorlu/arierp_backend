@@ -50,7 +50,7 @@ class AddVPosTransactionView(View):
             return JsonResponse({'message': 'VPOS işlemi kaydedilemedi!','status':'error'}, status=400)
         
         if obj:
-            third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
+            third_person_result = compare_names(isim=f"{data.get('Ad')} {data.get('IkinciAd')}" if data.get('IkinciAd') else data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
             
             if third_person_result == NameMatch.REVIEW:
                 #İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.
@@ -97,5 +97,16 @@ class AddVPosTransactionTestView(View):
         if not obj:
             return JsonResponse({'message': 'VPOS işlemi kaydedilemedi!','status':'error'}, status=400)
 
+        sent, response_message = send_vpos_transation_to_leaseflex_test(obj.uuid)
+
+        if not sent:
+            obj.status = Statuses.REJECTED
+            obj.last_error = response_message
+            obj.save()
+            return JsonResponse({'message': f"Leaseflex'ten gelen hata: {response_message}",'status':'error'}, status=400)
+
+        obj.status = Statuses.SENT
+        obj.response_message = response_message
+        obj.save()
 
         return JsonResponse({'message': f'Başarıyla kaydedildi!','status':'success'}, status=200)
