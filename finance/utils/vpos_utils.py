@@ -100,7 +100,9 @@ def fetch_vpos_smartis():
     url = "https://odeme.arileasing.com.tr/api/odemeRapor/Liste"
     params={
         "take": 100,
-        "page": 1
+        "page": 1,
+        "startDate": "2026-11-10",
+        "endDate": "2026-11-24"
         # "approved": 1,
         # "status": 0,
     }
@@ -171,7 +173,7 @@ def is_valid_vpos_transaction_data(data):
         'VergiDairesi_Birey', 'VergiNo_Birey', 'Adres_Birey',
         'Ulke_Birey', 'Sehir_Birey', 'Ilce_Birey', 'Posta_Birey',
         'UserName', 'Password', 'Telefon', 'EMail', 'Fax',
-        'BankCode', 'ContractCode', 'ExtTransactionId','KartAdSoyad','TaksitNo'
+        'BankCode', 'ContractCode', 'ExtTransactionId','KartAdSoyad'
     ]
     for field in str_fields:
         value = data.get(field)
