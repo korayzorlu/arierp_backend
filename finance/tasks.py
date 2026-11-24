@@ -561,6 +561,10 @@ def send_vpos_transation_to_leaseflex_task(uuid):
 
 @shared_task()
 def send_vpos_transation_to_leaseflex_bulk_task(company):
+    if settings.DEBUG:
+        print(f"DEBUG mode is on. Skipping sending VPosTransaction to Leaseflex.")
+        return
+    
     objs = VPosTransaction.objects.filter(company__id=int(company),status=Statuses.PENDING).order_by('process_date')
     
     if not objs.exists():

@@ -1,0 +1,108 @@
+[
+    {
+        "UserName": "VisualPos",
+        "Password": "1234",
+        "ProcessDate": "2026-11-17T15:00:07.6187523+03:00",
+        "MusteriTipi": 2,
+        "FirmaAdi": null,
+        "KurumTipi": null,
+        "Telefon": "5436998984",
+        "VergiDairesi": null,
+        "VergiNo": null,
+        "EMail": "musabyilmaz@ikramla.com.tr",
+        "Fax": null,
+        "WebSitesi": null,
+        "Adres": "YAMANEVLER MAH. ŞİMŞEK SOK. NO:14/A ÜMRANİYE İSTANBUL",
+        "Ulke": "TÜRKİYE",
+        "Sehir": "İSTANBUL",
+        "Posta": null,
+        "Ilce": "ÜMRANİYE",
+        "IletisimList": [
+            {
+                "IletisimTuru": "5",
+                "IletisimDegeri": "0 543 699 89 84"
+            }
+        ],
+        "Ad": "MUSAB",
+        "IkinciAd": null,
+        "OrtaAd": "",
+        "SoyAd": "YILMAZ",
+        "Cinsiyet": null,
+        "VergiDairesi_Birey": null,
+        "VergiNo_Birey": null,
+        "Uyruk": "1",
+        "PasaportNo": null,
+        "TCKimlikNo": "37786653960",
+        "DogumTarih": "",
+        "Adres_Birey": "YAMANEVLER MAH. ŞİMŞEK SOK. NO:14/A ÜMRANİYE İSTANBUL",
+        "Ulke_Birey": "TÜRKİYE",
+        "Sehir_Birey": "İSTANBUL",
+        "Ilce_Birey": "ÜMRANİYE",
+        "Posta_Birey": null,
+        "IletisimList_Birey": [
+            {
+                "IletisimTuru": "5",
+                "IletisimDegeri": "0 543 699 89 84"
+            }
+        ],
+        "BankCode": "B000471",
+        "ContractCode": "61997.1.0",
+        "PaidAmount": 22575.00,
+        "CurrencyCode": "TL",
+        "ExtTransactionId": "22842731534032692260",
+        "LeasePostingGroupId": true
+    },
+    {
+        "UserName": "VisualPos",
+        "Password": "1234",
+        "ProcessDate": "2026-11-17T15:00:07.6187523+03:00",
+        "MusteriTipi": 2,
+        "FirmaAdi": null,
+        "KurumTipi": null,
+        "Telefon": "5436998984",
+        "VergiDairesi": null,
+        "VergiNo": null,
+        "EMail": "musabyilmaz@ikramla.com.tr",
+        "Fax": null,
+        "WebSitesi": null,
+        "Adres": "YAMANEVLER MAH. ŞİMŞEK SOK. NO:14/A ÜMRANİYE İSTANBUL",
+        "Ulke": "TÜRKİYE",
+        "Sehir": "İSTANBUL",
+        "Posta": null,
+        "Ilce": "ÜMRANİYE",
+        "IletisimList": [
+            {
+                "IletisimTuru": "5",
+                "IletisimDegeri": "0 543 699 89 84"
+            }
+        ],
+        "Ad": "MUSAB",
+        "IkinciAd": null,
+        "OrtaAd": "",
+        "SoyAd": "YILMAZ",
+        "Cinsiyet": null,
+        "VergiDairesi_Birey": null,
+        "VergiNo_Birey": null,
+        "Uyruk": "1",
+        "PasaportNo": null,
+        "TCKimlikNo": "37786653960",
+        "DogumTarih": "",
+        "Adres_Birey": "YAMANEVLER MAH. ŞİMŞEK SOK. NO:14/A ÜMRANİYE İSTANBUL",
+        "Ulke_Birey": "TÜRKİYE",
+        "Sehir_Birey": "İSTANBUL",
+        "Ilce_Birey": "ÜMRANİYE",
+        "Posta_Birey": null,
+        "IletisimList_Birey": [
+            {
+                "IletisimTuru": "5",
+                "IletisimDegeri": "0 543 699 89 84"
+            }
+        ],
+        "BankCode": "B000471",
+        "ContractCode": "61997.1.0",
+        "PaidAmount": 785.16,
+        "CurrencyCode": "TL",
+        "ExtTransactionId": "22842731534032692260",
+        "LeasePostingGroupId": false
+    }
+]

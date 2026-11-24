@@ -251,6 +251,8 @@ class VPosTransactionListSerializer(serializers.Serializer):
     sending_started_date = serializers.DateTimeField()
     sent_date = serializers.DateTimeField()
 
+    source = serializers.CharField()
+
     currency = serializers.SerializerMethodField()
     paid_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     process_date = serializers.DateTimeField()
