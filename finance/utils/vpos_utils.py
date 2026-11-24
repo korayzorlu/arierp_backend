@@ -217,7 +217,7 @@ def add_vpos_transation(data):
         ilce = data.get('Ilce'),
         posta = data.get('Posta'),
 
-        taksit_no = data.get('TaksitNo'),
+        taksit_no = str(data.get('TaksitNo')),
         kart_sahibi_ad_soyad = data.get('KartAdSoyad'),
         ad = data.get('Ad'),
         ikinci_ad = data.get('IkinciAd'),
@@ -303,7 +303,7 @@ def add_vpos_transation_test(data):
         ilce = data.get('Ilce'),
         posta = data.get('Posta'),
 
-        taksit_no = data.get('TaksitNo'),
+        taksit_no = str(data.get('TaksitNo')),
         kart_sahibi_ad_soyad = data.get('KartAdSoyad'),
         ad = data.get('Ad'),
         ikinci_ad = data.get('IkinciAd'),
