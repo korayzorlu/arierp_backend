@@ -47,9 +47,9 @@ class AddVPosTransactionView(View):
         #geçici kontrol
         if data.get('ValidationKey') == settings.VPOS_VALIDATION_KEY_APP:
             if data.get('IkinciAd') and data.get('IkinciAd') != ".":
-                data.get('KartAdSoyad') = f"{data.get('Ad')} {data.get('IkinciAd')} {data.get('SoyAd')}"
+                data['KartAdSoyad'] = f"{data.get('Ad')} {data.get('IkinciAd')} {data.get('SoyAd')}"
             else:
-                data.get('KartAdSoyad') = f"{data.get('Ad')} {data.get('SoyAd')}"
+                data['KartAdSoyad'] = f"{data.get('Ad')} {data.get('SoyAd')}"
         #geçici kontrol-end
         
         obj = add_vpos_transation(data)
