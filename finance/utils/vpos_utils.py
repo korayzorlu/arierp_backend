@@ -98,12 +98,12 @@ def fetch_vpos_smartis():
     token = fetch_smartis_token()
 
     url = "https://odeme.arileasing.com.tr/api/odemeRapor/Liste"
-    # params={
-    #     "take": 100,
-    #     "page": 1,
-    #     # "approved": 1,
-    #     # "status": 0,
-    # }
+    params={
+        "take": 100,
+        "page": 1
+        # "approved": 1,
+        # "status": 0,
+    }
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(url, headers=headers)
     
@@ -217,7 +217,7 @@ def add_vpos_transation(data):
         ilce = data.get('Ilce'),
         posta = data.get('Posta'),
 
-        taksit_no = data.get('TaksitNo'),
+        taksit_no = str(data.get('TaksitNo')) if data.get('TaksitNo') else None,
         kart_sahibi_ad_soyad = data.get('KartAdSoyad'),
         ad = data.get('Ad'),
         ikinci_ad = data.get('IkinciAd'),
@@ -303,7 +303,7 @@ def add_vpos_transation_test(data):
         ilce = data.get('Ilce'),
         posta = data.get('Posta'),
 
-        taksit_no = data.get('TaksitNo'),
+        taksit_no = str(data.get('TaksitNo')) if data.get('TaksitNo') else None,
         kart_sahibi_ad_soyad = data.get('KartAdSoyad'),
         ad = data.get('Ad'),
         ikinci_ad = data.get('IkinciAd'),
