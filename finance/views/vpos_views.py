@@ -43,6 +43,14 @@ class AddVPosTransactionView(View):
         valid, response = is_valid_vpos_transaction_data(data)
         if not valid:
             return response
+
+        #geçici kontrol
+        if data.get('ValidationKey') == settings.VPOS_VALIDATION_KEY_APP:
+            if data.get('IkinciAd') and data.get('IkinciAd') != ".":
+                data.get('KartAdSoyad') = f"{data.get('Ad')} {data.get('IkinciAd')} {data.get('SoyAd')}"
+            else:
+                data.get('KartAdSoyad') = f"{data.get('Ad')} {data.get('SoyAd')}"
+        #geçici kontrol-end
         
         obj = add_vpos_transation(data)
 
@@ -50,7 +58,10 @@ class AddVPosTransactionView(View):
             return JsonResponse({'message': 'VPOS işlemi kaydedilemedi!','status':'error'}, status=400)
         
         if obj:
-            third_person_result = compare_names(isim=f"{data.get('Ad')} {data.get('IkinciAd')}" if data.get('IkinciAd') else data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
+            if data.get('IkinciAd') and data.get('IkinciAd') != ".":
+                third_person_result = compare_names(isim=f"{data.get('Ad')} {data.get('IkinciAd')}", soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
+            else:
+                third_person_result = compare_names(isim=data.get('Ad'), soyisim=data.get('SoyAd'), kart_sahibi=data.get('KartAdSoyad'))
             
             if third_person_result == NameMatch.REVIEW:
                 #İnceleme gerekli: Ad ve Soyad ile Kart Ad Soyad benzer ama tam olarak eşleşmiyor.
