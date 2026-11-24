@@ -268,7 +268,7 @@ def run_bot(username, password, file_name, task_id):
                 kaydi_olustur_button = wait.until(EC.presence_of_element_located((By.ID, "BaseAddNewBtn")))
                 kaydi_olustur_button.click()
 
-                for _ in range(5):
+                for _ in range(15):
                     try:
                         driver.switch_to.default_content()
                         driver.switch_to.frame("main")
