@@ -65,6 +65,7 @@ class RealEstate(models.Model):
     block = models.CharField(_("Block"), max_length=25, null=True, blank=True)
     unit = models.CharField(_("Unit"), max_length=25, null=True, blank=True)
     bbsn = models.CharField(_("BBSN"), max_length=25, null=True, blank=True)
+    is_deleted = models.CharField(_("IS DELETED"), max_length=25, null=True, blank=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
