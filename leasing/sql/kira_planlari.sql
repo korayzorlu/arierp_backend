@@ -60,9 +60,9 @@ SELECT
     l.SourceLOPId,
     l.NotaryPublicDate,
     pb.BLOCK_NO,
-    fp.FREE_PART_NO,
-    fp.ISLAND_NO,
-    fp.PARCEL_NO,
+    fpp.FREE_PART_NO,
+    fpp.ISLAND_NO,
+    fpp.PARCEL_NO,
     fpp.TIMESHARE_PERIOD,
     pl.CityName,
     pl.DistrictName,
@@ -84,7 +84,7 @@ FROM
     LEFT OUTER JOIN FoundationStatuteMenu d (NOLOCK) ON m.DefinitionId = d.DefinitionId AND d.TableName = 'LeasingOperationProject'
     LEFT JOIN LeasingOperationProject l (NOLOCK) ON lop.OperationProjectId = l.OperationProjectId
     LEFT JOIN RPR_QUO_ITEM qi (NOLOCK) ON qh.QuotationHeaderId = qi.QUO_HEADER_ID
-    LEFT JOIN RPR_FREE_PART_LIST_FOR_DET fp (NOLOCK) ON qi.FREE_PART_ID = fp.FREE_PART_ID
+    --LEFT JOIN RPR_FREE_PART_LIST_FOR_DET fp (NOLOCK) ON qi.FREE_PART_ID = fp.FREE_PART_ID
     LEFT JOIN RPR_PROJECT_FREE_PART fpp (NOLOCK) ON qi.FREE_PART_ID = fpp.FREE_PART_ID
     LEFT JOIN RPR_PROJECT_BLOCK_LIST pb (NOLOCK) ON qi.BLOCK_ID = pb.BLOCK_ID
     LEFT JOIN RPR_PROJECT_LIST pl ON qi.PROJECT_ID = pl.PROJECT_ID
