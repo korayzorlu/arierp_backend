@@ -190,7 +190,7 @@ def send_email_for_third_person_to_cleared(data):
             
     subject = '3. ŞAHIS ÖDEMESİ - TAMAMLANDI'
 
-    if type == "vpos":
+    if data.get("type") == "vpos":
         message = f'''
             Aşağıdaki kişi/kurum için gerekli olan sorgu tamamlanmıştır. Lütfen tahsilat işleminizi kontrol ediniz.
             
