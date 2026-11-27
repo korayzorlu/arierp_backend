@@ -1,0 +1,1 @@
+EXEC sp_helptext 'RPR_FREE_PART_LIST_FOR_DET';

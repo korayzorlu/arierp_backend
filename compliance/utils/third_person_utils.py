@@ -174,7 +174,7 @@ def send_email_for_third_person_cleared(name,tc_vkn_no,type):
 
     send_outlook_email(subject, message, from_email, recipient_list)
 
-def send_email_for_third_person_to_cleared(name,tc_vkn_no,type):       
+def send_email_for_third_person_to_cleared(data):       
     def send_outlook_email(subject, message, from_email, recipient_list, attachments=None):
         email = EmailMessage(
             subject,
@@ -189,14 +189,28 @@ def send_email_for_third_person_to_cleared(name,tc_vkn_no,type):
         #send_mail(subject, message, from_email, recipient_list, fail_silently=False)
             
     subject = '3. ŞAHIS ÖDEMESİ - TAMAMLANDI'
-    message = f'''
-        Aşağıdaki kişi/kurum için gerekli olan sorgu tamamlanmıştır. Lütfen tahsilat işleminizi kontrol ediniz.
 
-        {name} - {tc_vkn_no}
+    if type == "vpos":
+        message = f'''
+            Aşağıdaki kişi/kurum için gerekli olan sorgu tamamlanmıştır. Lütfen tahsilat işleminizi kontrol ediniz.
+            
+            Ödemeyi Yapan: {data.get("name","")}
+            Müşteri: {data.get("customer","")}
+            Ödeme Tarihi: {data.get("date","")}
+            Ödeme Açıklaması: {data.get("description","")}
 
-        Arınet Tahsilat İşleme Ekranı: {"https://arinet.arileasing.com.tr/vpos-transactions" if type=="vpos" else "https://arinet.arileasing.com.tr/collections"}
+            Arınet Sanal Pos 3. Kişi Ekranı: https://arinet.arileasing.com.tr/vpos-transactions
+        '''
+    else:
+        message = f'''
+            Aşağıdaki kişi/kurum için gerekli olan sorgu tamamlanmıştır. Lütfen tahsilat işleminizi kontrol ediniz.
 
-    '''
+            İsim: {data.get("name","")}
+            TC/VKN/Pasaport No: {data.get("tc_vkn_no","")}
+
+            Arınet Tahsilat İşleme Ekranı: https://arinet.arileasing.com.tr/collections
+
+        '''
     from_email = 'Arınet <noreply@arileasing.com.tr>'
     recipient_list = settings.THIRD_PERSON_CLEARED_EMAIL_LIST
 
@@ -211,6 +225,12 @@ def check_third_person_in_partners(company):
         Q(is_vpos = False)
     )
     for obj in objs:
+        email_payload = {
+            "type": "finmaks",
+            "name": obj.name,
+            "tc_vkn_no": obj.tc_vkn_no
+        }
+        
         check_partners = Partner.objects.select_related().filter(
             (
                 Q(tc_vkn_no=obj.tc_vkn_no) |
@@ -230,7 +250,7 @@ def check_third_person_in_partners(company):
             #     is_reliable_person = True,
             #     third_person_status = 'cleared'
             # )
-            send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="finmaks")
+            send_email_for_third_person_to_cleared(email_payload)
 
         time.sleep(3)   
 

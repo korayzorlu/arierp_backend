@@ -5,6 +5,7 @@ from django.http import JsonResponse, FileResponse, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.crypto import get_random_string
+from django.utils import timezone
 from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -37,10 +38,17 @@ class UpdateThirdPersonStatusView(LoginRequiredMixin,View):
 
         obj = ThirdPerson.objects.select_related().filter(uuid = data.get('uuid')).first()
 
+        if obj:
+            email_payload = {
+                "type": "finmaks",
+                "name": obj.name,
+                "tc_vkn_no": obj.tc_vkn_no
+            }
+
         if data.get('status') == 'cleared':
             if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
                 obj.status = 'cleared'
-                send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="finmaks")
+                send_email_for_third_person_to_cleared(email_payload)
             else:
                 obj.status = 'need_document'
         elif data.get('status') == 'need_document':
@@ -257,7 +265,7 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
         
         if not obj:
             return JsonResponse({'message': 'Bir hata oluştu!','status':'error'}, status=400)
-        
+
         vpos_transaction = obj.vpos_transaction
 
         if not vpos_transaction:
@@ -270,7 +278,21 @@ class UpdateVPosThirdPersonStatusView(LoginRequiredMixin,View):
             if obj.third_person_third_person_documents.all().exists() or obj.is_customer_sent:
                 obj.status = 'cleared'
 
-                send_email_for_third_person_to_cleared(obj.name,obj.tc_vkn_no,type="vpos")
+                if vpos_transaction.ikinci_ad and vpos_transaction.ikinci_ad != ".":
+                    customer = f"{vpos_transaction.ad} {vpos_transaction.ikinci_ad} {vpos_transaction.soyad}"
+                else:
+                    customer = f"{vpos_transaction.ad} {vpos_transaction.soyad}"
+        
+                email_payload = {
+                    "type": "vpos",
+                    "name": obj.name,
+                    "tc_vkn_no": obj.tc_vkn_no,
+                    "customer": customer if vpos_transaction.ad else "",
+                    "date": vpos_transaction.process_date.strftime("%d.%m.%Y") if vpos_transaction.process_date else "",
+                    "description": f"{vpos_transaction.contract_code} No'lu sözleşme, {customer} adına yapılan ödeme." if vpos_transaction.contract_code else ""
+                }
+
+                send_email_for_third_person_to_cleared(email_payload)
 
                 sent, response_message = send_vpos_transation_to_leaseflex(vpos_transaction.uuid)
                 
