@@ -199,7 +199,7 @@ def send_email_for_third_person_to_cleared(data):
             Ödeme Tarihi: {data.get("date","")}
             Ödeme Açıklaması: {data.get("description","")}
 
-            Arınet Sanal Pos 3. Kişi Ekranı: https://arinet.arileasing.com.tr/vpos-transactions
+            Arınet Sanal Pos Hareketleri Ekranı: https://arinet.arileasing.com.tr/vpos-transactions
         '''
     else:
         message = f'''
